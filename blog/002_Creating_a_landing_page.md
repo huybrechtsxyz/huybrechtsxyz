@@ -1,15 +1,14 @@
-# Creating a landing page
-Welcome back. In the previous post [clicky clicky](001_Starting_a_new_application.md) we made sure our environment and machine were ready to start building an application. In this post we will create a basic landing page using ASP.Net Core MVC and Bootstrap.
+# Creating a home page
+Welcome back. In the previous post [clicky](001_Starting_a_new_application.md) we made sure our environment and machine were ready to start building an application. In this post we will create a basic home page using ASP.Net Core MVC and Bootstrap.
 
 ## Way of Thinking
-In online marketing, a landing page, sometimes known as a "lead capture page", "single property page", "static page", "squeeze page" or a "destination page", is a single web page that appears in response to clicking on a search engine optimized search result, marketing promotion, marketing email or an online advertisement. The landing page will usually display directed sales copy that is a logical extension of the advertisement, search result or link. Landing pages are used for lead generation. The actions that a visitor takes on a landing page is what determines an advertiser's conversion rate. A landing page may be part of a microsite or a single page within an organization's main web site. Landing pages are often linked to social media, e-mail campaigns, search engine marketing campaigns, high quality articles or "affiliate account" to enhance the effectiveness of the advertisements. The general goal of a landing page is to convert site visitors into sales or leads. - Wikipedia
-
-To put it plainly. This is the first impression is important. That is true for people and for applications. Most of your visitors will see and interact with your website for the first time through your landing page.
+We are going to build our home page. To put it plainly. The first impression is important. That is true for people and for applications / websites. Most of your visitors will see and interact with your website for the first time through this page. Make it count, give your application the showcase it deserves. Introduce the world to our new application with this static home page. Make sure the page capture what you are going to implement in the future, what can the potential customer expect?
+By starting out with a static home page we try to avoid the ‘but this feature is not in it yet’ paralysis. We want to let the world know about our application. We will add functionality to the application along the way. You want feedback on what we have, even if it is only a home page. Each time we add a new feature we want it in the hands of the customer as soon as possible.
 
 ## Way of Working
-We start by creating an empty ASP.Net core application and will add the required components along the way. We want a secure and fast landing page, that is easy to create and maintain. Let us start with something small. Either you already know what your application will do, then go ahead and create the page that show cases your desired functionality. If you have no clue, you can create a personal landing page. Use it to give your CV / resume a boost with a personal website.
+We start by creating an empty ASP.Net core application and will add the required components along the way. We want a secure and fast home page, that is easy to create and maintain. Let us start with something small. Either you already know what your application will do, then go ahead and create the page that show cases your desired functionality. If you have no clue, you can create a personal home page. Use it to give your CV / resume a boost with a personal website.
 
-We use Bootstrap (and jQuery) for our landing page. Bootstrap and MVC are a popular frameworks to building web applications. Bootstrap contains web-components, visual elements on the page, that you can use to build content and layout to your webpage. At this moment in time we are building a fixed webpage. We will add dynamic content in the future.
+We use Bootstrap (and jQuery) for our home page. Bootstrap and MVC are popular frameworks to building web applications. Bootstrap contains web-components, visual elements on the page, that you can use to build content and layout to your webpage. At this moment in time, we are building a fixed webpage. We will add dynamic content in the future.
 
 At the end we commit our code to our GitHub repository and update our project status.
 
@@ -22,7 +21,7 @@ Open GitHub and go to your projects. If you not already have done so, create a p
 Then in GitHub go to application's repository.
 1. Go to the issues tab
 2. Create a new issue
-3. Issue name: Create a landing page
+3. Issue name: Create a home page
 4. Select the appropriate tags and project for the issue
 5. Save the issue
 
@@ -36,10 +35,10 @@ You will notice that the issue is automatically added to the project. Let’s st
 ```
 
 ### ASP.Net Solution and Project
-In the websites directory create an empty landing application using the command line. Try building the application using, make sure your working directory points to your new project. And you can run the project. If you open your webbrowser on the port displayed on the terminal, you should see 'Hello World'.
+In the websites directory create an empty home application using the command line. Try building the application using, make sure your working directory points to your new project. And you can run the project. If you open your web browser on the port displayed on the terminal, you should see 'Hello World'.
 
 ```ps1
-> dotnet new web --name {namespace}/landing
+> dotnet new web --name {namespace}.Home
 > dotnet build
 > dotnet run
 ```
@@ -53,29 +52,27 @@ As this is not the only project of our solution, we are going to create a blank 
 ```
 
 ### Adding Bootstrap
-Great, we now have a working web application. Granted. Showing 'Hello World' was probably not the feature set of your dreams. Let us start by updating the project to get a more visual result. We start by adding bootstrap to our project.
-
-Bootstrap can be found at:
+Great, we now have a working web application. Granted. Showing 'Hello World' was probably not the feature set of your dreams. Let us start by updating the project to get a more visual result. We start by adding bootstrap to our project. Bootstrap can be found at:
 > https://getbootstrap.com/ 
 
-Update the landing project folder structure.
+Update the home project folder structure.
 ```ps1
 > {root}
 > ---- src
 > -------- websites
-> ------------ {landing}
+> ------------ {home project}
 > ---------------- wwwroot
 > -------------------- lib
 > ------------------------ bootstrap
 > --------------------------- css
 > --------------------------- js
 ```
-Unzip the download and move the contents of the downloaded folder to the new bootstrap folder in your project. CSS ans JS folder should be overwritten with the content of the download.
+Unzip the download and move the contents of the downloaded folder to the new bootstrap folder in your project. CSS and JS folder should be overwritten with the content of the download.
 
 ### Adding MVC (Model View Controller)
-MVC is a part of the ASP.Net core SDK and can easily be added to our application. You will need to update Program.cs to add the services and configuration. In order to debug the pages using hot reload we will need to add specific nuget package to our project.
+MVC is a part of the ASP.Net core SDK and can easily be added to our application. You will need to update Program.cs to add the services and configuration. To debug the pages using hot reload we will need to add specific NuGet package to our project.
 ```ps1
-cd {path to landing page folder}
+cd {path to home page folder}
 dotnet add package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation --version 6.0.2
 ```
 
@@ -105,18 +102,17 @@ app.Run();
 ```
 
 ### Add index page
-Situation. ASP.Net understands we will be using MVC and Bootstrap (with jQuery). This is the moment we will be buildling our landing page.
-Update the landing project folder structure.
+Situation. ASP.Net understands we will be using MVC and Bootstrap (with jQuery). This is the moment we will be building our home page.
+Update the home project folder structure.
 ```ps1
 > {root}
 > ---- src
 > -------- websites
-> ------------ {landing}
+> ------------ {home project}
 > ---------------- Pages
 ```
 
-Add the following files to the Pages directory
-
+Add the following files to the Pages directory:
 *_ViewStart.cshtml*
 ```c#
 @{
@@ -172,18 +168,20 @@ namespace {project namespace}.Pages
 ### Build and run
 Build and run your new solution. It should automatically open your Index page.
 ```ps1
-> dotnet new web --name {namespace}/landing
+> dotnet new web --name {namespace}/home
 > dotnet build
 > dotnet run
 ```
-Once you checked your new landing page. Stop the service.
+Once you checked your new home page. Stop the service.
 
 ### Commit
-Congratulations. You now have an application. We need to save our progress to this project. First we save the changes to our source code and upload them to GitHub.
+Congratulations. You now have an application. We need to save our progress to this project. Save the changes to our source code and upload them to GitHub.
 1. Make sure all files are saved and closed in the VSCode windows.
 2. Go to the source control in VSCode
-3. At the top in the Message textbox type: #{number of the isse on github} Creation of landing website
+3. At the top in the Message textbox type: #{number of the isse on github} Creation of home website
 4. Press the checkmark (Commit) - Select Save all and commit if needed
 5. Press the refresh (next to Commit) to synchronize your repository
+
+If this is the first time you commit, you will have to enter your credentials for Github.
 
 End of post.
