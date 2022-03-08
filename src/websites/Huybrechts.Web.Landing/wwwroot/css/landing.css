@@ -1,0 +1,14 @@
+﻿.landing-page .header-top {
+	height: 100vh;
+	min-height: 500px;
+	background-image: url('/img/welcome.webp');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+.landing-page .tenets {
+	color: #ffffff;
+	background-color: #1A355B;
+	padding-top: 60px;
+	padding-bottom: 60px;
+}

@@ -1,0 +1,421 @@
+﻿@page
+@model Huybrechts.Website.Pages.IndexModel
+@{
+	Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="The Huybrechts.xyz website.">
+	<environment include="Localhost,Development">
+		<title>[DEV] @Model.PageTitle</title>
+	</environment>
+	<environment include="Staging">
+		<title>[STG] @Model.PageTitle</title>
+	</environment>
+	<environment include="Production">
+		<title>@Model.PageTitle</title>
+	</environment>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" media="screen"/>
+	<link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true" media="screen"/>
+	<link rel="stylesheet" href="~/css/landingpage.min.css" asp-append-version="true" media="screen"/>
+</head>
+<body class="landing-page">
+	<section id="pagetop">
+		<div class="navbar-wrapper">
+			<nav class="navbar navbar-default navbar-fixed-top navbar-expand-md" role="navigation">
+				<div class="container">
+					<a class="navbar-brand" href="/">VINCENT HUYBRECHTS</a>
+					<div class="navbar-header page-scroll">
+						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+							<i class="fa fa-bars"></i>
+						</button>
+					</div>
+					<div class="collapse navbar-collapse justify-content-end" id="navbar">
+						<ul class="nav navbar-nav navbar-right">
+							<li><a class="nav-link page-scroll text-dark" href="#pagetop">Home</a></li>
+							<li><a class="nav-link page-scroll text-dark" href="#profile">Profile</a></li>
+							<li><a class="nav-link page-scroll text-dark" href="#projects">Projects</a></li>
+							<li><a class="nav-link page-scroll text-dark" href="#history">History</a></li>
+							<li><a class="nav-link page-scroll text-dark" href="/Contact">Contact</a></li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</div>
+	</section>
+	<section class="header-top">
+		<div class="container h-100">
+			<div class="row h-75 align-items-center">
+				<div class="col-12 text-center">
+					<h1>Vincent Huybrechts</h1>
+					<h3>IT Development Professional</h3>
+				</div>
+			</div>
+			<partial name="_CookieConsentPartial" />
+		</div>
+	</section>
+	<section id="profile" class="tenets">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-3">
+					<h2>Servant Leadership</h2>
+					<p>Put people first and help them grow, the organization will follow due to their increased capabilities and commitment.</p>
+				</div>
+				<div class="col-sm-3">
+					<h2>Agile Phylosophy</h2>
+					<p>Create a vision and strategy. Know what you want. Create a roadmap that can be adapted for future change to complete the vision. Take small steps to the future, get feedback, and adapt and repeat.</p>
+				</div>
+				<div class="col-sm-3">
+					<h2>Architecture &amp; Design</h2>
+					<p>Architecture defines how your organization will meet (future) business problems. Design will give you a more detailed level on how the systems will be build and interact.</p>
+				</div>
+				<div class="col-sm-3">
+					<h2>Training</h2>
+					<p>A trained workforce means people learning new skills that improves time to production, reduces costs and mistakes, builds confidence and creates a better working environment.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section id="profile2">
+		<div class="container">
+			<div class="row">
+				<div class="navy-line"></div>
+				<div class="col-lg-12 text-center">
+					<h1>IT Development Professional<br /><span class="navy"></span></h1>
+					<p>
+						Experienced IT development professional with a history of working in the logistics and supply chain industry.
+						Skilled in C#.NET and Dynamics NAV. Strong engineering professional with an analytical mind and a down-to-earth focus on vision, strategy, architecture, and software design.
+						Love working with other people to design, build, and deploy a solution that delivers actual value to end-users. Father of 3 little bundles of joy aged 5, 4, and 2.
+					</p>
+					<p>&nbsp;</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-3 text-center wow fadeInLeft">
+					<div>
+						<i class="fa fa-location-arrow features-icon"></i>
+						<h2>Leadership</h2>
+						<p>
+							Managing teams & technology, agile software development with scrum and kanban, training and coaching of people<br /><br />
+						</p>
+					</div>
+					<div class="m-t-lg">
+						<i class="fa fa-language features-icon"></i>
+						<h2>Languages</h2>
+						<p>Dutch: native, English: fluent, French: basic</p>
+					</div>
+				</div>
+				<div class="col-md-6 text-center wow zoomIn">
+					<div>
+						<p>&nbsp;</p>
+						<a class="LI-simple-link" href="https://be.linkedin.com/in/vincent-huybrechts-23b18031?trk=profile-badge" target="_blank">
+							<img class="rounded-circle img-linkedin img-hover"
+								 src="~/img/vincenthuybrechts.webp"
+								 alt="Vincent Huybrechts Portrait"
+								 data-toggle="tooltip" data-placement="right" title="LinkedIn Profile" />
+						</a>
+						<p>&nbsp;</p>
+					</div>
+				</div>
+				<div class="col-md-3 text-center wow fadeInRight">
+					<div>
+						<i class="fa fa-paragraph features-icon"></i>
+						<h2>Development</h2>
+						<p>MS Dynamics NAV (C/AL), MS C#.Net (ASP MVC) and .Net Core, Azure services, Visual Studio & TFS/Azure DevOps, BizTalk, Service Bus, API</p>
+					</div>
+					<div class="m-t-lg">
+						<i class="fa fa-table features-icon"></i>
+						<h2>Business intelligence</h2>
+						<p>
+							Data warehousing, PowerBI, QlikView
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section id="projects" class="gray-section gray-section-bottom">
+		<div class="container">
+			<div class="row m-b-lg">
+				<div class="col-lg-12 text-center">
+					<div class="navy-line"></div>
+					<h1>My Projects</h1>
+					<p>A brief summary of some of my last projects.</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-4 wow fadeInLeft">
+					<div class="team-member">
+						<i class="fa fa-euro-sign features-icon"></i>
+						<h4><span class="navy">Financial Accountability</span></h4>
+						<p>Managing the increasing budget and financial requirements for the growing IT department.</p>
+						<p>
+							Compose and monitor the global IT budget.
+							Creating a financial model for internal cost distribution.
+							Designing a reporting model for upper management.
+						</p>
+					</div>
+				</div>
+				<div class="col-sm-4 wow fadeIn">
+					<div class="team-member wow zoomIn">
+						<i class="fa fa-bullseye features-icon"></i>
+						<h4><span class="navy">New Way of Working</span></h4>
+						<p>Create a vision for the next-gen IT landscape for Katoen Natie.</p>
+						<p>
+							Architect of the New Way of Working. Presentation on the future IT landscape, processes, and technologies.
+							Moving from monolith NAV systems to micro services in .NET Platform.
+							Promoting a DevOps culture using containerization.
+							Cloud first development within a hybrid environment.
+							Implementing scrum as development process.
+						</p>
+					</div>
+				</div>
+				<div class="col-sm-4 wow fadeInRight">
+					<div class="team-member">
+						<i class="fa fa-university features-icon"></i>
+						<h4><span class="navy">Analysis Methodology</span></h4>
+						<p>Create documentation governance for local and nearshore development teams in cooperation with business and IT.</p>
+						<p>
+							Creation of analysis reference methodology.
+							Build an on-line learning platform with example cases.
+							In-house certification process for compliance validation.
+							Design and build custom Katoen Natie templates, model patterns, and customised analysis elements.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section id="history" class="timeline timeline-bottom">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 text-center">
+					<div class="navy-line"></div>
+					<h1>History</h1>
+					<p></p>
+				</div>
+			</div>
+			<div class="row features-block">
+				<div class="col-lg-12">
+					<div id="vertical-timeline" class="vertical-container light-timeline center-orientation">
+						<div class="vertical-timeline-block">
+							<div class="vertical-timeline-icon">
+								<img src="~/img/omp-logo.webp" class="img-fluid rounded-circle" alt="">
+							</div>
+							<div class="vertical-timeline-content">
+								<h2>OMP</h2>
+								<p>
+									OMP helps companies facing complex planning challenges to excel, grow and thrive by offering the best digitized supply chain planning solution on the market. Wondering how we will make your day?
+								</p>
+								<a href="http://omp.com" class="btn btn-xs btn-primary" target="_blank"> More info</a>
+							</div>
+						</div>
+						<div class="vertical-timeline-block">
+							<div class="vertical-timeline-icon">
+								<img src="~/img/omp-logo.webp" class="img-fluid rounded-circle" alt="">
+							</div>
+							<div class="vertical-timeline-content">
+								<h2>TECHNICAL ARCHITECT</h2>
+								<p>
+									<strong>Design and implement an event streaming orchestrator.</strong>
+									<ul>
+										<li>Design a Microsoft Azure event streaming orchestrator with Event Hub and Azure Function</li>
+										<li>Responsible for a team of 3 developers</li>
+									</ul>
+								</p>
+								<p>
+									<strong>Agile and scrum abassador</strong>
+									<ul>
+										<li>Support scrum masters in their daily job.</li>
+										<li>Support the Project Management office with agile way of working.</li>
+										<li>Build and maintain the agile guides.</li>
+									</ul>
+								</p>
+								<span class="vertical-date">September 2021 - Current</span>
+							</div>
+						</div>
+						<div class="vertical-timeline-block">
+							<div class="vertical-timeline-icon">
+								<img src="~/img/katoennatie-logo.webp" class="img-fluid rounded-circle" alt="">
+							</div>
+							<div class="vertical-timeline-content">
+								<h2>KATOEN NATIE</h2>
+								<p>
+									Katoen Natie offers tailor-made logistics and distribution solutions to different industries.
+									An in-house IT department of approx. 250 people, with developers, infrastructure engineers and a 24/7 service desk
+								</p>
+								<a href="http://katoennatie.com" class="btn btn-xs btn-primary" target="_blank"> More info</a>
+							</div>
+						</div>
+						<div class="vertical-timeline-block">
+							<div class="vertical-timeline-icon">
+								<img src="~/img/katoennatie-logo.webp" class="img-fluid rounded-circle" alt="">
+							</div>
+							<div class="vertical-timeline-content">
+								<h2>ICT SOLUTION ARCHITECT</h2>
+								<p>
+									<strong>Implement governance and policies to manage the digital transformation.</strong>
+									<ul>
+										<li>Work on implementing the new way of working for IT, getting the teams to migrate from Dynamics NAV to .NET technology</li>
+										<li>Start-up of the IT Architecture team</li>
+										<li>Defining the architectural deliverables and objectives</li>
+										<li>Integration in the project management process</li>
+									</ul>
+								</p>
+								<p>
+									<strong>Managing the increasing budget and financial requirements for the growing IT department.</strong>
+									<ul>
+										<li>Compose and monitor the global IT budget</li>
+										<li>Creating a financial model for internal cost distribution</li>
+										<li>Designing a reporting model for upper management</li>
+									</ul>
+								</p>
+								<p>
+									<strong>Manage teams and their projects.</strong>
+									<ul>
+										<li>Follow-up projects from start to finish</li>
+										<li>Plan work for teams and coordinate tasks</li>
+										<li>Coach people to ensure motivation during project lifecycle</li>
+										<li>Mitigate risks, resolve issues, escalate exceptions when required</li>
+									</ul>
+								</p>
+								<p>
+									<strong>Create documentation governance for local and nearshore development teams in cooperation with business and IT.</strong>
+									<ul>
+										<li>Creation of analysis reference methodology</li>
+										<li>Build an on-line learning platform with reference models</li>
+										<li>In-house certification process for compliance validation.</li>
+										<li>Design and build custom Katoen Natie templates, model patterns, and customised analysis elements.</li>
+									</ul>
+								</p>
+								<p>
+									<strong>Create a vision for the next-gen IT landscape for Katoen Natie.</strong>
+									<ul>
+										<li>Architect of the New Way of Working. Presentation on the future IT landscape, processes, and technologies. Moving from monolith NAV systems to micro services in .NET.</li>
+										<li>Promoting a DevOps culture using containerization</li>
+										<li>Cloud first development within a hybrid environment</li>
+										<li>Implementing scrum as development process</li>
+									</ul>
+								</p>
+								<p>
+									<strong>Extend the technology stack by:</strong>
+									<ul>
+										<li>- Selection and implementation of an application integration platform: Microsoft BizTalk</li>
+										<li>- Selection process for a business rule engine and workflow engine platform: Decisions.com</li>
+									</ul>
+								</p>
+								<span class="vertical-date">2016 - September 2021</span>
+							</div>
+						</div>
+						<div class="vertical-timeline-block">
+							<div class="vertical-timeline-icon">
+								<img src="~/img/katoennatie-logo.webp" class="img-fluid rounded-circle" alt="">
+							</div>
+							<div class="vertical-timeline-content">
+								<h2>IT DEVELOP LEAD</h2>
+								<p>
+									<strong>Ensure that our software projects come in on time and budget.</strong>
+									<ul>
+										<li>Responsible for team of 8 developers.</li>
+										<li>Acting as a mentor for the team.</li>
+										<li>Providing technical assistance to the development team.</li>
+										<li>Create the application architecture and software design.</li>
+										<li>Analysis and implementation of a data warehouse.</li>
+									</ul>
+								</p>
+								<span class="vertical-date">2014 - 2015</span>
+							</div>
+						</div>
+						<div class="vertical-timeline-block">
+							<div class="vertical-timeline-icon">
+								<img src="~/img/katoennatie-logo.webp" class="img-fluid rounded-circle" alt="">
+							</div>
+							<div class="vertical-timeline-content">
+								<h2>IT SOFTWARE DEVELOPER for Internal Services ERP</h2>
+								<p>
+									Work as part of an internal start-up team creating software for managing the internal working cost and purchase management.
+									Creation of a project management system that focuses on the financial aspects of the project.
+									Work order system for the technical service departments.
+									Purchase order management for the new purchase department.
+									Full integration with the financial management system.
+								</p>
+								<span class="vertical-date">2010 - 2014</span>
+							</div>
+						</div>
+						<div class="vertical-timeline-block">
+							<div class="vertical-timeline-icon">
+								<img src="~/img/katoennatie-logo.webp" class="img-fluid rounded-circle" alt="">
+							</div>
+							<div class="vertical-timeline-content">
+								<h2>IT SOFTWARE DEVELOPER for Bulk WMS</h2>
+								<p>
+									Work as part of 8-man team to further advance one of the WMS.<br />
+									Develop on the transport, stock, and integration flows.<br />
+									Creation of EDI application that can map a structured file to the data structure of the underlying ERP system.
+								</p>
+								<span class="vertical-date">2007 - 2010</span>
+							</div>
+						</div>
+						<div class="vertical-timeline-block">
+							<div class="vertical-timeline-icon">
+								<img src="~/img/intris-logo.webp" class="img-fluid rounded-circle" alt="">
+							</div>
+							<div class="vertical-timeline-content">
+								<h2>INTRIS</h2>
+								<p>
+									Intris is a Belgian provider of in-house developed freight forwarding, customs and warehousing management software.
+								</p>
+								<a href="http://intris.be" class="btn btn-xs btn-primary" target="_blank"> More info</a>
+							</div>
+						</div>
+						<div class="vertical-timeline-block">
+							<div class="vertical-timeline-icon">
+								<img src="~/img/intris-logo.webp" class="img-fluid rounded-circle" alt="">
+							</div>
+							<div class="vertical-timeline-content">
+								<h2>IT SOFTWARE DEVELOPER</h2>
+								<p>
+									<strong>Work as part of team to further advance the in-house software.</strong>
+									<ul>
+										<li>Design, develop and deploy projects and change requests.</li>
+										<li>Work on the financial, forwarding, warehousing, and customs software solutions.</li>
+										<li>Creation of the document generator that transforms ERP data into Word/Excel documents based on templates.</li>
+										<li>Implement maintain a Red Hat + Progress App Server for integration with Belgian customs authorities.</li>
+									</ul>
+								</p>
+								<p>
+									<strong>Optimize the internal workload to reduce operational overhead.</strong>
+									<ul>
+										<li>Build in-house application for managing projects and changes, related time registration and management</li>
+									</ul>
+								</p>
+								<span class="vertical-date">2003 - 2007</span>
+							</div>
+						</div>
+						<div class="vertical-timeline-block">
+							<div class="vertical-timeline-icon">
+								<img src="~/img/kdg-logo.webp" class="img-fluid rounded-circle" alt="">
+							</div>
+							<div class="vertical-timeline-content">
+								<h2>Applied Computer Science</h2>
+								<p>Studied computer sciences at Karel de Grote Hogeschool (Antwerp, Belgium)</p>
+								<span class="vertical-date">1998 - 2002</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12 text-center m-t-lg m-b-lg">
+					&copy; @DateTime.Now.Year - Huybrechts.xyz | <a class="" asp-page="Privacy">Privacy - Terms</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<script src="~/js/landingpage.min.js"></script>
+</body>
+</html>
