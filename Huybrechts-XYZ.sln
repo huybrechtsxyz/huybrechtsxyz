@@ -3,17 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1488BC15-8EF4-4CC7-95EF-B27097117361}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{366CB1EE-95B4-4FD5-9B5A-4E35261DF90A}"
 	ProjectSection(SolutionItems) = preProject
 		docs\LICENSE = docs\LICENSE
 		docs\README.md = docs\README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Website", "src\Website\Huybrechts.Website\Huybrechts.Website.csproj", "{E6813A33-2D0E-4A6E-B9C8-1B372C4EA64A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{96CB09C9-4038-45F8-BC75-67432BCA590E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Website.Client", "src\Website\Huybrechts.Website.Client\Huybrechts.Website.Client.csproj", "{67F638D3-FF73-4679-A8D5-D80C831476D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Identity", "src\Huybrechts.Identity\Huybrechts.Identity.csproj", "{814F62C9-3D44-412F-A094-F2BFAA08B33A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,21 +19,16 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E6813A33-2D0E-4A6E-B9C8-1B372C4EA64A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E6813A33-2D0E-4A6E-B9C8-1B372C4EA64A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E6813A33-2D0E-4A6E-B9C8-1B372C4EA64A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E6813A33-2D0E-4A6E-B9C8-1B372C4EA64A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{67F638D3-FF73-4679-A8D5-D80C831476D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{67F638D3-FF73-4679-A8D5-D80C831476D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{67F638D3-FF73-4679-A8D5-D80C831476D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{67F638D3-FF73-4679-A8D5-D80C831476D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{814F62C9-3D44-412F-A094-F2BFAA08B33A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{814F62C9-3D44-412F-A094-F2BFAA08B33A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{814F62C9-3D44-412F-A094-F2BFAA08B33A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{814F62C9-3D44-412F-A094-F2BFAA08B33A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E6813A33-2D0E-4A6E-B9C8-1B372C4EA64A} = {1488BC15-8EF4-4CC7-95EF-B27097117361}
-		{67F638D3-FF73-4679-A8D5-D80C831476D0} = {1488BC15-8EF4-4CC7-95EF-B27097117361}
+		{814F62C9-3D44-412F-A094-F2BFAA08B33A} = {96CB09C9-4038-45F8-BC75-67432BCA590E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EA046702-9B6A-4A79-A68E-D0F2C0B8530F}
