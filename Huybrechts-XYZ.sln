@@ -5,15 +5,15 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1488BC15-8EF4-4CC7-95EF-B27097117361}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Website", "src\Website\Huybrechts.Website\Huybrechts.Website.csproj", "{2BE161FA-A96F-4503-AEA0-0A413D4FD02C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Website.Client", "src\Website\Huybrechts.Website.Client\Huybrechts.Website.Client.csproj", "{1E2C9779-FFF5-4E52-937D-80780C762BDC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{366CB1EE-95B4-4FD5-9B5A-4E35261DF90A}"
 	ProjectSection(SolutionItems) = preProject
 		docs\LICENSE = docs\LICENSE
 		docs\README.md = docs\README.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Website", "src\Website\Huybrechts.Website\Huybrechts.Website.csproj", "{E6813A33-2D0E-4A6E-B9C8-1B372C4EA64A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Website.Client", "src\Website\Huybrechts.Website.Client\Huybrechts.Website.Client.csproj", "{67F638D3-FF73-4679-A8D5-D80C831476D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,21 +21,21 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2BE161FA-A96F-4503-AEA0-0A413D4FD02C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2BE161FA-A96F-4503-AEA0-0A413D4FD02C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2BE161FA-A96F-4503-AEA0-0A413D4FD02C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2BE161FA-A96F-4503-AEA0-0A413D4FD02C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E2C9779-FFF5-4E52-937D-80780C762BDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E2C9779-FFF5-4E52-937D-80780C762BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E2C9779-FFF5-4E52-937D-80780C762BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E2C9779-FFF5-4E52-937D-80780C762BDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6813A33-2D0E-4A6E-B9C8-1B372C4EA64A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6813A33-2D0E-4A6E-B9C8-1B372C4EA64A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6813A33-2D0E-4A6E-B9C8-1B372C4EA64A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6813A33-2D0E-4A6E-B9C8-1B372C4EA64A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67F638D3-FF73-4679-A8D5-D80C831476D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67F638D3-FF73-4679-A8D5-D80C831476D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67F638D3-FF73-4679-A8D5-D80C831476D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67F638D3-FF73-4679-A8D5-D80C831476D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{2BE161FA-A96F-4503-AEA0-0A413D4FD02C} = {1488BC15-8EF4-4CC7-95EF-B27097117361}
-		{1E2C9779-FFF5-4E52-937D-80780C762BDC} = {1488BC15-8EF4-4CC7-95EF-B27097117361}
+		{E6813A33-2D0E-4A6E-B9C8-1B372C4EA64A} = {1488BC15-8EF4-4CC7-95EF-B27097117361}
+		{67F638D3-FF73-4679-A8D5-D80C831476D0} = {1488BC15-8EF4-4CC7-95EF-B27097117361}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EA046702-9B6A-4A79-A68E-D0F2C0B8530F}
