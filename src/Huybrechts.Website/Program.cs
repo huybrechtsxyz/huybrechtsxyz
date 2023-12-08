@@ -46,7 +46,7 @@ try
     app.UseRouting();
     app.UseHttpsRedirection();
     app.UseStaticFiles();
-    app.UseSerilogRequestLogging();
+    //app.UseSerilogRequestLogging();
     app.UseAntiforgery();
 
     Log.Information("Mapping and routing razor components");
