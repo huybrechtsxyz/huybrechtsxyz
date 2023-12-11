@@ -1,10 +1,10 @@
-using Huybrechts.Website.Client.Pages;
 using Huybrechts.Website.Components;
 using Huybrechts.Website.Components.Account;
 using Huybrechts.Website.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor.Services;
 using Serilog;
 
 try
@@ -15,18 +15,17 @@ try
 	Log.Information("Creating application builder");
 	var builder = WebApplication.CreateBuilder(args);
 
-	Log.Information("Connecting to database");
-	var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection") ??
-		throw new InvalidOperationException("Connection string 'DatabaseConnection' not found.");
-	builder.Services.AddDbContext<ApplicationDbContext>(options =>
-		options.UseSqlServer(connectionString));
+	Log.Information("Connect to the database");
+	var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+	builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 	builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-	Log.Information("Building the authentication services");
+	Log.Information("Configure authentication");
 	builder.Services.AddCascadingAuthenticationState();
 	builder.Services.AddScoped<IdentityUserAccessor>();
 	builder.Services.AddScoped<IdentityRedirectManager>();
-	builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
+	builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
 	builder.Services.AddAuthentication(options =>
 	{
 		options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -34,18 +33,17 @@ try
 	})
 	.AddIdentityCookies();
 
+	Log.Information("Configure identity core");
 	builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
 		.AddEntityFrameworkStores<ApplicationDbContext>()
 		.AddSignInManager()
 		.AddDefaultTokenProviders();
 
-	// Add services to the container
 	Log.Information("Add services to the container");
-	builder.Services.AddRazorComponents()
-		.AddInteractiveServerComponents()
-		.AddInteractiveWebAssemblyComponents();
-
 	builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+	builder.Services.AddRazorComponents()
+		.AddInteractiveServerComponents();
+	builder.Services.AddMudServices();
 
 	Log.Information("Building the application and services");
 	var app = builder.Build();
@@ -55,7 +53,6 @@ try
 	if (app.Environment.IsDevelopment())
 	{
 		Log.Information("Configure the HTTP request pipeline for development");
-		app.UseWebAssemblyDebugging();
 		app.UseMigrationsEndPoint();
 	}
 	else if (app.Environment.IsStaging())
@@ -76,18 +73,12 @@ try
 	}
 
 	Log.Information("Initializing application services");
-	app.UseRouting();
 	app.UseHttpsRedirection();
 	app.UseStaticFiles();
-	//app.UseSerilogRequestLogging();
 	app.UseAntiforgery();
-	app.UseAuthorization();
 
 	Log.Information("Mapping and routing razor components");
-	app.MapRazorComponents<App>()
-		.AddInteractiveServerRenderMode()
-		.AddInteractiveWebAssemblyRenderMode()
-		.AddAdditionalAssemblies(typeof(Counter).Assembly);
+	app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 	app.MapAdditionalIdentityEndpoints();
 
 	Log.Information("Run configured application");
