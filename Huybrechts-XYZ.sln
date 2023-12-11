@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{366CB1EE-9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{96CB09C9-4038-45F8-BC75-67432BCA590E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Website", "src\Huybrechts.Website\Huybrechts.Website.csproj", "{102FF964-37C5-4674-9F19-896E8703B927}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Website", "src\Huybrechts.Website\Huybrechts.Website.csproj", "{102FF964-37C5-4674-9F19-896E8703B927}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

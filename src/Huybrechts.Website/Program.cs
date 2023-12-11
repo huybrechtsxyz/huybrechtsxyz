@@ -1,4 +1,5 @@
 using Huybrechts.Website.Components;
+using MudBlazor.Services;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -15,8 +16,9 @@ try
     Log.Information("Add services to the container");
     builder.Services.AddRazorComponents()
     .   AddInteractiveServerComponents();
+    builder.Services.AddMudServices();
 
-    Log.Information("Building the application and services");
+	Log.Information("Building the application and services");
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
@@ -49,7 +51,7 @@ try
     //app.UseSerilogRequestLogging();
     app.UseAntiforgery();
 
-    Log.Information("Mapping and routing razor components");
+	Log.Information("Mapping and routing razor components");
     app.MapRazorComponents<App>()
         .AddInteractiveServerRenderMode();
 

@@ -1,7 +1,18 @@
 ﻿@page "/"
-
-<PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<PageTitle>Welcome @ Huybrechts.xyz</PageTitle>
+<div class="row h-50 align-items-center">
+	<div class="col-12 text-center">
+		<h1 class="font-weight-light">Vincent Huybrechts</h1>
+		<p>IT Development Professional</p>
+		<a class="btn btn-secondary" role="button" aria-pressed="true" asp-area="" asp-controller="Home" asp-action="About">About Vincent</a>
+	</div>
+</div>
+<div class="container">
+	<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light fixed-bottom bg-transparent mb-3">
+		<div class="container">
+			<div class="float-left">
+				&copy; @DateTime.Now.Year - Huybrechts.xyz | <a class="" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+			</div>
+		</div>
+	</nav>
+</div>
