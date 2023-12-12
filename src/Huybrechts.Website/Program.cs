@@ -41,7 +41,8 @@ try
 
 	Log.Information("Add services to the container");
 	builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-	builder.Services.AddRazorComponents()
+    builder.Services.AddRazorPages();
+    builder.Services.AddRazorComponents()
 		.AddInteractiveServerComponents();
 	builder.Services.AddMudServices();
 
@@ -73,12 +74,14 @@ try
 	}
 
 	Log.Information("Initializing application services");
+	//app.UseSerilogRequestLogging();
 	app.UseHttpsRedirection();
 	app.UseStaticFiles();
 	app.UseAntiforgery();
 
 	Log.Information("Mapping and routing razor components");
-	app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+    app.MapRazorPages();
+    app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 	app.MapAdditionalIdentityEndpoints();
 
 	Log.Information("Run configured application");

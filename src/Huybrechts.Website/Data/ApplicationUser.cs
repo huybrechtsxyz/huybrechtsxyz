@@ -6,5 +6,4 @@ namespace Huybrechts.Website.Data
 	public class ApplicationUser : IdentityUser
 	{
 	}
-
 }
