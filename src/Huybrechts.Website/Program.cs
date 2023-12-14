@@ -1,3 +1,4 @@
+using Huybrechts.Helpers;
 using Huybrechts.Website.Components;
 using Huybrechts.Website.Components.Account;
 using Huybrechts.Website.Data;
@@ -17,7 +18,7 @@ try
 
 	Log.Information("Connect to the database");
 	var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-	builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+	builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
 	builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 	Log.Information("Configure authentication");
@@ -35,7 +36,7 @@ try
 
 	Log.Information("Configure identity core");
 	builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-		.AddEntityFrameworkStores<ApplicationDbContext>()
+		.AddEntityFrameworkStores<DatabaseContext>()
 		.AddSignInManager()
 		.AddDefaultTokenProviders();
 
@@ -55,12 +56,16 @@ try
 	Log.Information("Building the application and services");
 	var app = builder.Build();
 
+	// Database migrations
+	Log.Information("Adding database initializer as hosted service");
+	builder.Services.AddHostedService<DatabaseInitializer>();
+
 	// Configure the HTTP request pipeline.
 	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	if (app.Environment.IsDevelopment())
 	{
 		Log.Information("Configure the HTTP request pipeline for development");
-		app.UseMigrationsEndPoint();
+		//app.UseMigrationsEndPoint(); has already been executed
 	}
 	else if (app.Environment.IsStaging())
 	{
