@@ -45,6 +45,12 @@ try
     builder.Services.AddRazorComponents()
 		.AddInteractiveServerComponents();
 	builder.Services.AddMudServices();
+	builder.Services.Configure<CookiePolicyOptions>(options =>
+	{
+		// This lambda determines whether user consent for non-essential cookies is needed for a given request.
+		options.CheckConsentNeeded = context => true;
+		options.MinimumSameSitePolicy = SameSiteMode.None;
+	});
 
 	Log.Information("Building the application and services");
 	var app = builder.Build();
@@ -76,6 +82,7 @@ try
 	Log.Information("Initializing application services");
 	app.UseHttpsRedirection();
 	app.UseStaticFiles();
+	app.UseCookiePolicy();
 	app.UseAntiforgery();
 
 	Log.Information("Mapping and routing razor components");
