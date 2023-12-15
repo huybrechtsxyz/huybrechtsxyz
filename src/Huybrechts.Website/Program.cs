@@ -4,7 +4,6 @@ using Huybrechts.Website.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MudBlazor.Services;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
@@ -60,7 +59,6 @@ try
     builder.Services.AddRazorPages();
     builder.Services.AddRazorComponents()
 		.AddInteractiveServerComponents();
-	builder.Services.AddMudServices();
 	builder.Services.Configure<CookiePolicyOptions>(options =>
 	{
 		// This lambda determines whether user consent for non-essential cookies is needed for a given request.
