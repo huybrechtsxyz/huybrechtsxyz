@@ -104,7 +104,8 @@ try
 	Log.Information("Mapping and routing razor components");
 	app.UseSerilogRequestLogging();
 	app.MapRazorPages();
-	app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+	app.MapRazorComponents<App>()
+		.AddInteractiveServerRenderMode();
 	app.MapAdditionalIdentityEndpoints();
 
 	Log.Information("Run configured application");
