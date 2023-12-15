@@ -1,4 +1,3 @@
-using Huybrechts.Helpers;
 using Huybrechts.Website.Components;
 using Huybrechts.Website.Components.Account;
 using Huybrechts.Website.Data;
@@ -7,14 +6,26 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Compact;
 
 try
 {
-	Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
+	Log.Logger = new LoggerConfiguration()
+		.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+		.Enrich.FromLogContext()
+		.WriteTo.Console()
+		.CreateBootstrapLogger();
 	Log.Information("Starting application");
 
 	Log.Information("Creating application builder");
 	var builder = WebApplication.CreateBuilder(args);
+	builder.Host.UseSerilog((context, services, configuration) => configuration
+		.ReadFrom.Configuration(context.Configuration)
+		.ReadFrom.Services(services)
+		.Enrich.FromLogContext()
+		.WriteTo.Console(new RenderedCompactJsonFormatter()),
+		writeToProviders: true);
 
 	Log.Information("Connect to the database");
 	var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -40,6 +51,10 @@ try
 		.AddSignInManager()
 		.AddDefaultTokenProviders();
 
+	// Database migrations
+	Log.Information("Adding database initializer as hosted service");
+	builder.Services.AddHostedService<DatabaseInitializer>();
+
 	Log.Information("Add services to the container");
 	builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
     builder.Services.AddRazorPages();
@@ -55,10 +70,6 @@ try
 
 	Log.Information("Building the application and services");
 	var app = builder.Build();
-
-	// Database migrations
-	Log.Information("Adding database initializer as hosted service");
-	builder.Services.AddHostedService<DatabaseInitializer>();
 
 	// Configure the HTTP request pipeline.
 	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -91,7 +102,7 @@ try
 	app.UseAntiforgery();
 
 	Log.Information("Mapping and routing razor components");
-	//app.UseSerilogRequestLogging();
+	app.UseSerilogRequestLogging();
 	app.MapRazorPages();
 	app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 	app.MapAdditionalIdentityEndpoints();

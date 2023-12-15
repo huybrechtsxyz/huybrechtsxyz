@@ -1,31 +1,28 @@
 ﻿using Huybrechts.Helpers;
+using Huybrechts.Website.Pages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting.Internal;
-using System;
-using System.Diagnostics.Eventing.Reader;
+using Serilog;
+using ILogger = Serilog.ILogger;
 
 namespace Huybrechts.Website.Data;
-
 
 public class DatabaseInitializer : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
 	private readonly IConfiguration _configuration;
-	private readonly ILogger _logger;
-
 	private DatabaseContext? _dbcontext = null;
 
-	public DatabaseInitializer(IServiceProvider serviceProvider, IConfiguration configuration, ILogger logger)
+	private readonly ILogger _logger = Log.Logger.ForContext<DatabaseInitializer>();
+
+	public DatabaseInitializer(IServiceProvider serviceProvider, IConfiguration configuration)
     {
-		_logger = logger; 
 		_configuration = configuration;
 		_serviceProvider = serviceProvider;
 	}
 
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
-		_logger.LogInformation("Running database initializer...");
+		_logger.Information("Running database initializer...");
 		var configHelper = new ConfigurationHelper(_configuration);
 		var environment = _serviceProvider.GetRequiredService<IWebHostEnvironment>() ?? 
 			throw new Exception("The WebHostEnvironment service was not registered as a service");
@@ -36,11 +33,11 @@ public class DatabaseInitializer : IHostedService
 
 		if (environment.IsDevelopment() && configHelper.IsResetEnvironment)
 		{
-			_logger.LogWarning("Running database initializer...deleting existing database");
+			_logger.Warning("Running database initializer...deleting existing database");
 			await _dbcontext.Database.EnsureDeletedAsync(cancellationToken);
 		}
 
-		_logger.LogInformation("Running database initializer...applying database migrations");
+		_logger.Information("Running database initializer...applying database migrations");
 		await _dbcontext.Database.MigrateAsync(cancellationToken);
 
 		if (environment.IsDevelopment())
@@ -57,16 +54,16 @@ public class DatabaseInitializer : IHostedService
 
 	private async Task InitializeForDevelopmentAsync(CancellationToken cancellationToken)
 	{
-		_logger.LogInformation("Running database initializer...applying development migrations");
+		_logger.Information("Running database initializer...applying development migrations");
 	}
 
 	private async Task InitializeForStagingAsync(CancellationToken cancellationToken)
 	{
-		_logger.LogInformation("Running database initializer...applying staging migrations");
+		_logger.Information("Running database initializer...applying staging migrations");
 	}
 
 	private async Task InitializeForProductionAsync(CancellationToken cancellationToken)
 	{
-		_logger.LogWarning("Running database initializer...applying productions migrations");
+		_logger.Warning("Running database initializer...applying productions migrations");
 	}
 }
