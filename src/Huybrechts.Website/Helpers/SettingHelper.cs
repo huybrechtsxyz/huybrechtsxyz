@@ -3,13 +3,13 @@ using System.Globalization;
 
 namespace Huybrechts.Helpers
 {
-    public class ConfigurationHelper
+    public class SettingHelper
 	{
 		private readonly IConfiguration _configuration;
 
 		public static CultureInfo[] SupportedCultures => new[] { new CultureInfo("EN"), new CultureInfo("NL") };
 
-		public ConfigurationHelper(IConfiguration configuration)
+		public SettingHelper(IConfiguration configuration)
 		{
 			_configuration = configuration;
 		}

@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Builder
+﻿@using Huybrechts.Helpers
+@using Microsoft.AspNetCore.Builder
 @using Microsoft.AspNetCore.Http.Features
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.AspNetCore.Mvc.Localization
@@ -9,7 +10,7 @@
 @inject IOptions<RequestLocalizationOptions> LocOptions
 
 @{
-    var supportedCultures = Helpers.ConfigurationHelper.SupportedCultures;
+    var supportedCultures = SettingHelper.SupportedCultures;
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
     var cultureItems = supportedCultures.Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName }).ToList();
     var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}";

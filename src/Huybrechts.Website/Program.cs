@@ -110,9 +110,9 @@ try
 
     app.UseRequestLocalization(new RequestLocalizationOptions
     {
-        SupportedCultures = ConfigurationHelper.SupportedCultures,
-        SupportedUICultures = ConfigurationHelper.SupportedCultures,
-        DefaultRequestCulture = new RequestCulture(ConfigurationHelper.SupportedCultures[0])
+        SupportedCultures = SettingHelper.SupportedCultures,
+        SupportedUICultures = SettingHelper.SupportedCultures,
+        DefaultRequestCulture = new RequestCulture(SettingHelper.SupportedCultures[0])
     });
 
     Log.Information("Mapping and routing razor components");

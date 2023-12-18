@@ -23,7 +23,7 @@ public class DatabaseInitializer : IHostedService
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
 		_logger.Information("Running database initializer...");
-		var configHelper = new ConfigurationHelper(_configuration);
+		var configHelper = new SettingHelper(_configuration);
 		var environment = _serviceProvider.GetRequiredService<IWebHostEnvironment>() ?? 
 			throw new Exception("The WebHostEnvironment service was not registered as a service");
 		

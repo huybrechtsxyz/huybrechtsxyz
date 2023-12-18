@@ -18,8 +18,8 @@ public class MessageSender : IEmailSender
 
     public MessageSender(IConfiguration configuration)
 	{
-		_messageSettings = new ConfigurationHelper(configuration).GetMessagingSettings();
-		_messageAuthentication = new ConfigurationHelper(configuration).GetMessagingAuthentication();
+		_messageSettings = new SettingHelper(configuration).GetMessagingSettings();
+		_messageAuthentication = new SettingHelper(configuration).GetMessagingAuthentication();
     }
 
 	public async Task SendEmailAsync(string toEmail, string toName, string subject, string messageText)
