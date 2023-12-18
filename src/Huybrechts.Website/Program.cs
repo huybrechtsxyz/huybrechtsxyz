@@ -31,6 +31,7 @@ try
 		writeToProviders: true);
 
 	Log.Information("Connect to the database");
+	var settingHelper = new SettingHelper(builder.Configuration);
 	var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 	builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
 	builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -48,7 +49,14 @@ try
 	})
 	.AddIdentityCookies();
 
-	Log.Information("Configure identity core");
+	var google = settingHelper.GetGoogleAuthentication();
+    builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+    {
+		googleOptions.ClientId = google.ClientId;
+		googleOptions.ClientSecret = google.ClientSecret;
+    });
+
+    Log.Information("Configure identity core");
 	builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
 		.AddEntityFrameworkStores<DatabaseContext>()
 		.AddSignInManager()

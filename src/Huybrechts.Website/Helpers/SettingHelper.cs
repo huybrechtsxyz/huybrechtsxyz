@@ -36,6 +36,13 @@ namespace Huybrechts.Helpers
 			}
 		}
 
+		public AuthenticationSettings GetGoogleAuthentication()
+		{
+			AuthenticationSettings item = new();
+			_configuration.GetSection("Authentication:Google").Bind(item);
+            return item;
+        }
+
         public MessagingAuthentication GetMessagingAuthentication()
         {
             MessagingAuthentication item = new();
