@@ -1,8 +1,6 @@
 ﻿using Huybrechts.Helpers;
-using Huybrechts.Website.Data;
 using Huybrechts.Website.Models;
-using System.Net;
-using System.Net.Mail;
+using MimeKit;
 
 namespace Huybrechts.Services;
 
@@ -26,17 +24,19 @@ public class MessageSender : IEmailSender
 	{
 		try
 		{
-            SmtpClient client = new()
+			/* Is using an older implementation using mailkit instead
+            using SmtpClient client = new()
             {
                 Port = _messageSettings.MailPort, // 587,
                 Host = _messageSettings.MailServer, // "smtp.gmail.com" or another email sender provider
                 EnableSsl = _messageSettings.EnableSsl, // true,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(_messageAuthentication.UserName, _messageAuthentication.Password)
+                Credentials = new NetworkCredential(_messageAuthentication.UserName, _messageAuthentication.Password),
+				Timeout = 10000
             };
 
-			MailMessage mailMessage = new()
+			using MailMessage mailMessage = new()
 			{
 				From = new MailAddress(_messageSettings.SenderMail, _messageSettings.SenderName),
 				Subject = subject,
@@ -46,7 +46,25 @@ public class MessageSender : IEmailSender
 			mailMessage.To.Add(new MailAddress(toEmail, toName));
 
 			await client.SendMailAsync(mailMessage);
-			return;
+			
+			return;*/
+
+			using MimeMessage message = new();
+			message.From.Add(new MailboxAddress(_messageSettings.SenderName, _messageSettings.SenderMail));
+			message.To.Add(new MailboxAddress(toName, toEmail));
+			message.Subject = subject;
+			message.Body = new TextPart("html")
+			{
+				Text = messageText
+			};
+
+			using MailKit.Net.Smtp.SmtpClient client = new();
+			client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+			await client.ConnectAsync(_messageSettings.MailServer, _messageSettings.MailPort, _messageSettings.EnableSsl);
+            if (!string.IsNullOrEmpty(_messageAuthentication.UserName))
+				await client.AuthenticateAsync(_messageAuthentication.UserName, _messageAuthentication.Password);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
         }
 		catch (Exception ex)
 		{
