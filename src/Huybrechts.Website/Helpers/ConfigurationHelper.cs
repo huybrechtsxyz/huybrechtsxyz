@@ -1,8 +1,9 @@
-﻿using System.Globalization;
+﻿using Huybrechts.Website.Models;
+using System.Globalization;
 
 namespace Huybrechts.Helpers
 {
-	public class ConfigurationHelper
+    public class ConfigurationHelper
 	{
 		private readonly IConfiguration _configuration;
 
@@ -34,5 +35,19 @@ namespace Huybrechts.Helpers
 				return false;
 			}
 		}
-	}
+
+        public MessagingAuthentication GetMessagingAuthentication()
+        {
+            MessagingAuthentication item = new();
+            _configuration.GetSection("MessagingAuthentication").Bind(item);
+            return item;
+        }
+
+        public MessagingSettings GetMessagingSettings()
+        {
+            MessagingSettings item = new();
+            _configuration.GetSection("MessagingSettings").Bind(item);
+            return item;
+        }
+    }
 }

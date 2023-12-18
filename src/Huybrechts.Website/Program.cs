@@ -2,6 +2,7 @@ using Huybrechts.Helpers;
 using Huybrechts.Website.Components;
 using Huybrechts.Website.Components.Account;
 using Huybrechts.Website.Data;
+using Huybrechts.Website.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -10,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
-using System.Globalization;
 
 try
 {
@@ -57,10 +57,10 @@ try
 	// Database migrations
 	Log.Information("Adding database initializer as hosted service");
 	builder.Services.AddHostedService<DatabaseInitializer>();
-	builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-	
+    
     Log.Information("Add services to the container");
-	builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+    builder.Services.AddSingleton<IEmailSender<ApplicationUser>, AuthenticationSender>();
+    builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
     builder.Services.AddControllers();
 	builder.Services.AddRazorPages()
 		.AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
