@@ -1,4 +1,6 @@
 ﻿@page
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model IndexModel
 @{
 	ViewData["Title"] = "Huybrechts.xyz";
@@ -32,7 +34,7 @@
 				<div class="col-12 text-center">
 					<h1 class="font-weight-light">Vincent Huybrechts</h1>
 					<p>IT Development Professional</p>
-					<a class="btn btn-secondary" role="button" aria-pressed="true" href="https://www.linkedin.com/in/vincent-huybrechts-23b18031/">About Vincent</a>
+					<a class="btn btn-secondary" role="button" aria-pressed="true" href="https://www.linkedin.com/in/vincent-huybrechts-23b18031/">@Localizer["About Vincent"]</a>
 				</div>
 			</div>
 			<div class="container">
@@ -40,6 +42,9 @@
 					<div class="container">
 						<div class="float-left">
 							&copy; @DateTime.Now.Year - Huybrechts.xyz | <a class="" asp-area="" asp-page="Privacy">Privacy</a>
+						</div>
+						<div class="float-right">
+							@await Html.PartialAsync("_SelectLanguagePartial")
 						</div>
 					</div>
 				</nav>

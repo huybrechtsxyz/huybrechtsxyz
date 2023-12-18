@@ -1,8 +1,12 @@
-﻿namespace Huybrechts.Helpers
+﻿using System.Globalization;
+
+namespace Huybrechts.Helpers
 {
 	public class ConfigurationHelper
 	{
 		private readonly IConfiguration _configuration;
+
+		public static CultureInfo[] SupportedCultures => new[] { new CultureInfo("EN"), new CultureInfo("NL") };
 
 		public ConfigurationHelper(IConfiguration configuration)
 		{

@@ -7,6 +7,10 @@
 @using Microsoft.AspNetCore.WebUtilities
 @using Huybrechts.Website.Data
 
+@using System.Globalization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Register> Loc
+
 @inject UserManager<ApplicationUser> UserManager
 @inject IUserStore<ApplicationUser> UserStore
 @inject SignInManager<ApplicationUser> SignInManager
@@ -25,6 +29,7 @@
         <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
             <DataAnnotationsValidator />
             <h2>Create a new account.</h2>
+            <p>@Loc["Greeting"]</p>
             <hr />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating mb-3">

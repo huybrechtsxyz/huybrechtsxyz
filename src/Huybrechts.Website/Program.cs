@@ -1,12 +1,16 @@
+using Huybrechts.Helpers;
 using Huybrechts.Website.Components;
 using Huybrechts.Website.Components.Account;
 using Huybrechts.Website.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
+using System.Globalization;
 
 try
 {
@@ -53,13 +57,18 @@ try
 	// Database migrations
 	Log.Information("Adding database initializer as hosted service");
 	builder.Services.AddHostedService<DatabaseInitializer>();
-
-	Log.Information("Add services to the container");
+	builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+	
+    Log.Information("Add services to the container");
 	builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-    builder.Services.AddRazorPages();
-    builder.Services.AddRazorComponents()
+    builder.Services.AddControllers();
+	builder.Services.AddRazorPages()
+		.AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+		//.AddDataAnnotationsLocalization(); Not supported by blazor at this moment
+	builder.Services.AddRazorComponents()
 		.AddInteractiveServerComponents();
-	builder.Services.Configure<CookiePolicyOptions>(options =>
+	
+    builder.Services.Configure<CookiePolicyOptions>(options =>
 	{
 		// This lambda determines whether user consent for non-essential cookies is needed for a given request.
 		options.CheckConsentNeeded = context => true;
@@ -99,9 +108,17 @@ try
 	app.UseCookiePolicy();
 	app.UseAntiforgery();
 
-	Log.Information("Mapping and routing razor components");
+    app.UseRequestLocalization(new RequestLocalizationOptions
+    {
+        SupportedCultures = ConfigurationHelper.SupportedCultures,
+        SupportedUICultures = ConfigurationHelper.SupportedCultures,
+        DefaultRequestCulture = new RequestCulture(ConfigurationHelper.SupportedCultures[0])
+    });
+
+    Log.Information("Mapping and routing razor components");
 	app.UseSerilogRequestLogging();
-	app.MapRazorPages();
+    app.MapControllers();
+    app.MapRazorPages();
 	app.MapRazorComponents<App>()
 		.AddInteractiveServerRenderMode();
 	app.MapAdditionalIdentityEndpoints();

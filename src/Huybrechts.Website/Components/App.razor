@@ -15,6 +15,7 @@
 <body>
     <Routes @rendermode="@RenderModeForPage" />
     <script src="_framework/blazor.web.js"></script>
+    <script src="js/app.js"></script>
 </body>
 
 </html>
@@ -22,6 +23,16 @@
 @code {
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        HttpContext?.Response.Cookies.Append(
+            CookieRequestCultureProvider.DefaultCookieName,
+            CookieRequestCultureProvider.MakeCookieValue(
+                new RequestCulture(
+                    CultureInfo.CurrentCulture,
+                    CultureInfo.CurrentUICulture)));
+    }
 
     private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path.StartsWithSegments("/Account")
         ? null
