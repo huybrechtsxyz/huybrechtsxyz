@@ -50,11 +50,14 @@ try
 	.AddIdentityCookies();
 
 	var google = settingHelper.GetGoogleAuthentication();
-    builder.Services.AddAuthentication().AddGoogle(googleOptions =>
-    {
-		googleOptions.ClientId = google.ClientId;
-		googleOptions.ClientSecret = google.ClientSecret;
-    });
+	if (!(google is null || string.IsNullOrEmpty(google.ClientId) || string.IsNullOrEmpty(google.ClientSecret)))
+	{
+		builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+		{
+			googleOptions.ClientId = google.ClientId;
+			googleOptions.ClientSecret = google.ClientSecret;
+		});
+	}
 
     Log.Information("Configure identity core");
 	builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
