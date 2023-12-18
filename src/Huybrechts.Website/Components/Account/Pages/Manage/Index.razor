@@ -24,6 +24,10 @@
                 <label for="username" class="form-label">Username</label>
             </div>
             <div class="form-floating mb-3">
+                <input type="text" value="@fullname" class="form-control" placeholder="Your full name." disabled />
+                <label for="fullname" class="form-label">Full name</label>
+            </div>
+            <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
                 <label for="phone-number" class="form-label">Phone number</label>
                 <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
@@ -37,6 +41,7 @@
     private ApplicationUser user = default!;
     private string? username;
     private string? phoneNumber;
+    private string? fullname;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -49,7 +54,7 @@
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
         username = await UserManager.GetUserNameAsync(user);
         phoneNumber = await UserManager.GetPhoneNumberAsync(user);
-
+        fullname = user.Fullname;
         Input.PhoneNumber ??= phoneNumber;
     }
 
