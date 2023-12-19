@@ -1,10 +1,15 @@
 ﻿@page "/home"
+@using Microsoft.AspNetCore.Authorization
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<AuthorizeView>
+    Hello @context.User.Identity?.Name!
+</AuthorizeView>
 
 <footer class="fixed-bottom mt-auto py-3 bg-light">
     <div class="container">
