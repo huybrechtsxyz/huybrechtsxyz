@@ -4,23 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>aspnet-Huybrechts.Website-3a4d5077-f5ad-4d23-9276-b4a628a9988b</UserSecretsId>
-    <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+    <UserSecretsId>acbede3b-f8f8-41b2-ad78-d1f3e176949f</UserSecretsId>
   </PropertyGroup>
-   
-   <ItemGroup>
-    <None Include="..\..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.10.4" />
-    <PackageReference Include="MailKit" Version="4.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
   </ItemGroup>
 

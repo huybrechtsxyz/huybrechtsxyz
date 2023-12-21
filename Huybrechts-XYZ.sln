@@ -6,19 +6,19 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{366CB1EE-95B4-4FD5-9B5A-4E35261DF90A}"
 	ProjectSection(SolutionItems) = preProject
 		docs\LICENSE = docs\LICENSE
-		docs\PROJECTS.md = docs\PROJECTS.md
 		docs\MODEL.md = docs\MODEL.md
+		docs\PROJECTS.md = docs\PROJECTS.md
 		docs\README.md = docs\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{96CB09C9-4038-45F8-BC75-67432BCA590E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Website", "src\Huybrechts.Website\Huybrechts.Website.csproj", "{6812A465-AE93-433D-906E-8C0214368C2B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0BEB7417-E729-48A0-8890-4D3DF51DC70C}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Website", "src\Huybrechts.Website\Huybrechts.Website.csproj", "{90AA8034-3C0A-4D4B-98FF-DA1DAD59F0F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,16 +26,16 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6812A465-AE93-433D-906E-8C0214368C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6812A465-AE93-433D-906E-8C0214368C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6812A465-AE93-433D-906E-8C0214368C2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6812A465-AE93-433D-906E-8C0214368C2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90AA8034-3C0A-4D4B-98FF-DA1DAD59F0F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90AA8034-3C0A-4D4B-98FF-DA1DAD59F0F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90AA8034-3C0A-4D4B-98FF-DA1DAD59F0F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90AA8034-3C0A-4D4B-98FF-DA1DAD59F0F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{6812A465-AE93-433D-906E-8C0214368C2B} = {96CB09C9-4038-45F8-BC75-67432BCA590E}
+		{90AA8034-3C0A-4D4B-98FF-DA1DAD59F0F4} = {96CB09C9-4038-45F8-BC75-67432BCA590E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EA046702-9B6A-4A79-A68E-D0F2C0B8530F}
