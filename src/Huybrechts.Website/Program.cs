@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
+using System.IO.Compression;
 
 try
 {
@@ -41,7 +43,6 @@ try
 	builder.Services.AddScoped<IdentityUserAccessor>();
 	builder.Services.AddScoped<IdentityRedirectManager>();
 	builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-
 	builder.Services.AddAuthentication(options =>
 	{
 		options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -86,7 +87,22 @@ try
 		options.MinimumSameSitePolicy = SameSiteMode.None;
 	});
 
-	Log.Information("Building the application and services");
+    Log.Information("Enabling response compression with brotli and gzip");
+    builder.Services.AddResponseCompression(options => {
+        options.EnableForHttps = true;
+        options.Providers.Add<BrotliCompressionProvider>();
+        options.Providers.Add<GzipCompressionProvider>();
+    });
+    builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+    {
+        options.Level = CompressionLevel.Fastest;
+    });
+    builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+    {
+        options.Level = CompressionLevel.SmallestSize;
+    });
+
+    Log.Information("Building the application and services");
 	var app = builder.Build();
 
 	// Configure the HTTP request pipeline.
@@ -114,7 +130,8 @@ try
 	}
 
 	Log.Information("Initializing application services");
-	app.UseHttpsRedirection();
+    app.UseResponseCompression();
+    app.UseHttpsRedirection();
 	app.UseStaticFiles();
 	app.UseCookiePolicy();
 	app.UseAntiforgery();
@@ -133,6 +150,7 @@ try
 	app.MapRazorComponents<App>()
 		.AddInteractiveServerRenderMode();
 	app.MapAdditionalIdentityEndpoints();
+	
 
 	Log.Information("Run configured application");
 	app.Run();

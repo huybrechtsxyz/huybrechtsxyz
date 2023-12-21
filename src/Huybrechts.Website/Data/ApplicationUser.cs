@@ -1,22 +1,21 @@
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Huybrechts.Website.Data
 {
-    // Add profile data for application users by adding properties to the ApplicationUser class
+    [Table("IdentityUser")]
     public class ApplicationUser : IdentityUser
     {
+        [StringLength(128)]
         public string? FirstName { get; set; }
 
+        [StringLength(128)]
         public string? LastName { get; set; }
 
+		public byte[]? ProfilePicture { get; set; }
+
+		[NotMapped]
         public string Fullname => FirstName + (FirstName?.Length > 0 && LastName?.Length > 0 ? " " : "") + LastName;
-
-        public string? ImageType { get; set; }
-
-        public string? ImageData { get; set; }
-
-        public string? ImageData32 { get; set; }
-
-        public string? ImageData64 { get; set; }
     }
 }

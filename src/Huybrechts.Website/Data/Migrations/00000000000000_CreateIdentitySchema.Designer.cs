@@ -87,10 +87,10 @@ namespace Huybrechts.Website.Migrations
 						.HasDatabaseName("UserNameIndex")
 						.HasFilter("[NormalizedUserName] IS NOT NULL");
 
-					b.ToTable("AspNetUsers", (string)null);
+					b.ToTable("IdentityUsers", (string)null);
 				});
 
-			modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+			modelBuilder.Entity("Huybrechts.Website.Data.ApplicationRole", b =>
 				{
 					b.Property<string>("Id")
 						.HasColumnType("nvarchar(450)");
@@ -114,10 +114,10 @@ namespace Huybrechts.Website.Migrations
 						.HasDatabaseName("RoleNameIndex")
 						.HasFilter("[NormalizedName] IS NOT NULL");
 
-					b.ToTable("AspNetRoles", (string)null);
+					b.ToTable("IdentityRoles", (string)null);
 				});
 
-			modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+			modelBuilder.Entity("Huybrechts.Website.Data.ApplicationRoleClaim<string>", b =>
 				{
 					b.Property<int>("Id")
 						.ValueGeneratedOnAdd()
@@ -139,10 +139,10 @@ namespace Huybrechts.Website.Migrations
 
 					b.HasIndex("RoleId");
 
-					b.ToTable("AspNetRoleClaims", (string)null);
+					b.ToTable("IdentityRoleClaims", (string)null);
 				});
 
-			modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+			modelBuilder.Entity("Huybrechts.Website.Data.ApplicationUserClaim<string>", b =>
 				{
 					b.Property<int>("Id")
 						.ValueGeneratedOnAdd()
@@ -164,10 +164,10 @@ namespace Huybrechts.Website.Migrations
 
 					b.HasIndex("UserId");
 
-					b.ToTable("AspNetUserClaims", (string)null);
+					b.ToTable("IdentityUserClaims", (string)null);
 				});
 
-			modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+			modelBuilder.Entity("Huybrechts.Website.Data.ApplicationUserLogin<string>", b =>
 				{
 					b.Property<string>("LoginProvider")
 						.HasColumnType("nvarchar(450)");
@@ -186,10 +186,10 @@ namespace Huybrechts.Website.Migrations
 
 					b.HasIndex("UserId");
 
-					b.ToTable("AspNetUserLogins", (string)null);
+					b.ToTable("IdentityUserLogins", (string)null);
 				});
 
-			modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+			modelBuilder.Entity("Huybrechts.Website.Data.ApplicationUserRole<string>", b =>
 				{
 					b.Property<string>("UserId")
 						.HasColumnType("nvarchar(450)");
@@ -201,10 +201,10 @@ namespace Huybrechts.Website.Migrations
 
 					b.HasIndex("RoleId");
 
-					b.ToTable("AspNetUserRoles", (string)null);
+					b.ToTable("IdentityUserRoles", (string)null);
 				});
 
-			modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+			modelBuilder.Entity("Huybrechts.Website.Data.ApplicationUserToken<string>", b =>
 				{
 					b.Property<string>("UserId")
 						.HasColumnType("nvarchar(450)");
@@ -220,19 +220,19 @@ namespace Huybrechts.Website.Migrations
 
 					b.HasKey("UserId", "LoginProvider", "Name");
 
-					b.ToTable("AspNetUserTokens", (string)null);
+					b.ToTable("IdentityUserTokens", (string)null);
 				});
 
-			modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+			modelBuilder.Entity("Huybrechts.Website.Data.ApplicationRoleClaim<string>", b =>
 				{
-					b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+					b.HasOne("Huybrechts.Website.Data.ApplicationRole", null)
 						.WithMany()
 						.HasForeignKey("RoleId")
 						.OnDelete(DeleteBehavior.Cascade)
 						.IsRequired();
 				});
 
-			modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+			modelBuilder.Entity("Huybrechts.Website.Data.ApplicationUserClaim<string>", b =>
 				{
 					b.HasOne("Huybrechts.Website.Data.ApplicationUser", null)
 						.WithMany()
@@ -241,7 +241,7 @@ namespace Huybrechts.Website.Migrations
 						.IsRequired();
 				});
 
-			modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+			modelBuilder.Entity("Huybrechts.Website.Data.ApplicationUserLogin<string>", b =>
 				{
 					b.HasOne("Huybrechts.Website.Data.ApplicationUser", null)
 						.WithMany()
@@ -250,9 +250,9 @@ namespace Huybrechts.Website.Migrations
 						.IsRequired();
 				});
 
-			modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+			modelBuilder.Entity("Huybrechts.Website.Data.ApplicationUserRole<string>", b =>
 				{
-					b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+					b.HasOne("Huybrechts.Website.Data.ApplicationRole", null)
 						.WithMany()
 						.HasForeignKey("RoleId")
 						.OnDelete(DeleteBehavior.Cascade)
@@ -265,7 +265,7 @@ namespace Huybrechts.Website.Migrations
 						.IsRequired();
 				});
 
-			modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+			modelBuilder.Entity("Huybrechts.Website.Data.ApplicationUserToken<string>", b =>
 				{
 					b.HasOne("Huybrechts.Website.Data.ApplicationUser", null)
 						.WithMany()

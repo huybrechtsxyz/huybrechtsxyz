@@ -6,7 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{366CB1EE-95B4-4FD5-9B5A-4E35261DF90A}"
 	ProjectSection(SolutionItems) = preProject
 		docs\LICENSE = docs\LICENSE
-		docs\README.adoc = docs\README.adoc
+		docs\PROJECTS.md = docs\PROJECTS.md
+		docs\MODEL.md = docs\MODEL.md
+		docs\README.md = docs\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{96CB09C9-4038-45F8-BC75-67432BCA590E}"
