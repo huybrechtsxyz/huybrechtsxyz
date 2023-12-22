@@ -1,12 +1,13 @@
 using Huybrechts.Website.Components;
+using Huybrechts.Website.Data;
 using Huybrechts.Website.Helpers;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
-using System.Globalization;
 using System.IO.Compression;
 
 try 
@@ -26,6 +27,12 @@ try
         .Enrich.FromLogContext()
         .WriteTo.Console(new RenderedCompactJsonFormatter()),
         writeToProviders: true);
+
+    Log.Information("Connect to the database");
+    ApplicationSettings applicationSettings = new(builder.Configuration);
+    var connectionString = applicationSettings.GetApplicationDatabaseConnectionString();
+    builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
     Log.Information("Add services to the container");
     builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
