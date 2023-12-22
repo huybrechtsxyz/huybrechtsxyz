@@ -34,6 +34,10 @@ try
     builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+    // Database migrations
+    Log.Information("Adding database initializer as hosted service");
+    builder.Services.AddHostedService<DatabaseSeedWorker>();
+
     Log.Information("Add services to the container");
     builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
     builder.Services.AddControllers();
