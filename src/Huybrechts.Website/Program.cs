@@ -1,6 +1,9 @@
 using Huybrechts.Website.Components;
+using Huybrechts.Website.Components.Account;
 using Huybrechts.Website.Data;
 using Huybrechts.Website.Helpers;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -38,8 +41,26 @@ try
     Log.Information("Adding database initializer as hosted service");
     builder.Services.AddHostedService<DatabaseSeedWorker>();
 
-    Log.Information("Add services to the container");
-    builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+	Log.Information("Configure authentication");
+	//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+	//    .AddEntityFrameworkStores<DatabaseContext>();
+	builder.Services.AddCascadingAuthenticationState();
+	builder.Services.AddScoped<IdentityUserAccessor>();
+	builder.Services.AddScoped<IdentityRedirectManager>();
+	builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+	builder.Services.AddAuthentication(options =>
+	{
+		options.DefaultScheme = IdentityConstants.ApplicationScheme;
+		options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+	})
+	.AddIdentityCookies();
+	builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+        .AddEntityFrameworkStores<DatabaseContext>()
+        .AddSignInManager()
+        .AddDefaultTokenProviders();
+
+	Log.Information("Add services to the container");
+    builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");    
     builder.Services.AddControllers();
     builder.Services.AddRazorPages()
         .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
@@ -117,8 +138,9 @@ try
     app.MapRazorPages();
     app.MapRazorComponents<App>()
         .AddInteractiveServerRenderMode();
+	app.MapAdditionalIdentityEndpoints();
 
-    Log.Information("Run configured application");
+	Log.Information("Run configured application");
     app.Run();
 }
 catch (Exception ex)
