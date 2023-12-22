@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Huybrechts.Website.Models;
+using Microsoft.Extensions.Configuration;
 using System.Globalization;
 
 namespace Huybrechts.Website.Helpers;
@@ -16,13 +17,27 @@ public class ApplicationSettings
 		_configuration = configuration;
 	}
 
-	public string GetApplicationDatabaseConnectionString() => 
-		_configuration.GetConnectionString("ApplicationDatabase") ??
-		throw new InvalidOperationException("Connection string 'ApplicationDatabase' not found.");
-
     public bool DoInitializeEnvironment() => GetEnvironmentInitialization() == EnvironmentInitialization.Initialize;
 
     public bool DoResetEnvironment() => GetEnvironmentInitialization() == EnvironmentInitialization.Reset;
+	 
+    public string GetApplicationDatabaseConnectionString() => 
+		_configuration.GetConnectionString("ApplicationDatabase") ??
+		throw new InvalidOperationException("Connection string 'ApplicationDatabase' not found.");
+
+	public MessageAuthenticationSettings GetMessageAuthenticationSettings()
+	{
+        MessageAuthenticationSettings item = new();
+        _configuration.GetSection("Authentication:Mail").Bind(item);
+        return item;
+    }
+
+    public MessageServerSettings GetMessageServerSettings()
+    {
+        MessageServerSettings item = new();
+        _configuration.GetSection("Messaging:Mail").Bind(item);
+        return item;
+    }
 
     private EnvironmentInitialization GetEnvironmentInitialization()
 	{

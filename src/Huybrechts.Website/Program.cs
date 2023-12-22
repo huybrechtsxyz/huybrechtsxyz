@@ -2,6 +2,7 @@ using Huybrechts.Website.Components;
 using Huybrechts.Website.Components.Account;
 using Huybrechts.Website.Data;
 using Huybrechts.Website.Helpers;
+using Huybrechts.Website.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -58,8 +59,9 @@ try
         .AddEntityFrameworkStores<DatabaseContext>()
         .AddSignInManager()
         .AddDefaultTokenProviders();
+    builder.Services.AddSingleton<IEmailSender<ApplicationUser>, AuthenticationSender>();
 
-	Log.Information("Add services to the container");
+    Log.Information("Add services to the container");
     builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");    
     builder.Services.AddControllers();
     builder.Services.AddRazorPages()
