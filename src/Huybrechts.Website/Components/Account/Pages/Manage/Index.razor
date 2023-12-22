@@ -1,6 +1,7 @@
 ﻿@page "/Account/Manage"
 
 @using System.ComponentModel.DataAnnotations
+@using Huybrechts.Website.Attributes
 @using Microsoft.AspNetCore.Identity
 @using Huybrechts.Website.Data
 
@@ -26,6 +27,16 @@
             <div class="form-floating mb-3">
                 <input type="text" value="@fullname" class="form-control" placeholder="Your full name." disabled />
                 <label for="fullname" class="form-label">Full name</label>
+            </div>
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.FirstName" class="form-control" placeholder="Please enter your first name." />
+                <label for="first-name" class="form-label">First name</label>
+                <ValidationMessage For="() => Input.FirstName" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.LastName" class="form-control" placeholder="Please enter your last name." />
+                <label for="last-name" class="form-label">Last name</label>
+                <ValidationMessage For="() => Input.LastName" class="text-danger" />
             </div>
             <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
@@ -54,7 +65,8 @@
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
         username = await UserManager.GetUserNameAsync(user);
         phoneNumber = await UserManager.GetPhoneNumberAsync(user);
-        fullname = user.Fullname;
+        Input.FirstName ??= user.FirstName;
+        Input.LastName ??= user.LastName;
         Input.PhoneNumber ??= phoneNumber;
     }
 
@@ -69,13 +81,34 @@
             }
         }
 
+        if (Input.FirstName != user.FirstName)
+        {
+            user.FirstName = Input.FirstName;
+            await UserManager.UpdateAsync(user);
+        }
+
+        if (Input.LastName != user.LastName)
+        {
+            user.LastName = Input.LastName;
+            await UserManager.UpdateAsync(user);
+        }
+
         await SignInManager.RefreshSignInAsync(user);
         RedirectManager.RedirectToCurrentPageWithStatus("Your profile has been updated", HttpContext);
     }
 
     private sealed class InputModel
     {
-        [Phone]
+        [StringLength(120)]
+        [Display(Name = "First name")]
+        public string? FirstName { get; set; }
+
+        [StringLength(120)]
+        [Display(Name = "Last name")]
+        public string? LastName { get; set; }
+
+        [XyzPhone]
+        [StringLength(120)]
         [Display(Name = "Phone number")]
         public string? PhoneNumber { get; set; }
     }
