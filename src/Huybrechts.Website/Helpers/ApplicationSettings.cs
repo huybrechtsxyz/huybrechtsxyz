@@ -25,14 +25,21 @@ public class ApplicationSettings
 		_configuration.GetConnectionString("ApplicationDatabase") ??
 		throw new InvalidOperationException("Connection string 'ApplicationDatabase' not found.");
 
-	public MessageAuthenticationSettings GetMessageAuthenticationSettings()
+    public AuthenticationSettings GetGoogleAuthentication()
+    {
+        AuthenticationSettings item = new();
+        _configuration.GetSection("Authentication:Google").Bind(item);
+        return item;
+    }
+
+    public MessageAuthenticationSettings GetMessageAuthentication()
 	{
         MessageAuthenticationSettings item = new();
         _configuration.GetSection("Authentication:Mail").Bind(item);
         return item;
     }
 
-    public MessageServerSettings GetMessageServerSettings()
+    public MessageServerSettings GetMessageServer()
     {
         MessageServerSettings item = new();
         _configuration.GetSection("Messaging:Mail").Bind(item);

@@ -55,11 +55,22 @@ try
 		options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 	})
 	.AddIdentityCookies();
+
 	builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
         .AddEntityFrameworkStores<DatabaseContext>()
         .AddSignInManager()
         .AddDefaultTokenProviders();
     builder.Services.AddSingleton<IEmailSender<ApplicationUser>, AuthenticationSender>();
+
+    var google = applicationSettings.GetGoogleAuthentication();
+    if (!(google is null || string.IsNullOrEmpty(google.ClientId) || string.IsNullOrEmpty(google.ClientSecret)))
+    {
+        builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+        {
+            googleOptions.ClientId = google.ClientId;
+            googleOptions.ClientSecret = google.ClientSecret;
+        });
+    }
 
     Log.Information("Add services to the container");
     builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");    

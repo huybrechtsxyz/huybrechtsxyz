@@ -17,8 +17,8 @@ public class MessageSender : IEmailSender
     public MessageSender(IConfiguration configuration)
 	{
 		ApplicationSettings settings = new(configuration);
-        _mailSettings = settings.GetMessageServerSettings();
-        _mailAuthentication = settings.GetMessageAuthenticationSettings();
+        _mailSettings = settings.GetMessageServer();
+        _mailAuthentication = settings.GetMessageAuthentication();
     }
 
     /// <summary>
