@@ -38,9 +38,9 @@ else
             </li>
             <li>
                 <p>Scan the QR Code or enter this key <kbd>@sharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
-                <div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.</div>
                 <div></div>
                 <div data-url="@authenticatorUri"></div>
+                <img alt="" src="@QRByte" width="300" class="mb-5" />
             </li>
             <li>
                 <p>
@@ -75,6 +75,9 @@ else
     private string? authenticatorUri;
     private IEnumerable<string>? recoveryCodes;
 
+    //public string QRUrl { get; set; }
+    public string QRByte = "";
+
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
@@ -86,6 +89,8 @@ else
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
 
         await LoadSharedKeyAndQrCodeUriAsync(user);
+
+        GenerateQRCode();
     }
 
     private async Task OnValidSubmitAsync()
@@ -159,6 +164,17 @@ else
             UrlEncoder.Encode("Microsoft.AspNetCore.Identity.UI"),
             UrlEncoder.Encode(email),
             unformattedKey);
+    }
+
+    public void GenerateQRCode()
+    {
+        if (!string.IsNullOrEmpty(authenticatorUri))
+        {
+            QRCoder.QRCodeGenerator qrGenerator = new();
+            QRCoder.QRCodeData qrCodeData = qrGenerator.CreateQrCode(authenticatorUri, QRCoder.QRCodeGenerator.ECCLevel.Q);
+            QRCoder.PngByteQRCode qrCode = new(qrCodeData);
+            QRByte = string.Format("data:image/png;base64,{0}", Convert.ToBase64String(qrCode.GetGraphic(20)));
+        }
     }
 
     private sealed class InputModel
