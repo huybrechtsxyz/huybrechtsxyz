@@ -39,10 +39,6 @@ try
     builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-    // Database migrations
-    Log.Information("Adding database initializer as hosted service");
-    builder.Services.AddHostedService<DatabaseSeedWorker>();
-
 	Log.Information("Configure authentication");
 	//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
 	//    .AddEntityFrameworkStores<DatabaseContext>();
@@ -58,8 +54,9 @@ try
 	.AddIdentityCookies();
 
 	builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-        .AddEntityFrameworkStores<DatabaseContext>()
-        .AddSignInManager()
+		.AddRoles<ApplicationRole>()
+		.AddEntityFrameworkStores<DatabaseContext>()
+		.AddSignInManager()
         .AddDefaultTokenProviders();
     builder.Services.AddSingleton<IEmailSender<ApplicationUser>, AuthenticationSender>();
 
@@ -112,7 +109,11 @@ try
         options.Level = CompressionLevel.SmallestSize;
     });
 
-    Log.Information("Building the application and services");
+	// Database migrations
+	Log.Information("Adding database initializer as hosted service");
+	builder.Services.AddHostedService<DatabaseSeedWorker>();
+
+	Log.Information("Building the application and services");
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
@@ -120,8 +121,10 @@ try
     if (app.Environment.IsDevelopment())
     {
         Log.Information("Configure the HTTP request pipeline for development");
-        //app.UseMigrationsEndPoint(); has already been executed
-    }
+		app.UseDeveloperExceptionPage();
+		//app.UseWebAssemblyDebugging();
+		//app.UseMigrationsEndPoint(); has already been executed
+	}
     else if (app.Environment.IsStaging())
     {
         Log.Information("Configure the HTTP request pipeline for staging");
@@ -142,7 +145,7 @@ try
     Log.Information("Initializing application services");
     app.UseResponseCompression();
     app.UseHttpsRedirection();
-    app.UseStaticFiles();
+	app.UseStaticFiles();
     app.UseCookiePolicy();
     app.UseAntiforgery();
 
@@ -156,7 +159,9 @@ try
 
     Log.Information("Mapping and routing razor components");
     app.UseSerilogRequestLogging();
-    app.MapControllers();
+	app.UseAuthentication();
+	app.UseAuthorization();
+	app.MapControllers();
     app.MapRazorPages();
     app.MapRazorComponents<App>()
         .AddInteractiveServerRenderMode();
