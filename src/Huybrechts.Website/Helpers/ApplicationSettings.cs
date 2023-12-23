@@ -53,7 +53,21 @@ public class ApplicationSettings
         return EnvironmentInitialization.None;
     }
 
-    public enum EnvironmentInitialization
+	public SeedWorkerSettings GetSeedWorker()
+	{
+		SeedWorkerSettings item = new();
+		_configuration.GetSection("SeedWorker").Bind(item);
+		return item;
+	}
+
+	public SeedWorkerSecrets GetSeedSecrets()
+	{
+		SeedWorkerSecrets item = new();
+		_configuration.GetSection("Messaging:Mail").Bind(item);
+		return item;
+	}
+
+	public enum EnvironmentInitialization
 	{
 		None = 0,
 		Reset = 1,

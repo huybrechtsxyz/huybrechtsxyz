@@ -11,8 +11,8 @@ public class DatabaseSeedWorker : IHostedService
     private readonly IServiceProvider _serviceProvider;
 	private readonly IConfiguration _configuration;
 	private DatabaseContext? _dbcontext = null;
-	private UserManager<ApplicationUser> _userManager;
-	private RoleManager<ApplicationRole> _roleManager;
+	private UserManager<ApplicationUser>? _userManager;
+	private RoleManager<ApplicationRole>? _roleManager;
 
 	private readonly ILogger _logger = Log.Logger.ForContext<DatabaseSeedWorker>();
 
@@ -26,8 +26,6 @@ public class DatabaseSeedWorker : IHostedService
 
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
-		
-
 		_logger.Information("Running database initializer...");
         ApplicationSettings applicationSettings = new(_configuration);
 		var environment = _serviceProvider.GetRequiredService<IWebHostEnvironment>() ?? 
@@ -65,19 +63,9 @@ public class DatabaseSeedWorker : IHostedService
 
 	private async Task InitializeForAllAsync(CancellationToken cancellationToken)
 	{
-		/*
-		foreach(var roleEnum in Enum.GetValues(typeof(ApplicationRoleEnum)).Cast<ApplicationRoleEnum>())
-		{
-			if(!await _roleManager.RoleExistsAsync(roleEnum.ToString()))
-			{
-				await _roleManager.CreateAsync(new ApplicationRole()
-				{
-					Name = roleEnum.ToString()
-				});
-			}
-		}
+		await CreateDefaultApplicationRoles();
 
-		var sysadminUser = new ApplicationUser()
+		/*var sysadminUser = new ApplicationUser()
 		{
 			UserName = "sysadmin",
 			Email = "vincent@huybrechts.xyz",
@@ -93,7 +81,7 @@ public class DatabaseSeedWorker : IHostedService
 		}
 		*/
 	}
-
+	
 	private async Task InitializeForDevelopmentAsync(CancellationToken cancellationToken)
 	{
 		_logger.Information("Running database initializer...applying development migrations");
@@ -107,5 +95,23 @@ public class DatabaseSeedWorker : IHostedService
 	private async Task InitializeForProductionAsync(CancellationToken cancellationToken)
 	{
 		_logger.Warning("Running database initializer...applying productions migrations");
+	}
+
+	private async Task CreateDefaultApplicationRoles()
+	{
+		if (_roleManager is not null)
+		{
+			var defaultRoles = ApplicationRole.GetDefaultRoles();
+			foreach (var defaultRole in defaultRoles)
+			{
+				if (!await _roleManager.RoleExistsAsync(defaultRole.Name!))
+				{
+					await _roleManager.CreateAsync(new ApplicationRole()
+					{
+						Name = defaultRole.Name!
+					});
+				}
+			}
+		}
 	}
 }

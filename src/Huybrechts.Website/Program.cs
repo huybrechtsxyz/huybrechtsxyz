@@ -159,8 +159,6 @@ try
 
     Log.Information("Mapping and routing razor components");
     app.UseSerilogRequestLogging();
-	//app.UseAuthentication();
-	//app.UseAuthorization();
 	app.MapControllers();
     app.MapRazorPages();
     app.MapRazorComponents<App>()
