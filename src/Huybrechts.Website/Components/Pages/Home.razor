@@ -8,6 +8,15 @@
 
 Welcome to your new app.
 
-<AuthorizeView>
-    Hello @context.User.Identity?.Name!
-</AuthorizeView>
+
+<InputFile OnChange="LoadFiles" />
+
+@code
+{
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+        FileStream ms = new FileStream(e.File.Name, FileMode.Create);
+        e.File.OpenReadStream().CopyTo(ms);
+        var bytes = ms.ReadByte();
+    }
+}

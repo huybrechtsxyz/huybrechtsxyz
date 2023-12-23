@@ -17,16 +17,12 @@
 
 <div class="row">
     <div class="col-md-6">
-        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
+        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post" enctype="multipart/form-data">
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating mb-3">
                 <input type="text" value="@username" class="form-control" placeholder="Please choose your username." disabled />
                 <label for="username" class="form-label">Username</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" value="@fullname" class="form-control" placeholder="Your full name." disabled />
-                <label for="fullname" class="form-label">Full name</label>
             </div>
             <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.FirstName" class="form-control" placeholder="Please enter your first name." />
@@ -42,6 +38,24 @@
                 <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
                 <label for="phone-number" class="form-label">Phone number</label>
                 <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Profile picture</label>
+                <input type="file"
+                       accept=".png,.jpg,.jpeg,.gif,.tif"
+                       name="file"
+                       class="form-control"
+                       style="border:0px!important;padding: 0px;padding-top: 10px;padding-bottom: 30px;"
+                       onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])" />
+                @if (Input.ProfilePicture is not null)
+                {
+                    <img id="profilePicture" style="width:350px;height:350px; object-fit:cover" src="data:image/*;base64,@(Convert.ToBase64String(Input.ProfilePicture))">
+                }
+                else
+                {
+                    <img id="profilePicture" style="width:350px;height:350px; object-fit:cover" src="">
+                }
+                <ValidationMessage For="() => Input.ProfilePicture" class="text-danger" />
             </div>
             <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </EditForm>
@@ -68,6 +82,12 @@
         Input.FirstName ??= user.FirstName;
         Input.LastName ??= user.LastName;
         Input.PhoneNumber ??= phoneNumber;
+        if (user.ProfilePicture is not null)
+        {
+            if (Input.ProfilePicture is null)
+                Input.ProfilePicture = new byte[user.ProfilePicture.Length];
+            Array.Copy(user.ProfilePicture, Input.ProfilePicture, user.ProfilePicture.Length);
+        }
     }
 
     private async Task OnValidSubmitAsync()
@@ -93,6 +113,18 @@
             await UserManager.UpdateAsync(user);
         }
 
+        IFormFile? file = HttpContext.Request.Form.Files.FirstOrDefault();
+        if (file is not null)
+        {
+            using (var dataStream = new MemoryStream())
+            {
+                await file.CopyToAsync(dataStream);
+                user.ProfilePicture = new byte[dataStream.Length];
+                user.ProfilePicture = dataStream.ToArray();
+                await UserManager.UpdateAsync(user);
+            }
+        }
+
         await SignInManager.RefreshSignInAsync(user);
         RedirectManager.RedirectToCurrentPageWithStatus("Your profile has been updated", HttpContext);
     }
@@ -111,5 +143,7 @@
         [StringLength(120)]
         [Display(Name = "Phone number")]
         public string? PhoneNumber { get; set; }
+
+        public byte[]? ProfilePicture { get; set; }
     }
 }
