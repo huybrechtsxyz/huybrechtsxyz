@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
@@ -65,10 +66,18 @@ try
     var google = applicationSettings.GetGoogleAuthentication();
     if (!(google is null || string.IsNullOrEmpty(google.ClientId) || string.IsNullOrEmpty(google.ClientSecret)))
     {
-        builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+        builder.Services.AddAuthentication().AddGoogle(options =>
         {
-            googleOptions.ClientId = google.ClientId;
-            googleOptions.ClientSecret = google.ClientSecret;
+            options.ClientId = google.ClientId;
+            options.ClientSecret = google.ClientSecret;
+            options.Scope.Add("profile");
+            options.Events.OnCreatingTicket = (context) =>
+            {
+                var picture = context.User.GetProperty("picture").GetString();
+                if (context.Identity is not null && picture is not null)
+                    context.Identity.AddClaim(new System.Security.Claims.Claim("picture", picture));
+                return Task.CompletedTask;
+            };
         });
     }
 
