@@ -4,12 +4,13 @@ using Huybrechts.Website.Data;
 using Huybrechts.Website.Helpers;
 using Huybrechts.Website.Services;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
@@ -32,11 +33,35 @@ try
         .Enrich.FromLogContext()
         .WriteTo.Console(new RenderedCompactJsonFormatter()),
         writeToProviders: true);
+	ApplicationSettings applicationSettings = new(builder.Configuration);
 
-    Log.Information("Connect to the database");
-    ApplicationSettings applicationSettings = new(builder.Configuration);
-    var connectionString = applicationSettings.GetApplicationDatabaseConnectionString();
-    builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
+	Log.Information("Configuring webserver");
+    builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
+    if (applicationSettings.IsRunningInContainer())
+    { 
+	    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+	    {
+		    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+	    });
+	}
+	builder.Services.AddResponseCaching();
+
+	Log.Information("Connect to the database");
+	DatabaseContextType connectionType = applicationSettings.GetApplicationDatabaseType();
+	var connectionString = applicationSettings.GetApplicationDatabaseConnectionString();
+    switch (connectionType)
+    {
+		case DatabaseContextType.SqlServer:
+            {
+				builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
+                break;
+			}
+        case DatabaseContextType.PostgreSQL:
+            {
+				builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
+				break;
+            }
+	}
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 	Log.Information("Configure authentication");
@@ -91,7 +116,7 @@ try
     {
         // This lambda determines whether user consent for non-essential cookies is needed for a given request.
         options.CheckConsentNeeded = context => true;
-        options.MinimumSameSitePolicy = SameSiteMode.None;
+        options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
     });
 
     Log.Information("Enabling response compression with brotli and gzip");
@@ -145,9 +170,20 @@ try
     Log.Information("Initializing application services");
     app.UseResponseCompression();
     app.UseHttpsRedirection();
-	app.UseStaticFiles();
-    app.UseCookiePolicy();
+	app.UseStaticFiles(new StaticFileOptions
+	{
+		OnPrepareResponse = ctx =>
+		{
+			ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "public,max-age=86400"; //+ (int)(60 * 60 * 24);
+		}
+	});
+	app.UseCookiePolicy();
     app.UseAntiforgery();
+
+    if (applicationSettings.IsRunningInContainer())
+    {
+        app.UseForwardedHeaders();
+    }
 
     Log.Information("Initializing application localization");
     app.UseRequestLocalization(new RequestLocalizationOptions
@@ -159,6 +195,7 @@ try
 
     Log.Information("Mapping and routing razor components");
     app.UseSerilogRequestLogging();
+	app.UseResponseCaching();
 	app.MapControllers();
     app.MapRazorPages();
     app.MapRazorComponents<App>()

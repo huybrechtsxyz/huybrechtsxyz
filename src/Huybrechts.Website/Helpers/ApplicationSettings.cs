@@ -1,4 +1,5 @@
-﻿using Huybrechts.Website.Models;
+﻿using Huybrechts.Website.Data;
+using Huybrechts.Website.Models;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 
@@ -6,6 +7,8 @@ namespace Huybrechts.Website.Helpers;
 
 public class ApplicationSettings
 {
+	public static readonly string ENV_DOTNET_RUNNING_IN_CONTAINER = "DOTNET_RUNNING_IN_CONTAINER";
+
 	private readonly IConfiguration _configuration;
 
 	public static CultureInfo[] GetSupportedCultures() => [new("EN"), new("NL")];
@@ -24,6 +27,12 @@ public class ApplicationSettings
     public string GetApplicationDatabaseConnectionString() => 
 		_configuration.GetConnectionString("ApplicationDatabase") ??
 		throw new InvalidOperationException("Connection string 'ApplicationDatabase' not found.");
+
+	public DatabaseContextType GetApplicationDatabaseType()
+	{
+		var type = _configuration.GetValue<DatabaseContextType>("Environment:ApplicationDatabaseType");
+		return type;
+	}
 
     public AuthenticationSettings GetGoogleAuthentication()
     {
@@ -66,6 +75,8 @@ public class ApplicationSettings
 		_configuration.GetSection("Messaging:Mail").Bind(item);
 		return item;
 	}
+
+	public bool IsRunningInContainer() => (System.Environment.GetEnvironmentVariable(ENV_DOTNET_RUNNING_IN_CONTAINER) == "true");
 
 	public enum EnvironmentInitialization
 	{

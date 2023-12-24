@@ -5,6 +5,13 @@ using System.Reflection.Emit;
 
 namespace Huybrechts.Website.Data;
 
+public enum DatabaseContextType
+{
+	None = 0,
+	SqlServer = 1,
+	PostgreSQL = 2
+}
+
 public class DatabaseContext(DbContextOptions<DatabaseContext> options)
 	: IdentityDbContext<
 		ApplicationUser, 
