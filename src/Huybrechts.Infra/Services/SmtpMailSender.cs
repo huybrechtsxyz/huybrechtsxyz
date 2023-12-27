@@ -1,35 +1,24 @@
 ﻿using Huybrechts.Infra.Config;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using MimeKit;
 
 namespace Huybrechts.Infra.Services;
 
-public interface IEmailSender
-{
-	Task SendEmailAsync(string toEmail, string toName, string subject, string messageText);
-}
-
-public class MessageSender : IEmailSender
+public class SmtpMailSender : IEmailSender
 {
 	private readonly MessageAuthenticationSettings _mailAuthentication;
 	private readonly MessageServerSettings _mailSettings;
+    private readonly ILogger _logger;
 
-    public MessageSender(IConfiguration configuration)
+    public SmtpMailSender(IConfiguration configuration, ILogger logger)
 	{
 		ApplicationSettings settings = new(configuration);
         _mailSettings = settings.GetMessageServer();
         _mailAuthentication = settings.GetMessageAuthentication();
+        _logger = logger;
     }
 
-    /// <summary>
-    /// Sends an e-mail throught the provided server settings
-    /// </summary>
-    /// <param name="toEmail"></param>
-    /// <param name="toName"></param>
-    /// <param name="subject"></param>
-    /// <param name="messageText"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
     /// <remarks>
     /// Using MailKit, Net.SmtpClient uses an older implementation
     /// </remarks>
@@ -37,6 +26,7 @@ public class MessageSender : IEmailSender
 	{
 		try
 		{
+            _logger.LogDebug("Sending an email with MailKit to {to} with subject {subject}", toEmail, subject);
             using MimeMessage message = new();
 			message.From.Add(new MailboxAddress(_mailSettings.SenderName, _mailSettings.SenderMail));
 			message.To.Add(new MailboxAddress(toName, toEmail));
