@@ -73,18 +73,20 @@ try
     builder.Services.AddScoped<IdentityUserAccessor>();
     builder.Services.AddScoped<IdentityRedirectManager>();
     builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+    builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, AdditionalUserClaimsPrincipalFactory>();
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
         options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
     })
     .AddIdentityCookies();
-
+    
     builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
         .AddRoles<ApplicationRole>()
         .AddEntityFrameworkStores<DatabaseContext>()
         .AddSignInManager()
-        .AddDefaultTokenProviders();
+        .AddDefaultTokenProviders()
+        .AddClaimsPrincipalFactory<AdditionalUserClaimsPrincipalFactory>();
     builder.Services.AddSingleton<IEmailSender<ApplicationUser>, AuthenticationSender>();
 
     AuthenticationSettings? google = applicationSettings.GetGoogleAuthentication();
@@ -204,17 +206,19 @@ try
     app.UseSerilogRequestLogging();
     app.UseRouting();
     app.UseAntiforgery();
-    //app.UseFastEndpoints();
-    //app.UseSwaggerGen(); // FastEndpoints middleware
     app.UseResponseCaching();
     app.UseAuthorization();
+
+    // app.UseEndpoint but Routes can be registered directly at the top-level of a minimal API application 
+    // app.MapGet("/", () => "Hello World!");
+    // app.UseFastEndpoints();
+    // app.UseSwaggerGen(); // FastEndpoints middleware
     app.MapControllers();
     app.MapRazorPages();
     app.MapRazorComponents<Huybrechts.Web.Components.App>()
         .AddInteractiveServerRenderMode();
     app.MapAdditionalIdentityEndpoints();
-    //app.MapGet("/", () => "Hello World!");
-
+    
     Log.Information("Run configured application");
     app.Run();
 }
