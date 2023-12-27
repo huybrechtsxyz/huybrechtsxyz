@@ -1,6 +1,9 @@
 using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Services;
+using Huybrechts.Web.Components;
+using Huybrechts.Web.Components.Account;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -9,6 +12,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Serilog.Formatting.Compact;
 using System.IO.Compression;
 
 try
@@ -22,6 +26,12 @@ try
 
     Log.Information("Creating application builder");
     var builder = WebApplication.CreateBuilder(args);
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .WriteTo.Console(new RenderedCompactJsonFormatter()),
+        writeToProviders: true);
     ApplicationSettings applicationSettings = new(builder.Configuration);
 
     Log.Information("Configuring webserver");
@@ -59,6 +69,10 @@ try
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
     Log.Information("Configure authentication");
+    builder.Services.AddCascadingAuthenticationState();
+    builder.Services.AddScoped<IdentityUserAccessor>();
+    builder.Services.AddScoped<IdentityRedirectManager>();
+    builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -105,6 +119,8 @@ try
     builder.Services.AddControllers();
     builder.Services.AddRazorPages()
         .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+    builder.Services.AddRazorComponents()
+        .AddInteractiveServerComponents();
 
     builder.Services.AddResponseCompression(options => {
         options.EnableForHttps = true;
@@ -160,8 +176,6 @@ try
     }
 
     Log.Information("Initializing application services");
-    //app.UseFastEndpoints();
-    //app.UseSwaggerGen(); // FastEndpoints middleware
     app.UseResponseCompression();
     app.UseHttpsRedirection();
     app.UseStaticFiles(new StaticFileOptions
@@ -172,8 +186,7 @@ try
         }
     });
     app.UseCookiePolicy();
-    app.UseAntiforgery();
-
+    
     if (applicationSettings.IsRunningInContainer())
     {
         app.UseForwardedHeaders();
@@ -188,9 +201,18 @@ try
     });
 
     Log.Information("Mapping and routing razor components");
-
+    app.UseSerilogRequestLogging();
+    app.UseRouting();
+    app.UseAntiforgery();
+    //app.UseFastEndpoints();
+    //app.UseSwaggerGen(); // FastEndpoints middleware
+    app.UseResponseCaching();
+    app.UseAuthorization();
     app.MapControllers();
     app.MapRazorPages();
+    app.MapRazorComponents<Huybrechts.Web.Components.App>()
+        .AddInteractiveServerRenderMode();
+    app.MapAdditionalIdentityEndpoints();
     //app.MapGet("/", () => "Hello World!");
 
     Log.Information("Run configured application");

@@ -11,14 +11,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{7629C565-7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0BA3500F-08AB-4705-BDEC-B6B1BCA62698}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Core", "src\Huybrechts.Core\Huybrechts.Core.csproj", "{CAA1949D-B97E-4B7D-A83F-F8E59877FE8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Core", "src\Huybrechts.Core\Huybrechts.Core.csproj", "{CAA1949D-B97E-4B7D-A83F-F8E59877FE8C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A3841D82-F23C-452A-BB04-B5FFF0E11190} = {A3841D82-F23C-452A-BB04-B5FFF0E11190}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Shared", "src\Huybrechts.Shared\Huybrechts.Shared.csproj", "{A3841D82-F23C-452A-BB04-B5FFF0E11190}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Web", "src\Huybrechts.Web\Huybrechts.Web.csproj", "{52CDECA4-7DE3-47FD-9F50-E2A8FFB047F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Web", "src\Huybrechts.Web\Huybrechts.Web.csproj", "{52CDECA4-7DE3-47FD-9F50-E2A8FFB047F5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CAA1949D-B97E-4B7D-A83F-F8E59877FE8C} = {CAA1949D-B97E-4B7D-A83F-F8E59877FE8C}
 		{EB10FD53-AAB1-44CD-BAE5-88C65443631A} = {EB10FD53-AAB1-44CD-BAE5-88C65443631A}
