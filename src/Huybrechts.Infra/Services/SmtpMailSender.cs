@@ -1,6 +1,5 @@
 ﻿using Huybrechts.Infra.Config;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using MimeKit;
 
 namespace Huybrechts.Infra.Services;
@@ -9,9 +8,9 @@ public class SmtpMailSender : IEmailSender
 {
 	private readonly MessageAuthenticationSettings _mailAuthentication;
 	private readonly MessageServerSettings _mailSettings;
-    private readonly ILogger _logger;
+    private readonly Serilog.ILogger _logger;
 
-    public SmtpMailSender(IConfiguration configuration, ILogger logger)
+    public SmtpMailSender(IConfiguration configuration, Serilog.ILogger logger)
 	{
 		ApplicationSettings settings = new(configuration);
         _mailSettings = settings.GetMessageServer();
@@ -26,7 +25,7 @@ public class SmtpMailSender : IEmailSender
 	{
 		try
 		{
-            _logger.LogDebug("Sending an email with MailKit to {to} with subject {subject}", toEmail, subject);
+            _logger.Debug("Sending an email with MailKit to {to} with subject {subject}", toEmail, subject);
             using MimeMessage message = new();
 			message.From.Add(new MailboxAddress(_mailSettings.SenderName, _mailSettings.SenderMail));
 			message.To.Add(new MailboxAddress(toName, toEmail));

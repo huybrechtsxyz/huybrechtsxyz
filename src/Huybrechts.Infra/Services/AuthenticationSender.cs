@@ -1,6 +1,5 @@
 ﻿using Huybrechts.Infra.Data;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace Huybrechts.Infra.Services;
 
@@ -8,7 +7,7 @@ public class AuthenticationSender : Microsoft.AspNetCore.Identity.IEmailSender<A
 {
     private readonly IEmailSender emailSender;
 
-    public AuthenticationSender(IConfiguration configuration, ILogger logger)
+    public AuthenticationSender(IConfiguration configuration, Serilog.ILogger logger)
     {
         emailSender = new SmtpMailSender(configuration, logger);
     }
