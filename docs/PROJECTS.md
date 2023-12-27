@@ -1,7 +1,0 @@
-
-# Project Management
-
-## Project
-
-## Task
-

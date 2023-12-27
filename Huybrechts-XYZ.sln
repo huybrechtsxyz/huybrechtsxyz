@@ -3,22 +3,32 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{366CB1EE-95B4-4FD5-9B5A-4E35261DF90A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{7629C565-711C-4591-8D76-31FDB9B3DABD}"
 	ProjectSection(SolutionItems) = preProject
 		docs\LICENSE = docs\LICENSE
-		docs\MODEL.md = docs\MODEL.md
-		docs\PROJECTS.md = docs\PROJECTS.md
 		docs\README.md = docs\README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{96CB09C9-4038-45F8-BC75-67432BCA590E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0BA3500F-08AB-4705-BDEC-B6B1BCA62698}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0BEB7417-E729-48A0-8890-4D3DF51DC70C}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Core", "src\Huybrechts.Core\Huybrechts.Core.csproj", "{CAA1949D-B97E-4B7D-A83F-F8E59877FE8C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A3841D82-F23C-452A-BB04-B5FFF0E11190} = {A3841D82-F23C-452A-BB04-B5FFF0E11190}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Website", "src\Huybrechts.Website\Huybrechts.Website.csproj", "{90AA8034-3C0A-4D4B-98FF-DA1DAD59F0F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Shared", "src\Huybrechts.Shared\Huybrechts.Shared.csproj", "{A3841D82-F23C-452A-BB04-B5FFF0E11190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Web", "src\Huybrechts.Web\Huybrechts.Web.csproj", "{52CDECA4-7DE3-47FD-9F50-E2A8FFB047F5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CAA1949D-B97E-4B7D-A83F-F8E59877FE8C} = {CAA1949D-B97E-4B7D-A83F-F8E59877FE8C}
+		{EB10FD53-AAB1-44CD-BAE5-88C65443631A} = {EB10FD53-AAB1-44CD-BAE5-88C65443631A}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra", "src\Huybrechts.Infra\Huybrechts.Infra.csproj", "{EB10FD53-AAB1-44CD-BAE5-88C65443631A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A3841D82-F23C-452A-BB04-B5FFF0E11190} = {A3841D82-F23C-452A-BB04-B5FFF0E11190}
+		{CAA1949D-B97E-4B7D-A83F-F8E59877FE8C} = {CAA1949D-B97E-4B7D-A83F-F8E59877FE8C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,16 +36,31 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{90AA8034-3C0A-4D4B-98FF-DA1DAD59F0F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{90AA8034-3C0A-4D4B-98FF-DA1DAD59F0F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{90AA8034-3C0A-4D4B-98FF-DA1DAD59F0F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{90AA8034-3C0A-4D4B-98FF-DA1DAD59F0F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAA1949D-B97E-4B7D-A83F-F8E59877FE8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAA1949D-B97E-4B7D-A83F-F8E59877FE8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAA1949D-B97E-4B7D-A83F-F8E59877FE8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAA1949D-B97E-4B7D-A83F-F8E59877FE8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3841D82-F23C-452A-BB04-B5FFF0E11190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3841D82-F23C-452A-BB04-B5FFF0E11190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3841D82-F23C-452A-BB04-B5FFF0E11190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3841D82-F23C-452A-BB04-B5FFF0E11190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52CDECA4-7DE3-47FD-9F50-E2A8FFB047F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52CDECA4-7DE3-47FD-9F50-E2A8FFB047F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52CDECA4-7DE3-47FD-9F50-E2A8FFB047F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52CDECA4-7DE3-47FD-9F50-E2A8FFB047F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB10FD53-AAB1-44CD-BAE5-88C65443631A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB10FD53-AAB1-44CD-BAE5-88C65443631A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB10FD53-AAB1-44CD-BAE5-88C65443631A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB10FD53-AAB1-44CD-BAE5-88C65443631A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{90AA8034-3C0A-4D4B-98FF-DA1DAD59F0F4} = {96CB09C9-4038-45F8-BC75-67432BCA590E}
+		{CAA1949D-B97E-4B7D-A83F-F8E59877FE8C} = {0BA3500F-08AB-4705-BDEC-B6B1BCA62698}
+		{A3841D82-F23C-452A-BB04-B5FFF0E11190} = {0BA3500F-08AB-4705-BDEC-B6B1BCA62698}
+		{52CDECA4-7DE3-47FD-9F50-E2A8FFB047F5} = {0BA3500F-08AB-4705-BDEC-B6B1BCA62698}
+		{EB10FD53-AAB1-44CD-BAE5-88C65443631A} = {0BA3500F-08AB-4705-BDEC-B6B1BCA62698}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EA046702-9B6A-4A79-A68E-D0F2C0B8530F}
