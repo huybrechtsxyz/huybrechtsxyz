@@ -27,7 +27,7 @@ public class ApplicationSettings
     public bool DoResetEnvironment() => GetEnvironmentInitialization() == EnvironmentInitialization.Reset;
 	 
     public string GetApplicationDatabaseConnectionString() => 
-		_configuration.GetConnectionString("ApplicationDatabase") ??
+		_configuration.GetConnectionString("AdministrationDatabase") ??
 		throw new InvalidOperationException("Connection string 'ApplicationDatabase' not found.");
 
 	public DatabaseProviderType GetApplicationDatabaseType()

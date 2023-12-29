@@ -3,13 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Huybrechts.Infra.Data;
 
-public enum DatabaseProviderType
-{
-	None = 0,
-	SqlServer = 1,
-	PostgreSQL = 2
-}
-
 public class AdministrationContext(DbContextOptions<AdministrationContext> options)
 	: IdentityDbContext<
 		ApplicationUser, 

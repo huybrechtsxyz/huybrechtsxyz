@@ -66,7 +66,12 @@ try
                 break;
             }
     }
-    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+    
+
+    if (builder.Environment.IsDevelopment()) { 
+        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+    }
 
     Log.Information("Configure authentication");
     builder.Services.AddCascadingAuthenticationState();
