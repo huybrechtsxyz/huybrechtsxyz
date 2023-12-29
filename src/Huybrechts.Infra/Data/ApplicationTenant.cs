@@ -8,6 +8,7 @@ namespace Huybrechts.Infra.Data;
 [Index(nameof(Code), IsUnique = true)]
 public record ApplicationTenant
 {
+    [Key]
     [Required]
     [RegularExpression("^[a-z0-9]+$")]
     [StringLength(24, MinimumLength = 2)]
@@ -24,13 +25,21 @@ public record ApplicationTenant
 
     public byte[]? ProfilePicture { get; set; }
 
+    [StringLength(24)]
+    public string? DatabaseProvider { get; set; }
+
     [StringLength(512)]
-    public string ConnectionString { get; set; } = string.Empty;
-
-
+    public string? ConnectionString { get; set; }
 
     [Timestamp]
     public byte[]? ConcurrencyToken { get; set; }
+
+    public DatabaseProviderType GetDatabaseProviderType()
+    {
+        if (Enum.TryParse<DatabaseProviderType>(DatabaseProvider, out DatabaseProviderType dbtype))
+            return dbtype;
+        throw new InvalidCastException("Invalid DatabaseProvider for type of ApplicationTenant " + Code);
+    }
 
     public ICollection<ApplicationTenantRole>? Roles { get; set; }
 

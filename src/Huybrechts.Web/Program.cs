@@ -46,29 +46,10 @@ try
     builder.Services.AddResponseCaching();
 
     Log.Information("Connect to the database");
-    DatabaseProviderType connectionType = applicationSettings.GetApplicationDatabaseType();
-    var connectionString = applicationSettings.GetApplicationDatabaseConnectionString();
-    switch (connectionType)
-    {
-        case DatabaseProviderType.SqlServer:
-            {
-                builder.Services.AddDbContext<AdministrationContext>(options => options.UseSqlServer(connectionString));
-                break;
-            }
-        case DatabaseProviderType.PostgreSQL:
-            {
-                builder.Services.AddDbContext<AdministrationContext>(options => options.UseNpgsql(connectionString));
-                break;
-            }
-        case DatabaseProviderType.None:
-            {
-                builder.Services.AddDbContext<AdministrationContext>(options => options.UseSqlite(connectionString));
-                break;
-            }
-    }
-
-    
-
+    DatabaseProviderType connectionType = applicationSettings.GetAdministrationDatabaseType();
+    var connectionString = applicationSettings.GetAdministrationConnectionString();
+    var contextOptions = TenantContextFactory.BuildOptions(connectionString, connectionType);
+    builder.Services.AddDbContext<AdministrationContext>(options => options = contextOptions);
     if (builder.Environment.IsDevelopment()) { 
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
     }
@@ -151,7 +132,12 @@ try
 
     // Database migrations
     Log.Information("Adding database initializer as hosted service");
-    builder.Services.AddHostedService<DatabaseSeedWorker>();
+    builder.Services.AddHostedService<AdministrationSeedWorker>();
+
+    Log.Information("Connect to tenant databases");
+    TenantContextFactory tenantContextFactory = new();
+    var tenantContextCollection = tenantContextFactory.BuildTenantCollection(builder.Configuration);
+    builder.Services.AddSingleton(typeof(ITenantContextCollection), tenantContextCollection);
 
     Log.Information("Building the application and services");
     var app = builder.Build(); ;

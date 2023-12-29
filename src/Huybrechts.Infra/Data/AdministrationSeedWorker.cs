@@ -10,7 +10,7 @@ using ILogger = Serilog.ILogger;
 
 namespace Huybrechts.Infra.Data;
 
-public class DatabaseSeedWorker : IHostedService
+public class AdministrationSeedWorker : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
 	private readonly IConfiguration _configuration;
@@ -18,9 +18,9 @@ public class DatabaseSeedWorker : IHostedService
 	private UserManager<ApplicationUser>? _userManager;
 	private RoleManager<ApplicationRole>? _roleManager;
 
-	private readonly ILogger _logger = Log.Logger.ForContext<DatabaseSeedWorker>();
+	private readonly ILogger _logger = Log.Logger.ForContext<AdministrationSeedWorker>();
 
-	public DatabaseSeedWorker(
+	public AdministrationSeedWorker(
 		IServiceProvider serviceProvider,
 		IConfiguration configuration)
     {
@@ -67,9 +67,11 @@ public class DatabaseSeedWorker : IHostedService
 
 	private async Task InitializeForAllAsync(CancellationToken cancellationToken)
 	{
-		await CreateDefaultApplicationRoles();
+        _logger.Information("Running database initializer...applying migrations");
 
-		/*var sysadminUser = new ApplicationUser()
+        //await CreateDefaultApplicationRoles();
+
+        /*var sysadminUser = new ApplicationUser()
 		{
 			UserName = "sysadmin",
 			Email = "vincent@huybrechts.xyz",
@@ -84,7 +86,7 @@ public class DatabaseSeedWorker : IHostedService
 			await _userManager.AddToRoleAsync(sysadminUser, ApplicationRoleEnum.SystemAdmin.ToString());
 		}
 		*/
-	}
+    }
 	
 	private async Task InitializeForDevelopmentAsync(CancellationToken cancellationToken)
 	{

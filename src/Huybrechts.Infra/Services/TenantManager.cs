@@ -7,11 +7,7 @@ namespace Huybrechts.Infra.Services;
 
 public interface ITenantManager
 {
-    public string GetDatabaseProvider();
 
-    public string GetConnectionString();
-
-    public ApplicationTenant GetTenant();
 }
 
 public class TenantManager : ITenantManager
@@ -21,18 +17,7 @@ public class TenantManager : ITenantManager
 
     public TenantManager(IHttpContextAccessor contextAccessor)
     {
-        _httpContext = contextAccessor.HttpContext!;
-        if (_httpContext is not null)
-        {
-            if (_httpContext.Request.Headers.TryGetValue("tenant", out var tenantId))
-            {
-                SetTenant(tenantId);
-            }
-            else
-            {
-                throw new Exception("Invalid Tenant!");
-            }
-        }
+       
     }
 
     public string GetConnectionString()

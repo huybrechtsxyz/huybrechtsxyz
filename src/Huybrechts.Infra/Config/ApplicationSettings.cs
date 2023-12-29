@@ -10,7 +10,6 @@ public class ApplicationSettings
 
     public static bool IsRunningInContainer() => (System.Environment.GetEnvironmentVariable(ENV_DOTNET_RUNNING_IN_CONTAINER) == "true");
 
-
     private readonly IConfiguration _configuration;
 
 	public static CultureInfo[] GetSupportedCultures() => [new("EN"), new("NL")];
@@ -25,17 +24,20 @@ public class ApplicationSettings
     public bool DoInitializeEnvironment() => GetEnvironmentInitialization() == EnvironmentInitialization.Initialize;
 
     public bool DoResetEnvironment() => GetEnvironmentInitialization() == EnvironmentInitialization.Reset;
-	 
-    public string GetApplicationDatabaseConnectionString() => 
-		_configuration.GetConnectionString("AdministrationDatabase") ??
-		throw new InvalidOperationException("Connection string 'ApplicationDatabase' not found.");
 
-	public DatabaseProviderType GetApplicationDatabaseType()
+    public string GetAdministrationConnectionString()
+    {
+        return _configuration.GetConnectionString("AdministrationDatabase") ??
+        throw new InvalidOperationException("Connection string 'AdministrationDatabase' not found.");
+    }
+
+    public DatabaseProviderType GetAdministrationDatabaseType()
 	{
-		var type = _configuration.GetValue<DatabaseProviderType>("Environment:ApplicationDatabaseType");
-		return type;
-	}
-
+        if (Enum.TryParse<DatabaseProviderType>(_configuration["Environment:AdministrationDatabaseType"], out DatabaseProviderType dbtype))
+            return dbtype;
+        throw new InvalidCastException("Invalid Environment:AdministrationDatabaseType for type of DatabaseProviderType");
+    }
+    
     public AuthenticationSettings GetGoogleAuthentication()
     {
         AuthenticationSettings item = new();
@@ -74,7 +76,7 @@ public class ApplicationSettings
 	public SeedWorkerSecrets GetSeedSecrets()
 	{
 		SeedWorkerSecrets item = new();
-		_configuration.GetSection("Messaging:Mail").Bind(item);
+		_configuration.GetSection("SeedWorker").Bind(item);
 		return item;
 	}
 		

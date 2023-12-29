@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Huybrechts.Infra.Data;
 
-public class AdministrationContext(DbContextOptions<AdministrationContext> options)
+public class AdministrationContext
 	: IdentityDbContext<
 		ApplicationUser, 
 		ApplicationRole, string, 
@@ -11,8 +11,12 @@ public class AdministrationContext(DbContextOptions<AdministrationContext> optio
 		ApplicationUserRole, 
 		ApplicationUserLogin, 
 		ApplicationRoleClaim, 
-		ApplicationUserToken>(options)
+		ApplicationUserToken>
 {
+    public AdministrationContext(DbContextOptions options) : base(options)
+    {
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
@@ -31,7 +35,7 @@ public class AdministrationContext(DbContextOptions<AdministrationContext> optio
         builder.Entity<ApplicationUserToken>().ToTable("IdentityUserToken");
     }
 
-    //public DbSet<ApplicationTenant> ApplicationTenants { get; set; }
+    public DbSet<ApplicationTenant> Tenants { get; set; }
 
     //public DbSet<ApplicationTenantRole> ApplicationRoles { get; set; }
 
