@@ -14,7 +14,7 @@ public class DatabaseSeedWorker : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
 	private readonly IConfiguration _configuration;
-	private DatabaseContext? _dbcontext = null;
+	private AdministrationContext? _dbcontext = null;
 	private UserManager<ApplicationUser>? _userManager;
 	private RoleManager<ApplicationRole>? _roleManager;
 
@@ -36,7 +36,7 @@ public class DatabaseSeedWorker : IHostedService
 			throw new Exception("The WebHostEnvironment service was not registered as a service");
 		
 		using var scope = _serviceProvider.CreateScope();
-		_dbcontext = scope.ServiceProvider.GetRequiredService<DatabaseContext>() ??
+		_dbcontext = scope.ServiceProvider.GetRequiredService<AdministrationContext>() ??
 			throw new Exception("The DatabaseContext service was not registered as a service");
 
 		_userManager = (UserManager<ApplicationUser>)scope.ServiceProvider.GetRequiredService(typeof(UserManager<ApplicationUser>));

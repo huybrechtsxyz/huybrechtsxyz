@@ -10,7 +10,7 @@ public class ApplicationRole : IdentityRole
 	{
 		None = 0,
 		User = 1,
-		Sysadmin = 64
+		Sysadmin = 128
 	}
 
 	public static List<ApplicationRole> GetDefaultRoles()

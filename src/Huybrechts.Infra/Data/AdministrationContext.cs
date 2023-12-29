@@ -3,14 +3,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Huybrechts.Infra.Data;
 
-public enum DatabaseContextType
+public enum DatabaseProviderType
 {
 	None = 0,
 	SqlServer = 1,
 	PostgreSQL = 2
 }
 
-public class DatabaseContext(DbContextOptions<DatabaseContext> options)
+public class AdministrationContext(DbContextOptions<AdministrationContext> options)
 	: IdentityDbContext<
 		ApplicationUser, 
 		ApplicationRole, string, 
@@ -37,5 +37,13 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
         builder.Entity<ApplicationUserRole>().ToTable("IdentityUserRole");
         builder.Entity<ApplicationUserToken>().ToTable("IdentityUserToken");
     }
+
+    //public DbSet<ApplicationTenant> ApplicationTenants { get; set; }
+
+    //public DbSet<ApplicationTenantRole> ApplicationRoles { get; set; }
+
+    //public DbSet<ApplicationTenantUser> ApplicationTenantUsers { get; set; }
+
+    //public DbSet<ApplicationTenantUserRole> ApplicationTenantRoles { get; set; }
 }
 

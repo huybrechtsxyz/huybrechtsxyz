@@ -36,7 +36,7 @@ try
 
     Log.Information("Configuring webserver");
     builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
-    if (applicationSettings.IsRunningInContainer())
+    if (ApplicationSettings.IsRunningInContainer())
     {
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
@@ -46,23 +46,23 @@ try
     builder.Services.AddResponseCaching();
 
     Log.Information("Connect to the database");
-    DatabaseContextType connectionType = applicationSettings.GetApplicationDatabaseType();
+    DatabaseProviderType connectionType = applicationSettings.GetApplicationDatabaseType();
     var connectionString = applicationSettings.GetApplicationDatabaseConnectionString();
     switch (connectionType)
     {
-        case DatabaseContextType.SqlServer:
+        case DatabaseProviderType.SqlServer:
             {
-                builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
+                builder.Services.AddDbContext<AdministrationContext>(options => options.UseSqlServer(connectionString));
                 break;
             }
-        case DatabaseContextType.PostgreSQL:
+        case DatabaseProviderType.PostgreSQL:
             {
-                builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
+                builder.Services.AddDbContext<AdministrationContext>(options => options.UseNpgsql(connectionString));
                 break;
             }
-        case DatabaseContextType.None:
+        case DatabaseProviderType.None:
             {
-                builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlite(connectionString));
+                builder.Services.AddDbContext<AdministrationContext>(options => options.UseSqlite(connectionString));
                 break;
             }
     }
@@ -83,7 +83,7 @@ try
     
     builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
         .AddRoles<ApplicationRole>()
-        .AddEntityFrameworkStores<DatabaseContext>()
+        .AddEntityFrameworkStores<AdministrationContext>()
         .AddSignInManager()
         .AddDefaultTokenProviders()
         .AddClaimsPrincipalFactory<AdditionalUserClaimsPrincipalFactory>();
@@ -158,7 +158,6 @@ try
         Log.Information("Configure the HTTP request pipeline for development");
         app.UseDeveloperExceptionPage();
         //app.UseWebAssemblyDebugging();
-        //app.UseMigrationsEndPoint(); has already been executed
     }
     else if (app.Environment.IsStaging())
     {
@@ -189,7 +188,7 @@ try
     });
     app.UseCookiePolicy();
     
-    if (applicationSettings.IsRunningInContainer())
+    if (ApplicationSettings.IsRunningInContainer())
     {
         app.UseForwardedHeaders();
     }
