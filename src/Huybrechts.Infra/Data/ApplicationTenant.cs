@@ -41,7 +41,7 @@ public record ApplicationTenant
         throw new InvalidCastException("Invalid DatabaseProvider for type of ApplicationTenant " + Code);
     }
 
-    public ICollection<ApplicationTenantRole>? Roles { get; set; }
+    //public ICollection<ApplicationTenantRole>? Roles { get; set; }
 
-    public ICollection<ApplicationTenantUser>? Users { get; set; }
+    //public ICollection<ApplicationTenantUser>? Users { get; set; }
 }

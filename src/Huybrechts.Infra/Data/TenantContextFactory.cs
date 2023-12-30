@@ -13,11 +13,11 @@ public class TenantContextFactory
         
     }
 
-    public static DbContextOptionsBuilder BuildOptions(string? connectionString, DatabaseProviderType connectionType)
+    public static DbContextOptionsBuilder BuildOptions<Tcontext>(string? connectionString, DatabaseProviderType connectionType) where Tcontext : DbContext
     {
         ArgumentNullException.ThrowIfNullOrEmpty(connectionString);
 
-        DbContextOptionsBuilder builder = new();
+        DbContextOptionsBuilder<Tcontext> builder = new();
         switch (connectionType)
         {
             case DatabaseProviderType.SqlServer:
@@ -41,30 +41,16 @@ public class TenantContextFactory
         return builder;
     }
 
-    public ITenantContextCollection BuildTenantCollection(IConfiguration configuration)
-    {
-        ApplicationSettings applicationSettings = new(configuration);
-        DatabaseProviderType connectionType = applicationSettings.GetAdministrationDatabaseType();
-        var connectionString = applicationSettings.GetAdministrationConnectionString();
-        var contextOptions = TenantContextFactory.BuildOptions(connectionString, connectionType);
-        AdministrationContext dbcontext = new(contextOptions.Options);
-        var collection = BuildTenantCollection(dbcontext);
-        dbcontext.Dispose();
-        return collection;
-    }
-
-    public ITenantContextCollection BuildTenantCollection(AdministrationContext dbcontext)
+    public void BuildTenantCollection(AdministrationContext dbcontext, TenantContextCollection collection)
     {
         var tenants = dbcontext.Tenants.ToList();
-        if (tenants is null || tenants.Count == 0)
-            return new TenantContextCollection();
-
-        TenantContextCollection collection = new();
-        foreach (var item in tenants)
+        if (tenants is not null && tenants.Count != 0)
         {
-            collection.SetTenant(item.Code, BuildContext(item));
+            foreach (var item in tenants)
+            {
+                collection.SetTenant(item.Code, BuildContext(item));
+            }
         }
-        return collection;
     }
 
     public TenantContext BuildContext(ApplicationTenant tenant)
@@ -75,66 +61,7 @@ public class TenantContextFactory
             ConnectionString = tenant.ConnectionString,
             DatabaseProvider = tenant.DatabaseProvider
         };
-        var options = BuildOptions(tenant.ConnectionString, tenant.GetDatabaseProviderType());
+        var options = BuildOptions<TenantContext>(tenant.ConnectionString, tenant.GetDatabaseProviderType());
         return new(options.Options, value);
-    }
-}
-
-public interface ITenantContextCollection : IDisposable
-{
-    TenantContext GetTenant(string tenant);
-
-    void SetTenant(string tenant, TenantContext value);
-}
-
-public class TenantContextCollection: ITenantContextCollection
-{
-    private readonly Dictionary<string, TenantContext> _tenants = [];
-
-    public TenantContextCollection() 
-    {
-    }
-
-    public void Dispose()
-    {
-        if (_tenants is null)
-            return;
-        foreach(var tenant in _tenants)
-            tenant.Value.Dispose();
-    }
-
-    public TenantContext GetTenant(string tenant)
-    {
-        if (_tenants.TryGetValue(tenant, out TenantContext? value))
-            return value;
-        throw new Exception("Invalid tenant requested");
-    }
-
-    public void SetTenant(string tenant, TenantContext value)
-    {
-        ArgumentNullException.ThrowIfNull(value);
-        if (!_tenants.TryAdd(tenant, value))
-            throw new ArgumentException("Tenant with key already exists", nameof(tenant));
-    }
-}
-
-public class TenantContext: DbContext
-{
-    public ApplicationTenant Tenant { get; init; }
-
-    public TenantContext(DbContextOptions options, ApplicationTenant tenant)
-        : base(options)
-    {
-        Tenant = tenant;
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
-    }
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder);
     }
 }

@@ -48,8 +48,24 @@ try
     Log.Information("Connect to the database");
     DatabaseProviderType connectionType = applicationSettings.GetAdministrationDatabaseType();
     var connectionString = applicationSettings.GetAdministrationConnectionString();
-    var contextOptions = TenantContextFactory.BuildOptions(connectionString, connectionType);
-    builder.Services.AddDbContext<AdministrationContext>(options => options = contextOptions);
+    switch (connectionType)
+    {
+        case DatabaseProviderType.SqlServer:
+            {
+                builder.Services.AddDbContext<AdministrationContext>(options => options.UseSqlServer(connectionString));
+                break;
+            }
+        case DatabaseProviderType.PostgreSQL:
+            {
+                builder.Services.AddDbContext<AdministrationContext>(options => options.UseNpgsql(connectionString));
+                break;
+            }
+        case DatabaseProviderType.None:
+            {
+                builder.Services.AddDbContext<AdministrationContext>(options => options.UseSqlite(connectionString));
+                break;
+            }
+    }
     if (builder.Environment.IsDevelopment()) { 
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
     }
@@ -135,9 +151,8 @@ try
     builder.Services.AddHostedService<AdministrationSeedWorker>();
 
     Log.Information("Connect to tenant databases");
-    TenantContextFactory tenantContextFactory = new();
-    var tenantContextCollection = tenantContextFactory.BuildTenantCollection(builder.Configuration);
-    builder.Services.AddSingleton(typeof(ITenantContextCollection), tenantContextCollection);
+    builder.Services.AddSingleton(typeof(ITenantContextCollection), new TenantContextCollection());
+    //var tenantContextCollection = tenantContextFactory.BuildTenantCollection(builder.Configuration);
 
     Log.Information("Building the application and services");
     var app = builder.Build(); ;

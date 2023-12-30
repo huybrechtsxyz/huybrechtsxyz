@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Org.BouncyCastle.Tls;
 using Serilog;
 using ILogger = Serilog.ILogger;
 
@@ -29,39 +30,44 @@ public class AdministrationSeedWorker : IHostedService
 	}
 
 	public async Task StartAsync(CancellationToken cancellationToken)
-	{
-		_logger.Information("Running database initializer...");
+    {
+        _logger.Information("Running database initializer...");
         ApplicationSettings applicationSettings = new(_configuration);
-		var environment = _serviceProvider.GetRequiredService<IWebHostEnvironment>() ?? 
-			throw new Exception("The WebHostEnvironment service was not registered as a service");
-		
-		using var scope = _serviceProvider.CreateScope();
-		_dbcontext = scope.ServiceProvider.GetRequiredService<AdministrationContext>() ??
-			throw new Exception("The DatabaseContext service was not registered as a service");
+        var environment = _serviceProvider.GetRequiredService<IWebHostEnvironment>() ??
+            throw new Exception("The WebHostEnvironment service was not registered as a service");
 
-		_userManager = (UserManager<ApplicationUser>)scope.ServiceProvider.GetRequiredService(typeof(UserManager<ApplicationUser>));
-		_roleManager = (RoleManager<ApplicationRole>)scope.ServiceProvider.GetRequiredService(typeof(RoleManager<ApplicationRole>));
+        using var scope = _serviceProvider.CreateScope();
+        _dbcontext = scope.ServiceProvider.GetRequiredService<AdministrationContext>() ??
+            throw new Exception("The DatabaseContext service was not registered as a service");
 
-		if (environment.IsDevelopment() && applicationSettings.DoResetEnvironment())
-		{
-			_logger.Warning("Running database initializer...deleting existing database");
-			await _dbcontext.Database.EnsureDeletedAsync(cancellationToken);
-		}
+        _userManager = (UserManager<ApplicationUser>)scope.ServiceProvider.GetRequiredService(typeof(UserManager<ApplicationUser>));
+        _roleManager = (RoleManager<ApplicationRole>)scope.ServiceProvider.GetRequiredService(typeof(RoleManager<ApplicationRole>));
 
-		_logger.Information("Running database initializer...applying database migrations");
-		await _dbcontext.Database.MigrateAsync(cancellationToken);
+        if (environment.IsDevelopment() && applicationSettings.DoResetEnvironment())
+        {
+            _logger.Warning("Running database initializer...deleting existing database");
+            await _dbcontext.Database.EnsureDeletedAsync(cancellationToken);
+        }
 
-		await InitializeForAllAsync(cancellationToken);
+        _logger.Information("Running database initializer...applying database migrations");
+        await _dbcontext.Database.MigrateAsync(cancellationToken);
 
-		if (environment.IsDevelopment())
-			await InitializeForDevelopmentAsync(cancellationToken);
+        await InitializeForAllAsync(cancellationToken);
 
-		else if (environment.IsStaging())
-			await InitializeForStagingAsync(cancellationToken);
+        if (environment.IsDevelopment())
+            await InitializeForDevelopmentAsync(cancellationToken);
+
+        else if (environment.IsStaging())
+            await InitializeForStagingAsync(cancellationToken);
 
         else if (environment.IsProduction())
-			await InitializeForProductionAsync(cancellationToken);
-	}
+            await InitializeForProductionAsync(cancellationToken);
+
+        _logger.Information("Running database initializer...loading tenants");
+        var tenantCollection = (TenantContextCollection)scope.ServiceProvider.GetRequiredService(typeof(ITenantContextCollection));
+        TenantContextFactory tenantFactory = new();
+        tenantFactory.BuildTenantCollection(_dbcontext, tenantCollection);
+    }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
