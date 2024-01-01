@@ -8,13 +8,13 @@ namespace Huybrechts.Infra.Data;
 public class ApplicationUser : IdentityUser
 {
     [StringLength(128)]
-    public string? FirstName { get; set; }
+    public string? GivenName { get; set; }
 
     [StringLength(128)]
-    public string? LastName { get; set; }
+    public string? Surname { get; set; }
 
 	public byte[]? ProfilePicture { get; set; }
 
 	[NotMapped]
-    public string Fullname => FirstName + (FirstName?.Length > 0 && LastName?.Length > 0 ? " " : "") + LastName;
+    public string Fullname => GivenName + (GivenName?.Length > 0 && Surname?.Length > 0 ? " " : "") + Surname;
 }

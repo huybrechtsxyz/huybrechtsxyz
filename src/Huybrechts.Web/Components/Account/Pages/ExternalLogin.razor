@@ -186,44 +186,37 @@
 
     private async Task<ApplicationUser> UpdateUser(ApplicationUser user)
     {
-        return await UpdateUserFromGoogle(user);
-    }
-
-    private async Task<ApplicationUser> UpdateUserFromGoogle(ApplicationUser user)
-    {
         bool updated = false;
 
-        if (externalLoginInfo.Principal.HasClaim(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname") ||
-                    externalLoginInfo.Principal.HasClaim(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"))
+        if (string.IsNullOrEmpty(user.GivenName) && externalLoginInfo.Principal.HasClaim((c => c.Type == ClaimTypes.GivenName)))
         {
-            var surname = string.Empty;
-            var givenname = string.Empty;
-
-            var surClaim = externalLoginInfo.Principal.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname");
-            if (surClaim is not null)
-                surname = surClaim.Value.ToString();
-
-            var givenClaim = externalLoginInfo.Principal.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname");
-            if (givenClaim is not null)
-                givenname = givenClaim.Value.ToString();
-
-            if (string.Compare(user.FirstName, givenname, true) != 0 ||
-                string.Compare(user.LastName, surname, true) != 0)
+            var claim = externalLoginInfo.Principal.FindFirst(ClaimTypes.GivenName);
+            if (claim is not null)
             {
-                user.FirstName = givenname;
-                user.LastName = surname;
+                user.GivenName = claim.Value.ToString();
                 updated = true;
             }
         }
 
-        if (externalLoginInfo.Principal.HasClaim(c => c.Type == "picture"))
+        if (string.IsNullOrEmpty(user.Surname) && externalLoginInfo.Principal.HasClaim((c => c.Type == ClaimTypes.Surname)))
         {
-            var imageClaim = externalLoginInfo.Principal.FindFirst("picture");
-            if (imageClaim is not null)
+            var claim = externalLoginInfo.Principal.FindFirst(ClaimTypes.Surname);
+            if (claim is not null)
+            {
+                user.Surname = claim.Value.ToString();
+                updated = true;
+            }
+        }
+
+        // use options.ClaimActions.MapJsonKey("image", "picture")
+        if (user.ProfilePicture == Array.Empty<byte>() && externalLoginInfo.Principal.HasClaim(c => c.Type == "picture"))
+        {
+            var claim = externalLoginInfo.Principal.FindFirst("picture");
+            if (claim is not null)
             {
                 using (var client = new HttpClient())
                 {
-                    using (var response = await client.GetAsync(imageClaim.Value.ToString()))
+                    using (var response = await client.GetAsync(claim.Value.ToString()))
                     {
                         byte[] imageBytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                         user.ProfilePicture = new byte[imageBytes.Length];
@@ -238,7 +231,7 @@
             await UserManager.UpdateAsync(user);
         return user;
     }
-
+        
     private IUserEmailStore<ApplicationUser> GetEmailStore()
     {
         if (!UserManager.SupportsUserEmail)

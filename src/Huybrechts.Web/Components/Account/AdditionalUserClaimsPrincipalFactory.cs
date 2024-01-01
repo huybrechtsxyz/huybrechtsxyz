@@ -20,10 +20,10 @@ public class AdditionalUserClaimsPrincipalFactory
         ClaimsPrincipal principal = await base.CreateAsync(user);
         var identity = (ClaimsIdentity)principal.Identity!;
         var claims = new List<Claim> { };
-        if (!string.IsNullOrEmpty(user.FirstName))
-            claims.Add(new Claim(ClaimTypes.GivenName, user.FirstName));
-        if (!string.IsNullOrEmpty(user.LastName))
-            claims.Add(new Claim(ClaimTypes.Surname, user.LastName));
+        if (!string.IsNullOrEmpty(user.GivenName))
+            claims.Add(new Claim(ClaimTypes.GivenName, user.GivenName));
+        if (!string.IsNullOrEmpty(user.Surname))
+            claims.Add(new Claim(ClaimTypes.Surname, user.Surname));
         identity.AddClaims(claims);
         return principal;
     }

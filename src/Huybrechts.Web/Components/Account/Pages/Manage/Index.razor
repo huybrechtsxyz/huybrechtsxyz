@@ -25,14 +25,14 @@
                 <label for="username" class="form-label">Username</label>
             </div>
             <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.FirstName" class="form-control" placeholder="Please enter your first name." />
-                <label for="first-name" class="form-label">First name</label>
-                <ValidationMessage For="() => Input.FirstName" class="text-danger" />
+                <InputText @bind-Value="Input.GivenName" class="form-control" placeholder="Please enter your given name." />
+                <label for="givenname" class="form-label">Given name</label>
+                <ValidationMessage For="() => Input.GivenName" class="text-danger" />
             </div>
             <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.LastName" class="form-control" placeholder="Please enter your last name." />
-                <label for="last-name" class="form-label">Last name</label>
-                <ValidationMessage For="() => Input.LastName" class="text-danger" />
+                <InputText @bind-Value="Input.Surname" class="form-control" placeholder="Please enter your surname." />
+                <label for="surname" class="form-label">Surname</label>
+                <ValidationMessage For="() => Input.Surname" class="text-danger" />
             </div>
             <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
@@ -78,8 +78,8 @@
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
         username = await UserManager.GetUserNameAsync(user);
         phoneNumber = await UserManager.GetPhoneNumberAsync(user);
-        Input.FirstName ??= user.FirstName;
-        Input.LastName ??= user.LastName;
+        Input.GivenName ??= user.GivenName;
+        Input.Surname ??= user.Surname;
         Input.PhoneNumber ??= phoneNumber;
         if (user.ProfilePicture is not null)
         {
@@ -100,15 +100,15 @@
             }
         }
 
-        if (Input.FirstName != user.FirstName)
+        if (Input.GivenName != user.GivenName)
         {
-            user.FirstName = Input.FirstName;
+            user.GivenName = Input.GivenName;
             await UserManager.UpdateAsync(user);
         }
 
-        if (Input.LastName != user.LastName)
+        if (Input.Surname != user.Surname)
         {
-            user.LastName = Input.LastName;
+            user.Surname = Input.Surname;
             await UserManager.UpdateAsync(user);
         }
 
@@ -131,12 +131,12 @@
     private sealed class InputModel
     {
         [StringLength(120)]
-        [Display(Name = "First name")]
-        public string? FirstName { get; set; }
+        [Display(Name = "Given name")]
+        public string? GivenName { get; set; }
 
         [StringLength(120)]
-        [Display(Name = "Last name")]
-        public string? LastName { get; set; }
+        [Display(Name = "Surname")]
+        public string? Surname { get; set; }
 
         [XyzPhone]
         [StringLength(120)]

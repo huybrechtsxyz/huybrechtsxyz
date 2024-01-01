@@ -32,14 +32,14 @@
             <hr />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.FirstName" class="form-control" autocomplete="firstname" aria-required="true" placeholder="John" />
-                <label for="firstname">First name</label>
-                <ValidationMessage For="() => Input.FirstName" class="text-danger" />
+                <InputText @bind-Value="Input.GivenName" class="form-control" autocomplete="givenname" aria-required="true" placeholder="John" />
+                <label for="givenname">Given name</label>
+                <ValidationMessage For="() => Input.GivenName" class="text-danger" />
             </div>
             <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.LastName" class="form-control" autocomplete="lastname" aria-required="true" placeholder="Doe" />
-                <label for="lastname">Last name</label>
-                <ValidationMessage For="() => Input.LastName" class="text-danger" />
+                <InputText @bind-Value="Input.Surname" class="form-control" autocomplete="surname" aria-required="true" placeholder="Doe" />
+                <label for="surname">Surname</label>
+                <ValidationMessage For="() => Input.Surname" class="text-danger" />
             </div>
             <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
@@ -86,8 +86,8 @@
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-        user.FirstName = Input.FirstName;
-        user.LastName = Input.LastName;
+        user.GivenName = Input.GivenName;
+        user.Surname = Input.Surname;
         var result = await UserManager.CreateAsync(user, Input.Password);
         if (!result.Succeeded)
         {
@@ -152,14 +152,14 @@
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
         [DataType(DataType.Text)]
-        [Display(Name = "First name")]
-        public string FirstName { get; set; } = "";
+        [Display(Name = "Given name")]
+        public string GivenName { get; set; } = "";
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
         [DataType(DataType.Text)]
-        [Display(Name = "Last name")]
-        public string LastName { get; set; } = "";
+        [Display(Name = "Surname")]
+        public string Surname { get; set; } = "";
 
         [Required]
         [EmailAddress]

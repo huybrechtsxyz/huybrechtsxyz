@@ -99,7 +99,7 @@ try
         {
             options.ClientId = google.ClientId;
             options.ClientSecret = google.ClientSecret;
-            //options.ClaimActions.MapJsonKey("given", "picture"); maps claim name to other
+            //options.ClaimActions.MapJsonKey("image", "picture"); maps claim name to othername if needed
             options.Scope.Add("profile");
             options.Events.OnCreatingTicket = (context) =>
             {
