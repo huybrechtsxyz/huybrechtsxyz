@@ -6,25 +6,25 @@ namespace Huybrechts.Infra.Data;
 [Table("IdentityRole")]
 public class ApplicationRole : IdentityRole
 {
-	public enum DefaultRole
-	{
-		None = 0,
-		User = 1,
-		Sysadmin = 128
-	}
-
 	public static List<ApplicationRole> GetDefaultRoles()
 	{
 		List<ApplicationRole> list = [];
-		foreach (var value in Enum.GetValues(typeof(DefaultRole)).Cast<DefaultRole>())
+		foreach (var value in Enum.GetValues(typeof(ApplicationRoleValues)).Cast<ApplicationRoleValues>())
 		{
 			var item = new ApplicationRole()
 			{
 				Name = value.ToString()
 			};
-			if (value != DefaultRole.None)
+			if (value != ApplicationRoleValues.None)
 				list.Add(item);
 		}
 		return list;
 	}
+}
+
+public enum ApplicationRoleValues
+{
+    None = 0,
+    User = 1,
+    Sysadmin = 128
 }

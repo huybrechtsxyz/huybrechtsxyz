@@ -95,7 +95,7 @@
             return;
         }
 
-        result = await UserManager.AddToRoleAsync(user, ApplicationRole.DefaultRole.User.ToString());
+        result = await UserManager.AddToRoleAsync(user, ApplicationRoleValues.User.ToString());
         if (!result.Succeeded)
         {
             Logger.LogWarning("User created without user role.");
