@@ -19,11 +19,12 @@ public class AdditionalUserClaimsPrincipalFactory
     {
         ClaimsPrincipal principal = await base.CreateAsync(user);
         var identity = (ClaimsIdentity)principal.Identity!;
-        var claims = new List<Claim>
-            {
-                //new Claim(CustomClaimTypes.Planet, user.Planet)
-            };
-        //identity.AddClaims(claims);
+        var claims = new List<Claim> { };
+        if (!string.IsNullOrEmpty(user.FirstName))
+            claims.Add(new Claim(ClaimTypes.GivenName, user.FirstName));
+        if (!string.IsNullOrEmpty(user.LastName))
+            claims.Add(new Claim(ClaimTypes.Surname, user.LastName));
+        identity.AddClaims(claims);
         return principal;
     }
 }

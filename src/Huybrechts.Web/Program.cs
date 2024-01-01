@@ -3,6 +3,7 @@ using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Services;
 using Huybrechts.Web.Components;
 using Huybrechts.Web.Components.Account;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -98,6 +99,7 @@ try
         {
             options.ClientId = google.ClientId;
             options.ClientSecret = google.ClientSecret;
+            //options.ClaimActions.MapJsonKey("given", "picture"); maps claim name to other
             options.Scope.Add("profile");
             options.Events.OnCreatingTicket = (context) =>
             {

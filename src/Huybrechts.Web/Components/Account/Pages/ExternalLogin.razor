@@ -142,26 +142,29 @@
                 Logger.LogInformation("User created an account using {Name} provider.", externalLoginInfo.LoginProvider);
 
                 result = await UserManager.AddToRoleAsync(user, ApplicationRole.DefaultRole.User.ToString());
-                if (result.Succeeded)
+                if (!result.Succeeded)
                 {
-                    var userId = await UserManager.GetUserIdAsync(user);
-                    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-
-                    var callbackUrl = NavigationManager.GetUriWithQueryParameters(
-                        NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
-                        new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code });
-                    await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
-
-                    // If account confirmation is required, we need to show the link if we don't have a real email sender
-                    if (UserManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        RedirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = Input.Email });
-                    }
-
-                    await SignInManager.SignInAsync(user, isPersistent: false, externalLoginInfo.LoginProvider);
-                    RedirectManager.RedirectTo(ReturnUrl);
+                    Logger.LogWarning("User was created without the user role");
                 }
+
+                user = await UpdateUser(user);
+
+                var userId = await UserManager.GetUserIdAsync(user);
+                var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                var callbackUrl = NavigationManager.GetUriWithQueryParameters(
+                    NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
+                    new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code });
+                await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
+
+                // If account confirmation is required, we need to show the link if we don't have a real email sender
+                if (UserManager.Options.SignIn.RequireConfirmedAccount)
+                {
+                    RedirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = Input.Email });
+                }
+
+                await SignInManager.SignInAsync(user, isPersistent: false, externalLoginInfo.LoginProvider);
+                RedirectManager.RedirectTo(ReturnUrl); 
             }
         }
 
@@ -179,6 +182,61 @@
             throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
                 $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor");
         }
+    }
+
+    private async Task<ApplicationUser> UpdateUser(ApplicationUser user)
+    {
+        return await UpdateUserFromGoogle(user);
+    }
+
+    private async Task<ApplicationUser> UpdateUserFromGoogle(ApplicationUser user)
+    {
+        bool updated = false;
+
+        if (externalLoginInfo.Principal.HasClaim(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname") ||
+                    externalLoginInfo.Principal.HasClaim(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"))
+        {
+            var surname = string.Empty;
+            var givenname = string.Empty;
+
+            var surClaim = externalLoginInfo.Principal.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname");
+            if (surClaim is not null)
+                surname = surClaim.Value.ToString();
+
+            var givenClaim = externalLoginInfo.Principal.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname");
+            if (givenClaim is not null)
+                givenname = givenClaim.Value.ToString();
+
+            if (string.Compare(user.FirstName, givenname, true) != 0 ||
+                string.Compare(user.LastName, surname, true) != 0)
+            {
+                user.FirstName = givenname;
+                user.LastName = surname;
+                updated = true;
+            }
+        }
+
+        if (externalLoginInfo.Principal.HasClaim(c => c.Type == "picture"))
+        {
+            var imageClaim = externalLoginInfo.Principal.FindFirst("picture");
+            if (imageClaim is not null)
+            {
+                using (var client = new HttpClient())
+                {
+                    using (var response = await client.GetAsync(imageClaim.Value.ToString()))
+                    {
+                        byte[] imageBytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                        user.ProfilePicture = new byte[imageBytes.Length];
+                        user.ProfilePicture = imageBytes.ToArray();
+                        updated = true;
+                    }
+                }
+            }
+        }
+
+        if (updated)
+            await UserManager.UpdateAsync(user);
+        return user;
     }
 
     private IUserEmailStore<ApplicationUser> GetEmailStore()

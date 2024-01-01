@@ -22,7 +22,8 @@ public class ApplicationRole : IdentityRole
 			{
 				Name = value.ToString()
 			};
-			list.Add(item);
+			if (value != DefaultRole.None)
+				list.Add(item);
 		}
 		return list;
 	}
