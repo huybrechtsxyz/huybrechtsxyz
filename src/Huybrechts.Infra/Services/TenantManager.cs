@@ -1,7 +1,7 @@
 ﻿using Huybrechts.Infra.Data;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace Huybrechts.Infra.Services;
 
@@ -12,26 +12,19 @@ public interface ITenantManager
 
 public class TenantManager : ITenantManager
 {
-    private HttpContext _httpContext;
-    private ApplicationTenant _currentTenant;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly AdministrationContext _context;
+    private readonly ILogger _logger;
 
-    public TenantManager(IHttpContextAccessor contextAccessor)
+    public TenantManager(UserManager<ApplicationUser> userManager, AdministrationContext context, ILogger logger)
     {
-       
+        _logger = logger;
+        _userManager = userManager;
+        _context = context;
     }
 
-    public string GetConnectionString()
+    public async Task<ICollection<ApplicationTenant>> GetTenants()
     {
-        throw new NotImplementedException();
-    }
-
-    public string GetDatabaseProvider()
-    {
-        throw new NotImplementedException();
-    }
-
-    public ApplicationTenant GetTenant()
-    {
-        return _currentTenant;
+        return await _context.Tenants.ToListAsync();
     }
 }

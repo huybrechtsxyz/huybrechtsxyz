@@ -75,7 +75,7 @@ public class AdministrationSeedWorker : IHostedService
 	{
         _logger.Information("Running database initializer...applying migrations");
 
-        await CreateDefaultApplicationRoles();
+        //await CreateDefaultApplicationRoles();
 
         /*var sysadminUser = new ApplicationUser()
 		{

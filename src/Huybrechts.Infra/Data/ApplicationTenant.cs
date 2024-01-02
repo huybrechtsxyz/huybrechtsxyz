@@ -1,18 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Huybrechts.Infra.Data;
 
 [Table("IdentityTenant")]
-[Index(nameof(Code), IsUnique = true)]
 public record ApplicationTenant
 {
     [Key]
     [Required]
     [RegularExpression("^[a-z0-9]+$")]
     [StringLength(24, MinimumLength = 2)]
-    public string Code { get; set; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
+
+    public ApplicationTenantState State { get; set; }
 
     [Required]
     [StringLength(256, MinimumLength = 2)]
@@ -23,7 +25,7 @@ public record ApplicationTenant
 
     public string? Remark { get; set; }
 
-    public byte[]? ProfilePicture { get; set; }
+    public byte[]? Picture { get; set; }
 
     [StringLength(24)]
     public string? DatabaseProvider { get; set; }
@@ -32,16 +34,40 @@ public record ApplicationTenant
     public string? ConnectionString { get; set; }
 
     [Timestamp]
-    public byte[]? ConcurrencyToken { get; set; }
+    public byte[]? ConcurrencyStamp { get; set; }
 
     public DatabaseProviderType GetDatabaseProviderType()
     {
         if (Enum.TryParse<DatabaseProviderType>(DatabaseProvider, out DatabaseProviderType dbtype))
             return dbtype;
-        throw new InvalidCastException("Invalid DatabaseProvider for type of ApplicationTenant " + Code);
+        throw new InvalidCastException("Invalid DatabaseProvider for type of ApplicationTenant " + Id);
     }
+}
 
-    //public ICollection<ApplicationTenantRole>? Roles { get; set; }
+public enum ApplicationTenantState
+{
+    New = 1,        // A new tenant
+    Pending = 2,    // In progress to deploy resources
+    Active = 3,     // Resources deployed
+    Inactive = 4,   // Set inactive by user
+    Removing = 5,   // Set to delete by user
+    Removed = 6     // Deleted by the system
+}
 
-    //public ICollection<ApplicationTenantUser>? Users { get; set; }
+public class ApplicationTenantConfiguration : IEntityTypeConfiguration<ApplicationTenant>
+{
+    public void Configure(EntityTypeBuilder<ApplicationTenant> builder)
+    {
+        builder.Property<string>("Id").HasMaxLength(24).HasColumnType("nvarchar(24)");
+        builder.Property<byte[]>("ConcurrencyStamp").IsConcurrencyToken().ValueGeneratedOnAddOrUpdate().HasColumnType("rowversion");
+        builder.Property<string>("ConnectionString").HasMaxLength(512).HasColumnType("nvarchar(512)");
+        builder.Property<string>("DatabaseProvider").HasMaxLength(24).HasColumnType("nvarchar(24)");
+        builder.Property<string>("Description").HasMaxLength(512).HasColumnType("nvarchar(512)");
+        builder.Property<string>("Name").IsRequired().HasMaxLength(256).HasColumnType("nvarchar(256)");
+        builder.Property<byte[]>("ProfilePicture").HasColumnType("varbinary(max)");
+        builder.Property<string>("Remark").HasColumnType("nvarchar(max)");
+        builder.Property(p => p.State).HasConversion(v => v.ToString(), v => (ApplicationTenantState)Enum.Parse(typeof(ApplicationTenantState), v));
+        builder.HasKey("Id");
+        builder.ToTable("IdentityTenant");
+    }
 }

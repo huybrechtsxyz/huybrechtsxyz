@@ -86,6 +86,8 @@ try
     
     builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
         .AddRoles<ApplicationRole>()
+        .AddRoleValidator<ApplicationRoleValidator>()
+        .AddRoleManager<ApplicationRoleManager>()
         .AddEntityFrameworkStores<AdministrationContext>()
         .AddSignInManager()
         .AddDefaultTokenProviders()
@@ -150,10 +152,10 @@ try
 
     // Database migrations
     Log.Information("Adding database initializer as hosted service");
-    builder.Services.AddHostedService<AdministrationSeedWorker>();
+    //builder.Services.AddHostedService<AdministrationSeedWorker>();
 
     Log.Information("Connect to tenant databases");
-    builder.Services.AddSingleton(typeof(ITenantContextCollection), new TenantContextCollection());
+    //builder.Services.AddSingleton(typeof(ITenantContextCollection), new TenantContextCollection());
     //var tenantContextCollection = tenantContextFactory.BuildTenantCollection(builder.Configuration);
 
     Log.Information("Building the application and services");

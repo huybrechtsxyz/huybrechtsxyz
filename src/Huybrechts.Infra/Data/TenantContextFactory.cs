@@ -48,7 +48,7 @@ public class TenantContextFactory
         {
             foreach (var item in tenants)
             {
-                collection.SetTenant(item.Code, BuildContext(item));
+                collection.SetTenant(item.Id, BuildContext(item));
             }
         }
     }
@@ -57,7 +57,7 @@ public class TenantContextFactory
     {
         ApplicationTenant value = new()
         {
-            Code = tenant.Code,
+            Id = tenant.Id,
             ConnectionString = tenant.ConnectionString,
             DatabaseProvider = tenant.DatabaseProvider
         };
