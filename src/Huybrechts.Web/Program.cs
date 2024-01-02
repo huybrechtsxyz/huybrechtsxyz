@@ -94,7 +94,7 @@ try
         .AddClaimsPrincipalFactory<AdditionalUserClaimsPrincipalFactory>();
     builder.Services.AddSingleton<IEmailSender<ApplicationUser>, AuthenticationSender>();
 
-    AuthenticationSettings? google = applicationSettings.GetGoogleAuthentication();
+    ClientIdAndSecretOptions? google = applicationSettings.GetGoogleAuthentication();
     if (!(google is null || string.IsNullOrEmpty(google.ClientId) || string.IsNullOrEmpty(google.ClientSecret)))
     {
         builder.Services.AddAuthentication().AddGoogle(options =>

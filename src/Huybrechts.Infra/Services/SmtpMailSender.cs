@@ -6,8 +6,8 @@ namespace Huybrechts.Infra.Services;
 
 public class SmtpMailSender : IEmailSender
 {
-	private readonly MessageAuthenticationSettings _mailAuthentication;
-	private readonly MessageServerSettings _mailSettings;
+	private readonly MessageAuthenticationOptions _mailAuthentication;
+	private readonly MessageServerOptions _mailSettings;
     private readonly Serilog.ILogger _logger;
 
     public SmtpMailSender(IConfiguration configuration, Serilog.ILogger logger)

@@ -38,23 +38,23 @@ public class ApplicationSettings
         throw new InvalidCastException("Invalid Environment:AdministrationDatabaseType for type of DatabaseProviderType");
     }
     
-    public AuthenticationSettings GetGoogleAuthentication()
+    public ClientIdAndSecretOptions GetGoogleAuthentication()
     {
-        AuthenticationSettings item = new();
+        ClientIdAndSecretOptions item = new();
         _configuration.GetSection("Authentication:Google").Bind(item);
         return item;
     }
 
-    public MessageAuthenticationSettings GetMessageAuthentication()
+    public MessageAuthenticationOptions GetMessageAuthentication()
 	{
-        MessageAuthenticationSettings item = new();
+        MessageAuthenticationOptions item = new();
         _configuration.GetSection("Authentication:Mail").Bind(item);
         return item;
     }
 
-    public MessageServerSettings GetMessageServer()
+    public MessageServerOptions GetMessageServer()
     {
-        MessageServerSettings item = new();
+        MessageServerOptions item = new();
         _configuration.GetSection("Messaging:Mail").Bind(item);
         return item;
     }
@@ -66,9 +66,9 @@ public class ApplicationSettings
         return EnvironmentInitialization.None;
     }
 
-	public SeedWorkerSettings GetSeedWorker()
+	public SeedWorkerOptions GetSeedWorker()
 	{
-		SeedWorkerSettings item = new();
+		SeedWorkerOptions item = new();
 		_configuration.GetSection("SeedWorker").Bind(item);
 		return item;
 	}

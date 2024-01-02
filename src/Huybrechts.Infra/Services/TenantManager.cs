@@ -23,8 +23,4 @@ public class TenantManager : ITenantManager
         _context = context;
     }
 
-    public async Task<ICollection<ApplicationTenant>> GetTenants()
-    {
-        return await _context.Tenants.ToListAsync();
-    }
 }

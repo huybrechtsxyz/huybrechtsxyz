@@ -1,6 +1,6 @@
 ﻿namespace Huybrechts.Infra.Config;
 
-public class AuthenticationSettings
+public class ClientIdAndSecretOptions
 {
     public string ClientId { get; set; } = string.Empty;
 

@@ -1,6 +1,6 @@
 ﻿namespace Huybrechts.Infra.Config;
 
-public class MessageServerSettings
+public class MessageServerOptions
 {
 	public string MailServer { get; set; } = string.Empty;
 
@@ -13,7 +13,7 @@ public class MessageServerSettings
     public string SenderName { get; set; } = string.Empty;
 }
 
-public class MessageAuthenticationSettings
+public class MessageAuthenticationOptions
 {
     public string Username { get; set; } = string.Empty;
 
