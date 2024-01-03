@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.Migrations
 {
     [DbContext(typeof(AdministrationContext))]
-    [Migration("20240103151730_UpdateIdentityTenant")]
+    [Migration("20240103204145_UpdateIdentityTenant")]
     partial class UpdateIdentityTenant
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace Huybrechts.Infra.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationRole", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -33,6 +33,15 @@ namespace Huybrechts.Infra.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
@@ -48,14 +57,14 @@ namespace Huybrechts.Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId", "NormalizedName")
+                    b.HasIndex("TenantId", "Label")
                         .IsUnique()
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasFilter("[Label] IS NOT NULL");
 
                     b.ToTable("IdentityRole", (string)null);
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationRoleClaim", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationRoleClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -80,7 +89,7 @@ namespace Huybrechts.Infra.Migrations
                     b.ToTable("IdentityRoleClaim", (string)null);
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationTenant", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationTenant", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(24)
@@ -126,7 +135,7 @@ namespace Huybrechts.Infra.Migrations
                     b.ToTable("IdentityTenant", (string)null);
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationUser", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -202,7 +211,7 @@ namespace Huybrechts.Infra.Migrations
                     b.ToTable("IdentityUser", (string)null);
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationUserClaim", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationUserClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -227,7 +236,7 @@ namespace Huybrechts.Infra.Migrations
                     b.ToTable("IdentityUserClaim", (string)null);
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationUserLogin", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationUserLogin", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -249,30 +258,22 @@ namespace Huybrechts.Infra.Migrations
                     b.ToTable("IdentityUserLogin", (string)null);
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationUserRole", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationUserRole", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("TenantId")
-                        .HasMaxLength(24)
-                        .HasColumnType("nvarchar(24)");
-
                     b.Property<string>("RoleId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("UserId", "TenantId", "RoleId");
+                    b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("TenantId", "RoleId")
-                        .IsUnique()
-                        .HasFilter("[RoleId] IS NOT NULL");
 
                     b.ToTable("IdentityUserRole", (string)null);
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationUserTenant", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationUserTenant", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -313,7 +314,7 @@ namespace Huybrechts.Infra.Migrations
                     b.ToTable("IdentityUserTenant", (string)null);
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationUserToken", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationUserToken", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -332,91 +333,85 @@ namespace Huybrechts.Infra.Migrations
                     b.ToTable("IdentityUserToken", (string)null);
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationRole", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationRole", b =>
                 {
-                    b.HasOne("Huybrechts.Infra.Data.ApplicationTenant", null)
+                    b.HasOne("Huybrechts.Infra.Entities.ApplicationTenant", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationRoleClaim", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationRoleClaim", b =>
                 {
-                    b.HasOne("Huybrechts.Infra.Data.ApplicationRole", null)
+                    b.HasOne("Huybrechts.Infra.Entities.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationUserClaim", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationUserClaim", b =>
                 {
-                    b.HasOne("Huybrechts.Infra.Data.ApplicationUser", null)
+                    b.HasOne("Huybrechts.Infra.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationUserLogin", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationUserLogin", b =>
                 {
-                    b.HasOne("Huybrechts.Infra.Data.ApplicationUser", null)
+                    b.HasOne("Huybrechts.Infra.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationUserRole", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationUserRole", b =>
                 {
-                    b.HasOne("Huybrechts.Infra.Data.ApplicationRole", null)
+                    b.HasOne("Huybrechts.Infra.Entities.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Huybrechts.Infra.Data.ApplicationTenant", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Huybrechts.Infra.Data.ApplicationUser", null)
+                    b.HasOne("Huybrechts.Infra.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationUserTenant", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationUserTenant", b =>
                 {
-                    b.HasOne("Huybrechts.Infra.Data.ApplicationUser", null)
+                    b.HasOne("Huybrechts.Infra.Entities.ApplicationUser", null)
                         .WithMany("Tenants")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("Huybrechts.Infra.Data.ApplicationTenant", null)
+                    b.HasOne("Huybrechts.Infra.Entities.ApplicationTenant", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Huybrechts.Infra.Data.ApplicationUser", null)
+                    b.HasOne("Huybrechts.Infra.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationUserToken", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationUserToken", b =>
                 {
-                    b.HasOne("Huybrechts.Infra.Data.ApplicationUser", null)
+                    b.HasOne("Huybrechts.Infra.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationUser", b =>
+            modelBuilder.Entity("Huybrechts.Infra.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("Tenants");
                 });

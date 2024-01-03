@@ -10,10 +10,6 @@ namespace Huybrechts.Infra.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_IdentityUserRole",
-                table: "IdentityUserRole");
-
             migrationBuilder.DropIndex(
                 name: "IX_IdentityTenant_Code",
                 table: "IdentityTenant");
@@ -32,14 +28,6 @@ namespace Huybrechts.Infra.Migrations
                 table: "IdentityTenant",
                 newName: "Id");
 
-            migrationBuilder.AddColumn<string>(
-                name: "TenantId",
-                table: "IdentityUserRole",
-                type: "nvarchar(24)",
-                maxLength: 24,
-                nullable: false,
-                defaultValue: "");
-
             migrationBuilder.AddColumn<byte[]>(
                 name: "Picture",
                 table: "IdentityTenant",
@@ -54,16 +42,26 @@ namespace Huybrechts.Infra.Migrations
                 defaultValue: "");
 
             migrationBuilder.AddColumn<string>(
+                name: "Description",
+                table: "IdentityRole",
+                type: "nvarchar(512)",
+                maxLength: 512,
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Label",
+                table: "IdentityRole",
+                type: "nvarchar(200)",
+                maxLength: 200,
+                nullable: false,
+                defaultValue: "");
+
+            migrationBuilder.AddColumn<string>(
                 name: "TenantId",
                 table: "IdentityRole",
                 type: "nvarchar(24)",
                 maxLength: 24,
                 nullable: true);
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_IdentityUserRole",
-                table: "IdentityUserRole",
-                columns: new[] { "UserId", "TenantId", "RoleId" });
 
             migrationBuilder.CreateTable(
                 name: "IdentityUserTenant",
@@ -100,18 +98,11 @@ namespace Huybrechts.Infra.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserRole_TenantId_RoleId",
-                table: "IdentityUserRole",
-                columns: new[] { "TenantId", "RoleId" },
-                unique: true,
-                filter: "[RoleId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_IdentityRole_TenantId_NormalizedName",
+                name: "IX_IdentityRole_TenantId_Label",
                 table: "IdentityRole",
-                columns: new[] { "TenantId", "NormalizedName" },
+                columns: new[] { "TenantId", "Label" },
                 unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
+                filter: "[Label] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityUserTenant_ApplicationUserId",
@@ -136,13 +127,6 @@ namespace Huybrechts.Infra.Migrations
                 principalTable: "IdentityTenant",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_IdentityUserRole_IdentityTenant_TenantId",
-                table: "IdentityUserRole",
-                column: "TenantId",
-                principalTable: "IdentityTenant",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
@@ -152,28 +136,12 @@ namespace Huybrechts.Infra.Migrations
                 name: "FK_IdentityRole_IdentityTenant_TenantId",
                 table: "IdentityRole");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_IdentityUserRole_IdentityTenant_TenantId",
-                table: "IdentityUserRole");
-
             migrationBuilder.DropTable(
                 name: "IdentityUserTenant");
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_IdentityUserRole",
-                table: "IdentityUserRole");
-
             migrationBuilder.DropIndex(
-                name: "IX_IdentityUserRole_TenantId_RoleId",
-                table: "IdentityUserRole");
-
-            migrationBuilder.DropIndex(
-                name: "IX_IdentityRole_TenantId_NormalizedName",
+                name: "IX_IdentityRole_TenantId_Label",
                 table: "IdentityRole");
-
-            migrationBuilder.DropColumn(
-                name: "TenantId",
-                table: "IdentityUserRole");
 
             migrationBuilder.DropColumn(
                 name: "Picture",
@@ -182,6 +150,14 @@ namespace Huybrechts.Infra.Migrations
             migrationBuilder.DropColumn(
                 name: "State",
                 table: "IdentityTenant");
+
+            migrationBuilder.DropColumn(
+                name: "Description",
+                table: "IdentityRole");
+
+            migrationBuilder.DropColumn(
+                name: "Label",
+                table: "IdentityRole");
 
             migrationBuilder.DropColumn(
                 name: "TenantId",
@@ -196,11 +172,6 @@ namespace Huybrechts.Infra.Migrations
                 name: "Id",
                 table: "IdentityTenant",
                 newName: "Code");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_IdentityUserRole",
-                table: "IdentityUserRole",
-                columns: new[] { "UserId", "RoleId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityTenant_Code",
