@@ -1,5 +1,6 @@
 using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
+using Huybrechts.Infra.Entities;
 using Huybrechts.Infra.Services;
 using Huybrechts.Web.Components.Account;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -84,6 +85,7 @@ try
     .AddIdentityCookies();
     
     builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+        .AddUserManager<ApplicationUserManager>()
         .AddRoles<ApplicationRole>()
         .AddRoleValidator<ApplicationRoleValidator>()
         .AddRoleManager<ApplicationRoleManager>()

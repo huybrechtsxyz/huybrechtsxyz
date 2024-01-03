@@ -1,4 +1,4 @@
-﻿using Huybrechts.Infra.Data;
+﻿using Huybrechts.Infra.Entities;
 using Microsoft.Extensions.Configuration;
 
 namespace Huybrechts.Infra.Services;

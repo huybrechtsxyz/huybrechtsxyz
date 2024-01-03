@@ -1,4 +1,5 @@
 ﻿using Huybrechts.Infra.Data;
+using Huybrechts.Infra.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

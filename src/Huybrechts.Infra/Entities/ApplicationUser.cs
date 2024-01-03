@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Huybrechts.Infra.Data;
+namespace Huybrechts.Infra.Entities;
 
 [Table("IdentityUser")]
 public class ApplicationUser : IdentityUser
@@ -15,9 +15,9 @@ public class ApplicationUser : IdentityUser
     [StringLength(128)]
     public string? Surname { get; set; }
 
-	public byte[]? ProfilePicture { get; set; }
+    public byte[]? ProfilePicture { get; set; }
 
-	[NotMapped]
+    [NotMapped]
     public string Fullname => GivenName + (GivenName?.Length > 0 && Surname?.Length > 0 ? " " : "") + Surname;
 
     public virtual ICollection<ApplicationUserTenant> Tenants { get; set; } = new List<ApplicationUserTenant>();

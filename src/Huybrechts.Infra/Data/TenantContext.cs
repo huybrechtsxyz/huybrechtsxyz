@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Huybrechts.Infra.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Huybrechts.Infra.Data;
 

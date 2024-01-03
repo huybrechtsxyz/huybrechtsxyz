@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Huybrechts.Infra.Data;
+using Huybrechts.Infra.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -9,8 +10,8 @@ public class AdditionalUserClaimsPrincipalFactory
      : UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>
 {
     public AdditionalUserClaimsPrincipalFactory(
-        UserManager<ApplicationUser> userManager,
-        RoleManager<ApplicationRole> roleManager,
+        ApplicationUserManager userManager,
+        ApplicationRoleManager roleManager,
         IOptions<IdentityOptions> optionsAccessor)
         : base(userManager, roleManager, optionsAccessor)
     { }

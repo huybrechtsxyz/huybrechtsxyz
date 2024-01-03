@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Huybrechts.Infra.Data;
+namespace Huybrechts.Infra.Entities;
 
 [Table("IdentityRole")]
 public class ApplicationRole : IdentityRole
@@ -16,7 +16,7 @@ public class ApplicationRole : IdentityRole
 
     public ApplicationRole(string rolename) : base(rolename) { }
 
-    public ApplicationRole(string tenant, string rolename) : base (rolename)
+    public ApplicationRole(string tenant, string rolename) : base(rolename)
     {
         TenantId = tenant;
     }

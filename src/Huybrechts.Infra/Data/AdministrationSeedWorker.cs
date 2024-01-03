@@ -1,16 +1,13 @@
 ﻿using Huybrechts.Infra.Config;
+using Huybrechts.Infra.Entities;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Org.BouncyCastle.Tls;
 using Quartz;
 using Quartz.Impl;
 using Serilog;
-using System.Data;
-using static System.Formats.Asn1.AsnWriter;
 using ILogger = Serilog.ILogger;
 
 namespace Huybrechts.Infra.Data;
@@ -20,8 +17,8 @@ public class AdministrationSeedWorker : IHostedService
     private readonly IServiceProvider _serviceProvider;
     private readonly IConfiguration _configuration;
     private AdministrationContext? _dbcontext = null;
-    private UserManager<ApplicationUser> _userManager;
-    private RoleManager<ApplicationRole> _roleManager;
+    private ApplicationUserManager _userManager;
+    private ApplicationRoleManager _roleManager;
 
     private readonly ILogger _logger = Log.Logger.ForContext<AdministrationSeedWorker>();
 
@@ -44,7 +41,7 @@ public class AdministrationSeedWorker : IHostedService
         _dbcontext = scope.ServiceProvider.GetRequiredService<AdministrationContext>() ??
             throw new Exception("The DatabaseContext service was not registered as a service");
 
-        _userManager = (UserManager<ApplicationUser>)scope.ServiceProvider.GetRequiredService(typeof(UserManager<ApplicationUser>));
+        _userManager = (ApplicationUserManager)scope.ServiceProvider.GetRequiredService(typeof(ApplicationUserManager));
         _roleManager = (ApplicationRoleManager)scope.ServiceProvider.GetRequiredService(typeof(ApplicationRoleManager));
 
         if (environment.IsDevelopment() && applicationSettings.DoResetEnvironment())

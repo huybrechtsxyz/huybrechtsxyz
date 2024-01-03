@@ -1,4 +1,5 @@
 ﻿using Huybrechts.Infra.Config;
+using Huybrechts.Infra.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

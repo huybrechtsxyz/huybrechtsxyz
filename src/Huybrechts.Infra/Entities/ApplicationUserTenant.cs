@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Huybrechts.Infra.Data;
+namespace Huybrechts.Infra.Entities;
 
 [Table("IdentityUserTenant")]
 [Index(nameof(UserId), nameof(TenantId), IsUnique = true)]

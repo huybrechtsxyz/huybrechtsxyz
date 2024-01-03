@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Emit;
 
-namespace Huybrechts.Infra.Data;
+namespace Huybrechts.Infra.Entities;
 
 [Table("IdentityRoleClaim")]
 public class ApplicationRoleClaim : IdentityRoleClaim<string>

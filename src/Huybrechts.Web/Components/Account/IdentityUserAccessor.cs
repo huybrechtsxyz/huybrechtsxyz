@@ -1,9 +1,9 @@
 using Huybrechts.Infra.Data;
-using Microsoft.AspNetCore.Identity;
+using Huybrechts.Infra.Entities;
 
 namespace Huybrechts.Web.Components.Account
 {
-	internal sealed class IdentityUserAccessor(UserManager<ApplicationUser> userManager, IdentityRedirectManager redirectManager)
+    internal sealed class IdentityUserAccessor(ApplicationUserManager userManager, IdentityRedirectManager redirectManager)
 	{
 		public async Task<ApplicationUser> GetRequiredUserAsync(HttpContext context)
 		{

@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Huybrechts.Infra.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Huybrechts.Infra.Data;
+namespace Huybrechts.Infra.Entities;
 
 [Table("IdentityTenant")]
 public record ApplicationTenant
@@ -38,7 +39,7 @@ public record ApplicationTenant
 
     public DatabaseProviderType GetDatabaseProviderType()
     {
-        if (Enum.TryParse<DatabaseProviderType>(DatabaseProvider, out DatabaseProviderType dbtype))
+        if (Enum.TryParse(DatabaseProvider, out DatabaseProviderType dbtype))
             return dbtype;
         throw new InvalidCastException("Invalid DatabaseProvider for type of ApplicationTenant " + Id);
     }

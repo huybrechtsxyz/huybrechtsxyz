@@ -4,9 +4,10 @@
 @using Huybrechts.Website.Components.Account
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
+@using Huybrechts.Infra.Entities
 @using Huybrechts.Infra.Data
 
-@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationUserManager UserManager
 @inject IEmailSender<ApplicationUser> EmailSender
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
