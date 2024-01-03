@@ -9,10 +9,9 @@ namespace Huybrechts.Infra.Data;
 [Table("IdentityUserRole")]
 public class ApplicationUserRole : IdentityUserRole<string>
 {
-    [Required]
     [RegularExpression("^[a-z0-9]+$")]
     [StringLength(24, MinimumLength = 2)]
-    public string TenantId { get; set; } = string.Empty;
+    public string? TenantId { get; set; }
 }
 
 public class ApplicationUserRoleConfiguration : IEntityTypeConfiguration<ApplicationUserRole>
@@ -23,10 +22,10 @@ public class ApplicationUserRoleConfiguration : IEntityTypeConfiguration<Applica
         builder.Property<string>("TenantId").HasMaxLength(24).HasColumnType("nvarchar(24)");
         builder.Property<string>("RoleId").HasColumnType("nvarchar(450)");
         builder.HasKey("UserId", "TenantId", "RoleId");
-        builder.HasIndex("TenantId", "RoleId");
+        builder.HasIndex("TenantId", "RoleId").IsUnique().HasFilter("[RoleId] IS NOT NULL");
         builder.ToTable("IdentityUserRole");
         builder.HasOne<ApplicationRole>().WithMany().HasForeignKey("RoleId").OnDelete(DeleteBehavior.Cascade).IsRequired();
-        builder.HasOne<ApplicationTenant>().WithMany().HasForeignKey("TenantId").OnDelete(DeleteBehavior.NoAction).IsRequired();
+        builder.HasOne<ApplicationTenant>().WithMany().HasForeignKey("TenantId").OnDelete(DeleteBehavior.NoAction);
         builder.HasOne<ApplicationUser>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade).IsRequired();
         builder.ToTable("IdentityUserRole");
     }

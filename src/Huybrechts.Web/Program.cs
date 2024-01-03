@@ -1,9 +1,7 @@
 using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Services;
-using Huybrechts.Web.Components;
 using Huybrechts.Web.Components.Account;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 using Serilog;
 using Serilog.Formatting.Compact;
 using System.IO.Compression;
@@ -122,6 +121,21 @@ try
     });
 
     Log.Information("Add services to the container");
+    builder.Services.Configure<QuartzOptions>(builder.Configuration.GetSection("Quartz"));
+    builder.Services.Configure<QuartzOptions>(options =>
+    {
+        options.Scheduling.IgnoreDuplicates = true; // default: false
+        options.Scheduling.OverWriteExistingData = true; // default: true
+    });
+    builder.Services.AddQuartz(q =>
+    {
+        //q.UseMicrosoftDependencyInjectionJobFactory(); obsolete and default
+    });
+    builder.Services.AddQuartzHostedService(options =>
+    {
+        // when shutting down we want jobs to complete gracefully
+        options.WaitForJobsToComplete = true;
+    });
     builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
     builder.Services.AddAntiforgery();
     builder.Services.AddControllers();
@@ -152,11 +166,8 @@ try
 
     // Database migrations
     Log.Information("Adding database initializer as hosted service");
-    //builder.Services.AddHostedService<AdministrationSeedWorker>();
-
-    Log.Information("Connect to tenant databases");
-    //builder.Services.AddSingleton(typeof(ITenantContextCollection), new TenantContextCollection());
-    //var tenantContextCollection = tenantContextFactory.BuildTenantCollection(builder.Configuration);
+    builder.Services.AddSingleton(typeof(ITenantContextCollection), new TenantContextCollection());
+    builder.Services.AddHostedService<AdministrationSeedWorker>();
 
     Log.Information("Building the application and services");
     var app = builder.Build(); ;

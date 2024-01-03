@@ -20,7 +20,7 @@ public class ApplicationUser : IdentityUser
 	[NotMapped]
     public string Fullname => GivenName + (GivenName?.Length > 0 && Surname?.Length > 0 ? " " : "") + Surname;
 
-    public ICollection<ApplicationUserTenant> Tenants { get; set; } = new List<ApplicationUserTenant>();
+    public virtual ICollection<ApplicationUserTenant> Tenants { get; set; } = new List<ApplicationUserTenant>();
 }
 
 public class ApplicationUserConfiguration : IEntityTypeConfiguration<ApplicationUser>

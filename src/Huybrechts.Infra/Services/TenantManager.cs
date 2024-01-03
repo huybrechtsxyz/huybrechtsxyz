@@ -23,4 +23,10 @@ public class TenantManager : ITenantManager
         _context = context;
     }
 
+    public List<ApplicationTenant> GetTenants()
+    {
+
+
+        return new List<ApplicationTenant> { new() { Id = "jef" } };
+    }
 }

@@ -48,6 +48,8 @@ public class TenantContextFactory
         {
             foreach (var item in tenants)
             {
+                if (collection.TryGetTenant(item.Id, out _))
+                    continue;
                 collection.SetTenant(item.Id, BuildContext(item));
             }
         }

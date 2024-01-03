@@ -5,7 +5,7 @@
 namespace Huybrechts.Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateIdentitySchemaWithTenant : Migration
+    public partial class UpdateIdentityTenant : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -58,8 +58,7 @@ namespace Huybrechts.Infra.Migrations
                 table: "IdentityRole",
                 type: "nvarchar(24)",
                 maxLength: 24,
-                nullable: false,
-                defaultValue: "");
+                nullable: true);
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_IdentityUserRole",
@@ -103,10 +102,12 @@ namespace Huybrechts.Infra.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityUserRole_TenantId_RoleId",
                 table: "IdentityUserRole",
-                columns: new[] { "TenantId", "RoleId" });
+                columns: new[] { "TenantId", "RoleId" },
+                unique: true,
+                filter: "[RoleId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "RoleNameIndex",
+                name: "IX_IdentityRole_TenantId_NormalizedName",
                 table: "IdentityRole",
                 columns: new[] { "TenantId", "NormalizedName" },
                 unique: true,
@@ -167,7 +168,7 @@ namespace Huybrechts.Infra.Migrations
                 table: "IdentityUserRole");
 
             migrationBuilder.DropIndex(
-                name: "RoleNameIndex",
+                name: "IX_IdentityRole_TenantId_NormalizedName",
                 table: "IdentityRole");
 
             migrationBuilder.DropColumn(

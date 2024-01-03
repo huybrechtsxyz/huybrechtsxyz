@@ -40,7 +40,6 @@ namespace Huybrechts.Infra.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("TenantId")
-                        .IsRequired()
                         .HasMaxLength(24)
                         .HasColumnType("nvarchar(24)");
 
@@ -48,7 +47,6 @@ namespace Huybrechts.Infra.Migrations
 
                     b.HasIndex("TenantId", "NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("IdentityRole", (string)null);
@@ -264,7 +262,9 @@ namespace Huybrechts.Infra.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.HasIndex("TenantId", "RoleId");
+                    b.HasIndex("TenantId", "RoleId")
+                        .IsUnique()
+                        .HasFilter("[RoleId] IS NOT NULL");
 
                     b.ToTable("IdentityUserRole", (string)null);
                 });
@@ -334,8 +334,7 @@ namespace Huybrechts.Infra.Migrations
                     b.HasOne("Huybrechts.Infra.Data.ApplicationTenant", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Huybrechts.Infra.Data.ApplicationRoleClaim", b =>
