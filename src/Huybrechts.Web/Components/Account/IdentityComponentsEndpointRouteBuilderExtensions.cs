@@ -1,3 +1,4 @@
+using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Entities;
 using Huybrechts.Web.Components.Account.Pages;
 using Huybrechts.Web.Components.Account.Pages.Manage;
@@ -73,7 +74,7 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
 
 		manageGroup.MapPost("/DownloadPersonalData", async (
 			HttpContext context,
-			[FromServices] UserManager<ApplicationUser> userManager,
+			[FromServices] ApplicationUserManager userManager,
 			[FromServices] AuthenticationStateProvider authenticationStateProvider) =>
 		{
 			var user = await userManager.GetUserAsync(context.User);
