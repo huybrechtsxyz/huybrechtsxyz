@@ -2,6 +2,7 @@ using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Entities;
 using Huybrechts.Infra.Services;
+using Huybrechts.Infra.Workers;
 using Huybrechts.Web.Components.Account;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;

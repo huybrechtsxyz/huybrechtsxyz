@@ -8,22 +8,22 @@ using Serilog;
 using System.Threading;
 using ILogger = Serilog.ILogger;
 
-namespace Huybrechts.Infra.Data;
+namespace Huybrechts.Infra.Workers;
 
 public class TenantCreatorJob : IJob
 {
     private readonly IServiceProvider _serviceProvider;
-	private readonly IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
 
-	private readonly ILogger _logger = Log.Logger.ForContext<TenantCreatorJob>();
+    private readonly ILogger _logger = Log.Logger.ForContext<TenantCreatorJob>();
 
-	public TenantCreatorJob(
-		IServiceProvider serviceProvider,
-		IConfiguration configuration)
+    public TenantCreatorJob(
+        IServiceProvider serviceProvider,
+        IConfiguration configuration)
     {
-		_configuration = configuration;
-		_serviceProvider = serviceProvider;
-	}
+        _configuration = configuration;
+        _serviceProvider = serviceProvider;
+    }
 
     public async Task Execute(IJobExecutionContext context)
     {
@@ -53,23 +53,23 @@ public class TenantCreatorJob : IJob
             await InitializeForProductionAsync();
     }
 
-	private async Task InitializeForAllAsync()
-	{
+    private async Task InitializeForAllAsync()
+    {
         _logger.Information("Running tenant initializer...applying migrations");
     }
-	
-	private async Task InitializeForDevelopmentAsync()
-	{
-		_logger.Information("Running tenant initializer...applying development migrations");
-	}
 
-	private async Task InitializeForStagingAsync()
-	{
-		_logger.Information("Running tenant initializer...applying staging migrations");
-	}
+    private async Task InitializeForDevelopmentAsync()
+    {
+        _logger.Information("Running tenant initializer...applying development migrations");
+    }
 
-	private async Task InitializeForProductionAsync()
-	{
-		_logger.Warning("Running tenant initializer...applying productions migrations");
-	}
+    private async Task InitializeForStagingAsync()
+    {
+        _logger.Information("Running tenant initializer...applying staging migrations");
+    }
+
+    private async Task InitializeForProductionAsync()
+    {
+        _logger.Warning("Running tenant initializer...applying productions migrations");
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using Huybrechts.Infra.Config;
+using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ using Quartz.Impl;
 using Serilog;
 using ILogger = Serilog.ILogger;
 
-namespace Huybrechts.Infra.Data;
+namespace Huybrechts.Infra.Workers;
 
 public class AdministrationSeedWorker : IHostedService
 {
@@ -109,7 +110,7 @@ public class AdministrationSeedWorker : IHostedService
         IScheduler scheduler = await factory.GetScheduler(cancellationToken);
         var collection = (TenantContextCollection)scope.ServiceProvider.GetRequiredService(typeof(ITenantContextCollection));
         TenantContextFactory tenantFactory = new();
-        tenantFactory.BuildTenantCollection(_dbcontext, collection);
+        tenantFactory.BuildTenantCollection(_dbcontext!, collection);
         foreach (var tenant in collection)
         {
             await ScheduleTenantUpdateAsync(scheduler, (TenantContext)tenant, cancellationToken);
