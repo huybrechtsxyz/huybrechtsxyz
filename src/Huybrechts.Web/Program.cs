@@ -1,3 +1,5 @@
+using Huybrechts.Infra.Config;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 using Serilog.Formatting.Compact;
@@ -22,6 +24,13 @@ try
 
     Log.Information("Configuring webserver");
     builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
+    if (ApplicationSettings.IsRunningInContainer())
+    {
+        builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        });
+    }
 
     Log.Information("Building the application and services");
     foreach (var service in builder.Services)
@@ -29,6 +38,12 @@ try
 
     Log.Information("Building the application and services");
     var app = builder.Build();
+
+    Log.Information("Configuring running in containers");
+    if (ApplicationSettings.IsRunningInContainer())
+    {
+        app.UseForwardedHeaders();
+    }
 
     Log.Information("Mapping and routing razor components");
     app.MapGet("/", () => "Hello World!");

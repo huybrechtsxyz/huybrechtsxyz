@@ -13,12 +13,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0BA3500F-08A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Web", "src\Huybrechts.Web\Huybrechts.Web.csproj", "{3E841C79-49C3-4596-9621-5C953B778C40}"
 	ProjectSection(ProjectDependencies) = postProject
+		{3E37A5CA-2667-4998-B132-2CD49815E8C5} = {3E37A5CA-2667-4998-B132-2CD49815E8C5}
 		{D9F747B3-7889-44B3-9107-B7EB69D0EBA3} = {D9F747B3-7889-44B3-9107-B7EB69D0EBA3}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Core", "src\Huybrechts.Core\Huybrechts.Core.csproj", "{D9F747B3-7889-44B3-9107-B7EB69D0EBA3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra", "src\Huybrechts.Infra\Huybrechts.Infra.csproj", "{3E37A5CA-2667-4998-B132-2CD49815E8C5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D9F747B3-7889-44B3-9107-B7EB69D0EBA3} = {D9F747B3-7889-44B3-9107-B7EB69D0EBA3}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
