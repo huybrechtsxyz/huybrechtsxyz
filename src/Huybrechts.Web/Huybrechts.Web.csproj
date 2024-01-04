@@ -16,9 +16,5 @@
    <ItemGroup>
      <ProjectReference Include="..\Huybrechts.Infra\Huybrechts.Infra.csproj" />
    </ItemGroup>
-
-   <ItemGroup>
-     <Folder Include="Pages\Shared\" />
-   </ItemGroup>
    
 </Project>

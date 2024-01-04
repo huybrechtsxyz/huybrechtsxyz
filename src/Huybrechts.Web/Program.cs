@@ -1,5 +1,6 @@
 using Huybrechts.Infra.Config;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -50,6 +51,8 @@ try
     });
 
     Log.Information("Configuring user interface");
+	builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+	builder.Services.AddControllers();
 	builder.Services.AddRazorPages().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
 	Log.Information("Building the application and services");
@@ -59,17 +62,48 @@ try
     Log.Information("Building the application and services");
     var app = builder.Build();
 
-    Log.Information("Initializing application services");
-    app.UseResponseCompression();
-    app.UseHttpsRedirection();
-    app.UseStaticFiles(new StaticFileOptions
-    {
-        OnPrepareResponse = ctx =>
-        {
-            ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "public,max-age=86400"; //+ (int)(60 * 60 * 24);
-        }
-    });
+	// Configure the HTTP request pipeline.
+	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+	if (app.Environment.IsDevelopment())
+	{
+		Log.Information("Configure the HTTP request pipeline for development");
+		app.UseDeveloperExceptionPage();
+		//app.UseWebAssemblyDebugging();
+	}
+	else if (app.Environment.IsStaging())
+	{
+		Log.Information("Configure the HTTP request pipeline for staging");
+		app.UseExceptionHandler("/Error", createScopeForErrors: true);
+		app.UseHsts();
+	}
+	else if (app.Environment.IsProduction())
+	{
+		Log.Information("Configure the HTTP request pipeline for production");
+		app.UseExceptionHandler("/Error", createScopeForErrors: true);
+		app.UseHsts();
+	}
+	else
+	{
+		throw new Exception("Invalid application environment");
+	}
 
+	Log.Information("Initializing application services");
+	app.UseResponseCompression();
+	app.UseHttpsRedirection();
+	app.UseStaticFiles(new StaticFileOptions
+	{
+		OnPrepareResponse = ctx =>
+		{
+			ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "public,max-age=86400"; //+ (int)(60 * 60 * 24);
+		}
+	}); 
+    app.UseRequestLocalization(new RequestLocalizationOptions
+	{
+		SupportedCultures = ApplicationSettings.GetSupportedCultures(),
+		SupportedUICultures = ApplicationSettings.GetSupportedCultures(),
+		DefaultRequestCulture = new RequestCulture(ApplicationSettings.GetDefaultCulture())
+	});
+	
     Log.Information("Configuring running in containers");
     if (ApplicationSettings.IsRunningInContainer())
     {
@@ -81,6 +115,7 @@ try
     app.UseResponseCaching();
 
     Log.Information("Mapping and routing razor components");
+	app.MapControllers();
 	app.MapRazorPages();
 
     Log.Information("Run configured application");
