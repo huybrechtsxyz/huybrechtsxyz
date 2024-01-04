@@ -1,8 +1,10 @@
 using Huybrechts.Infra.Config;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 using Serilog.Formatting.Compact;
+using System.IO.Compression;
 
 try
 {
@@ -31,6 +33,20 @@ try
             options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         });
     }
+    builder.Services.AddResponseCaching();
+    builder.Services.AddResponseCompression(options => {
+        options.EnableForHttps = true;
+        options.Providers.Add<BrotliCompressionProvider>();
+        options.Providers.Add<GzipCompressionProvider>();
+    });
+    builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+    {
+        options.Level = CompressionLevel.Fastest;
+    });
+    builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+    {
+        options.Level = CompressionLevel.SmallestSize;
+    });
 
     Log.Information("Building the application and services");
     foreach (var service in builder.Services)
@@ -39,11 +55,26 @@ try
     Log.Information("Building the application and services");
     var app = builder.Build();
 
+    Log.Information("Initializing application services");
+    app.UseResponseCompression();
+    app.UseHttpsRedirection();
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        OnPrepareResponse = ctx =>
+        {
+            ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "public,max-age=86400"; //+ (int)(60 * 60 * 24);
+        }
+    });
+
     Log.Information("Configuring running in containers");
     if (ApplicationSettings.IsRunningInContainer())
     {
         app.UseForwardedHeaders();
     }
+
+    Log.Information("Configuring middleware services");
+    app.UseSerilogRequestLogging();
+    app.UseResponseCaching();
 
     Log.Information("Mapping and routing razor components");
     app.MapGet("/", () => "Hello World!");
