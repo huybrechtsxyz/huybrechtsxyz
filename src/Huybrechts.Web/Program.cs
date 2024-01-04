@@ -58,6 +58,7 @@ try
 
 	Log.Information("Configuring user interface");
 	builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+	builder.Services.AddAntiforgery();
 	builder.Services.AddControllers();
 	builder.Services.AddRazorPages().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
@@ -119,7 +120,9 @@ try
 
     Log.Information("Configuring middleware services");
     app.UseSerilogRequestLogging();
-    app.UseResponseCaching();
+	app.UseRouting();
+	app.UseAntiforgery();
+	app.UseResponseCaching();
 
     Log.Information("Mapping and routing razor components");
 	app.MapControllers();
