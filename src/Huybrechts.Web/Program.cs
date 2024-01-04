@@ -49,8 +49,14 @@ try
     {
         options.Level = CompressionLevel.SmallestSize;
     });
+	builder.Services.Configure<CookiePolicyOptions>(options =>
+	{
+		// This lambda determines whether user consent for non-essential cookies is needed for a given request.
+		options.CheckConsentNeeded = context => true;
+		options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
+	});
 
-    Log.Information("Configuring user interface");
+	Log.Information("Configuring user interface");
 	builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 	builder.Services.AddControllers();
 	builder.Services.AddRazorPages().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
@@ -96,15 +102,16 @@ try
 		{
 			ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "public,max-age=86400"; //+ (int)(60 * 60 * 24);
 		}
-	}); 
-    app.UseRequestLocalization(new RequestLocalizationOptions
+	});
+	app.UseRequestLocalization(new RequestLocalizationOptions
 	{
 		SupportedCultures = ApplicationSettings.GetSupportedCultures(),
 		SupportedUICultures = ApplicationSettings.GetSupportedCultures(),
 		DefaultRequestCulture = new RequestCulture(ApplicationSettings.GetDefaultCulture())
 	});
-	
-    Log.Information("Configuring running in containers");
+	app.UseCookiePolicy();
+
+	Log.Information("Configuring running in containers");
     if (ApplicationSettings.IsRunningInContainer())
     {
         app.UseForwardedHeaders();
