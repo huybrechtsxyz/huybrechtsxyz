@@ -1,5 +1,6 @@
 using Huybrechts.Infra.Config;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
@@ -48,7 +49,10 @@ try
         options.Level = CompressionLevel.SmallestSize;
     });
 
-    Log.Information("Building the application and services");
+    Log.Information("Configuring user interface");
+	builder.Services.AddRazorPages().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+
+	Log.Information("Building the application and services");
     foreach (var service in builder.Services)
         Log.Information(service.ToString());
 
@@ -77,7 +81,7 @@ try
     app.UseResponseCaching();
 
     Log.Information("Mapping and routing razor components");
-    app.MapGet("/", () => "Hello World!");
+	app.MapRazorPages();
 
     Log.Information("Run configured application");
     app.Run();
