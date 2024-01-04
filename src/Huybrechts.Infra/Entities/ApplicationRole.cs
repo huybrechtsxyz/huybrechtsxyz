@@ -48,7 +48,14 @@ public class ApplicationRole : IdentityRole
         return $"{tenant}{Hashtag}{label}";
     }
 
-	public ApplicationRole() : base() { }
+	public static string GetTenantRole(string tenant, string role)
+	{
+		if (role.Contains(Hashtag))
+			return role;
+		return GetRoleName(tenant, role);
+	}
+
+    public ApplicationRole() : base() { }
 
 	public ApplicationRole(string rolename) : base(rolename) { }
 

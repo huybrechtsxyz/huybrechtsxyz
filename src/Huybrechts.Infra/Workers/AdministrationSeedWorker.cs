@@ -56,14 +56,14 @@ public class AdministrationSeedWorker : IHostedService
 
         await InitializeForAllAsync(cancellationToken);
 
-        if (environment.IsDevelopment())
-            await InitializeForDevelopmentAsync(cancellationToken);
+        //if (environment.IsDevelopment())
+        //    await InitializeForDevelopmentAsync(cancellationToken);
 
-        else if (environment.IsStaging())
-            await InitializeForStagingAsync(cancellationToken);
+        //else if (environment.IsStaging())
+        //    await InitializeForStagingAsync(cancellationToken);
 
-        else if (environment.IsProduction())
-            await InitializeForProductionAsync(cancellationToken);
+        //else if (environment.IsProduction())
+        //    await InitializeForProductionAsync(cancellationToken);
 
         _logger.Information("Running database initializer...loading tenants");
         await InitializeTenantsAsync(scope, cancellationToken);
@@ -79,20 +79,20 @@ public class AdministrationSeedWorker : IHostedService
         await CreateDefaultTenants(vincent);
     }
 
-    private async Task InitializeForDevelopmentAsync(CancellationToken cancellationToken)
-    {
-        _logger.Information("Running database initializer...applying development migrations");
-    }
+    //private async Task InitializeForDevelopmentAsync(CancellationToken cancellationToken)
+    //{
+    //    _logger.Information("Running database initializer...applying development migrations");
+    //}
 
-    private async Task InitializeForStagingAsync(CancellationToken cancellationToken)
-    {
-        _logger.Information("Running database initializer...applying staging migrations");
-    }
+    //private async Task InitializeForStagingAsync(CancellationToken cancellationToken)
+    //{
+    //    _logger.Information("Running database initializer...applying staging migrations");
+    //}
 
-    private async Task InitializeForProductionAsync(CancellationToken cancellationToken)
-    {
-        _logger.Warning("Running database initializer...applying productions migrations");
-    }
+    //private async Task InitializeForProductionAsync(CancellationToken cancellationToken)
+    //{
+    //    _logger.Warning("Running database initializer...applying productions migrations");
+    //}
 
     private async Task InitializeTenantsAsync(IServiceScope scope, CancellationToken cancellationToken)
     {
@@ -215,7 +215,7 @@ public class AdministrationSeedWorker : IHostedService
 		}
 
         ApplicationRole role = defaultRoles.First(q => q.GetRoleValue() == ApplicationRoleValues.Owner);
-        var result = await _userManager!.AddToRoleAsync(owner, role.Name!);
+        var result = await _userManager!.AddToTenantAsync(owner, tenant.Id, role.NormalizedName!);
         if (!result.Succeeded)
         {
             foreach (var error in result.Errors)

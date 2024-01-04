@@ -87,6 +87,7 @@ try
     
     builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
         .AddUserManager<ApplicationUserManager>()
+        .AddUserStore<ApplicationUserStore>()
         .AddRoles<ApplicationRole>()
         .AddRoleValidator<ApplicationRoleValidator>()
         .AddRoleManager<ApplicationRoleManager>()

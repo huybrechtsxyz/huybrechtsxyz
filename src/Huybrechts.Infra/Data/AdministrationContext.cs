@@ -37,5 +37,7 @@ public class AdministrationContext
     }
 
     public DbSet<ApplicationTenant> Tenants { get; set; }
+
+    public DbSet<ApplicationUserTenant> UserTenants { get; set; }
 }
 

@@ -25,7 +25,7 @@ public class TenantCreatorJob : IJob
         _serviceProvider = serviceProvider;
     }
 
-    public async Task Execute(IJobExecutionContext context)
+    public Task Execute(IJobExecutionContext jobContext)
     {
         _logger.Information("Running tenant initializer...");
         ApplicationSettings applicationSettings = new(_configuration);
@@ -39,37 +39,38 @@ public class TenantCreatorJob : IJob
         }
 
         _logger.Information("Running tenant initializer...applying database migrations");
+        return Task.CompletedTask;
         //await _dbcontext.Database.MigrateAsync(cancellationToken);
 
-        await InitializeForAllAsync();
+        //await InitializeForAllAsync();
 
-        if (environment.IsDevelopment())
-            await InitializeForDevelopmentAsync();
+        //if (environment.IsDevelopment())
+        //    await InitializeForDevelopmentAsync();
 
-        else if (environment.IsStaging())
-            await InitializeForStagingAsync();
+        //else if (environment.IsStaging())
+        //    await InitializeForStagingAsync();
 
-        else if (environment.IsProduction())
-            await InitializeForProductionAsync();
+        //else if (environment.IsProduction())
+        //    await InitializeForProductionAsync();
     }
 
-    private async Task InitializeForAllAsync()
-    {
-        _logger.Information("Running tenant initializer...applying migrations");
-    }
+    //private async Task InitializeForAllAsync()
+    //{
+    //    _logger.Information("Running tenant initializer...applying migrations");
+    //}
 
-    private async Task InitializeForDevelopmentAsync()
-    {
-        _logger.Information("Running tenant initializer...applying development migrations");
-    }
+    //private async Task InitializeForDevelopmentAsync()
+    //{
+    //    _logger.Information("Running tenant initializer...applying development migrations");
+    //}
 
-    private async Task InitializeForStagingAsync()
-    {
-        _logger.Information("Running tenant initializer...applying staging migrations");
-    }
+    //private async Task InitializeForStagingAsync()
+    //{
+    //    _logger.Information("Running tenant initializer...applying staging migrations");
+    //}
 
-    private async Task InitializeForProductionAsync()
-    {
-        _logger.Warning("Running tenant initializer...applying productions migrations");
-    }
+    //private async Task InitializeForProductionAsync()
+    //{
+    //    _logger.Warning("Running tenant initializer...applying productions migrations");
+    //}
 }

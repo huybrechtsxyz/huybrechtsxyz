@@ -34,14 +34,18 @@ public class TenantManager : ITenantManager
         _logger = logger;
     }
 
-    public async List<ApplicationTenant> GetTenants()
+    public async Task<IList<ApplicationTenant>> GetTenants()
     {
-        if (_httpContextAccessor is null || _httpContextAccessor.HttpContext is null || _userManager is null)
+        if (_httpContextAccessor is null ||
+            _httpContextAccessor.HttpContext is null ||
+            _httpContextAccessor.HttpContext.User is null ||
+            _userManager is null)
             return [];
 
         var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
-        var applicationUsers = _userManager.Users.Include(i => i.Tenants).Where(q => q.Id == user.Id).ToList();
-        
-        return new List<ApplicationTenant> { new() { Id = "jef" } };
+        if (user is null)
+            return [];
+
+        return await _userManager.GetApplicationTenantsAsync(user);
     }
 }
