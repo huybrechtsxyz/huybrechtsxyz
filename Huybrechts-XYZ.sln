@@ -11,9 +11,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{7629C565-7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0BA3500F-08AB-4705-BDEC-B6B1BCA62698}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Web", "src\Huybrechts.Web\Huybrechts.Web.csproj", "{3E841C79-49C3-4596-9621-5C953B778C40}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3E841C79-49C3-4596-9621-5C953B778C40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E841C79-49C3-4596-9621-5C953B778C40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E841C79-49C3-4596-9621-5C953B778C40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E841C79-49C3-4596-9621-5C953B778C40}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3E841C79-49C3-4596-9621-5C953B778C40} = {0BA3500F-08AB-4705-BDEC-B6B1BCA62698}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EA046702-9B6A-4A79-A68E-D0F2C0B8530F}
