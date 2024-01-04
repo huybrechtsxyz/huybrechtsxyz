@@ -96,13 +96,13 @@
             return;
         }
 
-        // result = await UserManager.AddToRoleAsync(user, ApplicationRoleValues.User.ToString());
-        // if (!result.Succeeded)
-        // {
-        //     Logger.LogWarning("User created without user role.");
-        //     identityErrors = result.Errors;
-        //     return;
-        // }
+        result = await UserManager.AddToRoleAsync(user, ApplicationRole.SystemUser.ToString());
+        if (!result.Succeeded)
+        {
+            Logger.LogWarning("User created without user role.");
+            identityErrors = result.Errors;
+            return;
+        }
 
         Logger.LogInformation("User created a new account with password.");
 

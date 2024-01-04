@@ -44,7 +44,7 @@ public class TenantContextFactory
 
     public void BuildTenantCollection(AdministrationContext dbcontext, TenantContextCollection collection)
     {
-        var tenants = dbcontext.Tenants.ToList();
+        var tenants = dbcontext.Tenants.Where(q => q.State == ApplicationTenantState.Active).ToList();
         if (tenants is not null && tenants.Count != 0)
         {
             foreach (var item in tenants)

@@ -6,9 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Org.BouncyCastle.Crypto;
 using Quartz;
 using Quartz.Impl;
 using Serilog;
+using SQLitePCL;
 using ILogger = Serilog.ILogger;
 
 namespace Huybrechts.Infra.Workers;
@@ -16,25 +18,23 @@ namespace Huybrechts.Infra.Workers;
 public class AdministrationSeedWorker : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IConfiguration _configuration;
-    private AdministrationContext? _dbcontext = null;
-    private ApplicationUserManager _userManager;
-    private ApplicationRoleManager _roleManager;
+	private readonly ApplicationSettings _applicationSettings;
+
+	private AdministrationContext? _dbcontext = null;
+    private ApplicationUserManager? _userManager;
+    private ApplicationRoleManager? _roleManager;
 
     private readonly ILogger _logger = Log.Logger.ForContext<AdministrationSeedWorker>();
 
-    public AdministrationSeedWorker(
-        IServiceProvider serviceProvider,
-        IConfiguration configuration)
+    public AdministrationSeedWorker(IServiceProvider serviceProvider, IConfiguration configuration)
     {
-        _configuration = configuration;
         _serviceProvider = serviceProvider;
-    }
+        _applicationSettings = new(configuration);
+	}
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.Information("Running database initializer...");
-        ApplicationSettings applicationSettings = new(_configuration);
         var environment = _serviceProvider.GetRequiredService<IWebHostEnvironment>() ??
             throw new Exception("The WebHostEnvironment service was not registered as a service");
 
@@ -45,7 +45,7 @@ public class AdministrationSeedWorker : IHostedService
         _userManager = (ApplicationUserManager)scope.ServiceProvider.GetRequiredService(typeof(ApplicationUserManager));
         _roleManager = (ApplicationRoleManager)scope.ServiceProvider.GetRequiredService(typeof(ApplicationRoleManager));
 
-        if (environment.IsDevelopment() && applicationSettings.DoResetEnvironment())
+        if (environment.IsDevelopment() && _applicationSettings.DoResetEnvironment())
         {
             _logger.Warning("Running database initializer...deleting existing database");
             await _dbcontext.Database.EnsureDeletedAsync(cancellationToken);
@@ -73,20 +73,10 @@ public class AdministrationSeedWorker : IHostedService
 
     private async Task InitializeForAllAsync(CancellationToken cancellationToken)
     {
-        _logger.Information("Running database initializer...creating users and roles");
         var vincent = await CreateDefaultUsers();
-
-        _logger.Information("Running database initializer...creating tenants");
-
-        //await CreateDefaultApplicationRoles();
-
-        /*
-		if (user is null)
-		{
-			await _userManager.CreateAsync(sysadminUser, "password");
-			await _userManager.AddToRoleAsync(sysadminUser, ApplicationRoleEnum.SystemAdmin.ToString());
-		}
-		*/
+        if (vincent is null)
+            throw new NullReferenceException(nameof(vincent));
+        await CreateDefaultTenants(vincent);
     }
 
     private async Task InitializeForDevelopmentAsync(CancellationToken cancellationToken)
@@ -117,6 +107,27 @@ public class AdministrationSeedWorker : IHostedService
         }
     }
 
+    private async Task<ApplicationTenant> CreateDefaultTenants(ApplicationUser owner)
+    {
+		_logger.Information("Running database initializer...creating default tenants");
+
+        var connectionString = _applicationSettings.GetTenantConnectionStringTemplate();
+        var connectionType = _applicationSettings.GetTenantDatabaseTemplateType();
+
+        var huybrechts = await CreateTenant(new ApplicationTenant()
+        {
+            Id = "huybrechts",
+			Name = "Huybrechts.xyz",
+			Description = "",
+			ConnectionString = connectionString.Replace("&{tenant}", "huybrechts"),
+			DatabaseProvider = connectionType.ToString(),
+			State = ApplicationTenantState.New,
+            Remark = string.Empty
+        }, owner);
+
+		return huybrechts!;
+    }
+
     private async Task<ApplicationUser?> CreateDefaultUsers()
     {
         _logger.Information("Running database initializer...creating default users");
@@ -134,21 +145,26 @@ public class AdministrationSeedWorker : IHostedService
 
         var sysadmin = await CreateRole(new ApplicationRole()
         {
-            Name = ApplicationRole.SystemAdministrator
+            Name = ApplicationRole.SystemAdministrator,
+            Label = ApplicationRole.SystemAdministrator
         });
         if (sysadmin is null)
             _logger.Information("Running database initializer...error creating roles");
 
         var user = await CreateRole(new ApplicationRole()
         {
-            Name = ApplicationRole.SystemUser
+            Name = ApplicationRole.SystemUser,
+            Label = ApplicationRole.SystemUser
         });
         if (user is null)
             _logger.Information("Running database initializer...error creating roles");
 
         if (vincent is not null && sysadmin is not null)
         {
-            var result = await _userManager.AddToRoleAsync(vincent, sysadmin.Name!);
+            if (await _userManager!.IsInRoleAsync(vincent, sysadmin.Name!))
+                return vincent;
+
+            var result = await _userManager!.AddToRoleAsync(vincent, sysadmin.Name!);
             if (result.Succeeded)
                 return vincent;
 
@@ -163,7 +179,7 @@ public class AdministrationSeedWorker : IHostedService
     {
         ArgumentNullException.ThrowIfNull(() => role);
         ArgumentNullException.ThrowIfNull(() => role.Name);
-        var item = await _roleManager.FindByNameAsync(role.Name!);
+        var item = await _roleManager!.FindByNameAsync(role.Name!);
         if (item is not null)
             return item;
 
@@ -177,16 +193,48 @@ public class AdministrationSeedWorker : IHostedService
         return null;
     }
 
-    private async Task<ApplicationUser?> CreateUser(ApplicationUser user)
+	private async Task<ApplicationTenant?> CreateTenant(ApplicationTenant tenant, ApplicationUser owner)
+	{
+		ArgumentNullException.ThrowIfNull(() => tenant);
+		ArgumentNullException.ThrowIfNull(() => tenant.Id);
+		ArgumentNullException.ThrowIfNull(() => tenant.Name);
+		var item = await _dbcontext!.Tenants.FindAsync(tenant.Id);
+		if (item is not null)
+			return item;
+
+        _dbcontext.Tenants.Add(tenant);
+        await _dbcontext.SaveChangesAsync();
+
+        var defaultRoles = ApplicationRole.GetDefaultRoles(tenant.Id);
+		foreach (var defaultRole in defaultRoles)
+		{
+			if (!await _roleManager!.RoleExistsAsync(defaultRole.Name!))
+			{
+                await _roleManager.CreateAsync(defaultRole);
+			}
+		}
+
+        ApplicationRole role = defaultRoles.First(q => q.GetRoleValue() == ApplicationRoleValues.Owner);
+        var result = await _userManager!.AddToRoleAsync(owner, role.Name!);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+                _logger.Error("Error adding role {role} to user {user}: {errorcode} with {errortext}", role.Name, owner.Email, error.Code, error.Description);
+        }
+
+        return tenant;
+	}
+
+	private async Task<ApplicationUser?> CreateUser(ApplicationUser user)
     {
         ArgumentNullException.ThrowIfNull(nameof(user));
         ArgumentNullException.ThrowIfNull(nameof(user.UserName));
         ArgumentNullException.ThrowIfNull(nameof(user.Email));
-        var item = await _userManager.FindByEmailAsync(user.Email!);
+        var item = await _userManager!.FindByEmailAsync(user.Email!);
         if (item is not null)
             return item;
 
-        var result = await _userManager.CreateAsync(user);
+        var result = await _userManager.CreateAsync(user, _applicationSettings.GetDefaultPassword());
         if (result.Succeeded)
             return await _userManager.FindByEmailAsync(user.Email!);
 
@@ -198,6 +246,10 @@ public class AdministrationSeedWorker : IHostedService
 
     private async Task ScheduleTenantUpdateAsync(IScheduler scheduler, TenantContext tenant, CancellationToken cancellationToken)
     {
+        if (tenant.Tenant.State != ApplicationTenantState.Active &&
+            tenant.Tenant.State != ApplicationTenantState.Inactive)
+            return;
+
         var job = JobBuilder.Create<TenantUpdateJob>()
             .WithIdentity(TenantUpdateJob.Key)
             .UsingJobData("tenantid", tenant.Tenant.Id)
@@ -208,23 +260,3 @@ public class AdministrationSeedWorker : IHostedService
         await scheduler.ScheduleJob(job, trigger, cancellationToken);
     }
 }
-
-/*
-    private async Task CreateDefaultApplicationRoles()
-	{
-		if (_roleManager is not null)
-		{
-			var defaultRoles = ApplicationRole.GetDefaultRoles();
-			foreach (var defaultRole in defaultRoles)
-			{
-				if (!await _roleManager.RoleExistsAsync(defaultRole.Name!))
-				{
-					await _roleManager.CreateAsync(new ApplicationRole()
-					{
-						Name = defaultRole.Name!
-					});
-				}
-			}
-		}
-	}
-*/

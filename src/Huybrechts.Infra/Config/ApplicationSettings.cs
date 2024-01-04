@@ -37,7 +37,25 @@ public class ApplicationSettings
             return dbtype;
         throw new InvalidCastException("Invalid Environment:AdministrationDatabaseType for type of DatabaseProviderType");
     }
-    
+
+    public string GetTenantConnectionStringTemplate()
+    {
+        return _configuration.GetValue<string>("Environment:TenantDatabaseTemplate") ??
+        throw new InvalidOperationException("Connection string 'Environment:TenantDatabaseTemplate' not found.");
+    }
+
+    public DatabaseProviderType GetTenantDatabaseTemplateType()
+    {
+        if (Enum.TryParse<DatabaseProviderType>(_configuration["Environment:TenantDatabaseType"], out DatabaseProviderType dbtype))
+            return dbtype;
+        throw new InvalidCastException("Invalid Environment:TenantDatabaseType for type of DatabaseProviderType");
+    }
+
+    public string GetDefaultPassword()
+    {
+        return _configuration.GetValue<string>("Authentication:DefaultPassword") ?? string.Empty;
+    }
+
     public ClientIdAndSecretOptions GetGoogleAuthentication()
     {
         ClientIdAndSecretOptions item = new();
@@ -66,20 +84,6 @@ public class ApplicationSettings
         return EnvironmentInitialization.None;
     }
 
-	public SeedWorkerOptions GetSeedWorker()
-	{
-		SeedWorkerOptions item = new();
-		_configuration.GetSection("SeedWorker").Bind(item);
-		return item;
-	}
-
-	public SeedWorkerSecrets GetSeedSecrets()
-	{
-		SeedWorkerSecrets item = new();
-		_configuration.GetSection("SeedWorker").Bind(item);
-		return item;
-	}
-		
 	public enum EnvironmentInitialization
 	{
 		None = 0,

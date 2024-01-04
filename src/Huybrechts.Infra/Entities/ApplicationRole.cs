@@ -3,32 +3,49 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Huybrechts.Infra.Data;
 
 namespace Huybrechts.Infra.Entities;
 
 [Table("IdentityRole")]
 public class ApplicationRole : IdentityRole
 {
-    public static readonly string SystemAdministrator = "sysadmin";
-    public static readonly string SystemUser = "user";
+    private const string Hashtag = "#";
+    public static readonly string SystemAdministrator = "Administrator";
+    public static readonly string SystemUser = "User";
 
-    public static string GetTenantId(string rolename)
+	public static List<ApplicationRole> GetDefaultRoles(string tenant)
 	{
-		if (rolename.IndexOf("#") == 0)
+		List<ApplicationRole> list = [];
+		foreach (var value in Enum.GetValues(typeof(ApplicationRoleValues)).Cast<ApplicationRoleValues>())
+		{
+			var item = new ApplicationRole()
+			{
+				Name = ApplicationRole.GetRoleName(tenant, value.ToString()),
+				TenantId = tenant,
+				Label = value.ToString()
+			};
+			if (value != ApplicationRoleValues.None)
+				list.Add(item);
+		}
+		return list;
+	}
+
+	public static string GetTenantId(string rolename)
+	{
+        if (rolename.StartsWith(Hashtag))
 		    return string.Empty;
-	    return rolename[0..(rolename.IndexOf("#") - 1)];
+        return rolename[0..(rolename.IndexOf(Hashtag) - 1)];
     }
 
 	public static string GetRoleLabel(string rolename)
 	{
-		if (rolename.IndexOf("#") == 0)
-			return rolename;
-		return rolename[(rolename.IndexOf("#") + 1)..];
-	}
+        return rolename.StartsWith(Hashtag) ? rolename : rolename[(rolename.IndexOf(Hashtag) + 1)..];
+    }
 
     public static string GetRoleName(string tenant, string label)
     {
-        return $"{tenant}#{label}";
+        return $"{tenant}{Hashtag}{label}";
     }
 
 	public ApplicationRole() : base() { }
@@ -47,20 +64,12 @@ public class ApplicationRole : IdentityRole
 	[StringLength(512)]
 	public string? Description { get; set; }
 
-	public static List<ApplicationRole> GetDefaultRoles()
+	public ApplicationRoleValues GetRoleValue()
 	{
-		List<ApplicationRole> list = [];
-		foreach (var value in Enum.GetValues(typeof(ApplicationRoleValues)).Cast<ApplicationRoleValues>())
-		{
-			var item = new ApplicationRole()
-			{
-				Name = value.ToString()
-			};
-			if (value != ApplicationRoleValues.None)
-				list.Add(item);
-		}
-		return list;
-	}
+        if (Enum.TryParse<ApplicationRoleValues>(Label, out ApplicationRoleValues value))
+            return value;
+		return ApplicationRoleValues.None;
+    }
 }
 
 public enum ApplicationRoleValues
