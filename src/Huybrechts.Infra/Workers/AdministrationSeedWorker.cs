@@ -221,7 +221,7 @@ public class AdministrationSeedWorker : IHostedService
             foreach (var error in result.Errors)
                 _logger.Error("Error adding role {role} to user {user}: {errorcode} with {errortext}", role.Name, owner.Email, error.Code, error.Description);
         }
-
+        
         return tenant;
 	}
 
