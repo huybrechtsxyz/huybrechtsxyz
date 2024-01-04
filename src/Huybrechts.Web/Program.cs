@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 using Serilog.Formatting.Compact;
 
@@ -18,7 +19,10 @@ try
         .Enrich.FromLogContext()
         .WriteTo.Console(new RenderedCompactJsonFormatter()),
         writeToProviders: true);
-    
+
+    Log.Information("Configuring webserver");
+    builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
+
     Log.Information("Building the application and services");
     foreach (var service in builder.Services)
         Log.Information(service.ToString());
