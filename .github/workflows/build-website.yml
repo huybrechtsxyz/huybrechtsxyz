@@ -6,8 +6,12 @@ name: Website
 on:
   push:
     branches: [ "main" ]
+    paths: 
+       - 'src/website/**'
   pull_request:
     branches: [ "main" ]
+    paths: 
+       - 'src/website/**'
 
 jobs:
   build:
