@@ -16,17 +16,13 @@ on:
       - 'src/traefik/**'
 
 jobs:
-  initialize:
+  deploy:
     runs-on: ubuntu-latest
     environment: Staging
     steps:
       - uses: actions/checkout@v4
-      - name: SSH Install Docker Compose
-        uses: appleboy/scp-action@v0.1.7
+      - uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-image.yml@main
         with:
-          host: ${{ secrets.HOST_SERVER }}
-          username: ${{ secrets.HOST_USERNAME }}
-          password: ${{ secrets.HOST_PASSWORD }}
-          port: ${{ secrets.HOST_PORT }}
-          source: "src/traefik/docker-compose.traefik.yml"
-          target: "/app/cfg/docker-compose.traefik.yml"
+          environment: Staging
+          component: traefik
+        secrets: inherit

@@ -1,0 +1,52 @@
+# This reusable workflow will deploy a container image to an environment
+
+name: WF Deploy Image
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      component:
+        required: true
+        type: string
+    secrets:
+      HOST_SERVER:
+        required: true
+      HOST_USERNAME:
+        required: true
+      HOST_PASSWORD:
+        required: true
+      HOST_PORT:
+        required: true
+
+jobs:
+  deploy-image:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: SSH Deploy Files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST_SERVER }}
+          username: ${{ secrets.HOST_USERNAME }}
+          password: ${{ secrets.HOST_PASSWORD }}
+          port: ${{ secrets.HOST_PORT }}
+          source: "src/${{ inputs.component }}/**"
+          strip_components: 1
+          target: "/app/cfg"
+      - name: SSH Remote Command
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.HOST_SERVER }}
+          username: ${{ secrets.HOST_USERNAME }}
+          password: ${{ secrets.HOST_PASSWORD }}
+          port: ${{ secrets.HOST_PORT }}
+          script: |
+            cd \
+            cd app/cfg/${{ inputs.component }}
+            echo '${{ secrets.DOCKERHUB_PASSWORD }}' | docker login --username '${{ secrets.DOCKERHUB_USERNAME }}' --password-stdin &> /dev/null;
+            docker-compose -f docker-compose.yml pull &> /dev/null;
+            docker stack deploy -c <(docker-compose -f docker-compose.yml config) ${{ inputs.environment }};
