@@ -18,5 +18,5 @@ jobs:
           username: ${{ secrets.HOST_USERNAME }}
           password: ${{ secrets.HOST_PASSWORD }}
           port: ${{ secrets.HOST_PORT }}
-          source: "src/traefik/**"
-          target: "app/cfg"
+          source: "src/traefik/docker-compose.traefik.yml"
+          target: "/app/cfg"
