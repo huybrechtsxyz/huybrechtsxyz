@@ -16,13 +16,9 @@ on:
       - 'src/traefik/**'
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    environment: Staging
-    steps:
-      - uses: actions/checkout@v4
-      - uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-image.yml@main
-        with:
-          environment: Staging
-          component: traefik
-        secrets: inherit
+  call-deploy-image:
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-image.yml@main
+    with:
+      environment: Staging
+      component: traefik
+    secrets: inherit
