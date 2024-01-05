@@ -1,0 +1,48 @@
+# This workflow will initialize a new server
+
+name: Deploy Server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  initialize:
+    runs-on: ubuntu-latest
+    environment: Staging
+    steps:
+      - uses: actions/checkout@v4
+      - name: SSH Initialize Command
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.HOST_SERVER }}
+          username: ${{ secrets.HOST_USERNAME }}
+          password: ${{ secrets.HOST_PASSWORD }}
+          port: ${{ secrets.HOST_PORT }}
+          script: |
+            cd \
+            mkdir app
+            cd app
+            mkdir bin
+            mkdir data
+            mkdir logs
+
+      - name: SSH Copy Files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST_SERVER }}
+          username: ${{ secrets.HOST_USERNAME }}
+          password: ${{ secrets.HOST_PASSWORD }}
+          port: ${{ secrets.HOST_PORT }}
+          source: "iac/ubuntu/**"
+          target: "app/bin"
+
+      - name: SSH Remote Command
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.HOST_SERVER }}
+          username: ${{ secrets.HOST_USERNAME }}
+          password: ${{ secrets.HOST_PASSWORD }}
+          port: ${{ secrets.HOST_PORT }}
+          script: |
+            cd \
+            ./app/bin/init.sh
