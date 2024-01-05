@@ -45,7 +45,7 @@ jobs:
           password: ${{ secrets.HOST_PASSWORD }}
           port: ${{ secrets.HOST_PORT }}
           script: |
-            cd \
+            cd /
             cd app/cfg/${{ inputs.component }}
             echo '${{ secrets.DOCKERHUB_PASSWORD }}' | docker login --username '${{ secrets.DOCKERHUB_USERNAME }}' --password-stdin &> /dev/null;
             docker-compose -f docker-compose.yml pull &> /dev/null;
