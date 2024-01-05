@@ -29,7 +29,6 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-    - uses: actions/checkout@v3
+      run: dotnet test --no-build --verbosity normal
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag website:$(date +%s)
-      uses: actions/checkout@v3
