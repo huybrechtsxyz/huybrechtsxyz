@@ -25,7 +25,7 @@ services:
       # TSL
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.letsencrypt.acme.caserver=${TRAEFIK_CASERVER}"
+      - "--certificatesresolvers.letsencrypt.acme.caserver=${APP_CASERVER}"
       - "--certificatesresolvers.letsencrypt.acme.email=webmaster@huybrechts.xyz"
       - "--certificatesresolvers.letsencrypt.acme.storage=acme.json"
     networks:
@@ -44,7 +44,7 @@ services:
       - "traefik.http.middlewares.https_redirect.redirectscheme.permanent=true"
       # SSLHEADER
       - "traefik.http.middlewares.sslheader.headers.accessControlAllowMethods=GET,OPTIONS,PUT"
-      - "traefik.http.middlewares.sslheader.headers.accessControlAllowOrigin=https://${TRAEFIK_BASEURL}"
+      - "traefik.http.middlewares.sslheader.headers.accessControlAllowOrigin=https://${APP_BASEURL}"
       - "traefik.http.middlewares.sslheader.headers.accessControlMaxAge=100"
       - "traefik.http.middlewares.sslheader.headers.addVaryHeader=true"
       - "traefik.http.middlewares.sslheader.headers.browserXssFilter=true"
@@ -74,10 +74,10 @@ services:
       # DASHBOARD
       - "traefik.enable=true"
       - "traefik.port=8080"
-      - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_BASEURL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.traefik.rule=Host(`${APP_BASEURL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.traefik.tls.domains[0].main=${TRAEFIK_BASEURL}"
+      - "traefik.http.routers.traefik.tls.domains[0].main=${APP_BASEURL}"
       - "traefik.http.routers.traefik.middlewares=auth"
       - "traefik.http.middlewares.auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
