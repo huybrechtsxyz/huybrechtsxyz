@@ -1,0 +1,26 @@
+# Docker Compose for the WEBSITE environment STAGING
+version: '3.5'
+
+networks:
+  internet:
+
+volumes:
+  web-data:
+
+services:
+  portal:
+    image: "huybrechts/website:${XYZ_IMAGETAG}"
+    environment:
+      - "ASPNETCORE_ENVIRONMENT=${XYZ_ENVIRONMENT}"
+      - "DOTNET_RUNNING_IN_CONTAINER=true"
+    networks:
+      - "internet"
+    volumes:
+      - "portal-web:/app/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portal.rule=Host(`${TRAEFIK_BASEURL}`)"
+      - "traefik.http.routers.portal.entrypoints=websecure"
+      - "traefik.http.routers.portal.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.portal.tls.domains[0].main=${TRAEFIK_BASEURL}"
+      - "traefik.http.routers.portal.middlewares=sslheader"
