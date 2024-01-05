@@ -5,6 +5,16 @@ name: Deploy Traefik
 on:
   workflow_dispatch:
 
+  push:
+    branches: [ "main" ]
+    paths: 
+      - 'src/traefik/**'
+
+  pull_request:
+    branches: [ "main" ]
+    paths: 
+      - 'src/traefik/**'
+
 jobs:
   initialize:
     runs-on: ubuntu-latest
@@ -19,4 +29,4 @@ jobs:
           password: ${{ secrets.HOST_PASSWORD }}
           port: ${{ secrets.HOST_PORT }}
           source: "src/traefik/docker-compose.traefik.yml"
-          target: "/app/cfg"
+          target: "/app/cfg/docker-compose.traefik.yml"
