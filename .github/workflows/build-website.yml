@@ -28,13 +28,6 @@ jobs:
       run: dotnet build --no-restore
     - name: Test website
       run: dotnet test --no-build --verbosity normal
-
-  publish:
-
-    runs-on: ubuntu-latest
-    environment: Staging
-
-    steps:
     - name: Build the Docker image
       run: docker build . --file src/website/Huybrechts.Web/Dockerfile --tag website:$(date +%s)
     - name: Log into Docker Hub
