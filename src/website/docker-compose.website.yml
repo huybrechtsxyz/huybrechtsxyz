@@ -15,9 +15,9 @@ volumes:
 
 services:
   portal:
-    image: "huybrechts/portal:${XYZ_IMAGETAG}"
+    image: "huybrechts/website:main"
     environment:
-      - "ASPNETCORE_ENVIRONMENT=${XYZ_ENVIRONMENT}"
+      - "ASPNETCORE_ENVIRONMENT=${APP_ENVIRONMENT}"
       - "DOTNET_RUNNING_IN_CONTAINER=true"
     networks:
       - "internet"
@@ -28,8 +28,8 @@ services:
       - "portal-data:/app/data"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.portal.rule=Host(`${XYZ_BASEURL}`)"
+      - "traefik.http.routers.portal.rule=Host(`${APP_BASEURL}`)"
       - "traefik.http.routers.portal.entrypoints=websecure"
       - "traefik.http.routers.portal.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.portal.tls.domains[0].main=${XYZ_BASEURL}"
+      - "traefik.http.routers.portal.tls.domains[0].main=${APP_BASEURL}"
       - "traefik.http.routers.portal.middlewares=sslheader"
