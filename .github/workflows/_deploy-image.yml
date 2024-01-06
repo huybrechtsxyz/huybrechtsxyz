@@ -37,6 +37,16 @@ jobs:
           source: "src/${{ inputs.component }}/**"
           strip_components: 1
           target: "/app/cfg"
+      - name: SSH Deploy Files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST_SERVER }}
+          username: ${{ secrets.HOST_USERNAME }}
+          password: ${{ secrets.HOST_PASSWORD }}
+          port: ${{ secrets.HOST_PORT }}
+          source: "src/${{ inputs.environment }}.env"
+          strip_components: 1
+          target: "/app/cfg/${{ inputs.component }}"
       - name: SSH Remote Command
         uses: appleboy/ssh-action@v1.0.2
         with:
