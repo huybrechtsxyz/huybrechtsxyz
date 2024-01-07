@@ -34,7 +34,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - "./app/traefik:/app"
+      - "/app/traefik:/app"
       - "/var/run/docker.sock:/var/run/docker.sock"
     labels:
       # REDIRECT
@@ -45,7 +45,7 @@ services:
       - "traefik.http.middlewares.https_redirect.redirectscheme.permanent=true"
       # SSLHEADER
       - "traefik.http.middlewares.sslheader.headers.accessControlAllowMethods=GET,OPTIONS,PUT"
-      - "traefik.http.middlewares.sslheader.headers.accessControlAllowOrigin=https://${APP_BASEURL}"
+      - "traefik.http.middlewares.sslheader.headers.accessControlAllowOriginList=https://${APP_BASEURL}"
       - "traefik.http.middlewares.sslheader.headers.accessControlMaxAge=100"
       - "traefik.http.middlewares.sslheader.headers.addVaryHeader=true"
       - "traefik.http.middlewares.sslheader.headers.browserXssFilter=true"

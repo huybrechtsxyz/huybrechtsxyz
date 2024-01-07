@@ -4,22 +4,21 @@
 name: Build Website
 
 on:
-  workflow_dispatch:
-  
-  push:
-    branches: [ "main" ]
-    paths: 
-      - 'src/website/**'
-
-  pull_request:
-    branches: [ "main" ]
-    paths: 
-      - 'src/website/**'
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_PASSWORD:
+        required: true
        
 jobs:
-  build:
+  build-website:
     runs-on: ubuntu-latest
-    environment: Staging
+    environment: ${{ inputs.environment }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup .NET

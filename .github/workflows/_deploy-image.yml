@@ -1,6 +1,6 @@
 # This reusable workflow will deploy a container image to an environment
 
-name: WF Deploy Image
+name: Deploy Image
 
 on:
   workflow_call:
