@@ -23,8 +23,9 @@ try
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.Console(new RenderedCompactJsonFormatter()),
-        writeToProviders: true);
+        .WriteTo.Console(new RenderedCompactJsonFormatter())
+		.WriteTo.File("log-.txt", rollingInterval: RollingInterval.Day),
+		writeToProviders: true);
 
     Log.Information("Configuring webserver");
     builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));

@@ -5,7 +5,7 @@ networks:
 
 services:
   traefik:
-    image: "traefik:v2.1.6"
+    image: "traefik:v2.10"
     command:
       # FEATURES
       - "--log=true"
