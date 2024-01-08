@@ -16,6 +16,11 @@ services:
       file: traefik/docker-compose.yml
       service: traefik
       
+  portainer:
+    extends:
+      file: portainer/docker-compose.yml
+      service: portainer
+      
   website:
     extends:
       file: website/docker-compose.yml

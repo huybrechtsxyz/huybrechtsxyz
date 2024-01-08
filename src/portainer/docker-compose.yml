@@ -10,7 +10,7 @@ services:
   restart: always
   volumes:
     - /var/run/docker.sock:/var/run/docker.sock
-    - portainer_data:/data
+    - /app/portainer:/data
     # Frontend
     - "traefik.enable=true"
     - "traefik.http.routers.frontend.rule=Host(`${APP_BASEURL}\portainer`)"
