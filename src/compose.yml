@@ -19,4 +19,4 @@ services:
   website:
     extends:
       file: website/docker-compose.yml
-      service: webssite      
+      service: website      
