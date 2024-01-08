@@ -1,0 +1,24 @@
+# https://docs.docker.com/compose/multiple-compose-files/extends/
+
+# url.com:8080/dashboard       -> Traefik dashboard
+# url.com:8080/api             -> Traefik api
+
+# Docker Compose for the staging environment
+version: '3.9'
+
+networks:
+  internet:
+  localnet:
+
+volumes:
+
+services:
+  traefik:
+    extends:
+      file: traefik/docker-compose.yml
+      service: traefik
+      
+  website:
+    extends:
+      file: website/docker-compose.yml
+      service: webssite      

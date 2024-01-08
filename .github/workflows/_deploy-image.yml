@@ -36,6 +36,7 @@ jobs:
           port: ${{ secrets.HOST_PORT }}
           source: "src/${{ inputs.component }}/**"
           strip_components: 1
+          overwrite: true
           target: "/app"
       - name: SSH Deploy Files
         uses: appleboy/scp-action@v0.1.7
@@ -44,10 +45,10 @@ jobs:
           username: ${{ secrets.HOST_USERNAME }}
           password: ${{ secrets.HOST_PASSWORD }}
           port: ${{ secrets.HOST_PORT }}
-          source: "src/${{ inputs.environment }}.env"
+          source: "src/${{ inputs.environment }}.env,src/compose.yml"
           strip_components: 1
           overwrite: true
-          target: "/app/${{ inputs.component }}"
+          target: "/app"
       - name: SSH Remote Command
         uses: appleboy/ssh-action@v1.0.2
         with:
@@ -57,8 +58,8 @@ jobs:
           port: ${{ secrets.HOST_PORT }}
           script: |
             cd /
-            cd app/${{ inputs.component }}
+            cd app
             mv ${{ inputs.environment }}.env .env
             echo '${{ secrets.DOCKERHUB_PASSWORD }}' | docker login --username '${{ secrets.DOCKERHUB_USERNAME }}' --password-stdin &> /dev/null;
-            docker-compose -f docker-compose.yml pull &> /dev/null;
-            docker stack deploy -c <(docker-compose -f docker-compose.yml config) ${{ inputs.environment }};
+            docker-compose -f compose.yml pull &> /app/logs/compose.log;
+            docker stack deploy -c <(docker-compose -f compose.yml config) ${{ inputs.environment }};

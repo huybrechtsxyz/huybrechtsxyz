@@ -1,31 +1,23 @@
 # Docker Compose for the staging environment
-version: '3.5'
+version: '3.9'
 
 networks:
   internet:
-
-secrets:
-  Google__Captcha__SiteSecret:
-    external: true
-  Microsoft__AzureDevopsToken:
-    external: true
-
-volumes:
-  portal-data:
+  localnet:
 
 services:
-  portal:
+  website:
     image: "huybrechts/website:main"
     environment:
       - "ASPNETCORE_ENVIRONMENT=${APP_ENVIRONMENT}"
       - "DOTNET_RUNNING_IN_CONTAINER=true"
     networks:
       - "internet"
-    secrets:
-      - Google__Captcha__SiteSecret
-      - Microsoft__AzureDevopsToken
+    ports:
+      - 5080:5080
+      - 5433:5433
     volumes:
-      - "portal-data:/app/data"
+      - "/app/website:/app"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.portal.rule=Host(`${APP_BASEURL}`)"
