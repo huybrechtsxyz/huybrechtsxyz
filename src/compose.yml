@@ -10,8 +10,6 @@ networks:
   internet:
   localnet:
 
-volumes:
-
 services:
   traefik:
     extends:
