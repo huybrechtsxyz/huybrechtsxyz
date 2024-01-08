@@ -8,14 +8,23 @@ version: '3.9'
 
 networks:
   internet:
+    external: true
+  agentnet:
+    external: true
   localnet:
+    external: false
 
 services:
   traefik:
     extends:
       file: traefik/docker-compose.yml
       service: traefik
-      
+  
+  agent:
+    extends:
+      file: portainer/docker-compose.yml
+      service: agent
+
   portainer:
     extends:
       file: portainer/docker-compose.yml
