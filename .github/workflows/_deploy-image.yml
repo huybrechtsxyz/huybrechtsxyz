@@ -27,6 +27,8 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
