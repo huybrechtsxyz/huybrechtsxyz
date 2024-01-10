@@ -1,18 +1,11 @@
 # https://docs.docker.com/compose/multiple-compose-files/extends/
-
-# url.com:8080/dashboard       -> Traefik dashboard
-# url.com:8080/api             -> Traefik api
-
 # Docker Compose for the staging environment
 version: '3.9'
 
 networks:
   internet:
     external: true
-  agentnet:
-    external: true
   localnet:
-    external: false
 
 services:
   traefik:
@@ -20,15 +13,15 @@ services:
       file: traefik/docker-compose.yml
       service: traefik
   
-  agent:
+  portainer-agent:
     extends:
       file: portainer/docker-compose.yml
-      service: agent
+      service: portainer-agent
 
-  portainer:
+  portainer-server:
     extends:
       file: portainer/docker-compose.yml
-      service: portainer
+      service: portainer-server
       
   website:
     extends:
