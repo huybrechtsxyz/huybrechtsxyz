@@ -30,6 +30,7 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
+          ls ${{ github.workspace }}/src/traefik
       - name: SSH Deploy Files
         uses: appleboy/scp-action@v0.1.7
         with:
