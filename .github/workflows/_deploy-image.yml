@@ -35,7 +35,7 @@ jobs:
           password: ${{ secrets.HOST_PASSWORD }}
           port: ${{ secrets.HOST_PORT }}
           source: "src/${{ inputs.component }}/**"
-          strip_components: 1
+          strip_components: 2
           overwrite: true
           target: "/app"
       - name: SSH Deploy Files

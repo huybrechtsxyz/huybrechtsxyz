@@ -10,20 +10,20 @@ networks:
 services:
   traefik:
     extends:
-      file: traefik/docker-compose.yml
+      file: traefik/traefik-compose.yml
       service: traefik
   
   portainer-agent:
     extends:
-      file: portainer/docker-compose.yml
+      file: portainer/portainer-compose.yml
       service: portainer-agent
 
   portainer-server:
     extends:
-      file: portainer/docker-compose.yml
+      file: portainer/portainer-compose.yml
       service: portainer-server
       
   website:
     extends:
-      file: website/docker-compose.yml
+      file: website/website-compose.yml
       service: website      
