@@ -37,6 +37,14 @@ jobs:
           script: |
             cd /
             cd app
+            if [ -d cfg ]
+            then
+              mkdir cfg
+            fi
+            if [ -d portainer ]
+            then
+              mkdir portainer
+            fi
             mv ${{ inputs.environment }}.env .env
             echo '${{ secrets.DOCKERHUB_PASSWORD }}' | docker login --username '${{ secrets.DOCKERHUB_USERNAME }}' --password-stdin &> /dev/null;
             docker-compose -f compose.yml pull &> /app/logs/compose.log;

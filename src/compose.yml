@@ -13,17 +13,17 @@ services:
       file: traefik-compose.yml
       service: traefik
   
-  portainer-agent:
-    extends:
-      file: portainer-compose.yml
-      service: portainer-agent
+  # portainer-agent:
+  #   extends:
+  #     file: portainer-compose.yml
+  #     service: portainer-agent
 
-  portainer-server:
-    extends:
-      file: portainer-compose.yml
-      service: portainer-server
+  # portainer-server:
+  #   extends:
+  #     file: portainer-compose.yml
+  #     service: portainer-server
       
-  website:
-    extends:
-      file: website-compose.yml
-      service: website      
+  # website:
+  #   extends:
+  #     file: website-compose.yml
+  #     service: website

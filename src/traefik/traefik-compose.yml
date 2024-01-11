@@ -15,7 +15,6 @@ services:
       - "--accesslog.filepath=/app/logs/traefik-access.log"
       - "--accesslog.bufferingsize=100"
       - "--global.sendAnonymousUsage=false"
-      - "--api"
       - "--api.dashboard=true"
       # PROVIDERS
       - "--providers.docker=true"
@@ -29,7 +28,7 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.letsencrypt.acme.caserver=${APP_CASERVER}"
       - "--certificatesresolvers.letsencrypt.acme.email=webmaster@huybrechts.xyz"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/app/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/app/cfg/acme.json"
     networks:
       - "internet"
       - "localnet"
@@ -78,7 +77,7 @@ services:
       # DASHBOARD
       - "traefik.enable=true"
       - "traefik.port=8080"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.${APP_BASEURL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.traefik.rule=Host(`${APP_BASEURL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
@@ -90,7 +89,7 @@ services:
     image: traefik/whoami:v1.10
     labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.whoami.rule=Host(`whoami.${APP_BASEURL}`)"
+        - "traefik.http.routers.whoami.rule=Host(`whoami.${APP_BASEURL} && PathPrefix(`/whoami`)`)"
         - "traefik.http.routers.whoami.loadbalancer.server.port=8082"
         - "traefik.http.routers.whoami.middlewares=auth"
         - "traefik.http.routers.whoami.entrypoints=websecure"
