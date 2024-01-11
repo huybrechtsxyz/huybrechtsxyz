@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  whoami:
+    image: traefik/whoami:v1.10
+    network:
+      - internet
+    labels:
+      - traefik.enable=true
+      - traefik.constraint-label=traefik-${APP_ENVIRONMENT}
+      - traefik.http.routers.whoami.rule=Host(`${APP_BASEURL} && PathPrefix(`/whoami`)`)"
+      - traefik.http.routers.whoami.entrypoints=http

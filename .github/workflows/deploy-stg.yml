@@ -22,3 +22,10 @@ jobs:
       environment: staging
       component: traefik
     secrets: inherit
+  
+  deploy-whoami:
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-image.yml@main
+    with:
+      environment: development
+      component: whoami
+    secrets: inherit

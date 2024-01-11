@@ -9,31 +9,36 @@ networks:
 volumes:
   appdata:
     driver: local
-      driver_opts:
-        type: 'none'
-        o: 'bind'
-        device: '/app/${APP_ENVIRONMENT}'
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/app/${APP_ENVIRONMENT}'
 
   certdata:
     driver: local
-      driver_opts:
-        type: 'none'
-        o: 'bind'
-        device: '/app/${APP_ENVIRONMENT}/cert'
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/app/${APP_ENVIRONMENT}/cert'
 
   logdata:
     driver: local
-      driver_opts:
-        type: 'none'
-        o: 'bind'
-        device: '/app/${APP_ENVIRONMENT}/logs'
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/app/${APP_ENVIRONMENT}/logs'
 
 services:
   traefik:
     extends:
       file: traefik-compose.yml
       service: traefik
-  
+
+  whoami:
+    extends:
+      file: whoami-compose.yml
+      service: whoami
+
   # portainer-agent:
   #   extends:
   #     file: portainer-compose.yml

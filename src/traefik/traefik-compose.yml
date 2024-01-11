@@ -1,71 +1,82 @@
 version: '3.9'
 
-networks:
-  internet:
-
 services:
   traefik:
-    image: "traefik:v2.10"
+    image: traefik:v2.10
+    command:
+      # Enable the Traefik log, for configurations and errors
+      - --log
+      - --log.level=DEBUG
+      - --log.filePath=/logs/traefik.log
+      - --global.sendAnonymousUsage=false
+      # Enable the access log, with HTTP requests
+      - --accesslog
+      - --accesslog.filepath=/app/logs/traefik-access.log
+      # Add a constraint to only use services with the label "traefik.constraint-label=traefik-public"      
+      - --providers.docker.constraints=Label(`traefik.constraint-label`, `traefik-${APP_ENVIRONMENT}`)
+      # Do not expose all Docker services, only the ones explicitly exposed
+      # - --entrypoints.smtp.address=:25
+      - --entrypoints.http.address=:80
+      - --entrypoints.https.address=:443
+      # - --entrypoints.smtptls.address=:587
+      # - --entrypoints.https5000.address=:5000
+      # - --entrypoints.grpc.address=:8181
+      # Enable Docker Swarm mode
+      - --providers.docker
+      - --providers.docker.swarmmode
+      - --providers.docker.exposedbydefault=false
+      # Store the Let's Encrypt certificates in the mounted volume
+      - --certificatesresolvers.le.acme.httpchallenge=true
+      - --certificatesresolvers.le.acme.httpchallenge.entrypoint=http
+      - --certificatesresolvers.le.acme.caserver=${APP_CASERVER}
+      - --certificatesresolvers.le.acme.email=webmaster@huybrechts.xyz
+      - --certificatesresolvers.le.acme.storage=/certificates/acme.json
+      # Enable the Dashboard and API
+      - --api
+      # Allow to communicate with backend containers running https. https://stackoverflow.com/questions/49412376/internal-server-error-with-traefik-https-backend-on-port-443
+      - --serverstransport.insecureskipverify=true
+    networks:
+      - internet
+      - default
+    ports:
+      - "${APP_HTTP}:${APP_HTTP}"
+      - "${APP_HTTPS}:${APP_HTTPS}"
     deploy:
       placement:
         constraints:
-          - node.labels.traefik-public.traefik-certificates == true
-    command:
-      # FEATURES
-      - "--log=true"
-      - "--log.level=DEBUG"
-      - "--log.filePath=/app/logs/traefik.log"
-      - "--accesslog=true"
-      - "--accesslog.filepath=/app/logs/traefik-access.log"
-      - "--global.sendAnonymousUsage=false"
-      - "--api.dashboard=true"
-      # PROVIDERS
-      - "--providers.docker=true"
-      - "--providers.docker.swarmMode=true"
-      - "--providers.docker.constraints=Label(`traefik.constraint-label`, `traefik-${APP_ENVIRONMENT}`)"
-      - "--providers.docker.exposedbydefault=false"
-      # ENTRYPOINTS
-      - "--entryPoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      # TSL
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.letsencrypt.acme.caserver=${APP_CASERVER}"
-      - "--certificatesresolvers.letsencrypt.acme.email=webmaster@huybrechts.xyz"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/app/cert/acme.json"
-    networks:
-      - "internet"
-    ports:
-      - target: ${APP_HTTP}
-        published: ${APP_HTTP}
-        mode: host
-      - target: ${APP_HTTPS}
-        published: ${APP_HTTPS}
-        mode: host
+          # Make the traefik service run only on the manager node,
+          # as the node with it has the volume for the certificates
+          - node.role == manager
     volumes:
-      - "appdata:/app"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      # Add Docker as a mounted volume, so that Traefik can read the labels of other services
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Mount the volume to store the certificates
+      - certdata:/certificates
+      - logdata:/logs
     labels:
-      # BASIC
-      - "traefik.enable=true"
-      - "traefik.constraint-label=traefik-${APP_ENVIRONMENT}"
-      # REDIRECT
-      - "traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)"
-      - "traefik.http.routers.http_catchall.entrypoints=web"
-      - "traefik.http.routers.http_catchall.middlewares=https_redirect"
-      - "traefik.http.middlewares.https_redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.https_redirect.redirectscheme.permanent=true"
-      # DASHBOARD
-      - "traefik.http.routers.traefik.rule=Host(`${APP_BASEURL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
-      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.middlewares=auth"
-      - "traefik.http.routers.traefik.tls=true"
-      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.traefik.tls.domains[0].main=${APP_BASEURL}"      
-      - "traefik.http.middlewares.auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
-      # # SSLHEADER
+      - traefik.enable=true
+      - traefik.docker.network=-internet
+      - traefik.constraint-label=traefik-public
+      # Middlewares can be re-used by other stacks in other Docker Compose files - users=${USERNAME}:${PASSWORD}
+      # - traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)
+      # - traefik.http.routers.http_catchall.entrypoints=http
+      # - traefik.http.routers.http_catchall.middlewares=https_redirect
+      - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
+      - traefik.http.middlewares.admin-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
+      # Use the special Traefik service api@internal with the web UI/Dashboard
+      # traefik.http.routers.dashboard-https.rule=Host(`${APP_BASEURL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      - traefik.http.routers.traefik-dashboard-http.rule=Host(`${APP_BASEURL?Variable not set}`)
+      - traefik.http.routers.traefik-dashboard-http.entrypoints=http
+      - traefik.http.routers.traefik-dashboard-http.middlewares=https-redirect
+      - traefik.http.routers.traefik-dashboard-https.rule=Host(`${APP_BASEURL?Variable not set}`)
+      - traefik.http.routers.traefik-dashboard-https.entrypoints=https
+      - traefik.http.routers.traefik-dashboard-https.tls=true
+      - traefik.http.routers.traefik-dashboard-https.tls.certresolver=le
+      - traefik.http.routers.traefik-dashboard-https.service=api@internal
+      - traefik.http.routers.traefik-dashboard-https.middlewares=admin-auth
+      - traefik.http.services.traefik-dashboard-https.loadbalancer.server.port=8080
+      # SSLHEADER
       # - "traefik.http.middlewares.sslheader.headers.accessControlAllowMethods=GET,OPTIONS,PUT"
       # - "traefik.http.middlewares.sslheader.headers.accessControlAllowOriginList=https://${APP_BASEURL}"
       # - "traefik.http.middlewares.sslheader.headers.accessControlMaxAge=100"
@@ -94,15 +105,3 @@ services:
       #     object-src 'none';\
       #     script-src-elem 'self' *.google.com https://www.gstatic.com;\
       #     style-src 'self' *.googleapis.com;"
-
-  whoami:
-    image: traefik/whoami:v1.10
-    labels:
-        - "traefik.enable=true"
-        - "traefik.constraint-label=traefik-${APP_ENVIRONMENT}"
-        - "traefik.http.routers.whoami.rule=Host(`${APP_BASEURL} && PathPrefix(`/whoami`)`)"
-        - "traefik.http.routers.whoami.loadbalancer.server.port=80"
-        - "traefik.http.routers.whoami.middlewares=auth"
-        - "traefik.http.routers.whoami.entrypoints=websecure"
-        - "traefik.http.routers.whoami.tls=true"
-        - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
