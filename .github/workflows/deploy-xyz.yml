@@ -1,6 +1,6 @@
-# This workflow will initialize a new server
+# This workflow deploys the production environment
 
-name: Production - Deploy Traefik
+name: Deploy To Production
 
 on:
   workflow_dispatch:
@@ -8,17 +8,17 @@ on:
   #push:
   #  branches: [ "main" ]
   #  paths: 
-  #    - 'src/traefik/**'
+  #    - 'src/website/**'
 
   #pull_request:
   #  branches: [ "main" ]
   #  paths: 
-  #    - 'src/traefik/**'
+  #    - 'src/website/**'
 
 jobs:
-  call-deploy-image:
+  deploy-traefik:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-image.yml@main
     with:
-      environment: Production
+      environment: production
       component: traefik
     secrets: inherit

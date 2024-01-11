@@ -1,6 +1,6 @@
 # This reusable workflow will deploy a container image to an environment
 
-name: Deploy Image
+name: Reusable - Deploy Image
 
 on:
   workflow_call:
@@ -12,10 +12,6 @@ on:
         required: true
         type: string
     secrets:
-      DOCKERHUB_USERNAME:
-        required: true
-      DOCKERHUB_PASSWORD:
-        required: true
       HOST_SERVER:
         required: true
       HOST_USERNAME:
@@ -49,7 +45,7 @@ jobs:
           source: "src/${{ inputs.component }}/**"
           strip_components: 2
           overwrite: true
-          target: "/app"
+          target: "/app/${{ inputs.environment }}"
       - name: SSH Deploy Files
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -60,4 +56,4 @@ jobs:
           source: "src/${{ inputs.environment }}.env,src/compose.yml"
           strip_components: 1
           overwrite: true
-          target: "/app"
+          target: "/app/${{ inputs.environment }}"

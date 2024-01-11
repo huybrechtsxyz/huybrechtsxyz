@@ -1,6 +1,6 @@
-# This workflow will initialize a new server
+# This workflow will deploy the staging environment
 
-name: Production - Stack Deploy
+name: Start Staging Environment
 
 on:
   workflow_dispatch:
@@ -16,8 +16,8 @@ on:
   #    - 'src/website/**'
 
 jobs:
-  call-deploy-image:
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_stack-deploy.yml@main
+  start-docker-stack:
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-stack.yml@main
     with:
-      environment: Production
+      environment: staging
     secrets: inherit

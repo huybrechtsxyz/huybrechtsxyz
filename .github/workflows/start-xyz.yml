@@ -1,0 +1,23 @@
+# This workflow will start the production environment
+
+name: Start Production Environment
+
+on:
+  workflow_dispatch:
+
+  #push:
+  #  branches: [ "main" ]
+  #  paths: 
+  #    - 'src/website/**'
+
+  #pull_request:
+  #  branches: [ "main" ]
+  #  paths: 
+  #    - 'src/website/**'
+
+jobs:
+  start-docker-stack:
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-stack.yml@main
+    with:
+      environment: production
+    secrets: inherit

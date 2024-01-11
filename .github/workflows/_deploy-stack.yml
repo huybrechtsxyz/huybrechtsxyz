@@ -1,6 +1,6 @@
-# This reusable workflow will deploy a container image to an environment
+# This reusable workflow start the stack
 
-name: Stack Deploy
+name: Reusable - Stack Deploy
 
 on:
   workflow_call:
@@ -36,7 +36,7 @@ jobs:
           port: ${{ secrets.HOST_PORT }}
           script: |
             cd /
-            cd app
+            cd app/${{ inputs.environment }}
             if [ -d cfg ]
             then
               mkdir cfg
@@ -45,7 +45,7 @@ jobs:
             then
               mkdir portainer
             fi
-            mv ${{ inputs.environment }}.env .env
+            mv ${{ inputs.environment }}.env .env > /dev/null
             echo '${{ secrets.DOCKERHUB_PASSWORD }}' | docker login --username '${{ secrets.DOCKERHUB_USERNAME }}' --password-stdin &> /dev/null;
-            docker-compose -f compose.yml pull &> /app/logs/compose.log;
+            docker-compose -f compose.yml pull &> /app/${{ inputs.environment }}/logs/compose.log;
             docker stack deploy -c <(docker-compose -f compose.yml config) ${{ inputs.environment }};
