@@ -26,6 +26,6 @@ jobs:
   deploy-whoami:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-image.yml@main
     with:
-      environment: development
+      environment: production
       component: whoami
     secrets: inherit
