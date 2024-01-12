@@ -16,6 +16,17 @@ on:
   #    - 'src/website/**'
 
 jobs:
+  deploy-socketproxy:
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-image.yml@main
+    with:
+      environment: production
+      component: socketproxy
+    secrets:
+      HOST_SERVER: ${{ secrets.HOST_SERVER }}
+      HOST_USERNAME: ${{ secrets.HOST_USERNAME }}
+      HOST_PASSWORD: ${{ secrets.HOST_PASSWORD }}
+      HOST_PORT: ${{ secrets.HOST_PORT }}
+
   deploy-traefik:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-image.yml@main
     with:

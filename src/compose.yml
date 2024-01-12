@@ -5,30 +5,15 @@ version: '3.9'
 networks:
   internet:
     external: true
-
-volumes:
-  appdata:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '/app/${APP_ENVIRONMENT}'
-
-  certdata:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '/app/${APP_ENVIRONMENT}/cert'
-
-  logdata:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '/app/${APP_ENVIRONMENT}/logs'
+  socket_proxy:
+    external: true
 
 services:
+  socketproxy:
+    extends:
+      file: socketproxy-compose.yml
+      service: socketproxy
+
   traefik:
     extends:
       file: traefik-compose.yml

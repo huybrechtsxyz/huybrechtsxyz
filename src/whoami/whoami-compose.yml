@@ -3,10 +3,16 @@ version: '3.9'
 services:
   whoami:
     image: traefik/whoami:v1.10
-    network:
+    networks:
       - internet
     labels:
-      - traefik.enable=true
-      - traefik.constraint-label=traefik-${APP_ENVIRONMENT}
-      - traefik.http.routers.whoami.rule=Host(`${APP_BASEURL} && PathPrefix(`/whoami`)`)"
-      - traefik.http.routers.whoami.entrypoints=http
+      # Explicitly instruct Traefik to expose this service
+      - "traefik.enable=true"
+      - "traefik.constraint-label=traefik-${APP_ENVIRONMENT}"
+      # Router configuration
+      - "traefik.http.routers.whoami_rts.rule=Host(`${APP_BASEURL}`) && PathPrefix(`/whoami`)"
+      - "traefik.http.routers.whoami_rts.entrypoints=https"
+      - "traefik.http.routers.whoami_rts.tls=true"
+      - "traefik.http.routers.whoami_rts.service=whoami_svc"
+      # Service configuration (container is listening to port 80)
+      - "traefik.http.services.whoami_svc.loadbalancer.server.port=80"
