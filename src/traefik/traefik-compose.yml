@@ -54,15 +54,6 @@ services:
       # Allow to communicate with backend containers running https.
       # https://stackoverflow.com/questions/49412376/internal-server-error-with-traefik-https-backend-on-port-443
       - --serverstransport.insecureskipverify=true
-    deploy:
-      placement:
-        constraints:
-          # Make the traefik service run only on the manager node,
-          # as the node with it has the volume for the certificates
-          - node.role == manager
-    restart: unless-stopped
-    depends_on:
-      - "socketproxy"
     networks:
       - "internet"
       - "socket_proxy"
@@ -71,9 +62,9 @@ services:
       - "433:433"
     volumes:
       #- "/app/${APP_ENVIRONMENT}/traefik-config.yml:/app/traefik-config.yml:ro"
-      - "/app/${APP_ENVIRONMENT}/certs/:/app/certs"
-      - "/app/${APP_ENVIRONMENT}/logs/:/app/logs"
-      - "/app/${APP_ENVIRONMENT}/cfg/:/app/cfg"
+      - "/app/${APP_ENVIRONMENT}/certs:/app/certs"
+      - "/app/${APP_ENVIRONMENT}/logs:/app/logs"
+      #- "/app/${APP_ENVIRONMENT}/cfg:/app/cfg"
     healthcheck:
       # Run traefik healthcheck command
       # https://doc.traefik.io/traefik/operations/cli/#healthcheck
@@ -82,50 +73,56 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.constraint-label=traefik-${APP_ENVIRONMENT}"
-      # Use the special Traefik service api@internal with the web UI/Dashboard
-      # traefik.http.routers.dashboard-https.rule=Host(`${APP_BASEURL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
-      - "traefik.http.routers.dashboard.rule=Host(`${APP_BASEURL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
-      - "traefik.http.routers.dashboard.entrypoints=https"
-      - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.middlewares=admin-auth"
-      # `metrics` router configuration
-      - "traefik.http.routers.metrics.rule=Host(`${APP_BASEURL}`) && PathPrefix(`/metrics`)"
-      - "traefik.http.routers.metrics.tls=true"
-      - "traefik.http.routers.metrics.entrypoints=https"
-      - "traefik.http.routers.metrics.service=prometheus@internal"
-      - "traefik.http.routers.metrics.middlewares=admin-auth"
-      # Middlewares
-      - "traefik.http.middlewares.admin-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
-      # SSLHEADER
-      # - "traefik.http.middlewares.sslheader.headers.accessControlAllowMethods=GET,OPTIONS,PUT"
-      # - "traefik.http.middlewares.sslheader.headers.accessControlAllowOriginList=https://${APP_BASEURL}"
-      # - "traefik.http.middlewares.sslheader.headers.accessControlMaxAge=100"
-      # - "traefik.http.middlewares.sslheader.headers.addVaryHeader=true"
-      # - "traefik.http.middlewares.sslheader.headers.browserXssFilter=true"
-      # - "traefik.http.middlewares.sslheader.headers.contentTypeNosniff=true"
-      # - "traefik.http.middlewares.sslheader.headers.customFrameOptionsValue=SAMEORIGIN"
-      # - "traefik.http.middlewares.sslheader.headers.forceSTSHeader=true"
-      # - "traefik.http.middlewares.sslheader.headers.featurePolicy=vibrate 'self'"
-      # - "traefik.http.middlewares.sslheader.headers.frameDeny=true"
-      # - "traefik.http.middlewares.sslheader.headers.referrerPolicy=no-referrer, strict-origin-when-cross-origin"
-      # - "traefik.http.middlewares.sslheader.headers.sslredirect=true"
-      # - "traefik.http.middlewares.sslheader.headers.stsSeconds=31536000"
-      # - "traefik.http.middlewares.sslheader.headers.stsIncludeSubdomains=true"
-      # - "traefik.http.middlewares.sslheader.headers.stsPreload=true"
-      # - "traefik.http.middlewares.sslheader.headers.customResponseHeaders.x-powered-by=Foobar/1.1.1"
-      # - "traefik.http.middlewares.sslheader.headers.customResponseHeaders.set-cookie='max-age=2592000; Path=/; Secure; HttpOnly; SameSite=Strict;'"
-      # - "traefik.http.middlewares.sslheader.headers.contentSecurityPolicy=\
-      #     default-src 'none';\
-      #     base-uri 'self';\
-      #     font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;\
-      #     form-action 'self' https://accounts.google.com;\
-      #     frame-ancestors 'none';\
-      #     frame-src 'self' https://www.google.com https://notfound-static.fwebservices.be/;\
-      #     img-src 'self' https://*.googleusercontent.com data:;\
-      #     object-src 'none';\
-      #     script-src-elem 'self' *.google.com https://www.gstatic.com;\
-      #     style-src 'self' *.googleapis.com;"
+    deploy:
+      placement:
+        constraints:
+          # Make the traefik service run only on the manager node,
+          # as the node with it has the volume for the certificates
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.constraint-label=traefik-${APP_ENVIRONMENT}"
+        # Use the special Traefik service api@internal with the web UI/Dashboard
+        # traefik.http.routers.dashboard-https.rule=Host(`${APP_BASEURL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+        - "traefik.http.routers.dashboard.rule=Host(`${APP_BASEURL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        - "traefik.http.routers.dashboard.entrypoints=https"
+        - "traefik.http.routers.dashboard.tls=true"
+        - "traefik.http.routers.dashboard.service=api@internal"
+        - "traefik.http.routers.dashboard.middlewares=admin-auth"
+        # `metrics` router configuration
+        - "traefik.http.routers.metrics.rule=Host(`${APP_BASEURL}`) && PathPrefix(`/metrics`)"
+        - "traefik.http.routers.metrics.tls=true"
+        - "traefik.http.routers.metrics.entrypoints=https"
+        - "traefik.http.routers.metrics.service=prometheus@internal"
+        - "traefik.http.routers.metrics.middlewares=admin-auth"
+        # Middlewares
+        - "traefik.http.middlewares.admin-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
+        # SSLHEADER
+        # - "traefik.http.middlewares.sslheader.headers.accessControlAllowMethods=GET,OPTIONS,PUT"
+        # - "traefik.http.middlewares.sslheader.headers.accessControlAllowOriginList=https://${APP_BASEURL}"
+        # - "traefik.http.middlewares.sslheader.headers.accessControlMaxAge=100"
+        # - "traefik.http.middlewares.sslheader.headers.addVaryHeader=true"
+        # - "traefik.http.middlewares.sslheader.headers.browserXssFilter=true"
+        # - "traefik.http.middlewares.sslheader.headers.contentTypeNosniff=true"
+        # - "traefik.http.middlewares.sslheader.headers.customFrameOptionsValue=SAMEORIGIN"
+        # - "traefik.http.middlewares.sslheader.headers.forceSTSHeader=true"
+        # - "traefik.http.middlewares.sslheader.headers.featurePolicy=vibrate 'self'"
+        # - "traefik.http.middlewares.sslheader.headers.frameDeny=true"
+        # - "traefik.http.middlewares.sslheader.headers.referrerPolicy=no-referrer, strict-origin-when-cross-origin"
+        # - "traefik.http.middlewares.sslheader.headers.sslredirect=true"
+        # - "traefik.http.middlewares.sslheader.headers.stsSeconds=31536000"
+        # - "traefik.http.middlewares.sslheader.headers.stsIncludeSubdomains=true"
+        # - "traefik.http.middlewares.sslheader.headers.stsPreload=true"
+        # - "traefik.http.middlewares.sslheader.headers.customResponseHeaders.x-powered-by=Foobar/1.1.1"
+        # - "traefik.http.middlewares.sslheader.headers.customResponseHeaders.set-cookie='max-age=2592000; Path=/; Secure; HttpOnly; SameSite=Strict;'"
+        # - "traefik.http.middlewares.sslheader.headers.contentSecurityPolicy=\
+        #     default-src 'none';\
+        #     base-uri 'self';\
+        #     font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;\
+        #     form-action 'self' https://accounts.google.com;\
+        #     frame-ancestors 'none';\
+        #     frame-src 'self' https://www.google.com https://notfound-static.fwebservices.be/;\
+        #     img-src 'self' https://*.googleusercontent.com data:;\
+        #     object-src 'none';\
+        #     script-src-elem 'self' *.google.com https://www.gstatic.com;\
+        #     style-src 'self' *.googleapis.com;"

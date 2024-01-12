@@ -8,7 +8,6 @@ services:
   # Using this proxy lets you block anything you consider those services should not do.
   socketproxy:
     image: tecnativa/docker-socket-proxy:latest
-    restart: unless-stopped
     environment:
       NETWORKS: 1
       SERVICES: 1
@@ -18,3 +17,5 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - socket_proxy
+    labels:
+      - "traefik.constraint-label=traefik-${APP_ENVIRONMENT}"
