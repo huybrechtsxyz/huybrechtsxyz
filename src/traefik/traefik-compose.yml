@@ -13,11 +13,12 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.to=https"
       # Enable Docker Swarm mode
       # Default docker network to use for connections to all containers
-      # Use the secure docker socket proxy
+      # Use Docker Socket Proxy instead for improved security
       - "--providers.docker=true"
       - "--providers.docker.swarmmode"
       - "--providers.docker.network=internet"
-      - "--providers.docker.endpoint=tcp://socket_proxy:2375"
+      #- "--providers.docker.endpoint=tcp://socket_proxy:2375"
+      - --providers.docker.endpoint=unix:///var/run/docker.sock 
       - "--providers.docker.exposedbydefault=false"
       # Add a constraint to only use services with the label "traefik.constraint-label=traefik-public"      
       - "--providers.docker.constraints=Label(`traefik.constraint-label`, `traefik-${APP_ENVIRONMENT}`)"
@@ -61,6 +62,7 @@ services:
       - "80:80"
       - "433:433"
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       #- "/app/${APP_ENVIRONMENT}/traefik-config.yml:/app/traefik-config.yml:ro"
       - "/app/${APP_ENVIRONMENT}/certs:/app/certs"
       - "/app/${APP_ENVIRONMENT}/logs:/app/logs"

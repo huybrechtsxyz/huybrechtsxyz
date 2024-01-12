@@ -9,10 +9,10 @@ networks:
     external: true
 
 services:
-  socketproxy:
-    extends:
-      file: socketproxy-compose.yml
-      service: socketproxy
+  # socketproxy:
+  #   extends:
+  #     file: socketproxy-compose.yml
+  #     service: socketproxy
 
   traefik:
     extends:

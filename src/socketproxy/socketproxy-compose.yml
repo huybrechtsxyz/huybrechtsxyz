@@ -17,5 +17,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - socket_proxy
-    labels:
-      - "traefik.constraint-label=traefik-${APP_ENVIRONMENT}"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.constraint-label=traefik-${APP_ENVIRONMENT}"
