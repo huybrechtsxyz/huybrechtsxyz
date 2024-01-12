@@ -18,7 +18,7 @@ services:
       - "--providers.docker.swarmmode"
       - "--providers.docker.network=internet"
       #- "--providers.docker.endpoint=tcp://socket_proxy:2375"
-      - --providers.docker.endpoint=unix:///var/run/docker.sock 
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
       - "--providers.docker.exposedbydefault=false"
       # Add a constraint to only use services with the label "traefik.constraint-label=traefik-public"      
       - "--providers.docker.constraints=Label(`traefik.constraint-label`, `traefik-${APP_ENVIRONMENT}`)"
@@ -83,20 +83,33 @@ services:
           - node.role == manager
       labels:
         - "traefik.enable=true"
+        - "traefik.port=8080"
         - "traefik.constraint-label=traefik-${APP_ENVIRONMENT}"
+        # REDIRECT
+        - "traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)"
+        - "traefik.http.routers.http_catchall.entrypoints=http"
+        - "traefik.http.routers.http_catchall.middlewares=https_redirect"
+        - "traefik.http.middlewares.https_redirect.redirectscheme.scheme=https"
+        - "traefik.http.middlewares.https_redirect.redirectscheme.permanent=true"
         # Use the special Traefik service api@internal with the web UI/Dashboard
         # traefik.http.routers.dashboard-https.rule=Host(`${APP_BASEURL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
         - "traefik.http.routers.dashboard.rule=Host(`${APP_BASEURL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         - "traefik.http.routers.dashboard.entrypoints=https"
         - "traefik.http.routers.dashboard.tls=true"
+        - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.dashboard.tls.domains[0].main=${APP_BASEURL}"
         - "traefik.http.routers.dashboard.service=api@internal"
         - "traefik.http.routers.dashboard.middlewares=admin-auth"
+        - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
         # `metrics` router configuration
         - "traefik.http.routers.metrics.rule=Host(`${APP_BASEURL}`) && PathPrefix(`/metrics`)"
         - "traefik.http.routers.metrics.tls=true"
+        - "traefik.http.routers.metrics.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.metrics.tls.domains[0].main=${APP_BASEURL}"
         - "traefik.http.routers.metrics.entrypoints=https"
         - "traefik.http.routers.metrics.service=prometheus@internal"
         - "traefik.http.routers.metrics.middlewares=admin-auth"
+        - "traefik.http.services.metrics.loadbalancer.server.port=8080"
         # Middlewares
         - "traefik.http.middlewares.admin-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
         # SSLHEADER
