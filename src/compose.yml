@@ -2,18 +2,7 @@
 # Docker Compose for the staging environment
 version: '3.9'
 
-networks:
-  internet:
-    external: true
-  socket_proxy:
-    external: true
-
 services:
-  # socketproxy:
-  #   extends:
-  #     file: socketproxy-compose.yml
-  #     service: socketproxy
-
   traefik:
     extends:
       file: traefik-compose.yml
@@ -23,18 +12,3 @@ services:
     extends:
       file: whoami-compose.yml
       service: whoami
-
-  # portainer-agent:
-  #   extends:
-  #     file: portainer-compose.yml
-  #     service: portainer-agent
-
-  # portainer-server:
-  #   extends:
-  #     file: portainer-compose.yml
-  #     service: portainer-server
-      
-  # website:
-  #   extends:
-  #     file: website-compose.yml
-  #     service: website
