@@ -24,5 +24,5 @@ EXPOSE 8080
 EXPOSE 8081
 ENV DOTNET_CLI_TELEMETRY_OPTOUT '1'
 ENV DOTNET_EnableDiagnostics=0
-ENV DOTNET_URLS=http://+:8080,httsp://+:8081
+ENV DOTNET_URLS=http://+,httsp://+
 ENTRYPOINT ["dotnet", "Huybrechts.Web.dll"]
