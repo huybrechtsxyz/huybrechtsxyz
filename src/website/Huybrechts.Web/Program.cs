@@ -50,87 +50,87 @@ try
     {
         options.Level = CompressionLevel.SmallestSize;
     });
-	builder.Services.Configure<CookiePolicyOptions>(options =>
-	{
-		// This lambda determines whether user consent for non-essential cookies is needed for a given request.
-		options.CheckConsentNeeded = context => true;
-		options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
-	});
+		builder.Services.Configure<CookiePolicyOptions>(options =>
+		{
+			// This lambda determines whether user consent for non-essential cookies is needed for a given request.
+			options.CheckConsentNeeded = context => true;
+			options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
+		});
 
-	Log.Information("Configuring user interface");
-	builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-	builder.Services.AddAntiforgery();
-	builder.Services.AddControllers();
-	builder.Services.AddRazorPages().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+		Log.Information("Configuring user interface");
+		builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+		builder.Services.AddAntiforgery();
+		builder.Services.AddControllers();
+		builder.Services.AddRazorPages().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
-	Log.Information("Building the application and services");
+		Log.Information("Building the application and services");
     foreach (var service in builder.Services)
         Log.Information(service.ToString());
 
     Log.Information("Building the application and services");
     var app = builder.Build();
 
-	// Configure the HTTP request pipeline.
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-	if (app.Environment.IsDevelopment())
-	{
-		Log.Information("Configure the HTTP request pipeline for development");
-		app.UseDeveloperExceptionPage();
-		//app.UseWebAssemblyDebugging();
-	}
-	else if (app.Environment.IsStaging())
-	{
-		Log.Information("Configure the HTTP request pipeline for staging");
-		app.UseExceptionHandler("/Error", createScopeForErrors: true);
-		app.UseHsts();
-	}
-	else if (app.Environment.IsProduction())
-	{
-		Log.Information("Configure the HTTP request pipeline for production");
-		app.UseExceptionHandler("/Error", createScopeForErrors: true);
-		app.UseHsts();
-	}
-	else
-	{
-		throw new Exception("Invalid application environment");
-	}
-
-	Log.Information("Initializing application services");
-	app.UseResponseCompression();
-	app.UseHttpsRedirection();
-	app.UseStaticFiles(new StaticFileOptions
-	{
-		OnPrepareResponse = ctx =>
+		// Configure the HTTP request pipeline.
+		// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+		if (app.Environment.IsDevelopment())
 		{
-			ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "public,max-age=86400"; //+ (int)(60 * 60 * 24);
+			Log.Information("Configure the HTTP request pipeline for development");
+			app.UseDeveloperExceptionPage();
+			//app.UseWebAssemblyDebugging();
 		}
-	});
-	app.UseRequestLocalization(new RequestLocalizationOptions
-	{
-		SupportedCultures = ApplicationSettings.GetSupportedCultures(),
-		SupportedUICultures = ApplicationSettings.GetSupportedCultures(),
-		DefaultRequestCulture = new RequestCulture(ApplicationSettings.GetDefaultCulture())
-	});
-	app.UseCookiePolicy();
+		else if (app.Environment.IsStaging())
+		{
+			Log.Information("Configure the HTTP request pipeline for staging");
+			app.UseExceptionHandler("/Error", createScopeForErrors: true);
+			//app.UseHsts();
+		}
+		else if (app.Environment.IsProduction())
+		{
+			Log.Information("Configure the HTTP request pipeline for production");
+			app.UseExceptionHandler("/Error", createScopeForErrors: true);
+			//app.UseHsts();
+		}
+		else
+		{
+			throw new Exception("Invalid application environment");
+		}
 
-	Log.Information("Configuring running in containers");
-    if (ApplicationSettings.IsRunningInContainer())
-    {
-        app.UseForwardedHeaders();
-    }
+		Log.Information("Initializing application services");
+		app.UseResponseCompression();
+		//app.UseHttpsRedirection();
+		app.UseStaticFiles(new StaticFileOptions
+		{
+			OnPrepareResponse = ctx =>
+			{
+				ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "public,max-age=86400"; //+ (int)(60 * 60 * 24);
+			}
+		});
+		app.UseRequestLocalization(new RequestLocalizationOptions
+		{
+			SupportedCultures = ApplicationSettings.GetSupportedCultures(),
+			SupportedUICultures = ApplicationSettings.GetSupportedCultures(),
+			DefaultRequestCulture = new RequestCulture(ApplicationSettings.GetDefaultCulture())
+		});
+		app.UseCookiePolicy();
 
-    Log.Information("Configuring middleware services");
-    app.UseSerilogRequestLogging();
-	app.UseRouting();
-	app.UseAntiforgery();
-	app.UseResponseCaching();
+		Log.Information("Configuring running in containers");
+		if (ApplicationSettings.IsRunningInContainer())
+		{
+				app.UseForwardedHeaders();
+		}
 
-    Log.Information("Mapping and routing razor components");
-	app.MapControllers();
-	app.MapRazorPages();
+		Log.Information("Configuring middleware services");
+		app.UseSerilogRequestLogging();
+		app.UseRouting();
+		app.UseAntiforgery();
+		app.UseResponseCaching();
 
-    Log.Information("Run configured application");
-    app.Run();
+		Log.Information("Mapping and routing razor components");
+		app.MapControllers();
+		app.MapRazorPages();
+
+		Log.Information("Run configured application");
+		app.Run();
 }
 catch(Exception ex)
 {
