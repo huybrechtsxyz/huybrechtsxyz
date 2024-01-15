@@ -1,0 +1,42 @@
+2024-01-15 08:34:36.397 +01:00 [INF] Configure the HTTP request pipeline for development
+2024-01-15 08:34:36.458 +01:00 [INF] Initializing application services
+2024-01-15 08:34:36.462 +01:00 [INF] Configuring running in containers
+2024-01-15 08:34:36.464 +01:00 [INF] Configuring middleware services
+2024-01-15 08:34:36.510 +01:00 [INF] User profile is available. Using 'C:\Users\vhuybrec\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2024-01-15 08:34:36.537 +01:00 [INF] Mapping and routing razor components
+2024-01-15 08:34:36.643 +01:00 [INF] Run configured application
+2024-01-15 08:34:36.796 +01:00 [WRN] HTTP/2 is not enabled for 127.0.0.1:5080. The endpoint is configured to use HTTP/1.1 and HTTP/2, but TLS is not enabled. HTTP/2 requires TLS application protocol negotiation. Connections to this endpoint will use HTTP/1.1.
+2024-01-15 08:34:36.803 +01:00 [WRN] HTTP/2 is not enabled for [::1]:5080. The endpoint is configured to use HTTP/1.1 and HTTP/2, but TLS is not enabled. HTTP/2 requires TLS application protocol negotiation. Connections to this endpoint will use HTTP/1.1.
+2024-01-15 08:34:36.806 +01:00 [INF] Now listening on: https://localhost:5433
+2024-01-15 08:34:36.808 +01:00 [INF] Now listening on: http://localhost:5080
+2024-01-15 08:34:36.811 +01:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-01-15 08:34:36.813 +01:00 [INF] Hosting environment: Development
+2024-01-15 08:34:36.815 +01:00 [INF] Content root path: E:\Sources\huybrechtsxyz\src\website\Huybrechts.Web
+2024-01-15 08:34:37.800 +01:00 [INF] Request starting HTTP/2 GET https://localhost:5433/ - null null
+2024-01-15 08:34:37.862 +01:00 [INF] No cached response available for this request.
+2024-01-15 08:34:37.876 +01:00 [INF] Executing endpoint '/Index'
+2024-01-15 08:34:37.914 +01:00 [INF] Route matched with {page = "/Index", action = "", controller = ""}. Executing page /Index
+2024-01-15 08:34:37.925 +01:00 [INF] Executing handler method Huybrechts.Web.Pages.IndexModel.OnGet - ModelState is "Valid"
+2024-01-15 08:34:37.928 +01:00 [INF] Executed handler method OnGet, returned result .
+2024-01-15 08:34:37.933 +01:00 [INF] Executing an implicit handler method - ModelState is "Valid"
+2024-01-15 08:34:37.937 +01:00 [INF] Executed an implicit handler method, returned result Microsoft.AspNetCore.Mvc.RazorPages.PageResult.
+2024-01-15 08:34:38.079 +01:00 [INF] Executed page /Index in 150.7717ms
+2024-01-15 08:34:38.088 +01:00 [INF] Executed endpoint '/Index'
+2024-01-15 08:34:38.092 +01:00 [INF] The response could not be cached for this request.
+2024-01-15 08:34:38.100 +01:00 [INF] HTTP GET / responded 200 in 259.0241 ms
+2024-01-15 08:34:38.109 +01:00 [INF] Request finished HTTP/2 GET https://localhost:5433/ - 200 null text/html; charset=utf-8 311.1467ms
+2024-01-15 08:34:38.179 +01:00 [INF] Request starting HTTP/2 GET https://localhost:5433/lib/jquery/jquery.js - null null
+2024-01-15 08:34:38.179 +01:00 [INF] Request starting HTTP/2 GET https://localhost:5433/lib/bootstrap/css/bootstrap.css - null null
+2024-01-15 08:34:38.221 +01:00 [INF] Request starting HTTP/2 GET https://localhost:5433/lib/bootstrap/js/bootstrap.bundle.js - null null
+2024-01-15 08:34:38.297 +01:00 [INF] Sending file. Request path: '/lib/jquery/jquery.js'. Physical path: 'E:\Sources\huybrechtsxyz\src\website\Huybrechts.Web\wwwroot\lib\jquery\jquery.js'
+2024-01-15 08:34:38.297 +01:00 [INF] Sending file. Request path: '/lib/bootstrap/css/bootstrap.css'. Physical path: 'E:\Sources\huybrechtsxyz\src\website\Huybrechts.Web\wwwroot\lib\bootstrap\css\bootstrap.css'
+2024-01-15 08:34:38.297 +01:00 [INF] Sending file. Request path: '/lib/bootstrap/js/bootstrap.bundle.js'. Physical path: 'E:\Sources\huybrechtsxyz\src\website\Huybrechts.Web\wwwroot\lib\bootstrap\js\bootstrap.bundle.js'
+2024-01-15 08:34:38.310 +01:00 [INF] Request finished HTTP/2 GET https://localhost:5433/lib/jquery/jquery.js - 200 null text/javascript 130.6687ms
+2024-01-15 08:34:38.310 +01:00 [INF] Request finished HTTP/2 GET https://localhost:5433/lib/bootstrap/js/bootstrap.bundle.js - 200 null text/javascript 89.0878ms
+2024-01-15 08:34:38.310 +01:00 [INF] Request finished HTTP/2 GET https://localhost:5433/lib/bootstrap/css/bootstrap.css - 200 null text/css 130.6687ms
+2024-01-15 08:34:38.378 +01:00 [INF] Request starting HTTP/2 GET https://localhost:5433/img/welcome.png - null null
+2024-01-15 08:34:38.427 +01:00 [INF] Sending file. Request path: '/img/welcome.png'. Physical path: 'E:\Sources\huybrechtsxyz\src\website\Huybrechts.Web\wwwroot\img\welcome.png'
+2024-01-15 08:34:38.431 +01:00 [INF] Request finished HTTP/2 GET https://localhost:5433/img/welcome.png - 200 212719 image/png 52.3149ms
+2024-01-15 08:34:38.492 +01:00 [INF] Request starting HTTP/2 GET https://localhost:5433/favicon.ico - null null
+2024-01-15 08:34:38.510 +01:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'E:\Sources\huybrechtsxyz\src\website\Huybrechts.Web\wwwroot\favicon.ico'
+2024-01-15 08:34:38.516 +01:00 [INF] Request finished HTTP/2 GET https://localhost:5433/favicon.ico - 200 176252 image/x-icon 24.2737ms
