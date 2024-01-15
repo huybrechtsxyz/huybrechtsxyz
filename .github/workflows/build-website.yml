@@ -30,7 +30,7 @@ on:
 jobs:
   build-website:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: production
     steps:
       - uses: actions/checkout@v4
       - name: Setup .NET
