@@ -14,8 +14,8 @@ services:
     networks:
       - "internet"
     ports:
-      - 5080:5080
-      - 5433:5433
+      - "8080"
+      - "8081"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.portal.rule=Host(`${APP_BASEURL}`)"
