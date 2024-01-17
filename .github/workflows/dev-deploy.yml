@@ -14,7 +14,7 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      APP_HOST_SERVER: ${{ secrets.HOST_APP_HOST_SERVER }}
+      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
       APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
