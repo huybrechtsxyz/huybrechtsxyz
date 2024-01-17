@@ -1,6 +1,6 @@
 # This workflow deploys traefik to the development environment
 
-name: Deploy To Staging
+name: Deploy Components To Staging
 
 on:
   workflow_dispatch:

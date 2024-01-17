@@ -4,7 +4,7 @@
 name: Reusable - Build Website
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       environment:
         required: true

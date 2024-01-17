@@ -1,6 +1,6 @@
 # This workflow deploys traefik to the development environment
 
-name: Deploy Component To Development
+name: Reusable - Deploy Component
 
 on:
   workflow_call:
@@ -12,6 +12,10 @@ on:
         required: true
         type: string
     secrets:
+      REGISTRY_USERNAME:
+        required: true
+      REGISTRY_PASSWORD:
+        required: true
       APP_HOST_SERVER:
         required: true
       APP_HOST_USERNAME:
