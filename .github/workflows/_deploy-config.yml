@@ -95,5 +95,4 @@ jobs:
           script: |
             cd /;
             cd /app/${{ inputs.environment }};
-            mv ${{ inputs.environment }}.env .env 2>/dev/null \
-              echo 'Environment variables set'
+            mv ${{ inputs.environment }}.env .env 2>/dev/null || echo 'Environment variables set'
