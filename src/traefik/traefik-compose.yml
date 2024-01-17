@@ -72,8 +72,8 @@ services:
       - "--entryPoints.metrics.address=:8082"
       - "--metrics.prometheus.entryPoint=metrics"
       - "--metrics.prometheus.manualrouting=true"
-    networks:
-      - proxy
+    #networks:
+    #  - proxy
     ports:
       # The HTTP port
       - "80:80"
