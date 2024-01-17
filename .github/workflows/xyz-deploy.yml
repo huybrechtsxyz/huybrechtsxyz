@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy-traefik:
-    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-component.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-component.yml@main
     with:
       environment: production
       component: traefik
@@ -20,7 +20,7 @@ jobs:
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
 
   deploy-whoami:
-    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-component.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-component.yml@main
     with:
       environment: production
       component: whoami
@@ -33,7 +33,7 @@ jobs:
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
 
   deploy-website:
-    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-component.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-component.yml@main
     with:
       environment: production
       component: website

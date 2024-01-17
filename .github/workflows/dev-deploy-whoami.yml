@@ -17,7 +17,7 @@ on:
 
 jobs:
   deploy-component:
-    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-component.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-component.yml@main
     with:
       environment: development
       component: whoami

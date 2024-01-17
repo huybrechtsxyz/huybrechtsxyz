@@ -17,7 +17,7 @@ on:
 
 jobs:
   build-website:
-    uses: huybrechtsxyz/huybrechtsxyz/build/github/_build-website.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_build-website.yml@main
     with:
       environment: development
     secrets:
@@ -25,7 +25,7 @@ jobs:
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
   deploy-component:
     needs: [ build-website ]
-    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-component.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-component.yml@main
     with:
       environment: development
       component: whoami

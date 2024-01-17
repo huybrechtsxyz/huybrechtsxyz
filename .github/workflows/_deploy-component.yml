@@ -23,7 +23,7 @@ on:
 
 jobs:
   deploy-config:
-    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-config.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-config.yml@main
     with:
       environment: ${{ inputs.environment }}
       component: ${{ inputs.component }}
@@ -35,7 +35,7 @@ jobs:
 
   deploy-image:
     needs: [ deploy-config ]
-    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-image.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-image.yml@main
     with:
       environment: ${{ inputs.environment }}
       component: ${{ inputs.component }}
@@ -49,7 +49,7 @@ jobs:
 
   deploy-stack:
     needs: [ deploy-config, deploy-image ]
-    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-stack.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-stack.yml@main
     with:
       environment: ${{ inputs.environment }}
       component: ${{ inputs.component }}
