@@ -14,7 +14,7 @@ services:
       # Docker swarm confiuration
       - --providers.docker
       - --providers.docker.exposedbydefault=false
-      - --providers.docker.network=traefik-${APP_ENVIRONMENT?EnvironmentNotSet}
+      - --providers.docker.network=traefik
       - --providers.swarm
       # Enable ACME (Let's Encrypt): automatic SSL.
       # CA server to use. Uncomment the line to use Let's Encrypt's staging server, leave commented to go to prod. Optional
@@ -62,7 +62,7 @@ services:
       - --api=true
       - --api.dashboard=true
     networks:
-      - traefik-${APP_ENVIRONMENT?EnvironmentNotSet}
+      - traefik
     ports:
       - "80:80"
       - "443:443"

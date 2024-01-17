@@ -7,7 +7,7 @@ services:
     extends:
       file: traefik-compose.yml
       service: traefik
-  traefik:
+  website:
     extends:
       file: website-compose.yml
       service: website
