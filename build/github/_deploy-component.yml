@@ -1,0 +1,61 @@
+# This workflow deploys traefik to the development environment
+
+name: Deploy Component To Development
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      component:
+        required: true
+        type: string
+    secrets:
+      APP_HOST_SERVER:
+        required: true
+      APP_HOST_USERNAME:
+        required: true
+      APP_HOST_PASSWORD:
+        required: true
+      APP_HOST_PORT:
+        required: true
+
+jobs:
+  deploy-config:
+    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-config.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+      component: ${{ inputs.component }}
+    secrets:
+      APP_HOST_SERVER: ${{ secrets.HOST_APP_HOST_SERVERSERVER }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
+
+  deploy-image:
+    needs: [ deploy-config ]
+    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-image.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+      component: ${{ inputs.component }}
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      APP_HOST_SERVER: ${{ secrets.HOST_APP_HOST_SERVERSERVER }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
+
+  deploy-stack:
+    needs: [ deploy-config, deploy-image ]
+    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-stack.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+      component: ${{ inputs.component }}
+    secrets:
+      APP_HOST_SERVER: ${{ secrets.HOST_APP_HOST_SERVERSERVER }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
+  

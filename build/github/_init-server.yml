@@ -1,0 +1,69 @@
+# This reusable workflow will initialize the server it runs on
+
+name: Reusable - Initialize Server
+
+on:
+  workflow_call:
+    secrets:
+      APP_HOST_SERVER:
+        required: true
+      APP_HOST_USERNAME:
+        required: true
+      APP_HOST_PASSWORD:
+        required: true
+      APP_HOST_PORT:
+        required: true
+
+jobs:
+  init-server:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: SSH Remote Command
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APPHOST_PORT }}
+          script: |
+            cd /;
+            echo "Reading package list";
+            sudo apt update
+            echo "Install Docker";
+            if docker --version &>> /dev/null; then
+              echo "Docker already installed";
+            else
+              sudo apt -y install docker.io
+              docker --version;
+            fi;
+            echo "Install Docker-Compose";
+            if docker-compose --version; then
+              echo "Docker-Compose already installed";
+            else
+              sudo apt -y install docker-compose;
+              chmod +x /usr/local/bin/docker-compose;
+            fi;
+            echo "Firewall set rules and enable"
+            if ufw --version; then
+              echo y | ufw reset;
+              ufw default deny incoming;
+              ufw default allow outgoing;
+              ufw allow 22/tcp;
+              ufw allow 80/tcp;
+              ufw allow 443/tcp;
+              value=$( ufw status | grep -ic 'Status: active' );
+              if [ $value -eq 1 ]
+              then
+                echo "Firewall is already active";
+              else
+                echo "Enable firewall";
+                echo "y" | ufw enable;
+              fi;
+            fi;
+            if jq --help; then
+              echo 'JSON parser already installed';
+            else
+              apt -y install jq;
+              echo 'JSON parser installed';
+            fi;

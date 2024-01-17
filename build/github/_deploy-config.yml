@@ -1,0 +1,98 @@
+# This reusable workflow will deploy the configuration files to the environment
+
+name: Reusable - Deploy Configuration
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      component:
+        required: true
+        type: string
+    secrets:
+      APP_HOST_SERVER:
+        required: true
+      APP_HOST_USERNAME:
+        required: true
+      APP_HOST_PASSWORD:
+        required: true
+      APP_HOST_PORT:
+        required: true
+
+jobs:
+  deploy-config:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: List repository files
+        run: |
+          ls ${{ github.workspace }}
+      - name: List component files
+        run: |
+          ls ${{ github.workspace }}/src/${{ inputs.component }}
+      - name: Prepare environment
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APP_HOST_PORT }}
+          script: |
+            echo "Creating application directories";
+            cd /;
+            if [ ! -d /app }} ]; then
+              mkdir -p /app }};
+            fi
+            if [ ! -d /app/${{ inputs.environment }} ]; then
+              mkdir -p /app/${{ inputs.environment }};
+            fi
+            if [ ! -d /app/${{ inputs.environment }}/cert ]; then
+              mkdir -p /app/${{ inputs.environment }}/cert;
+            fi
+            if [ ! -d /app/${{ inputs.environment }}/cfg ]; then
+              mkdir -p /app/${{ inputs.environment }}/cfg;
+            fi
+            if [ ! -d /app/${{ inputs.environment }}/data ]; then
+              mkdir -p /app/${{ inputs.environment }}/data;
+            fi
+            if [ ! -d /app/${{ inputs.environment }}/logs ]; then
+              mkdir -p /app/${{ inputs.environment }}/logs;
+            fi
+      - name: Deploy component files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APP_HOST_PORT }}
+          source: "src/${{ inputs.component }}/**"
+          strip_components: 2
+          overwrite: true
+          target: "/app/${{ inputs.environment }}"
+      - name: Deploy generic files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APP_HOST_PORT }}
+          source: "src/${{ inputs.environment }}.env,src/compose.yml"
+          strip_components: 1
+          overwrite: true
+          target: "/app/${{ inputs.environment }}"
+      - name: Finish configuration deployment
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APP_HOST_PORT }}
+          script: |
+            cd /;
+            cd /app/${{ inputs.environment }};
+            mv ${{ inputs.environment }}.env .env

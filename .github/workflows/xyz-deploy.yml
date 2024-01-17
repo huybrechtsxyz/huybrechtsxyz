@@ -1,0 +1,46 @@
+# This workflow deploys traefik to the development environment
+
+name: Deploy To Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-traefik:
+    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-component.yml@main
+    with:
+      environment: production
+      component: traefik
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      APP_HOST_SERVER: ${{ secrets.HOST_APP_HOST_SERVERSERVER }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
+
+  deploy-whoami:
+    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-component.yml@main
+    with:
+      environment: production
+      component: whoami
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      APP_HOST_SERVER: ${{ secrets.HOST_APP_HOST_SERVERSERVER }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
+
+  deploy-website:
+    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-component.yml@main
+    with:
+      environment: production
+      component: website
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      APP_HOST_SERVER: ${{ secrets.HOST_APP_HOST_SERVERSERVER }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}

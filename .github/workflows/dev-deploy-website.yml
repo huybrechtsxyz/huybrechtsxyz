@@ -1,0 +1,34 @@
+# This workflow deploys the website to the development environment
+
+name: Deploy Website To Development
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches: [ "main" ]
+    paths: 
+      - 'src/whoami/**'
+
+  pull_request:
+    branches: [ "main" ]
+    paths: 
+      - 'src/whoami/**'
+
+jobs:
+  build-website:
+    uses: huybrechtsxyz/huybrechtsxyz/build/github/_build-website.yml@main
+    with:
+      environment: development
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+  deploy-component:
+    needs: [ build-website ]
+    uses: huybrechtsxyz/huybrechtsxyz/build/github/_deploy-component.yml@main
+    with:
+      environment: development
+      component: whoami
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}

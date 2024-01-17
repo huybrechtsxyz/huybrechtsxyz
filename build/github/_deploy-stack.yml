@@ -1,0 +1,42 @@
+# This reusable workflow will deploy or update the docker stock for its environment
+
+name: Reusable - Deploy Docker Stack
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      component:
+        required: true
+        type: string
+    secrets:
+      APP_HOST_SERVER:
+        required: true
+      APP_HOST_USERNAME:
+        required: true
+      APP_HOST_PASSWORD:
+        required: true
+      APP_HOST_PORT:
+        required: true
+
+jobs:
+  deploy-config:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Update docker stack
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APP_HOST_PORT }}
+          script: |
+            cd /;
+            cd /app/${{ inputs.environment }};
+            docker stack deploy -c <(docker-compose -f compose.yml config) ${{ inputs.environment }};

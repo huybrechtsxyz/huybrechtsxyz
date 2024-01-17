@@ -82,13 +82,15 @@ try
 		{
 			Log.Information("Configure the HTTP request pipeline for staging");
 			app.UseExceptionHandler("/Error", createScopeForErrors: true);
-			//app.UseHsts();
+			if (!ApplicationSettings.IsRunningInContainer())
+					app.UseHsts();
 		}
 		else if (app.Environment.IsProduction())
 		{
 			Log.Information("Configure the HTTP request pipeline for production");
 			app.UseExceptionHandler("/Error", createScopeForErrors: true);
-			//app.UseHsts();
+			if (!ApplicationSettings.IsRunningInContainer())
+					app.UseHsts();
 		}
 		else
 		{
@@ -97,7 +99,8 @@ try
 
 		Log.Information("Initializing application services");
 		app.UseResponseCompression();
-		//app.UseHttpsRedirection();
+		if (!ApplicationSettings.IsRunningInContainer())
+				app.UseHttpsRedirection();
 		app.UseStaticFiles(new StaticFileOptions
 		{
 			OnPrepareResponse = ctx =>
