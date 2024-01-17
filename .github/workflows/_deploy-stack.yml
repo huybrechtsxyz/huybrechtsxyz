@@ -8,9 +8,6 @@ on:
       environment:
         required: true
         type: string
-      component:
-        required: true
-        type: string
     secrets:
       APP_HOST_SERVER:
         required: true
