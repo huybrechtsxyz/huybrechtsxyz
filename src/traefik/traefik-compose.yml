@@ -4,121 +4,172 @@ services:
   traefik:
     image: traefik:v3.0
     command:
-      # Do not expose all Docker services, only the ones explicitly exposed
-      # Forces redirection of incoming requests from `web - http` to `websecure - https` entrypoint.
-      # https://doc.traefik.io/traefik/routing/entrypoints/#redirection
-      - "--entryPoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-      - "--entryPoints.websecure.address=:443"
-      - "--entrypoints.websecure.http.tls.certResolver=letsencrypt"
-      - "--entrypoints.websecure.http.tls.domains[0].main=${APP_HOST_DOMAIN?Variable not set}"
-      # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
-      # https://doc.traefik.io/traefik/routing/entrypoints/#http2
-      - "--entryPoints.websecure.http2.maxConcurrentStreams=250"
-      # Enable ACME (Let's Encrypt): automatic SSL.
-      # Use a HTTP-01 ACME challenge.Optional.
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-      # EntryPoint to use for the HTTP-01 challenges. Required.
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      # CA server to use. Uncomment the line to use Let's Encrypt's staging server, leave commented to go to prod. Optional
-      # Default: "https://acme-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      # Email address used for registration. Required
-      - "--certificatesresolvers.letsencrypt.acme.email=${APP_HOST_MAIL?Variable not set}"
-      # File or key used for certificates storage. Required
-      - "--certificatesresolvers.letsencrypt.acme.storage=/app/cert/acme.json"
-      # The certificates' duration in hours. It defaults to 2160 (90 days) to follow Let's Encrypt certificates' duration. Optional. Default: 2160
-      - "--certificatesresolvers.letsencrypt.acme.certificatesDuration=2160"
-      # Preferred chain to use. If the CA offers multiple certificate chains, prefer the chain with an issuer matching this Subject Common Name.
-      # If no match, the default offered chain will be used. Optional. Default: ""
-      - --certificatesresolvers.letsencrypt.acme.preferredchain="ISRG Root X1"
-      # KeyType to use. Optional. Default: "RSA4096"
-      # Available values : "EC256", "EC384", "RSA2048", "RSA4096", "RSA8192"
-      - "--certificatesresolvers.letsencrypt.acme.keytype=RSA4096"
-      # Docker swarm confiuration
-      - "--providers.docker=true"
-      - "--providers.docker.exposedByDefault=false"
-      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
-      - "--providers.swarm.exposedByDefault=false"
-      - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
-      # Dashboard. Optional. Default: true. 
-      - "--api=true"
-      - "--api.dashboard=true"
-      # Checking the Health of Your Traefik Instances
-      - "--ping=true"
-      # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
-      # Enable the Traefik log, for configurations and errors
-      - "--log=true"
-      - "--log.level=DEBUG"
-      - "--log.format=json"
-      - "--log.maxsize=5"
-      - "--log.maxage=5"
-      - "--log.filePath=/app/logs/traefik.log"
-      - "--global.sendAnonymousUsage=false"
-      # Enable the access log, with HTTP requests
-      - "--accesslog=true"
-      - "--accesslog.format=json"
-      - "--accesslog.filepath=/app/logs/traefik-access.log"
-      # Prometheus metrics
-      # https://doc.traefik.io/traefik/observability/metrics/prometheus/
-      # Enable prometheus metrics
-      # Create a manual router instead of the default one
-      - "--metrics.prometheus=true"
-      - "--metrics.prometheus.addEntryPointsLabels=true"
-      - "--metrics.prometheus.addrouterslabels=true"
-      - "--metrics.prometheus.addServicesLabels=true"
-      - "--entryPoints.metrics.address=:8082"
-      - "--metrics.prometheus.entryPoint=metrics"
-      - "--metrics.prometheus.manualrouting=true"
-    #networks:
-    #  - proxy
+      - --log.level=INFO
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.swarmmode=true
+      - --providers.docker.network=traefik
+      - --api
+      - --api.dashboard=true
+      - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      # update your email here
+      - --certificatesresolvers.leresolver.acme.email=webmaster@huybrechts.xyz
+      # Make sure the this file is available and permission is set correctly
+      - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
+      - --certificatesresolvers.leresolver.acme.tlschallenge=true
     ports:
-      # The HTTP port
       - "80:80"
-      - "433:433"
-      # The Web UI (enabled by --api.insecure=true)
-      #- "8080:8080"
+      - "443:443"
+    networks:
+      - traefik
     volumes:
-      # So that Traefik can listen to the Docker events
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/app/${APP_ENVIRONMENT}/cert:/app/cert"
-      - "/app/${APP_ENVIRONMENT}/logs:/app/logs"
-    healthcheck:
-      # Run traefik healthcheck command
-      # https://doc.traefik.io/traefik/operations/cli/#healthcheck
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"      
+      - "/app/development/cert:/app/cert"
+      - "/app/development/logs:/app/logs"
     deploy:
-      mode: global
-      placement:
-        constraints:
-          # Make the traefik service run only on the manager node,
-          # as the node with it has the volume for the certificates
-          - "node.role == manager"
       labels:
+        # Dashboard
         - "traefik.enable=true"
-        - "traefik.docker.network=proxy"
-        # Middlewares
-        - "traefik.http.middlewares.admin-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
-        # Use the special Traefik service api@internal with the web UI/Dashboard
-        # Dummy service for Swarm port detection. The port can be any valid integer value.
-        #- "traefik.http.routers.dashboard.entrypoints=websecure"
-        - "traefik.http.routers.dashboard.rule=Host(`${APP_HOST_DOMAIN?Variable not set}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
-        - "traefik.http.routers.dashboard.service=api@internal"
-        - "traefik.http.routers.dashboard.middlewares=admin-auth"
-        - "traefik.http.middlewares.auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0"
-        - "traefik.http.services.dashboard.loadbalancer.server.port=9999"
-        # `metrics` router configuration
-        #- "traefik.http.routers.metrics.tls=true"
-        #- "traefik.http.routers.metrics.tls.certresolver=letsencrypt"
-        #- "traefik.http.routers.metrics.tls.domains[0].main=${APP_BASEURL}"
-        #- "traefik.http.routers.metrics.entrypoints=https"
-        - "traefik.http.routers.metrics.rule=Host(`${APP_HOST_DOMAIN?Variable not set}`) && PathPrefix(`/metrics`)"
-        - "traefik.http.routers.metrics.service=prometheus@internal"
-        - "traefik.http.routers.metrics.middlewares=admin-auth"
-        - "traefik.http.services.metrics.loadbalancer.server.port=8080"
+        # Change the host url here
+        - "traefik.http.routers.traefik.rule=Host(`traefik.huybrechts.xyz`)"
+        - "traefik.http.routers.traefik.service=api@internal"
+        - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+        - "traefik.http.routers.traefik.tls.certresolver=leresolver"
+        - "traefik.http.routers.traefik.entrypoints=websecure"
+        - "traefik.http.routers.traefik.middlewares=authtraefik"
+        # Change the auth password here
+        - "traefik.http.middlewares.authtraefik.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
+
+        # global redirect to https
+        - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+        - "traefik.http.routers.http-catchall.entrypoints=web"
+        - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+
+        # middleware redirect
+        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+
+
+  # traefik:
+  #   image: traefik:v3.0
+  #   command:
+  #     # Do not expose all Docker services, only the ones explicitly exposed
+  #     # Forces redirection of incoming requests from `web - http` to `websecure - https` entrypoint.
+  #     # https://doc.traefik.io/traefik/routing/entrypoints/#redirection
+  #     - "--entryPoints.web.address=:80"
+  #     #- "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+  #     #- "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+  #     - "--entryPoints.websecure.address=:443"
+  #     - "--entrypoints.websecure.http.tls.certResolver=letsencrypt"
+  #     - "--entrypoints.websecure.http.tls.domains[0].main=${APP_HOST_DOMAIN?Variable not set}"
+  #     # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
+  #     # https://doc.traefik.io/traefik/routing/entrypoints/#http2
+  #     - "--entryPoints.websecure.http2.maxConcurrentStreams=250"
+  #     # Enable ACME (Let's Encrypt): automatic SSL.
+  #     # Use a HTTP-01 ACME challenge.Optional.
+  #     - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+  #     # EntryPoint to use for the HTTP-01 challenges. Required.
+  #     - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+  #     # CA server to use. Uncomment the line to use Let's Encrypt's staging server, leave commented to go to prod. Optional
+  #     # Default: "https://acme-v02.api.letsencrypt.org/directory"
+  #     - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+  #     # Email address used for registration. Required
+  #     - "--certificatesresolvers.letsencrypt.acme.email=${APP_HOST_MAIL?Variable not set}"
+  #     # File or key used for certificates storage. Required
+  #     - "--certificatesresolvers.letsencrypt.acme.storage=/app/cert/acme.json"
+  #     # The certificates' duration in hours. It defaults to 2160 (90 days) to follow Let's Encrypt certificates' duration. Optional. Default: 2160
+  #     - "--certificatesresolvers.letsencrypt.acme.certificatesDuration=2160"
+  #     # Preferred chain to use. If the CA offers multiple certificate chains, prefer the chain with an issuer matching this Subject Common Name.
+  #     # If no match, the default offered chain will be used. Optional. Default: ""
+  #     - --certificatesresolvers.letsencrypt.acme.preferredchain="ISRG Root X1"
+  #     # KeyType to use. Optional. Default: "RSA4096"
+  #     # Available values : "EC256", "EC384", "RSA2048", "RSA4096", "RSA8192"
+  #     - "--certificatesresolvers.letsencrypt.acme.keytype=RSA4096"
+  #     # Docker swarm confiuration
+  #     - "--providers.docker=true"
+  #     - "--providers.docker.exposedByDefault=false"
+  #     - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+  #     - "--providers.swarm.exposedByDefault=false"
+  #     - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
+  #     # Dashboard. Optional. Default: true. 
+  #     - "--api=true"
+  #     - "--api.dashboard=true"
+  #     # Checking the Health of Your Traefik Instances
+  #     - "--ping=true"
+  #     # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+  #     # Enable the Traefik log, for configurations and errors
+  #     - "--log=true"
+  #     - "--log.level=DEBUG"
+  #     - "--log.format=json"
+  #     - "--log.maxsize=5"
+  #     - "--log.maxage=5"
+  #     - "--log.filePath=/app/logs/traefik.log"
+  #     - "--global.sendAnonymousUsage=false"
+  #     # Enable the access log, with HTTP requests
+  #     - "--accesslog=true"
+  #     - "--accesslog.format=json"
+  #     - "--accesslog.filepath=/app/logs/traefik-access.log"
+  #     # Prometheus metrics
+  #     # https://doc.traefik.io/traefik/observability/metrics/prometheus/
+  #     # Enable prometheus metrics
+  #     # Create a manual router instead of the default one
+  #     - "--metrics.prometheus=true"
+  #     - "--metrics.prometheus.addEntryPointsLabels=true"
+  #     - "--metrics.prometheus.addrouterslabels=true"
+  #     - "--metrics.prometheus.addServicesLabels=true"
+  #     - "--entryPoints.metrics.address=:8082"
+  #     - "--metrics.prometheus.entryPoint=metrics"
+  #     - "--metrics.prometheus.manualrouting=true"
+  #   networks:
+  #     - traefik-public
+  #   ports:
+  #     # The HTTP port
+  #     - "80:80"
+  #     - "433:433"
+  #     # The Web UI (enabled by --api.insecure=true)
+  #     #- "8080:8080"
+  #   volumes:
+  #     # So that Traefik can listen to the Docker events
+  #     - "/var/run/docker.sock:/var/run/docker.sock"
+  #     - "/app/${APP_ENVIRONMENT}/cert:/app/cert"
+  #     - "/app/${APP_ENVIRONMENT}/logs:/app/logs"
+  #   healthcheck:
+  #     # Run traefik healthcheck command
+  #     # https://doc.traefik.io/traefik/operations/cli/#healthcheck
+  #     test: ["CMD", "traefik", "healthcheck", "--ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 5s
+  #   deploy:
+  #     mode: global
+  #     placement:
+  #       constraints:
+  #         # Make the traefik service run only on the manager node,
+  #         # as the node with it has the volume for the certificates
+  #         - "node.role == manager"
+  #     labels:
+  #       - "traefik.enable=true"
+  #       - "traefik.docker.network=traefik-public"
+  #       # Middlewares
+  #       - "traefik.http.middlewares.admin-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
+  #       # Use the special Traefik service api@internal with the web UI/Dashboard
+  #       # Dummy service for Swarm port detection. The port can be any valid integer value.
+  #       #- "traefik.http.routers.dashboard.entrypoints=websecure"
+  #       - "traefik.http.routers.dashboard.rule=Host(`${APP_HOST_DOMAIN?Variable not set}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+  #       - "traefik.http.routers.dashboard.service=api@internal"
+  #       - "traefik.http.routers.dashboard.middlewares=admin-auth"
+  #       - "traefik.http.middlewares.auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0"
+  #       - "traefik.http.services.dashboard.loadbalancer.server.port=9999"
+  #       # `metrics` router configuration
+  #       #- "traefik.http.routers.metrics.tls=true"
+  #       #- "traefik.http.routers.metrics.tls.certresolver=letsencrypt"
+  #       #- "traefik.http.routers.metrics.tls.domains[0].main=${APP_BASEURL}"
+  #       #- "traefik.http.routers.metrics.entrypoints=https"
+  #       - "traefik.http.routers.metrics.rule=Host(`${APP_HOST_DOMAIN?Variable not set}`) && PathPrefix(`/metrics`)"
+  #       - "traefik.http.routers.metrics.service=prometheus@internal"
+  #       - "traefik.http.routers.metrics.middlewares=admin-auth"
+  #       - "traefik.http.services.metrics.loadbalancer.server.port=8080"
         

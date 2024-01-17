@@ -36,6 +36,7 @@ jobs:
             else
               sudo apt -y install docker.io
               docker --version;
+              # docker network create --driver=overlay traefik
             fi;
             echo "Install Docker-Compose";
             if docker-compose --version; then
