@@ -9,9 +9,9 @@ services:
       - --entrypoints.websecure.address=:443
       - --providers.docker
       - --providers.docker.exposedbydefault=false
-      - --providers.docker.swarmmode=true
       - --providers.docker.network=traefik
-      - --api
+      - --providers.swarm
+      - --api=true
       - --api.dashboard=true
       - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
       # update your email here
@@ -33,7 +33,7 @@ services:
         # Dashboard
         - "traefik.enable=true"
         # Change the host url here
-        - "traefik.http.routers.traefik.rule=Host(`traefik.huybrechts.xyz`)"
+        - "traefik.http.routers.traefik.rule=Host(`develop.huybrechts.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
         - "traefik.http.routers.traefik.tls.certresolver=leresolver"
