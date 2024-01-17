@@ -43,5 +43,5 @@ jobs:
           script: |
             cd /;
             cd /app/${{ inputs.environment }};
-            echo '${{ secrets.REGISTRY_PASSWORD }}' | docker login --username '${{ secrets.REGISTRY_USERNAME }}' --password-stdin &> /dev/null;
-            docker-compose -f ${{ inputs.component }}-compose.yml pull &> /app/${{ inputs.environment }}/logs/compose.log;
+            #echo '${{ secrets.REGISTRY_PASSWORD }}' | docker login --username '${{ secrets.REGISTRY_USERNAME }}' --password-stdin &> /dev/null;
+            #docker-compose -f ${{ inputs.component }}-compose.yml pull &> /app/${{ inputs.environment }}/logs/compose.log;
