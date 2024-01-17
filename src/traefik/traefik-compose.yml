@@ -12,7 +12,7 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entryPoints.websecure.address=:443"
       - "--entrypoints.websecure.http.tls.certResolver=letsencrypt"
-      - "--entrypoints.websecure.http.tls.domains[0].main=${APP_HOST?Variable not set}"
+      - "--entrypoints.websecure.http.tls.domains[0].main=${APP_HOST_DOMAIN?Variable not set}"
       # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
       # https://doc.traefik.io/traefik/routing/entrypoints/#http2
       - "--entryPoints.websecure.http2.maxConcurrentStreams=250"
@@ -23,12 +23,11 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       # CA server to use. Uncomment the line to use Let's Encrypt's staging server, leave commented to go to prod. Optional
       # Default: "https://acme-v02.api.letsencrypt.org/directory"
-      # --certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
-      - "--certificatesresolvers.letsencrypt.acme.caserver=${APP_CASERVER?Variable not set}"
+      - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       # Email address used for registration. Required
-      - "--certificatesresolvers.letsencrypt.acme.email=${APP_CAMAIL?Variable not set}"
+      - "--certificatesresolvers.letsencrypt.acme.email=${APP_HOST_MAIL?Variable not set}"
       # File or key used for certificates storage. Required
-      - "--certificatesresolvers.letsencrypt.acme.storage=/app/certs/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/app/cert/acme.json"
       # The certificates' duration in hours. It defaults to 2160 (90 days) to follow Let's Encrypt certificates' duration. Optional. Default: 2160
       - "--certificatesresolvers.letsencrypt.acme.certificatesDuration=2160"
       # Preferred chain to use. If the CA offers multiple certificate chains, prefer the chain with an issuer matching this Subject Common Name.
@@ -83,7 +82,7 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/app/${APP_ENVIRONMENT}/certs:/app/certs"
+      - "/app/${APP_ENVIRONMENT}/cert:/app/cert"
       - "/app/${APP_ENVIRONMENT}/logs:/app/logs"
     healthcheck:
       # Run traefik healthcheck command
@@ -108,7 +107,7 @@ services:
         # Use the special Traefik service api@internal with the web UI/Dashboard
         # Dummy service for Swarm port detection. The port can be any valid integer value.
         #- "traefik.http.routers.dashboard.entrypoints=websecure"
-        - "traefik.http.routers.dashboard.rule=Host(`${APP_HOST?Variable not set}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        - "traefik.http.routers.dashboard.rule=Host(`${APP_HOST_DOMAIN?Variable not set}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         - "traefik.http.routers.dashboard.service=api@internal"
         - "traefik.http.routers.dashboard.middlewares=admin-auth"
         - "traefik.http.middlewares.auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0"
@@ -118,7 +117,7 @@ services:
         #- "traefik.http.routers.metrics.tls.certresolver=letsencrypt"
         #- "traefik.http.routers.metrics.tls.domains[0].main=${APP_BASEURL}"
         #- "traefik.http.routers.metrics.entrypoints=https"
-        - "traefik.http.routers.metrics.rule=Host(`${APP_HOST}`) && PathPrefix(`/metrics`)"
+        - "traefik.http.routers.metrics.rule=Host(`${APP_HOST_DOMAIN?Variable not set}`) && PathPrefix(`/metrics`)"
         - "traefik.http.routers.metrics.service=prometheus@internal"
         - "traefik.http.routers.metrics.middlewares=admin-auth"
         - "traefik.http.services.metrics.loadbalancer.server.port=8080"
