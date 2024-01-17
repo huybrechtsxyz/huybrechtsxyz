@@ -17,5 +17,5 @@ services:
       service: whoami
 
 networks:
-  traefik-${APP_ENVIRONMENT}:
+  traefik:
     external: true
