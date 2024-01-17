@@ -9,11 +9,10 @@ services:
       - traefik
     deploy:
       labels:
-        # Explicitly instruct Traefik to expose this service
         - "traefik.enable=true"
-        # Change the host url here
         - "traefik.http.routers.whoami.rule=Host(`${APP_HOST_DOMAIN}`) && PathPrefix(`/whoami`)"
         - "traefik.http.services.whoami.loadbalancer.server.port=8080"
         - "traefik.http.routers.whoami.entrypoints=websecure"
+        - "traefik.http.routers.whoami.middlewares=authadmin"
         - "traefik.http.routers.whoami.tls=true"
-        - "traefik.http.routers.whoami.tls.certresolver=leresolver"
+        - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"

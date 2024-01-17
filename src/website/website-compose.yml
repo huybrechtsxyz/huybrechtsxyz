@@ -1,26 +1,18 @@
 # Docker Compose for the staging environment
 version: '3.9'
 
-networks:
-  internet:
-  localnet:
-
 services:
   website:
-    image: "huybrechts/website:latest"
+    image: "huybrechts/website:main"
     environment:
       - "ASPNETCORE_ENVIRONMENT=${APP_ENVIRONMENT}"
       - "DOTNET_RUNNING_IN_CONTAINER=true"
     networks:
-      - "internet"
-    ports:
-      - "8080"
-      - "8081"
+      - traefik-${APP_ENVIRONMENT}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.portal.rule=Host(`${APP_BASEURL}`)"
-      - "traefik.http.routers.portal.service=website"
-      - "traefik.http.routers.portal.entrypoints=websecure"
-      - "traefik.http.routers.portal.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.portal.tls.domains[0].main=${APP_BASEURL}"
-      - "traefik.http.routers.portal.middlewares=sslheader"
+      - "traefik.http.routers.website.rule=Host(`${APP_HOST_DOMAIN}`)"
+      - "traefik.http.services.website.loadbalancer.server.port=8080"
+      - "traefik.http.routers.website.entrypoints=websecure"
+      - "traefik.http.routers.website.tls=true"
+      - "traefik.http.routers.website.tls.certresolver=letsencrypt"

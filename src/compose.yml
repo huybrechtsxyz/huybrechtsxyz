@@ -7,11 +7,15 @@ services:
     extends:
       file: traefik-compose.yml
       service: traefik
+  traefik:
+    extends:
+      file: website-compose.yml
+      service: website
   whoami:
     extends:
       file: whoami-compose.yml
       service: whoami
 
 networks:
-  traefik:
+  traefik-${APP_ENVIRONMENT}:
     external: true
