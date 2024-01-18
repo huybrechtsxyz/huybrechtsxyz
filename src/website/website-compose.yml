@@ -3,7 +3,7 @@ version: '3.9'
 
 services:
   website:
-    image: "huybrechts/website:main"
+    image: "huybrechts/website:${APP_ENVIRONMENT}"
     environment:
       - "ASPNETCORE_ENVIRONMENT=${APP_ENVIRONMENT}"
       - "DOTNET_RUNNING_IN_CONTAINER=true"

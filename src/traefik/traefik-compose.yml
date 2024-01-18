@@ -5,8 +5,8 @@ services:
     image: traefik:v3.0
     command:
       # Entry points
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.address=:${APP_HOST_HTTP?HttpPortNotSet}
+      - --entrypoints.websecure.address=:${APP_HOST_HTTPS?HttpsPortNotSet}
       # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
       # https://doc.traefik.io/traefik/routing/entrypoints/#http2
       - --entryPoints.websecure.http2.maxConcurrentStreams=250
