@@ -15,4 +15,4 @@ services:
       - "traefik.http.services.website.loadbalancer.server.port=8080"
       - "traefik.http.routers.website.entrypoints=websecure"
       - "traefik.http.routers.website.tls=true"
-      - "traefik.http.routers.website.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.website.tls.certresolver=leresolver"
