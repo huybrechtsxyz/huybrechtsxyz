@@ -1,4 +1,5 @@
 ﻿@page
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment webHostingEnv
 @model PrivacyModel
 @{
 	ViewData["Title"] = "Privacy Policy - Huybrechts.xyz";
@@ -25,6 +26,14 @@
 	</header>
 	<div class="container">
 		<partial name="_CookieConsentPartial" />
+		<environment names="Development,Staging">
+			<div class="row">
+				<div class="col-md-12">
+					<h2>@webHostingEnv.EnvironmentName.ToUpper() ENVIRONMENT</h2>
+					<hr />
+				</div>
+			</div>
+		</environment>
 		<div class="row">
 			<div class="col-md-12">
 				<h4>From the legal perspective</h4>

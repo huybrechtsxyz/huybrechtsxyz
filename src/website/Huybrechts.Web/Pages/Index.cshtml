@@ -1,5 +1,6 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.Localization
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment webHostingEnv
 @inject IViewLocalizer Localizer
 @model IndexModel
 @{
@@ -34,14 +35,22 @@
 				<div class="col-12 text-center">
 					<h1 class="font-weight-light">Vincent Huybrechts</h1>
 					<p>IT Development Professional</p>
-					<a class="btn btn-secondary" role="button" aria-pressed="true" href="https://www.linkedin.com/in/vincent-huybrechts-23b18031/">@Localizer["About Vincent"]</a>
+					<a class="btn btn-scondary" role="button" aria-pressed="true" href="https://www.linkedin.com/in/vincent-huybrechts-23b18031/">@Localizer["About Vincent"]</a>
+					<environment names="Development">
+						<p />
+						<h2>DEVELOPMENT ENVIRONMENT</h2>
+					</environment>
+					<environment names="Staging">
+						<p />
+						<h2>STAGING ENVIRONMENT</h2>
+					</environment>
 				</div>
 			</div>
 			<div class="container">
 				<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light fixed-bottom bg-transparent mb-3">
 					<div class="container">
 						<div class="float-left">
-							&copy; @DateTime.Now.Year - Huybrechts.xyz | <a class="" asp-area="" asp-page="Privacy">Privacy</a>
+							&copy; @DateTime.Now.Year - Huybrechts.xyz | <a class="" asp-area="" asp-page="Privacy">Privacy</a> | @webHostingEnv.EnvironmentName
 						</div>
 						<div class="float-right">
 							<partial name="_SelectLanguagePartial" />
