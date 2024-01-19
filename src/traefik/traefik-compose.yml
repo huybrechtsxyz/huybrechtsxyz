@@ -4,12 +4,17 @@ services:
   traefik:
     image: "traefik:v3.0"
     command:
+      # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+      # Enable the Traefik log, for configurations and errors
+      - --log=true
       - --log.level=DEBUG
       - --log.format=json
       - --log.maxsize=5
       - --log.maxage=5
       - --log.filePath=/app/logs/traefik.log
+      # Checking the Health of Your Traefik Instances
       - --ping=true
+      # Enable the access log, with HTTP requests
       - --accesslog=true
       - --accesslog.format=json
       - --accesslog.filepath=/app/logs/traefik-access.log
