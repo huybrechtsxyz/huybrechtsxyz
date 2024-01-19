@@ -45,8 +45,8 @@ services:
       - --providers.docker
       - --providers.docker.exposedbydefault=false
       - --providers.docker.network=traefik
-      - --providers.docker.contraints=Label(`traefik.tags`, `development`)
       - --providers.swarm
+      - --providers.swarm.contraints=Label(`traefik.tags`, `development`)
       # Dashboard. Optional. Default: true. 
       - --api
       - --api.dashboard=true

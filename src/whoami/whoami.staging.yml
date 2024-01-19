@@ -10,6 +10,7 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
+        - "traefik.tags=staging"
         - "traefik.http.routers.whoami.rule=Host(`staging.huybrechts.xyz`) && PathPrefix(`/whoami`)"
         - "traefik.http.services.whoami.loadbalancer.server.port=8080"
         - "traefik.http.routers.whoami.middlewares=authadmin"
