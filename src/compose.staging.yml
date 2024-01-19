@@ -1,0 +1,21 @@
+# https://docs.docker.com/compose/multiple-compose-files/extends/
+# Docker Compose for the staging environment
+version: '3.9'
+
+services:
+  traefik:
+    extends:
+      file: traefik.staging.yml
+      service: traefik
+  website:
+    extends:
+      file: website.staging.yml
+      service: website
+  whoami:
+    extends:
+      file: whoami.staging.yml
+      service: whoami
+
+networks:
+  traefik:
+    external: true

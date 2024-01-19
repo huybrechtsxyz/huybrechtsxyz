@@ -1,0 +1,19 @@
+# Docker Compose for the staging environment
+version: '3.9'
+
+services:
+  website:
+    image: huybrechts/website:production
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_RUNNING_IN_CONTAINER=true
+    networks:
+      - traefik
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.website.rule=Host(`huybrechts.xyz`)"
+        - "traefik.http.services.website.loadbalancer.server.port=8080"
+        - "traefik.http.routers.website.entrypoints=websecure"
+        - "traefik.http.routers.website.tls=true"
+        - "traefik.http.routers.website.tls.certresolver=leresolver"

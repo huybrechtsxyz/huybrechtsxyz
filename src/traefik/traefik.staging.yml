@@ -7,7 +7,7 @@ services:
       # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
       # Enable the Traefik log, for configurations and errors
       - --log=true
-      - --log.level=DEBUG
+      - --log.level=INFO
       - --log.format=json
       - --log.maxsize=5
       - --log.maxage=5
@@ -36,8 +36,8 @@ services:
       #- --metrics.openTelemetry.addServicesLabels=true
       #- --metrics.openTelemetry.grpc=true
       # Entry points
-      - --entrypoints.web.address=:5080
-      - --entrypoints.websecure.address=:5443
+      - --entrypoints.web.address=:8080
+      - --entrypoints.websecure.address=:8443
       # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
       # https://doc.traefik.io/traefik/routing/entrypoints/#http2
       # Do not expose all Docker services, only the ones explicitly exposed
@@ -61,8 +61,8 @@ services:
       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
       - --certificatesresolvers.leresolver.acme.tlschallenge=true
     ports:
-      - "5080:80"
-      - "5443:443"
+      - "8080:80"
+      - "8443:443"
     networks:
       - traefik
     volumes:
@@ -82,7 +82,7 @@ services:
         # Dashboard
         - "traefik.enable=true"
         # Change the host url here
-        - "traefik.http.routers.traefik.rule=Host(`develop.huybrechts.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        - "traefik.http.routers.traefik.rule=Host(`staging.huybrechts.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
         - "traefik.http.routers.traefik.tls.certresolver=leresolver"
