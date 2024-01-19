@@ -57,7 +57,7 @@ services:
       # Make sure the this file is available and permission is set correctly
       # Use a TLS-ALPN-01 ACME challenge. Optional (but recommended). 
       - --certificatesresolvers.leresolver.acme.caserver=${APP_CERT_SERVER}
-      - --certificatesresolvers.leresolver.acme.email=${APP_CERT_MAIL}
+      - --certificatesresolvers.leresolver.acme.email=${APP_CERT_MAIL }
       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
       - --certificatesresolvers.leresolver.acme.tlschallenge=true
     ports:
@@ -82,7 +82,7 @@ services:
         # Dashboard
         - "traefik.enable=true"
         # Change the host url here
-        - "traefik.http.routers.traefik.rule=Host(`develop.huybrechts.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        - "traefik.http.routers.traefik.rule=Host(`${APP_HOST_DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
         - "traefik.http.routers.traefik.tls.certresolver=leresolver"
