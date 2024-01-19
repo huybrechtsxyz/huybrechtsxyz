@@ -5,6 +5,10 @@ services:
     image: "traefik:v3.0"
     command:
       - --log.level=DEBUG
+      - --log.format=json
+      - --log.maxsize=5
+      - --log.maxage=5
+      - --log.filePath=/app/logs/traefik.log
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --providers.docker
