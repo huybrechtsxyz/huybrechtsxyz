@@ -5,15 +5,15 @@ version: '3.9'
 services:
   traefik:
     extends:
-      file: traefik-compose.yml
+      file: traefik.yml
       service: traefik
   website:
     extends:
-      file: website-compose.yml
+      file: website.yml
       service: website
   whoami:
     extends:
-      file: whoami-compose.yml
+      file: whoami.yml
       service: whoami
 
 networks:

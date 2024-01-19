@@ -3,16 +3,16 @@ version: '3.9'
 
 services:
   website:
-    image: huybrechts/website:${APP_ENVIRONMENT}
+    image: huybrechts/website:development
     environment:
-      - ASPNETCORE_ENVIRONMENT=${APP_ENVIRONMENT}
+      - ASPNETCORE_ENVIRONMENT=Development
       - DOTNET_RUNNING_IN_CONTAINER=true
     networks:
       - traefik
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.website.rule=Host(`${APP_HOST_DOMAIN}`)"
+        - "traefik.http.routers.website.rule=Host(`develop.huybrechts.xyz`)"
         - "traefik.http.services.website.loadbalancer.server.port=8080"
         - "traefik.http.routers.website.entrypoints=websecure"
         - "traefik.http.routers.website.tls=true"

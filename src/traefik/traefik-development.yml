@@ -37,7 +37,7 @@ services:
       #- --metrics.openTelemetry.grpc=true
       # Entry points
       - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:433
+      - --entrypoints.websecure.address=:443
       # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
       # https://doc.traefik.io/traefik/routing/entrypoints/#http2
       # Do not expose all Docker services, only the ones explicitly exposed
@@ -97,10 +97,4 @@ services:
         - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
 
         # middleware redirect
-        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"        
-      # mode: global
-      # placement:
-      #   constraints:
-      #     # Make the traefik service run only on the manager node,
-      #     # as the node with it has the volume for the certificates
-      #     - "node.role == manager"
+        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"

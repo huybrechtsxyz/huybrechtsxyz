@@ -81,7 +81,7 @@ jobs:
           username: ${{ secrets.APP_HOST_USERNAME }}
           password: ${{ secrets.APP_HOST_PASSWORD }}
           port: ${{ secrets.APP_HOST_PORT }}
-          source: "src/${{ inputs.environment }}.env,src/compose.yml"
+          source: "src/compose-${{ inputs.environment }}.yml"
           strip_components: 1
           overwrite: true
           target: "/app/${{ inputs.environment }}"
@@ -95,4 +95,4 @@ jobs:
           script: |
             cd /;
             cd /app/${{ inputs.environment }};
-            mv ${{ inputs.environment }}.env .env 2>/dev/null || echo 'Environment variables set'
+            mv compose-${{ inputs.environment }}.yml compose.yml 2>/dev/null || echo 'Docker-compose initialized'
