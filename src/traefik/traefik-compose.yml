@@ -14,18 +14,18 @@ services:
       - --log.filePath=/app/logs/traefik.log
       - --global.sendAnonymousUsage=false
       # Checking the Health of Your Traefik Instances
-      - --ping=true
+      #- --ping=true
       # Enable the access log, with HTTP requests
-      - --accesslog=true
-      - --accesslog.format=json
-      - --accesslog.filepath=/app/logs/traefik-access.log
+      #- --accesslog=true
+      #- --accesslog.format=json
+      #- --accesslog.filepath=/app/logs/traefik-access.log
       # Prometheus metrics
       # https://doc.traefik.io/traefik/v3.0/observability/metrics/prometheus/
       # Enable prometheus metrics
-      - --metrics.prometheus=true
-      - --metrics.prometheus.addEntryPointsLabels=true
-      - --metrics.prometheus.addRoutersLabels=true
-      - --metrics.prometheus.addServicesLabels=true
+      #- --metrics.prometheus=true
+      #- --metrics.prometheus.addEntryPointsLabels=true
+      #- --metrics.prometheus.addRoutersLabels=true
+      #- --metrics.prometheus.addServicesLabels=true
       # OpenTelemetry metrics
       # https://doc.traefik.io/traefik/v3.0/observability/metrics/opentelemetry/
       # Address of the OpenTelemetry Collector to send metrics to.
@@ -41,7 +41,7 @@ services:
       - --entrypoints.websecure.address=:${APP_HOST_HTTPS?HttpPortNotSet}
       # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
       # https://doc.traefik.io/traefik/routing/entrypoints/#http2
-      - --entryPoints.websecure.http2.maxConcurrentStreams=250
+      #- --entryPoints.websecure.http2.maxConcurrentStreams=250
       # Do not expose all Docker services, only the ones explicitly exposed
       # Docker swarm confiuration
       - --providers.docker
@@ -71,21 +71,21 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"      
       - "/app/development/cert:/app/cert"
       - "/app/development/logs:/app/logs"
-    healthcheck:
-      # Run traefik healthcheck command
-      # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
+    #healthcheck:
+    #  # Run traefik healthcheck command
+    #  # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
+    #  test: ["CMD", "traefik", "healthcheck", "--ping"]
+    #  interval: 10s
+    #  timeout: 5s
+    #  retries: 3
+    #  start_period: 5s
     deploy:
-      mode: global
-      placement:
-        constraints:
-          # Make the traefik service run only on the manager node,
-          # as the node with it has the volume for the certificates
-          - "node.role == manager"
+    #  mode: global
+    #  placement:
+    #    constraints:
+    #      # Make the traefik service run only on the manager node,
+    #      # as the node with it has the volume for the certificates
+    #      - "node.role == manager"
       labels:
         # Dashboard
         - "traefik.enable=true"
@@ -98,9 +98,11 @@ services:
         - "traefik.http.routers.traefik.middlewares=authadmin"
         # Authorization middlewares
         - "traefik.http.middlewares.authadmin.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
+
         # global redirect to https
         - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
         - "traefik.http.routers.http-catchall.entrypoints=web"
         - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+        
         # middleware redirect
         - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
