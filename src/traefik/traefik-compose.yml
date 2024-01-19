@@ -36,9 +36,9 @@ services:
         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
         - "traefik.http.routers.traefik.tls.certresolver=leresolver"
         - "traefik.http.routers.traefik.entrypoints=websecure"
-        - "traefik.http.routers.traefik.middlewares=authtraefik"
+        - "traefik.http.routers.traefik.middlewares=authadmin"
         # Change the auth password here
-        - "traefik.http.middlewares.authtraefik.basicauth.users=admin:yournewpassword" # user/password
+        - "traefik.http.middlewares.authadmin.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
 
         # global redirect to https
         - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
