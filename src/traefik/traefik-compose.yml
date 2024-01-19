@@ -2,107 +2,155 @@ version: '3.9'
 
 services:
   traefik:
-    image: traefik:v3.0
+    image: "traefik:v3.0"
     command:
-      # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
-      # Enable the Traefik log, for configurations and errors
-      - --log=true
       - --log.level=INFO
-      - --log.format=json
-      - --log.maxsize=5
-      - --log.maxage=5
-      - --log.filePath=/app/logs/traefik.log
-      - --global.sendAnonymousUsage=false
-      # Checking the Health of Your Traefik Instances
-      #- --ping=true
-      # Enable the access log, with HTTP requests
-      #- --accesslog=true
-      #- --accesslog.format=json
-      #- --accesslog.filepath=/app/logs/traefik-access.log
-      # Prometheus metrics
-      # https://doc.traefik.io/traefik/v3.0/observability/metrics/prometheus/
-      # Enable prometheus metrics
-      #- --metrics.prometheus=true
-      #- --metrics.prometheus.addEntryPointsLabels=true
-      #- --metrics.prometheus.addRoutersLabels=true
-      #- --metrics.prometheus.addServicesLabels=true
-      # OpenTelemetry metrics
-      # https://doc.traefik.io/traefik/v3.0/observability/metrics/opentelemetry/
-      # Address of the OpenTelemetry Collector to send metrics to.
-      # The reporter can send metrics to the OpenTelemetry Collector using gRPC.
-      # - --metrics.openTelemetry=true
-      # - --metrics.openTelemetry.address=localhost:4318
-      # - --metrics.openTelemetry.addEntryPointsLabels=true
-      # - --metrics.openTelemetry.addRoutersLabels=true
-      # - --metrics.openTelemetry.addServicesLabels=true
-      # - --metrics.openTelemetry.grpc=true
-      # Entry points
-      - --entrypoints.web.address=:${APP_HOST_HTTP?HttpPortNotSet}
-      - --entrypoints.websecure.address=:${APP_HOST_HTTPS?HttpPortNotSet}
-      # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
-      # https://doc.traefik.io/traefik/routing/entrypoints/#http2
-      #- --entryPoints.websecure.http2.maxConcurrentStreams=250
-      # Do not expose all Docker services, only the ones explicitly exposed
-      # Docker swarm confiuration
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
       - --providers.docker
       - --providers.docker.exposedbydefault=false
       - --providers.docker.network=traefik
       - --providers.swarm
-      # Dashboard. Optional. Default: true. 
-      - --api=true
+      - --api
       - --api.dashboard=true
-      # Enable ACME (Let's Encrypt): automatic SSL.
-      # CA server to use. Uncomment the line to use Let's Encrypt's staging server, leave commented to go to prod. Optional
-      # Default: "https://acme-v02.api.letsencrypt.org/directory"
-      - --certificatesresolvers.leresolver.acme.caserver=${APP_CERT_SERVER?CertServerNotSet}
-      # Email address used for registration. Required
-      - --certificatesresolvers.leresolver.acme.email=${APP_CERT_MAIL?CertMailNotSet}
-      # File or key used for certificates storage. Required
-      # Make sure the this file is available and permission is set correctly
+      - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.leresolver.acme.email=webmaster@huybrechts.xyz
       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
-      # Use a TLS-ALPN-01 ACME challenge. Optional (but recommended). 
       - --certificatesresolvers.leresolver.acme.tlschallenge=true
     ports:
-      - "${APP_HOST_HTTP?HttpPortNotSet}:${APP_HOST_HTTP?HttpPortNotSet}"
-      - "${APP_HOST_HTTPS?HttpPortNotSet}:${APP_HOST_HTTPS?HttpPortNotSet}"
+      - "80:80"
+      - "443:443"
     networks:
       - traefik
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"      
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "/app/development/cert:/app/cert"
       - "/app/development/logs:/app/logs"
-    #healthcheck:
-    #  # Run traefik healthcheck command
-    #  # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
-    #  test: ["CMD", "traefik", "healthcheck", "--ping"]
-    #  interval: 10s
-    #  timeout: 5s
-    #  retries: 3
-    #  start_period: 5s
     deploy:
-    #  mode: global
-    #  placement:
-    #    constraints:
-    #      # Make the traefik service run only on the manager node,
-    #      # as the node with it has the volume for the certificates
-    #      - "node.role == manager"
       labels:
         # Dashboard
         - "traefik.enable=true"
         # Change the host url here
-        - "traefik.http.routers.traefik.rule=Host(`${APP_HOST_DOMAIN?DomainNotSet}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        - "traefik.http.routers.traefik.rule=Host(`develop.huybrechts.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
         - "traefik.http.routers.traefik.tls.certresolver=leresolver"
         - "traefik.http.routers.traefik.entrypoints=websecure"
-        - "traefik.http.routers.traefik.middlewares=authadmin"
-        # Authorization middlewares
-        - "traefik.http.middlewares.authadmin.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
+        - "traefik.http.routers.traefik.middlewares=authtraefik"
+        # Change the auth password here
+        - "traefik.http.middlewares.authtraefik.basicauth.users=admin:yournewpassword" # user/password
 
         # global redirect to https
         - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
         - "traefik.http.routers.http-catchall.entrypoints=web"
         - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-        
+
         # middleware redirect
         - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+# services:
+#   traefik:
+#     image: traefik:v3.0
+#     command:
+#       # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+#       # Enable the Traefik log, for configurations and errors
+#       - --log=true
+#       - --log.level=INFO
+#       - --log.format=json
+#       - --log.maxsize=5
+#       - --log.maxage=5
+#       - --log.filePath=/app/logs/traefik.log
+#       - --global.sendAnonymousUsage=false
+#       # Checking the Health of Your Traefik Instances
+#       #- --ping=true
+#       # Enable the access log, with HTTP requests
+#       #- --accesslog=true
+#       #- --accesslog.format=json
+#       #- --accesslog.filepath=/app/logs/traefik-access.log
+#       # Prometheus metrics
+#       # https://doc.traefik.io/traefik/v3.0/observability/metrics/prometheus/
+#       # Enable prometheus metrics
+#       #- --metrics.prometheus=true
+#       #- --metrics.prometheus.addEntryPointsLabels=true
+#       #- --metrics.prometheus.addRoutersLabels=true
+#       #- --metrics.prometheus.addServicesLabels=true
+#       # OpenTelemetry metrics
+#       # https://doc.traefik.io/traefik/v3.0/observability/metrics/opentelemetry/
+#       # Address of the OpenTelemetry Collector to send metrics to.
+#       # The reporter can send metrics to the OpenTelemetry Collector using gRPC.
+#       # - --metrics.openTelemetry=true
+#       # - --metrics.openTelemetry.address=localhost:4318
+#       # - --metrics.openTelemetry.addEntryPointsLabels=true
+#       # - --metrics.openTelemetry.addRoutersLabels=true
+#       # - --metrics.openTelemetry.addServicesLabels=true
+#       # - --metrics.openTelemetry.grpc=true
+#       # Entry points
+#       - --entrypoints.web.address=:${APP_HOST_HTTP?HttpPortNotSet}
+#       - --entrypoints.websecure.address=:${APP_HOST_HTTPS?HttpPortNotSet}
+#       # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
+#       # https://doc.traefik.io/traefik/routing/entrypoints/#http2
+#       #- --entryPoints.websecure.http2.maxConcurrentStreams=250
+#       # Do not expose all Docker services, only the ones explicitly exposed
+#       # Docker swarm confiuration
+#       - --providers.docker
+#       - --providers.docker.exposedbydefault=false
+#       - --providers.docker.network=traefik
+#       - --providers.swarm
+#       # Dashboard. Optional. Default: true. 
+#       - --api=true
+#       - --api.dashboard=true
+#       # Enable ACME (Let's Encrypt): automatic SSL.
+#       # CA server to use. Uncomment the line to use Let's Encrypt's staging server, leave commented to go to prod. Optional
+#       # Default: "https://acme-v02.api.letsencrypt.org/directory"
+#       - --certificatesresolvers.leresolver.acme.caserver=${APP_CERT_SERVER?CertServerNotSet}
+#       # Email address used for registration. Required
+#       - --certificatesresolvers.leresolver.acme.email=${APP_CERT_MAIL?CertMailNotSet}
+#       # File or key used for certificates storage. Required
+#       # Make sure the this file is available and permission is set correctly
+#       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
+#       # Use a TLS-ALPN-01 ACME challenge. Optional (but recommended). 
+#       - --certificatesresolvers.leresolver.acme.tlschallenge=true
+#     ports:
+#       - "${APP_HOST_HTTP?HttpPortNotSet}:${APP_HOST_HTTP?HttpPortNotSet}"
+#       - "${APP_HOST_HTTPS?HttpPortNotSet}:${APP_HOST_HTTPS?HttpPortNotSet}"
+#     networks:
+#       - traefik
+#     volumes:
+#       - "/var/run/docker.sock:/var/run/docker.sock:ro"      
+#       - "/app/development/cert:/app/cert"
+#       - "/app/development/logs:/app/logs"
+#     #healthcheck:
+#     #  # Run traefik healthcheck command
+#     #  # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
+#     #  test: ["CMD", "traefik", "healthcheck", "--ping"]
+#     #  interval: 10s
+#     #  timeout: 5s
+#     #  retries: 3
+#     #  start_period: 5s
+#     deploy:
+#     #  mode: global
+#     #  placement:
+#     #    constraints:
+#     #      # Make the traefik service run only on the manager node,
+#     #      # as the node with it has the volume for the certificates
+#     #      - "node.role == manager"
+#       labels:
+#         # Dashboard
+#         - "traefik.enable=true"
+#         # Change the host url here
+#         - "traefik.http.routers.traefik.rule=Host(`${APP_HOST_DOMAIN?DomainNotSet}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+#         - "traefik.http.routers.traefik.service=api@internal"
+#         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+#         - "traefik.http.routers.traefik.tls.certresolver=leresolver"
+#         - "traefik.http.routers.traefik.entrypoints=websecure"
+#         - "traefik.http.routers.traefik.middlewares=authadmin"
+#         # Authorization middlewares
+#         - "traefik.http.middlewares.authadmin.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
+
+#         # global redirect to https
+#         - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+#         - "traefik.http.routers.http-catchall.entrypoints=web"
+#         - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+        
+#         # middleware redirect
+#         - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
