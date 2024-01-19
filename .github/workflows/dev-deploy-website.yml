@@ -23,6 +23,7 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      
   deploy-component:
     needs: [ build-website ]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-component.yml@main

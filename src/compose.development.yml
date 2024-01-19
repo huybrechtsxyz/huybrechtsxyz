@@ -5,15 +5,15 @@ version: '3.9'
 services:
   traefik:
     extends:
-      file: traefik.yml
+      file: traefik.development.yml
       service: traefik
   website:
     extends:
-      file: website.yml
+      file: website.development.yml
       service: website
   whoami:
     extends:
-      file: whoami.yml
+      file: whoami.development.yml
       service: whoami
 
 networks:

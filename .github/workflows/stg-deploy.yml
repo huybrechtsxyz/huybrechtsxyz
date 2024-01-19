@@ -41,8 +41,8 @@ jobs:
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
       
   deploy-website:
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-component.yml@main
     needs: build-website
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-component.yml@main
     with:
       environment: staging
       component: website
