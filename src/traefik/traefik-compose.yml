@@ -36,8 +36,8 @@ services:
       #- --metrics.openTelemetry.addServicesLabels=true
       #- --metrics.openTelemetry.grpc=true
       # Entry points
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.address=:${APP_PORT_HTTP}
+      - --entrypoints.websecure.address=:${APP_PORT_HTTPS}
       # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
       # https://doc.traefik.io/traefik/routing/entrypoints/#http2
       # Do not expose all Docker services, only the ones explicitly exposed
