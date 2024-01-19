@@ -9,6 +9,28 @@ services:
       - --log.maxsize=5
       - --log.maxage=5
       - --log.filePath=/app/logs/traefik.log
+      - --ping=true
+      - --accesslog=true
+      - --accesslog.format=json
+      - --accesslog.filepath=/app/logs/traefik-access.log
+      # Prometheus metrics
+      # https://doc.traefik.io/traefik/v3.0/observability/metrics/prometheus/
+      #Enable prometheus metrics
+      - --metrics.prometheus=true
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addRoutersLabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      # OpenTelemetry metrics
+      # https://doc.traefik.io/traefik/v3.0/observability/metrics/opentelemetry/
+      # Address of the OpenTelemetry Collector to send metrics to.
+      # The reporter can send metrics to the OpenTelemetry Collector using gRPC.
+      - --metrics.openTelemetry=true
+      - --metrics.openTelemetry.address=localhost:4318
+      - --metrics.openTelemetry.addEntryPointsLabels=true
+      - --metrics.openTelemetry.addRoutersLabels=true
+      - --metrics.openTelemetry.addServicesLabels=true
+      - --metrics.openTelemetry.grpc=true
+      # Entry points
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --providers.docker
