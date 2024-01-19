@@ -57,7 +57,7 @@ services:
       # Make sure the this file is available and permission is set correctly
       # Use a TLS-ALPN-01 ACME challenge. Optional (but recommended). 
       - --certificatesresolvers.leresolver.acme.caserver=${APP_CERT_SERVER}
-      - --certificatesresolvers.leresolver.acme.email=${APP_CERT_MAIL }
+      - --certificatesresolvers.leresolver.acme.email=${APP_CERT_MAIL}
       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
       - --certificatesresolvers.leresolver.acme.tlschallenge=true
     ports:
