@@ -45,6 +45,7 @@ services:
       - --providers.docker
       - --providers.docker.exposedbydefault=false
       - --providers.docker.network=traefik
+      - --providers.docker.contraints=Label(`traefik.tags`, `production`)
       - --providers.swarm
       # Dashboard. Optional. Default: true. 
       - --api
@@ -56,7 +57,7 @@ services:
       # File or key used for certificates storage. Required
       # Make sure the this file is available and permission is set correctly
       # Use a TLS-ALPN-01 ACME challenge. Optional (but recommended). 
-      - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.leresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
       - --certificatesresolvers.leresolver.acme.email=webmaster@huybrechts.xyz
       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
       - --certificatesresolvers.leresolver.acme.tlschallenge=true
@@ -67,8 +68,8 @@ services:
       - traefik
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/app/development/cert:/app/cert"
-      - "/app/development/logs:/app/logs"
+      - "/app/production/cert:/app/cert"
+      - "/app/production/logs:/app/logs"
     healthcheck:
       # Run traefik healthcheck command
       # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
@@ -81,6 +82,7 @@ services:
       labels:
         # Dashboard
         - "traefik.enable=true"
+        - "traefik.tags=production"
         # Change the host url here
         - "traefik.http.routers.traefik.rule=Host(`huybrechts.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         - "traefik.http.routers.traefik.service=api@internal"

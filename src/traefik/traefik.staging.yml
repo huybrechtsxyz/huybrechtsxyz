@@ -36,8 +36,8 @@ services:
       #- --metrics.openTelemetry.addServicesLabels=true
       #- --metrics.openTelemetry.grpc=true
       # Entry points
-      - --entrypoints.web.address=:8080
-      - --entrypoints.websecure.address=:8443
+      - --entrypoints.web.address=:9080
+      - --entrypoints.websecure.address=:9443
       # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
       # https://doc.traefik.io/traefik/routing/entrypoints/#http2
       # Do not expose all Docker services, only the ones explicitly exposed
@@ -45,6 +45,7 @@ services:
       - --providers.docker
       - --providers.docker.exposedbydefault=false
       - --providers.docker.network=traefik
+      - --providers.docker.contraints=Label(`traefik.tags`, `staging`)
       - --providers.swarm
       # Dashboard. Optional. Default: true. 
       - --api
@@ -61,14 +62,14 @@ services:
       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
       - --certificatesresolvers.leresolver.acme.tlschallenge=true
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "9080:80"
+      - "9443:443"
     networks:
       - traefik
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/app/development/cert:/app/cert"
-      - "/app/development/logs:/app/logs"
+      - "/app/staging/cert:/app/cert"
+      - "/app/staging/logs:/app/logs"
     healthcheck:
       # Run traefik healthcheck command
       # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
@@ -81,6 +82,7 @@ services:
       labels:
         # Dashboard
         - "traefik.enable=true"
+        - "traefik.tags=staging"
         # Change the host url here
         - "traefik.http.routers.traefik.rule=Host(`staging.huybrechts.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         - "traefik.http.routers.traefik.service=api@internal"

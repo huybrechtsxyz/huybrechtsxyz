@@ -36,6 +36,7 @@ jobs:
           script: |
             cd /;
             cd /app/${{ inputs.environment }};
+            mv compose.${{ inputs.environment }}.yml compose.yml
             docker network inspect traefik --format {{.Id}} 2>/dev/null \
               || docker network create --driver overlay traefik
             docker stack deploy -c <(docker-compose -f compose.${{ inputs.environment }}.yml config) ${{ inputs.environment }};
