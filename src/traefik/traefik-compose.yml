@@ -56,8 +56,8 @@ services:
       # File or key used for certificates storage. Required
       # Make sure the this file is available and permission is set correctly
       # Use a TLS-ALPN-01 ACME challenge. Optional (but recommended). 
-      - --certificatesresolvers.leresolver.acme.caserver=${APP_CERT_SERVER}
-      - --certificatesresolvers.leresolver.acme.email=${APP_CERT_MAIL}
+      - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.leresolver.acme.email=webmaster@huybrechts.xyz
       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
       - --certificatesresolvers.leresolver.acme.tlschallenge=true
     ports:
@@ -82,7 +82,7 @@ services:
         # Dashboard
         - "traefik.enable=true"
         # Change the host url here
-        - "traefik.http.routers.traefik.rule=Host(`${APP_HOST_DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        - "traefik.http.routers.traefik.rule=Host(`develop.huybrechts.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
         - "traefik.http.routers.traefik.tls.certresolver=leresolver"
@@ -97,26 +97,10 @@ services:
         - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
 
         # middleware redirect
-        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-
-# services:
-#   traefik:
-#     image: traefik:v3.0
-#     command:
-#       - --global.sendAnonymousUsage=false
-#       - --entrypoints.web.address=:${APP_HOST_HTTP}
-#       - --entrypoints.websecure.address=:${APP_HOST_HTTPS?HttpPortNotSet}
-#       - --certificatesresolvers.leresolver.acme.caserver=${APP_CERT_SERVER?CertServerNotSet}
-#       - --certificatesresolvers.leresolver.acme.email=${APP_CERT_MAIL?CertMailNotSet}
-#       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
-#       - --certificatesresolvers.leresolver.acme.tlschallenge=true
-#     ports:
-#       - "${APP_HOST_HTTP?HttpPortNotSet}:${APP_HOST_HTTP?HttpPortNotSet}"
-#       - "${APP_HOST_HTTPS?HttpPortNotSet}:${APP_HOST_HTTPS?HttpPortNotSet}"
-#     deploy:
-#     #  mode: global
-#     #  placement:
-#     #    constraints:
-#     #      # Make the traefik service run only on the manager node,
-#     #      # as the node with it has the volume for the certificates
-#     #      - "node.role == manager"
+        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"        
+      # mode: global
+      # placement:
+      #   constraints:
+      #     # Make the traefik service run only on the manager node,
+      #     # as the node with it has the volume for the certificates
+      #     - "node.role == manager"
