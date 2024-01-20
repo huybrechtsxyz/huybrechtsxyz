@@ -36,7 +36,7 @@ jobs:
           script: |
             cd /;
             cd /app/${{ inputs.environment }};
-            if [ ! -f compose.${{ inputs.environment }}.yml }} ]; then
+            if [ ! -f compose.${{ inputs.environment }}.yml ]; then
               mv compose.${{ inputs.environment }}.yml compose.yml
             fi
             docker network inspect traefik --format {{.Id}} 2>/dev/null \
