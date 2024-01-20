@@ -46,7 +46,7 @@ services:
       # Docker swarm confiuration
       - --providers.docker
       - --providers.docker.exposedbydefault=false
-      - --providers.docker.network=traefik-dev
+      - --providers.docker.network=traefikdev
       - --providers.swarm
       - --providers.swarm.constraints=Label(`traefik.tags`, `development`)
       # Dashboard. Optional. Default: true. 
@@ -67,7 +67,7 @@ services:
       - "5080:80"
       - "5443:443"
     networks:
-      - traefik-dev
+      - traefikdev
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "/app/development/cert:/app/cert"

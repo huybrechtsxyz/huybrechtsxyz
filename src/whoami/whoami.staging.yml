@@ -6,7 +6,7 @@ services:
     command:
       - --port=8080
     networks:
-      - traefik-stg
+      - traefikstg
     deploy:
       labels:
         - "traefik.enable=true"

@@ -46,7 +46,7 @@ services:
       # Docker swarm confiuration
       - --providers.docker
       - --providers.docker.exposedbydefault=false
-      - --providers.docker.network=traefik-stg
+      - --providers.docker.network=traefikstg
       - --providers.swarm
       - --providers.swarm.constraints=Label(`traefik.tags`, `staging`)
       # Dashboard. Optional. Default: true. 
@@ -67,7 +67,7 @@ services:
       - "9080:80"
       - "9443:443"
     networks:
-      - traefik-stg
+      - traefikstg
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "/app/staging/cert:/app/cert"

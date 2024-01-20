@@ -41,8 +41,8 @@ jobs:
             fi
             docker network inspect traefik --format {{.Id}} 2>/dev/null \
               || docker network create --driver overlay traefik
-            docker network inspect traefik-dev --format {{.Id}} 2>/dev/null \
-              || docker network create --driver overlay traefik-dev
-            docker network inspect traefik-stg --format {{.Id}} 2>/dev/null \
-              || docker network create --driver overlay traefik-stg
+            docker network inspect traefikdev --format {{.Id}} 2>/dev/null \
+              || docker network create --driver overlay traefikdev
+            docker network inspect traefikstg --format {{.Id}} 2>/dev/null \
+              || docker network create --driver overlay traefikstg
             docker stack deploy -c <(docker-compose -f compose.yml config) ${{ inputs.environment }};
