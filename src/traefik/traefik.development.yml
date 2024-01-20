@@ -7,7 +7,7 @@ services:
       # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
       # Enable the Traefik log, for configurations and errors
       - --log=true
-      - --log.level=DEBUG
+      - --log.level=INFO
       - --log.format=json
       - --log.maxsize=5
       - --log.maxage=5
@@ -44,9 +44,9 @@ services:
       # Docker swarm confiuration
       - --providers.docker
       - --providers.docker.exposedbydefault=false
-      - --providers.docker.network=traefik
+      - --providers.docker.network=traefik-dev
       - --providers.swarm
-      - --providers.swarm.contraints=Label(`traefik.tags`, `development`)
+      - --providers.swarm.constraints=Label(`traefik.tags`, `development`)
       # Dashboard. Optional. Default: true. 
       - --api
       - --api.dashboard=true
@@ -65,7 +65,7 @@ services:
       - "5080:80"
       - "5443:443"
     networks:
-      - traefik
+      - traefik-dev
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "/app/development/cert:/app/cert"

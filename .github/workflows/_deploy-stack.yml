@@ -39,4 +39,8 @@ jobs:
             mv compose.${{ inputs.environment }}.yml compose.yml
             docker network inspect traefik --format {{.Id}} 2>/dev/null \
               || docker network create --driver overlay traefik
+            docker network inspect traefik-dev --format {{.Id}} 2>/dev/null \
+              || docker network create --driver overlay traefik-dev
+            docker network inspect traefik-stg --format {{.Id}} 2>/dev/null \
+              || docker network create --driver overlay traefik-stg
             docker stack deploy -c <(docker-compose -f compose.yml config) ${{ inputs.environment }};
