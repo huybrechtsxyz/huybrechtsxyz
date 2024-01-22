@@ -1,4 +1,5 @@
 using Huybrechts.Infra.Config;
+using Huybrechts.Infra.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -24,10 +25,13 @@ try
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .WriteTo.Console(new RenderedCompactJsonFormatter())
-		.WriteTo.File("log-.txt", rollingInterval: RollingInterval.Day),
+		.WriteTo.File("logs/website-.txt", rollingInterval: RollingInterval.Day),
 		writeToProviders: true);
 
-    Log.Information("Configuring webserver");
+	if (ApplicationSettings.IsRunningInContainer())
+		builder.Configuration.AddDockerSecrets("/run/secrets", ":", null);
+
+	Log.Information("Configuring webserver");
     builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
     if (ApplicationSettings.IsRunningInContainer())
     {
@@ -35,7 +39,7 @@ try
         {
             options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         });
-    }
+	}
     builder.Services.AddResponseCaching();
     builder.Services.AddResponseCompression(options => {
         options.EnableForHttps = true;
