@@ -7,6 +7,10 @@ services:
     extends:
       file: traefik.staging.yml
       service: traefik
+  consul:
+    extends:
+      file: consul.staging.yml
+      service: consul
   website:
     extends:
       file: website.staging.yml
