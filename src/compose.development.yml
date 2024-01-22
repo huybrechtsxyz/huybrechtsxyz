@@ -17,5 +17,5 @@ services:
       service: whoami
 
 networks:
-  traefik-dev:
+  traefikdev:
     external: true

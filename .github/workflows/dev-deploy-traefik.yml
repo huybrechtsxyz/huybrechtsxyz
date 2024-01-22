@@ -5,15 +5,15 @@ name: Deploy Traefik To Development
 on:
   workflow_dispatch:
 
-  push:
-    branches: [ "main" ]
-    paths: 
-      - 'src/traefik/**'
+  # push:
+  #   branches: [ "main" ]
+  #   paths: 
+  #     - 'src/traefik/**'
 
-  pull_request:
-    branches: [ "main" ]
-    paths: 
-      - 'src/traefik/**'
+  # pull_request:
+  #   branches: [ "main" ]
+  #   paths: 
+  #     - 'src/traefik/**'
 
 jobs:
   deploy-component:

@@ -17,5 +17,5 @@ services:
       service: whoami
 
 networks:
-  traefik-stg:
+  traefikstg:
     external: true
