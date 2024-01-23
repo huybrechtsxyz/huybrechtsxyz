@@ -56,7 +56,7 @@ public class DockerSecretsConfigurationProvider : ConfigurationProvider
 		string secretValue = reader.ReadToEnd();
 		if (secretValue.EndsWith(Environment.NewLine))
 		{
-			secretValue = secretValue.Substring(0, secretValue.Length - 1);
+			secretValue = secretValue[..^1];
 		}
 
 		string secretKey = secretFileName.Replace(_colonPlaceholder, ":");

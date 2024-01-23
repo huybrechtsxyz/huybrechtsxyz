@@ -70,7 +70,7 @@ jobs:
           username: ${{ secrets.APP_HOST_USERNAME }}
           password: ${{ secrets.APP_HOST_PASSWORD }}
           port: ${{ secrets.APP_HOST_PORT }}
-          source: "src/${{ inputs.component }}/**"
+          source: "src/${{ inputs.component }}/*${{ inputs.environment }}*"
           strip_components: 2
           overwrite: true
           target: "/app/${{ inputs.environment }}"
