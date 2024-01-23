@@ -19,6 +19,19 @@ jobs:
       APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
 
+  deploy-consul:
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-component.yml@main
+    with:
+      environment: development
+      component: consul
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
+
   deploy-whoami:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-component.yml@main
     with:
@@ -55,7 +68,7 @@ jobs:
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
 
   deploy-stack:
-    needs: [ deploy-traefik, deploy-website, deploy-whoami ]
+    needs: [ deploy-traefik, deploy-consul, deploy-website, deploy-whoami ]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-stack.yml@main
     with:
       environment: development

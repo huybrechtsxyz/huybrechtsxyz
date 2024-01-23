@@ -5,15 +5,15 @@ name: Deploy WhoAmI To Development
 on:
   workflow_dispatch:
 
-  # push:
-  #   branches: [ "main" ]
-  #   paths: 
-  #     - 'src/whoami/**'
+  push:
+    branches: [ "main" ]
+    paths: 
+      - 'src/whoami/**'
 
-  # pull_request:
-  #   branches: [ "main" ]
-  #   paths: 
-  #     - 'src/whoami/**'
+  pull_request:
+    branches: [ "main" ]
+    paths: 
+      - 'src/whoami/**'
 
 jobs:
   deploy-component:

@@ -1,6 +1,6 @@
 # This workflow deploys traefik to the development environment
 
-name: Deploy Traefik To Development
+name: Deploy Consul To Development
 
 on:
   workflow_dispatch:
@@ -8,19 +8,19 @@ on:
   push:
     branches: [ "main" ]
     paths: 
-      - 'src/traefik/**'
+      - 'src/consul/**'
 
   pull_request:
     branches: [ "main" ]
     paths: 
-      - 'src/traefik/**'
+      - 'src/consul/**'
 
 jobs:
   deploy-component:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-component.yml@main
     with:
       environment: development
-      component: traefik
+      component: consul
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
