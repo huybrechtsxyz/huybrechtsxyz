@@ -36,10 +36,10 @@ services:
       #- --metrics.openTelemetry.addServicesLabels=true
       #- --metrics.openTelemetry.grpc=true
       # Entry points
-      - --entrypoints.web.address=:9080
+      - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
       - --entrypoints.web.http.redirections.entryPoint.scheme=https
-      - --entrypoints.websecure.address=:9443
+      - --entrypoints.websecure.address=:443
       # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
       # https://doc.traefik.io/traefik/routing/entrypoints/#http2
       # Do not expose all Docker services, only the ones explicitly exposed
@@ -64,8 +64,8 @@ services:
       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
       - --certificatesresolvers.leresolver.acme.tlschallenge=true
     ports:
-      - "9080:80"
-      - "9443:443"
+      - "80:80"
+      - "443:443"
     networks:
       - traefikstg
     volumes:
@@ -96,9 +96,9 @@ services:
         - "traefik.http.middlewares.authadmin.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
 
         # global redirect to https
-        - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
-        - "traefik.http.routers.http-catchall.entrypoints=web"
-        - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+        #- "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+        #- "traefik.http.routers.http-catchall.entrypoints=web"
+        #- "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
 
         # middleware redirect
         - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
