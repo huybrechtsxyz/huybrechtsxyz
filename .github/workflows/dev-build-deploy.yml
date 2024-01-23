@@ -1,6 +1,6 @@
 # This workflow deploys traefik to the development environment
 
-name: Deploy Components To Development
+name: Build and Deploy To Development
 
 on:
   workflow_dispatch:
@@ -32,7 +32,16 @@ jobs:
       APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
 
+  build-website:
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_build-website.yml@main
+    with:
+      environment: development
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      
   deploy-website:
+    needs: build-website
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-component.yml@main
     with:
       environment: development

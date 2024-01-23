@@ -30,6 +30,7 @@ try
 
 	if (ApplicationSettings.IsRunningInContainer())
 		builder.Configuration.AddDockerSecrets("/run/secrets", ":", null);
+	//builder.Services.AddConsulConfig("");
 
 	Log.Information("Configuring webserver");
     builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
