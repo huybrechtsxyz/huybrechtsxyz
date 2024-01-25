@@ -48,22 +48,19 @@ jobs:
             if [ ! -d /app }} ]; then
               mkdir -p /app }};
             fi
-            if [ ! -d /app/${{ inputs.environment }} ]; then
-              mkdir -p /app/${{ inputs.environment }};
+            if [ ! -d /app/cert ]; then
+              mkdir -p /app/crt;
             fi
-            if [ ! -d /app/${{ inputs.environment }}/cert ]; then
-              mkdir -p /app/${{ inputs.environment }}/cert;
+            if [ ! -d /app/cfg ]; then
+              mkdir -p /app/cfg;
             fi
-            if [ ! -d /app/${{ inputs.environment }}/cfg ]; then
-              mkdir -p /app/${{ inputs.environment }}/cfg;
+            if [ ! -d /app/data ]; then
+              mkdir -p /app/dta;
             fi
-            if [ ! -d /app/${{ inputs.environment }}/data ]; then
-              mkdir -p /app/${{ inputs.environment }}/data;
+            if [ ! -d /app/logs ]; then
+              mkdir -p /app/log;
             fi
-            if [ ! -d /app/${{ inputs.environment }}/logs ]; then
-              mkdir -p /app/${{ inputs.environment }}/logs;
-            fi
-      - name: Deploy component files
+      - name: Deploy configuration files
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.APP_HOST_SERVER }}
@@ -73,7 +70,7 @@ jobs:
           source: "src/${{ inputs.component }}/*${{ inputs.environment }}*"
           strip_components: 2
           overwrite: true
-          target: "/app/${{ inputs.environment }}"
+          target: "/app"
       - name: Deploy generic files
         uses: appleboy/scp-action@v0.1.7
         with:
