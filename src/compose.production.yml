@@ -7,10 +7,6 @@ services:
     extends:
       file: traefik.production.yml
       service: traefik
-  consul:
-    extends:
-      file: consul.production.yml
-      service: consul
   website:
     extends:
       file: website.production.yml
