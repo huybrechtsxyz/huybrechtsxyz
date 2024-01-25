@@ -87,4 +87,4 @@ jobs:
           source: "src/compose.${{ inputs.environment }}.yml"
           strip_components: 1
           overwrite: true
-          target: "/app/${{ inputs.environment }}"
+          target: "/app"

@@ -39,7 +39,7 @@ jobs:
           port: ${{ secrets.APP_HOST_PORT }}
           script: |
             cd /;
-            cd /app/${{ inputs.environment }};
+            cd /app;
             if [ -f compose.${{ inputs.environment }}.yml ]; then
               mv compose.${{ inputs.environment }}.yml compose.yml;
             fi
