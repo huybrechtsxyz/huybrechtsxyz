@@ -70,8 +70,8 @@ services:
       - traefik
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/app/production/cert:/app/cert"
-      - "/app/production/logs:/app/logs"
+      - "/app/cert:/app/cert"
+      - "/app/logs:/app/logs"
     healthcheck:
       # Run traefik healthcheck command
       # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck

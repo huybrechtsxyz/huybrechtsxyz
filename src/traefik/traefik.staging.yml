@@ -70,8 +70,8 @@ services:
       - traefik
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/app/staging/cert:/app/cert"
-      - "/app/staging/logs:/app/logs"
+      - "/app/cert:/app/cert"
+      - "/app/logs:/app/logs"
     healthcheck:
       # Run traefik healthcheck command
       # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
@@ -94,11 +94,3 @@ services:
         - "traefik.http.routers.traefik.middlewares=authadmin"
         # Change the auth password here
         - "traefik.http.middlewares.authadmin.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
-
-        # global redirect to https
-        #- "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
-        #- "traefik.http.routers.http-catchall.entrypoints=web"
-        #- "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-
-        # middleware redirect
-        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"

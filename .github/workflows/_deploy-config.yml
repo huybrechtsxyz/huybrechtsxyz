@@ -49,16 +49,16 @@ jobs:
               mkdir -p /app }};
             fi
             if [ ! -d /app/cert ]; then
-              mkdir -p /app/crt;
+              mkdir -p /app/cert;
             fi
-            if [ ! -d /app/cfg ]; then
-              mkdir -p /app/cfg;
+            if [ ! -d /app/conf ]; then
+              mkdir -p /app/conf;
             fi
             if [ ! -d /app/data ]; then
-              mkdir -p /app/dta;
+              mkdir -p /app/data;
             fi
             if [ ! -d /app/logs ]; then
-              mkdir -p /app/log;
+              mkdir -p /app/logs;
             fi
       - name: Deploy configuration files
         uses: appleboy/scp-action@v0.1.7
