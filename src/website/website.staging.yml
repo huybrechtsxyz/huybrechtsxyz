@@ -8,7 +8,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Staging
       - DOTNET_RUNNING_IN_CONTAINER=true
     networks:
-      - traefikstg
+      - traefik
     deploy:
       labels:
         - "traefik.enable=true"
