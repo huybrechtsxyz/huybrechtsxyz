@@ -17,6 +17,10 @@ on:
         required: true
       APP_HOST_PORT:
         required: true
+      APP_HOST_EMAIL:
+        required: true
+      APP_DBASE_NAME:
+        required: true
 
 jobs:
   deploy-stack:
