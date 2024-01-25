@@ -1,6 +1,6 @@
 # This workflow deploys traefik to the development environment
 
-name: Deploy Components To Development
+name: Buid and Deploy To Development
 
 on:
   workflow_dispatch:

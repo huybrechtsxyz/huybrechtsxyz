@@ -1,6 +1,6 @@
 # This workflow deploys the website to the development environment
 
-name: Deploy Website To Development
+name: Deploy Website Config To Development
 
 on:
   workflow_dispatch:
