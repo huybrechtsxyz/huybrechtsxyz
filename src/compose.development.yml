@@ -7,15 +7,33 @@ services:
     extends:
       file: traefik.development.yml
       service: traefik
-  website:
-    extends:
-      file: website.development.yml
-      service: website
   whoami:
     extends:
       file: whoami.development.yml
       service: whoami
+  website:
+    extends:
+      file: website.development.yml
+      service: website
+  postgres:
+    extends:
+      file: postgres.development.yml
+      service: postgres
+  pgdamin:
+    extends:
+      file: postgres.development.yml
+      service: pgdamin
 
 networks:
   traefik:
+    external: true
+
+secrets:
+  app_dbase_name:
+    external: true
+  app_host_user:
+    external: true
+  app_host_email:
+    external: true
+  app_host_password:
     external: true

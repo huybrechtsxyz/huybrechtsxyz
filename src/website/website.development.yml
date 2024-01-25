@@ -9,6 +9,8 @@ services:
       - DOTNET_RUNNING_IN_CONTAINER=true
     networks:
       - traefik
+    volumes:
+      - "/app/logs:/app/logs"
     deploy:
       labels:
         - "traefik.enable=true"
