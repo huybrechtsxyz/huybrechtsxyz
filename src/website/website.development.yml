@@ -6,7 +6,7 @@ services:
     image: huybrechts/website:development
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      DOTNET_RUNNING_IN_CONTAINER: true
+      DOTNET_RUNNING_IN_CONTAINER: 1
     networks:
       - traefik
     volumes:

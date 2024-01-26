@@ -17,11 +17,11 @@ services:
       service: whoami
   postgres:
     extends:
-      file: postgres.development.yml
+      file: postgres.staging.yml
       service: postgres
   pgadmin:
     extends:
-      file: postgres.development.yml
+      file: postgres.staging.yml
       service: pgadmin
 
 networks:

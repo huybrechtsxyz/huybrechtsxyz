@@ -44,7 +44,7 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.tags=development"
+        - "traefik.tags=staging"
         - "traefik.http.routers.pgadmin.rule=Host(`staging.huybrechts.xyz`) && PathPrefix(`/pgadmin`)"
         - "traefik.http.services.pgadmin.loadbalancer.server.port=80"
         - "traefik.http.routers.pgadmin.middlewares=authadmin"

@@ -6,7 +6,7 @@ services:
     image: huybrechts/website:staging
     environment:
       ASPNETCORE_ENVIRONMENT: Staging
-      DOTNET_RUNNING_IN_CONTAINER: true
+      DOTNET_RUNNING_IN_CONTAINER: 1
     networks:
       - traefik
     deploy:
