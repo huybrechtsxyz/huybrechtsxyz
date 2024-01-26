@@ -15,7 +15,25 @@ services:
     extends:
       file: whoami.production.yml
       service: whoami
+  postgres:
+    extends:
+      file: postgres.production.yml
+      service: postgres
+  pgadmin:
+    extends:
+      file: postgres.production.yml
+      service: pgadmin
 
 networks:
   traefik:
+    external: true
+
+secrets:
+  app_dbase_name:
+    external: true
+  app_host_username:
+    external: true
+  app_host_email:
+    external: true
+  app_host_password:
     external: true
