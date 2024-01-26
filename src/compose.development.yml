@@ -30,10 +30,10 @@ networks:
 
 secrets:
   app_dbase_name:
-    file: app_dbase_name
+    external: true
   app_host_username:
-    file: app_host_username
+    external: true
   app_host_email:
-    file: app_host_email
+    external: true
   app_host_password:
-    file: app_host_password
+    external: true

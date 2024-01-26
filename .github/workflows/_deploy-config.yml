@@ -57,11 +57,12 @@ jobs:
             if [ ! -d /app/data ]; then
               mkdir -p /app/data;
             fi
-            if [ ! -d /app/data/dbase ]; then
-              mkdir -p /app/data/dbase;
+            if [ ! -d /app/data/progres ]; then
+              mkdir -p /app/data/progres;
             fi
             if [ ! -d /app/data/pgadmin ]; then
               mkdir -p /app/data/pgadmin;
+              sudo chown -R 5050:5050 /app/data/pgadmin
             fi
             if [ ! -d /app/logs ]; then
               mkdir -p /app/logs;

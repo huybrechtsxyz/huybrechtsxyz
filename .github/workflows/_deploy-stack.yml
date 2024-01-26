@@ -45,19 +45,19 @@ jobs:
             fi
             docker network inspect traefik --format {{.Id}} 2>/dev/null \
               || docker network create --driver overlay traefik;
-            if docker secret inspect ${{ secrets.APP_HOST_USERNAME }} 2>/dev/null; then \
+            if [ docker secret inspect ${{ secrets.APP_HOST_USERNAME }} 2>/dev/null ]; then \
               docker secret rm ${{ secrets.APP_HOST_USERNAME }};
             fi;
             echo ${{ secrets.APP_HOST_USERNAME }} | docker secret create app_host_username -;
-            if docker secret inspect ${{ secrets.APP_HOST_EMAIL }} 2>/dev/null; then \
+            if [ docker secret inspect ${{ secrets.APP_HOST_EMAIL }} 2>/dev/null ]; then \
               docker secret rm ${{ secrets.APP_HOST_EMAIL }};
             fi;
             echo ${{ secrets.APP_HOST_EMAIL }} | docker secret create app_host_email -;
-            if docker secret inspect ${{ secrets.APP_HOST_PASSWORD }} 2>/dev/null; then \
+            if [ docker secret inspect ${{ secrets.APP_HOST_PASSWORD }} 2>/dev/null ]; then \
               docker secret rm ${{ secrets.APP_HOST_PASSWORD }};
             fi;
             echo ${{ secrets.APP_HOST_PASSWORD }} | docker secret create app_host_password -;
-            if docker secret inspect ${{ secrets.APP_DBASE_NAME }} 2>/dev/null; then \
+            if [ docker secret inspect ${{ secrets.APP_DBASE_NAME }} 2>/dev/null ]; then \
               docker secret rm ${{ secrets.APP_DBASE_NAME }};
             fi;
             echo ${{ secrets.APP_DBASE_NAME }} | docker secret create app_dbase_name -;
