@@ -5,22 +5,23 @@ services:
     image: postgres:v16.1
     secrets:
       - app_dbase_name
-      - app_host_user
+      - app_host_username
       - app_host_password
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_DB=/run/secrets/app_dbase_name
-      - POSTGRES_USER=/run/secrets/app_host_user
+      - POSTGRES_USER=/run/secrets/app_host_username
       - POSTGRES_PASSWORD=/run/secrets/app_host_password
     networks:
       - traefik
     volumes:
-      - app/data/dbase:/var/lib/postgresql/data
+      - /app/data/dbase:/var/lib/postgresql/data
     healthcheck:
-      test: [“CMD-SHELL”, “pg_isready”]
-        interval    : 1s
+      test: ["CMD-SHELL", "pg_isready"]
+      interval    : 1s
       timeout: 5s
-        retries: 10
+      retries: 10
+      start_period: 5s
     deploy:
       replicas: 1
       placement:
@@ -29,7 +30,6 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     secrets:
-      - app_dbase_name
       - app_host_email
       - app_host_password
     environment:

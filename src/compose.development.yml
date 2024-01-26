@@ -31,7 +31,7 @@ networks:
 secrets:
   app_dbase_name:
     external: true
-  app_host_user:
+  app_host_username:
     external: true
   app_host_email:
     external: true
