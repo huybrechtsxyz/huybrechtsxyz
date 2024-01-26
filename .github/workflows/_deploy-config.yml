@@ -57,8 +57,8 @@ jobs:
             if [ ! -d /app/data ]; then
               mkdir -p /app/data;
             fi
-            if [ ! -d /app/data/progres ]; then
-              mkdir -p /app/data/progres;
+            if [ ! -d /app/data/pgdata ]; then
+              mkdir -p /app/data/pgdata;
             fi
             if [ ! -d /app/data/pgadmin ]; then
               mkdir -p /app/data/pgadmin;
