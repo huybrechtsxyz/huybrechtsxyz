@@ -5,8 +5,8 @@ services:
   website:
     image: huybrechts/website:production
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - DOTNET_RUNNING_IN_CONTAINER=true
+      ASPNETCORE_ENVIRONMENT: Production
+      DOTNET_RUNNING_IN_CONTAINER: true
     networks:
       - traefik
     deploy:

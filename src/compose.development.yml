@@ -19,10 +19,10 @@ services:
     extends:
       file: postgres.development.yml
       service: postgres
-  pgdamin:
+  pgadmin:
     extends:
       file: postgres.development.yml
-      service: pgdamin
+      service: pgadmin
 
 networks:
   traefik:
@@ -30,10 +30,10 @@ networks:
 
 secrets:
   app_dbase_name:
-    external: true
+    file: app_dbase_name
   app_host_username:
-    external: true
+    file: app_host_username
   app_host_email:
-    external: true
+    file: app_host_email
   app_host_password:
-    external: true
+    file: app_host_password
