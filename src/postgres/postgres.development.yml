@@ -9,9 +9,9 @@ services:
       - app_host_password
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_DB: /run/secrets/app_dbase_name
-      POSTGRES_USER: /run/secrets/app_host_username
-      POSTGRES_PASSWORD: /run/secrets/app_host_password
+      POSTGRES_DB_FILE: /run/secrets/app_dbase_name
+      POSTGRES_USER_FILE: /run/secrets/app_host_username
+      POSTGRES_PASSWORD_FILE: /run/secrets/app_host_password
     networks:
       - traefik
     volumes:
@@ -35,7 +35,8 @@ services:
     environment:
       PGADMIN_LISTEN_PORT: 80
       PGADMIN_DEFAULT_EMAIL: webmaster@huybrechts.xyz
-      PGADMIN_DEFAULT_PASSWORD: /run/secrets/app_host_password
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/app_host_password
+      SCRIPT_NAME: /pgadmin
     networks:
       - traefik
     volumes:
