@@ -60,7 +60,7 @@ jobs:
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
 
   deploy-stack:
-    needs: [ deploy-traefik, deploy-website, deploy-whoami ]
+    needs: [ deploy-traefik, deploy-website, deploy-whoami, deploy-postgres ]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-stack.yml@main
     with:
       environment: development
