@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  keycloak:
+    image: bitnami/keycloak
+    command:
+      - start
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_SCHEMA: keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: ApplicationDB
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+    networks:
+      - traefik
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=development"
+        - "traefik.http.routers.whoami.rule=Host(`develop.huybrechts.xyz`) && PathPrefix(`/keycloak`)"
+        - "traefik.http.services.whoami.loadbalancer.server.port=8080"
+        - "traefik.http.routers.whoami.middlewares=authadmin"
+        - "traefik.http.routers.whoami.entrypoints=websecure"
+        - "traefik.http.routers.whoami.tls=true"
+        - "traefik.http.routers.whoami.tls.certresolver=leresolver"
