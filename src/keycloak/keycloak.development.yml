@@ -8,16 +8,15 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_DB: postgres
-      KC_DB_SCHEMA: keycloak
-      KC_DB_USERNAME: postgres
-      KC_DB_PASSWORD: postgres
-      KC_DB_URL_PORT: 5432
-      KC_DB_URL_HOST: postgres
-      KC_DB_URL_DATABASE: ApplicationDB
-      KC_HTTP_ENABLED: true
-      KC_HOSTNAME_STRICT: false
-      KC_HOSTNAME_STRICT_HTTPS: false
+      KEYCLOAK_DATABASE_VENDOR: postgresql
+      KEYCLOAK_DATABASE_HOST: postgres
+      KEYCLOAK_DATABASE_PORT: 5432
+      KEYCLOAK_DATABASE_USER: keycloak
+      KEYCLOAK_DATABASE_NAME: ApplicationDB
+      KEYCLOAK_DATABASE_SCHEMA: keycloak
+      KC_HTTP_ENABLED: 'true'
+      KC_HOSTNAME_STRICT: 'false'
+      KC_HOSTNAME_STRICT_HTTPS: 'false'
     networks:
       - traefik
     deploy:
