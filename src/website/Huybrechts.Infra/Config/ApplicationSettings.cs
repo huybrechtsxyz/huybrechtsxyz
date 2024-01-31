@@ -2,7 +2,7 @@
 
 namespace Huybrechts.Infra.Config;
 
-public class ApplicationSettings
+public sealed class ApplicationSettings
 {
     public static readonly string ENV_DOTNET_RUNNING_IN_CONTAINER = "DOTNET_RUNNING_IN_CONTAINER";
 

@@ -2,13 +2,13 @@ using Microsoft.Extensions.Configuration;
 
 namespace Huybrechts.Infra.Config;
 
-public class DockerSecretsConfigurationProvider : ConfigurationProvider
+public sealed class DockerSecretsConfigurationProvider : ConfigurationProvider
 {
     private readonly string _secretsDirectoryPath;
     private readonly string _colonPlaceholder;
     private readonly ICollection<string>? _allowedPrefixes;
 
-    internal DockerSecretsConfigurationProvider(
+	public DockerSecretsConfigurationProvider(
         string secretsDirectoryPath,
         string colonPlaceholder,
         ICollection<string>? allowedPrefixes)
@@ -18,7 +18,7 @@ public class DockerSecretsConfigurationProvider : ConfigurationProvider
         _allowedPrefixes = allowedPrefixes;
     }
 
-    public override void Load()
+	public override void Load()
     {
         if (!Directory.Exists(_secretsDirectoryPath))
             return;
