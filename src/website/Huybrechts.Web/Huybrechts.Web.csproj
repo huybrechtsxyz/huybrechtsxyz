@@ -14,6 +14,7 @@
    </ItemGroup>
 
    <ItemGroup>
+     <ProjectReference Include="..\Huybrechts.Core\Huybrechts.Core.csproj" />
      <ProjectReference Include="..\Huybrechts.Infra\Huybrechts.Infra.csproj" />
    </ItemGroup>
    

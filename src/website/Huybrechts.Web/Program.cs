@@ -1,12 +1,13 @@
 using Huybrechts.Infra.Config;
+using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Serilog.Formatting.Compact;
 using System.IO.Compression;
 
 try
@@ -23,9 +24,9 @@ try
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
-        .Enrich.FromLogContext()
-        .WriteTo.Console(new RenderedCompactJsonFormatter())
-		.WriteTo.File("logs/website-.txt", rollingInterval: RollingInterval.Day),
+        .Enrich.FromLogContext(),
+        //.WriteTo.Console(new RenderedCompactJsonFormatter())
+		//.WriteTo.File("logs/website-.txt", rollingInterval: RollingInterval.Day),
 		writeToProviders: true);
 
 	if (ApplicationSettings.IsRunningInContainer())
@@ -60,6 +61,34 @@ try
 		options.CheckConsentNeeded = context => true;
 		options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
 	});
+
+	Log.Information("Connect to the database");
+	ApplicationSettings applicationSettings = new(builder.Configuration);
+	DatabaseProviderType connectionType = applicationSettings.GetApplicationConnectionType();
+	var connectionString = applicationSettings.GetApplicationConnectionString();
+	switch (connectionType)
+	{
+		case DatabaseProviderType.SqlLite:
+			{
+				builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
+				break;
+			}
+		case DatabaseProviderType.SqlServer:
+			{
+				builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+				break;
+			}
+		case DatabaseProviderType.PostgreSQL:
+			{
+				builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+				break;
+			}
+		default: throw new NotSupportedException("Invalid database context type given for ApplicationDbType");
+	}
+	if (builder.Environment.IsDevelopment())
+	{
+		builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+	}
 
 	Log.Information("Configuring user interface");
 	builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");

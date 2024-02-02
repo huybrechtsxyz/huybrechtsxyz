@@ -6,8 +6,14 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Core", "src\website\Huybrechts.Core\Huybrechts.Core.csproj", "{31084B68-4495-44E9-AC20-AA026B9C645B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra", "src\website\Huybrechts.Infra\Huybrechts.Infra.csproj", "{ECC4ADA9-F60F-4B26-8E25-B1B0D5B52E38}"
+	ProjectSection(ProjectDependencies) = postProject
+		{31084B68-4495-44E9-AC20-AA026B9C645B} = {31084B68-4495-44E9-AC20-AA026B9C645B}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Web", "src\website\Huybrechts.Web\Huybrechts.Web.csproj", "{97EEC211-ECB2-4003-B9BA-16E7278BDB00}"
+	ProjectSection(ProjectDependencies) = postProject
+		{31084B68-4495-44E9-AC20-AA026B9C645B} = {31084B68-4495-44E9-AC20-AA026B9C645B}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
