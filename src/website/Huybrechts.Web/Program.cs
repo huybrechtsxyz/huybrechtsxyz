@@ -70,17 +70,17 @@ try
 	{
 		case DatabaseProviderType.SqlLite:
 			{
-				builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
+				builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlite(connectionString));
 				break;
 			}
 		case DatabaseProviderType.SqlServer:
 			{
-				builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+				builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
 				break;
 			}
 		case DatabaseProviderType.PostgreSQL:
 			{
-				builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+				builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
 				break;
 			}
 		default: throw new NotSupportedException("Invalid database context type given for ApplicationDbType");

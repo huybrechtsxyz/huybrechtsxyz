@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Huybrechts.Infra.Data;
 
-public class ApplicationDbContext
+public class DatabaseContext
 	: IdentityDbContext<
 		ApplicationUser,
 		ApplicationRole, string, 
@@ -17,7 +17,7 @@ public class ApplicationDbContext
 {
     public DatabaseProviderType DatabaseProviderType { get; set; } = DatabaseProviderType.SqlServer;
 
-    public ApplicationDbContext(DbContextOptions options) : base(options)
+    public DatabaseContext(DbContextOptions options) : base(options)
     {
     }
 
@@ -39,7 +39,8 @@ public class ApplicationDbContext
 			case DatabaseProviderType.PostgreSQL:
 				OnModelCreatingPostgres(builder);
 				break;
-			default: throw new NotImplementedException("No or invalid database provider is registered");
+			default: 
+				throw new NotImplementedException("No or invalid database provider is registered");
 		}
 	}
 

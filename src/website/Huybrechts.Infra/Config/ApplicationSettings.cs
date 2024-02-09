@@ -19,15 +19,15 @@ public sealed class ApplicationSettings
 
 	public string GetApplicationConnectionString()
 	{
-		return _configuration.GetConnectionString("ApplicationDb") ??
-		throw new InvalidOperationException("Connection string 'ApplicationDb' not found.");
+		return _configuration.GetConnectionString("DatabaseContext") ??
+		throw new InvalidOperationException("Connection string 'DatabaseContext' not found.");
 	}
 
 	public DatabaseProviderType GetApplicationConnectionType()
 	{
-		if (Enum.TryParse<DatabaseProviderType>(_configuration["Environment:ApplicationDbType"], out DatabaseProviderType dbtype))
+		if (Enum.TryParse<DatabaseProviderType>(_configuration["Environment:DatabaseType"], out DatabaseProviderType dbtype))
 			return dbtype;
-		throw new InvalidCastException("Invalid Environment:ApplicationDbType for type of DatabaseProviderType");
+		throw new InvalidCastException("Invalid Environment:DatabaseType for type of DatabaseProviderType");
 	}
 
 	public static CultureInfo[] GetSupportedCultures() => [new("EN"), new("NL")];

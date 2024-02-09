@@ -8,14 +8,16 @@ namespace Huybrechts.Core.Identity.Entities;
 [Table("IdentityUserRole")]
 public class ApplicationUserRole : IdentityUserRole<string>
 {
-    [NotMapped]
+	private const string Hashtag = "#";
+
+	[NotMapped]
     public string TenantId
     {
         get
         {
-            if (RoleId.IndexOf("#")==0)
+            if (!RoleId.Contains(Hashtag))
                 return string.Empty;
-			return RoleId[0..(RoleId.IndexOf("#") - 1)];
+			return RoleId[0..(RoleId.IndexOf(Hashtag) - 1)];
 		}
     }
 
@@ -24,9 +26,9 @@ public class ApplicationUserRole : IdentityUserRole<string>
     { 
         get 
         {
-            if (RoleId.IndexOf("#") == 0)
+            if (!RoleId.Contains(Hashtag))
                 return RoleId;
-            return RoleId[(RoleId.IndexOf("#") + 1)..];
+            return RoleId[(RoleId.IndexOf(Hashtag) + 1)..];
         } 
     }
 }
