@@ -34,6 +34,32 @@ public sealed class ApplicationSettings
 		throw new InvalidCastException("Invalid Environment:DatabaseType for type of DatabaseProviderType");
 	}
 
+	public string GetDefaultPassword()
+	{
+		return _configuration.GetValue<string>("Authentication:DefaultPassword") ?? string.Empty;
+	}
+
+	public GoogleClientSecretOptions GetGoogleLoginClientSecret()
+	{
+		GoogleClientSecretOptions item = new();
+		_configuration.GetSection(GoogleClientSecretOptions.GoogleClientSecret).Bind(item);
+		return item;
+	}
+
+	public SmtpClientSecretOptions GetSmtpLoginClientSecret()
+	{
+		SmtpClientSecretOptions item = new();
+		_configuration.GetSection(SmtpClientSecretOptions.SmtpClientSecret).Bind(item);
+		return item;
+	}
+
+	public SmtpServerOptions GetSmtpServerSettings()
+	{
+		SmtpServerOptions item = new();
+		_configuration.GetSection(SmtpServerOptions.SmtpServer).Bind(item);
+		return item;
+	}
+
 	public static CultureInfo[] GetSupportedCultures() => [new("EN"), new("NL")];
 
 	public static CultureInfo GetDefaultCulture() => new("EN");

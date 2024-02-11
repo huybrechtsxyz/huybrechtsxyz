@@ -3,6 +3,7 @@ using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Extensions;
 using Huybrechts.Infra.Identity;
+using Huybrechts.Infra.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -99,6 +100,7 @@ try
 	builder.Services.TryAddScoped<ApplicationUserManager>();
 	builder.Services.TryAddScoped<ApplicationSignInManager>();
 	builder.Services.TryAddScoped<ApplicationUserClaimsPrincipalFactory>();
+	builder.Services.AddSingleton<IEmailSender<ApplicationUser>, AuthenticationSender>();
 	builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 		{
 			options.SignIn.RequireConfirmedAccount = false;
