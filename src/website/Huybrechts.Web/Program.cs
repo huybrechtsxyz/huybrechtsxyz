@@ -1,12 +1,16 @@
+using Huybrechts.Core.Identity.Entities;
 using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Extensions;
+using Huybrechts.Infra.Identity;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog;
 using System.IO.Compression;
 
@@ -90,11 +94,33 @@ try
 		builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 	}
 
+	Log.Information("Configure authentication");
+	builder.Services.TryAddScoped<ApplicationUserStore>();
+	builder.Services.TryAddScoped<ApplicationUserManager>();
+	builder.Services.TryAddScoped<ApplicationSignInManager>();
+	builder.Services.TryAddScoped<ApplicationUserClaimsPrincipalFactory>();
+	builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+		{
+			options.SignIn.RequireConfirmedAccount = false;
+		})
+		.AddEntityFrameworkStores<DatabaseContext>()
+		.AddRoleValidator<ApplicationRoleValidator>()
+		.AddRoleManager<ApplicationRoleManager>()
+		.AddUserStore<ApplicationUserStore>()
+		.AddUserManager<ApplicationUserManager>()
+		.AddSignInManager<ApplicationSignInManager>()
+		.AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
+		.AddDefaultTokenProviders();
+
 	Log.Information("Configuring user interface");
 	builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 	builder.Services.AddAntiforgery();
 	builder.Services.AddControllers();
 	builder.Services.AddRazorPages().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+
+	// Database migrations
+	Log.Information("Adding database initializer as hosted service");
+	//builder.Services.AddHostedService<DatabaseSeedWorker>();
 
 	Log.Information("Building the application and services");
     foreach (var service in builder.Services)
@@ -160,6 +186,10 @@ try
 	app.UseRouting();
 	app.UseAntiforgery();
 	app.UseResponseCaching();
+
+	Log.Information("Using authentication and authorization");
+	app.UseAuthentication();
+	app.UseAuthorization();
 
 	Log.Information("Mapping and routing razor components");
 	app.MapControllers();

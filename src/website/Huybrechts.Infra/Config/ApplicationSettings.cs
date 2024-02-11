@@ -17,6 +17,10 @@ public sealed class ApplicationSettings
 		_configuration = configuration;
 	}
 
+	public bool DoInitializeEnvironment() => GetEnvironmentInitialization() == EnvironmentInitialization.Initialize;
+
+	public bool DoResetEnvironment() => GetEnvironmentInitialization() == EnvironmentInitialization.Reset;
+
 	public string GetApplicationConnectionString()
 	{
 		return _configuration.GetConnectionString("DatabaseContext") ??
@@ -33,4 +37,11 @@ public sealed class ApplicationSettings
 	public static CultureInfo[] GetSupportedCultures() => [new("EN"), new("NL")];
 
 	public static CultureInfo GetDefaultCulture() => new("EN");
+
+	private EnvironmentInitialization GetEnvironmentInitialization()
+	{
+		if (Enum.TryParse<EnvironmentInitialization>(_configuration["Environment:Initialization"], out EnvironmentInitialization env))
+			return env;
+		return EnvironmentInitialization.None;
+	}
 }

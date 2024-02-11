@@ -1,15 +1,14 @@
 using Huybrechts.Core.Identity.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Huybrechts.Infra.Data;
 
 public class DatabaseContext
 	: IdentityDbContext<
 		ApplicationUser,
-		ApplicationRole, string, 
-		ApplicationUserClaim, 
+		ApplicationRole, string,
+		ApplicationUserClaim,
 		ApplicationUserRole, 
 		ApplicationUserLogin, 
 		ApplicationRoleClaim, 
@@ -28,6 +27,7 @@ public class DatabaseContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+		builder.Entity<ApplicationRole>();
 		switch (DatabaseProviderType)
 		{
 			case DatabaseProviderType.SqlLite:
@@ -70,8 +70,10 @@ public class DatabaseContext
 		builder.ApplyConfiguration(new ApplicationUserTokenConfiguration());
 	}
 
-	public DbSet<ApplicationTenant> Tenants { get; set; }
+	//public DbSet<ApplicationRole> ApplicationRoles { get; set; }
 
-    public DbSet<ApplicationUserTenant> UserTenants { get; set; }
+	public DbSet<ApplicationTenant> ApplicationTenants { get; set; }
+
+    public DbSet<ApplicationUserTenant> ApplicationUserTenants { get; set; }
 }
 
