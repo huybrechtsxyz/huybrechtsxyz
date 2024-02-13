@@ -8,7 +8,7 @@ using System.Data;
 namespace Huybrechts.Infra.Identity;
 
 public class ApplicationUserStore :
-	UserStore<ApplicationUser,ApplicationRole, DatabaseContext, string, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationUserToken, ApplicationRoleClaim>,
+	UserStore<ApplicationUser, ApplicationRole, DatabaseContext, string, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationUserToken, ApplicationRoleClaim>,
     IUserStore<ApplicationUser>
 {
     private readonly DatabaseContext _dbcontext;
