@@ -4,6 +4,7 @@ using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Extensions;
 using Huybrechts.Infra.Identity;
 using Huybrechts.Infra.Services;
+using Huybrechts.Infra.Workers;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -141,7 +142,7 @@ try
 
 	// Database migrations
 	Log.Information("Adding database initializer as hosted service");
-	//builder.Services.AddHostedService<DatabaseSeedWorker>();
+	builder.Services.AddHostedService<DatabaseSeedWorker>();
 
 	Log.Information("Building the application and services");
     foreach (var service in builder.Services)

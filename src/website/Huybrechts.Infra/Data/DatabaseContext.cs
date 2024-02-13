@@ -1,6 +1,7 @@
 using Huybrechts.Core.Identity.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Huybrechts.Infra.Data;
 
@@ -69,8 +70,6 @@ public class DatabaseContext
 		builder.ApplyConfiguration(new ApplicationUserTenantConfigurationNpSql());
 		builder.ApplyConfiguration(new ApplicationUserTokenConfiguration());
 	}
-
-	//public DbSet<ApplicationRole> ApplicationRoles { get; set; }
 
 	public DbSet<ApplicationTenant> ApplicationTenants { get; set; }
 
