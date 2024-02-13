@@ -5,6 +5,8 @@ using Huybrechts.Infra.Extensions;
 using Huybrechts.Infra.Identity;
 using Huybrechts.Infra.Services;
 using Huybrechts.Infra.Workers;
+using Huybrechts.Web.Components.Account;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -97,7 +99,11 @@ try
 	}
 
 	Log.Information("Configure authentication");
-	builder.Services.TryAddScoped<ApplicationUserStore>();
+    builder.Services.AddCascadingAuthenticationState();
+    builder.Services.AddScoped<IdentityUserAccessor>();
+    builder.Services.AddScoped<IdentityRedirectManager>();
+    builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+    builder.Services.TryAddScoped<ApplicationUserStore>();
 	builder.Services.TryAddScoped<ApplicationUserManager>();
 	builder.Services.TryAddScoped<ApplicationSignInManager>();
 	builder.Services.TryAddScoped<ApplicationUserClaimsPrincipalFactory>();
@@ -139,6 +145,7 @@ try
 	builder.Services.AddAntiforgery();
 	builder.Services.AddControllers();
 	builder.Services.AddRazorPages().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+	builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 	// Database migrations
 	Log.Information("Adding database initializer as hosted service");
@@ -164,14 +171,14 @@ try
 		Log.Information("Configure the HTTP request pipeline for staging");
 		app.UseExceptionHandler("/Error", createScopeForErrors: true);
 		if (!ApplicationSettings.IsRunningInContainer())
-				app.UseHsts();
+			app.UseHsts();
 	}
 	else if (app.Environment.IsProduction())
 	{
 		Log.Information("Configure the HTTP request pipeline for production");
 		app.UseExceptionHandler("/Error", createScopeForErrors: true);
 		if (!ApplicationSettings.IsRunningInContainer())
-				app.UseHsts();
+			app.UseHsts();
 	}
 	else
 	{
@@ -181,7 +188,7 @@ try
 	Log.Information("Initializing application services");
 	app.UseResponseCompression();
 	if (!ApplicationSettings.IsRunningInContainer())
-			app.UseHttpsRedirection();
+		app.UseHttpsRedirection();
 	app.UseStaticFiles(new StaticFileOptions
 	{
 		OnPrepareResponse = ctx =>
@@ -216,8 +223,11 @@ try
 	Log.Information("Mapping and routing razor components");
 	app.MapControllers();
 	app.MapRazorPages();
+    app.MapRazorComponents<Huybrechts.Web.Components.App>()
+        .AddInteractiveServerRenderMode();
+    app.MapAdditionalIdentityEndpoints();
 
-	Log.Information("Run configured application");
+    Log.Information("Run configured application");
 	app.Run();
 }
 catch(Exception ex)
@@ -228,4 +238,9 @@ finally
 {
     Log.Information("Application shut down complete");
     Log.CloseAndFlush();
+}
+
+// Make the implicit Program.cs class public, so integration tests can reference the correct assembly for host building
+public partial class Program
+{
 }
