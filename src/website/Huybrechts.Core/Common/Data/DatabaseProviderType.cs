@@ -1,4 +1,4 @@
-﻿namespace Huybrechts.Infra.Data;
+﻿namespace Huybrechts.Core.Common.Data;
 
 public enum DatabaseProviderType
 {

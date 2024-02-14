@@ -1,4 +1,4 @@
-﻿using Huybrechts.Infra.Data;
+﻿using Huybrechts.Core.Common.Data;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 

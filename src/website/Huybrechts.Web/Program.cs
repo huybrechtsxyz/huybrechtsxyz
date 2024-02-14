@@ -1,3 +1,4 @@
+using Huybrechts.Core.Common.Data;
 using Huybrechts.Core.Identity.Entities;
 using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;

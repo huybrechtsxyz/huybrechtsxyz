@@ -1,7 +1,7 @@
+using Huybrechts.Core.Common.Data;
 using Huybrechts.Core.Identity.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace Huybrechts.Infra.Data;
 
