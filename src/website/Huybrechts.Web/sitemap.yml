@@ -1,0 +1,11 @@
+version: 1.0
+
+sitemap:
+  pages:
+    - index: 
+        type: razor
+    - privacy:
+        type: razor
+    - home:
+        type: blazor
+    - 

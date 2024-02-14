@@ -210,24 +210,23 @@ try
 			app.UseForwardedHeaders();
 	}
 
-	Log.Information("Configuring middleware services");
-	app.UseSerilogRequestLogging();
+    Log.Information("Configuring middleware services");
+    Log.Information("Using authentication and authorization");
+    app.UseSerilogRequestLogging();
 	app.UseRouting();
-	app.UseAntiforgery();
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.UseAntiforgery();
 	app.UseResponseCaching();
-
-	Log.Information("Using authentication and authorization");
-	app.UseAuthentication();
-	app.UseAuthorization();
 
 	Log.Information("Mapping and routing razor components");
 	app.MapControllers();
 	app.MapRazorPages();
-    app.MapRazorComponents<Huybrechts.Web.Components.App>()
-        .AddInteractiveServerRenderMode();
-    app.MapAdditionalIdentityEndpoints();
+	app.MapRazorComponents<Huybrechts.Web.Components.App>()
+		.AddInteractiveServerRenderMode();
+	app.MapAdditionalIdentityEndpoints();
 
-    Log.Information("Run configured application");
+	Log.Information("Run configured application");
 	app.Run();
 }
 catch(Exception ex)
