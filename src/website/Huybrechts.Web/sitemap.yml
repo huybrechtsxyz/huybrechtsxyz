@@ -1,11 +1,47 @@
 version: 1.0
 
-sitemap:
-  pages:
+Sitemap:
+  Pages:
     - index: 
         type: razor
     - privacy:
         type: razor
     - home:
         type: blazor
-    - 
+    - counter:
+        type: blazor
+    - weather:
+        type: blazor
+    - Account:
+        type: blazor
+        Pages:
+          - Manage:
+              Pages:
+                - ChangePassword:
+                - DeletePersonalData:
+                - Disable2fa:
+                - Email:
+                - EnableAuthenticator:
+                - ExternalLogins:
+                - GenerateRecoveryCodes:
+                - Index:
+                - PersonalData:
+                - ResetAuthenticator:
+                - SetPassword:
+                - TwoFactorAuthentication:
+          - ConfirmEmail:
+          - ConfirmEmailChange:
+          - ExternalLogin:
+          - ForgotPassword:
+          - ForgotPasswordConfirmation:
+          - InvalidPasswordReset:
+          - InvalidUser:
+          - Lockout:
+          - Login:
+          - LoginWith2fa:
+          - LoginWithRecoveryCodes:
+          - Register:
+          - RegisterConfirmation:
+          - ResentEmailConfirmation:
+          - ResetPassword:
+          - ResetPasswordConfirmation:
