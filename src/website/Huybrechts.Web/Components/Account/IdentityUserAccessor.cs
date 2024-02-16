@@ -1,5 +1,5 @@
-using Huybrechts.Infra.Identity;
-using Huybrechts.Core.Identity.Entities;
+using Huybrechts.App.Identity;
+using Huybrechts.App.Identity.Entities;
 
 namespace Huybrechts.Web.Components.Account
 {

@@ -1,5 +1,5 @@
-using Huybrechts.Infra.Identity;
-using Huybrechts.Core.Identity.Entities;
+using Huybrechts.App.Identity;
+using Huybrechts.App.Identity.Entities;
 using Huybrechts.Web.Components.Account.Pages;
 using Huybrechts.Web.Components.Account.Pages.Manage;
 using Microsoft.AspNetCore.Authentication;

@@ -3,17 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Core", "src\website\Huybrechts.Core\Huybrechts.Core.csproj", "{31084B68-4495-44E9-AC20-AA026B9C645B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra", "src\website\Huybrechts.Infra\Huybrechts.Infra.csproj", "{ECC4ADA9-F60F-4B26-8E25-B1B0D5B52E38}"
-	ProjectSection(ProjectDependencies) = postProject
-		{31084B68-4495-44E9-AC20-AA026B9C645B} = {31084B68-4495-44E9-AC20-AA026B9C645B}
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Web", "src\website\Huybrechts.Web\Huybrechts.Web.csproj", "{97EEC211-ECB2-4003-B9BA-16E7278BDB00}"
 	ProjectSection(ProjectDependencies) = postProject
-		{31084B68-4495-44E9-AC20-AA026B9C645B} = {31084B68-4495-44E9-AC20-AA026B9C645B}
+		{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC} = {2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.App", "src\website\Huybrechts.App\Huybrechts.App.csproj", "{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,18 +16,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{31084B68-4495-44E9-AC20-AA026B9C645B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{31084B68-4495-44E9-AC20-AA026B9C645B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{31084B68-4495-44E9-AC20-AA026B9C645B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{31084B68-4495-44E9-AC20-AA026B9C645B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ECC4ADA9-F60F-4B26-8E25-B1B0D5B52E38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ECC4ADA9-F60F-4B26-8E25-B1B0D5B52E38}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ECC4ADA9-F60F-4B26-8E25-B1B0D5B52E38}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ECC4ADA9-F60F-4B26-8E25-B1B0D5B52E38}.Release|Any CPU.Build.0 = Release|Any CPU
 		{97EEC211-ECB2-4003-B9BA-16E7278BDB00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{97EEC211-ECB2-4003-B9BA-16E7278BDB00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97EEC211-ECB2-4003-B9BA-16E7278BDB00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97EEC211-ECB2-4003-B9BA-16E7278BDB00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
