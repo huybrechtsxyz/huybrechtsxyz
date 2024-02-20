@@ -93,7 +93,7 @@ try
 			}
 		default: throw new NotSupportedException("Invalid database context type given for ApplicationDbType");
 	}
-	if (builder.Environment.IsDevelopment())
+	if (builder.Environment.IsDevelopment() || builder.Environment.IsLocalhost())
 	{
 		builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 	}
@@ -158,9 +158,9 @@ try
     Log.Information("Building the application and services");
     var app = builder.Build();
 
-	// Configure the HTTP request pipeline.
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-	if (app.Environment.IsDevelopment())
+    // Configure the HTTP request pipeline.
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    if (app.Environment.IsDevelopment() || app.Environment.IsLocalhost())
 	{
 		Log.Information("Configure the HTTP request pipeline for development");
 		app.UseDeveloperExceptionPage();

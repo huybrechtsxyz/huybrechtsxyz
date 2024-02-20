@@ -20,5 +20,13 @@
    <ItemGroup>
      <ProjectReference Include="..\Huybrechts.App\Huybrechts.App.csproj" />
    </ItemGroup>
+
+   <ItemGroup>
+     <Content Update="appsettings.Localhost.json">
+       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+     </Content>
+   </ItemGroup>
    
 </Project>
