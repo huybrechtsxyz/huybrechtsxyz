@@ -2,6 +2,7 @@
 using Huybrechts.App.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
 
 namespace Huybrechts.App.Identity;
 
@@ -41,7 +42,47 @@ public class TenantManager : ITenantManager
         var user = await _userManager.GetUserAsync(state.User);
         if (user is null)
             return [];
+        if (await _userManager.IsInRoleAsync(user, ApplicationRole.SystemAdministrator))
+        {
+
+        }
 
         return await _userManager.GetApplicationTenantsAsync(user);
+    }
+
+    public async Task AddTenant(ApplicationTenant tenant)
+    {
+        var state = await _authenticationState.GetAuthenticationStateAsync();
+        var user = await _userManager.GetUserAsync(state.User) ??
+            throw new ApplicationException("User not found while trying to create tenant");
+
+        _dbcontext.ApplicationTenants.Add(tenant);
+        await _userManager.AddToTenantAsync(user, tenant.Id, ApplicationRole.GetRoleName(ApplicationRoleValues.Owner));
+        await _dbcontext.SaveChangesAsync();
+    }
+
+    public async Task UpdateTenant(ApplicationTenant tenant)
+    {
+        var state = await _authenticationState.GetAuthenticationStateAsync();
+        var user = await _userManager.GetUserAsync(state.User) ??
+            throw new ApplicationException($"User '{state.User}' not found while trying to update tenant");
+
+        var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
+            throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to update tenant");
+        item.UpdateFrom(tenant);
+        _dbcontext.ApplicationTenants.Update(tenant);
+        await _dbcontext.SaveChangesAsync();
+    }
+
+    public async Task DeleteTenant(ApplicationTenant tenant)
+    {
+        var state = await _authenticationState.GetAuthenticationStateAsync();
+        var user = await _userManager.GetUserAsync(state.User) ??
+            throw new ApplicationException($"User '{state.User}' not found while trying to delete tenant");
+
+        var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
+            throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to delete tenant");
+        _dbcontext.ApplicationTenants.Remove(tenant);
+        await _dbcontext.SaveChangesAsync();
     }
 }

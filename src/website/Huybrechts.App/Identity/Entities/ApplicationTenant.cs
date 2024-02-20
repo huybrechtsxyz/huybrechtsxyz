@@ -35,6 +35,13 @@ public record ApplicationTenant
 
     [Timestamp]
     public byte[]? ConcurrencyStamp { get; set; }
+
+    public void UpdateFrom(ApplicationTenant entity)
+    {
+        this.Name = entity.Name;
+        this.Description = entity.Description;
+        this.Remark = entity.Remark;
+    }
 }
 
 public class ApplicationTenantConfiguration : IEntityTypeConfiguration<ApplicationTenant>

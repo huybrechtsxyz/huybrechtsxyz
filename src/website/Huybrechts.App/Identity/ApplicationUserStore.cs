@@ -27,40 +27,29 @@ public class ApplicationUserStore :
         _dbcontext = context;
     }
 
-    public async Task<IList<ApplicationRole>> GetAppliationRolesAsync(ApplicationUser user, CancellationToken cancellationToken = default)
-    {
-        ThrowIfDisposed();
-        cancellationToken.ThrowIfCancellationRequested();
-        ArgumentNullException.ThrowIfNull(user);
-        var userId = user.Id;
-        var query = from userRoles in UserRoles
-                    join role in Roles on userRoles.RoleId equals role.Id
-                    where userRoles.UserId.Equals(userId)
-                    select role;
-        return await query.ToListAsync(cancellationToken);
-    }
-
-    public async Task AddToTenantAsync(ApplicationUser user, string tenantId, CancellationToken cancellationToken = default)
+    public async Task AddToTenantAsync(ApplicationUser user, string tenantId, string remark = "", CancellationToken cancellationToken = default)
     {
         ThrowIfDisposed();
         cancellationToken.ThrowIfCancellationRequested();
         ArgumentNullException.ThrowIfNull(user, nameof(user));
         ArgumentException.ThrowIfNullOrWhiteSpace(tenantId, nameof(tenantId));
 
-        var tenant = await Tenants.FindAsync([tenantId, cancellationToken], cancellationToken: cancellationToken) ??
-            throw new InvalidOperationException($"Tenant {tenantId} was not found");
-
+        var tenant = await Tenants.FindAsync([tenantId], cancellationToken: cancellationToken) ??
+            throw new InvalidOperationException($"Tenant {tenantId} was not found while adding user to tenant");
+        
         var userTenant = await UserTenants.FirstAsync(q => q.UserId == user.Id && tenantId == tenant.Id, cancellationToken: cancellationToken);
-        if (userTenant is not null)
-            return;
-
-        UserTenants.Add(new ApplicationUserTenant()
+        if (userTenant is null)
         {
-            UserId = user.Id,
-            TenantId = tenantId
-        });
+            userTenant = new ApplicationUserTenant()
+            {
+                UserId = user.Id,
+                TenantId = tenantId,
+                Remark = remark
+            };
+            UserTenants.Add(userTenant);
+        }
     }
-    
+
     public async Task<IList<string>> GetTenantsAsync(ApplicationUser user, CancellationToken cancellationToken = default)
     {
         ThrowIfDisposed();
@@ -92,7 +81,7 @@ public class ApplicationUserStore :
         ThrowIfDisposed();
         cancellationToken.ThrowIfCancellationRequested();
         ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
-        var tenant = await Tenants.FindAsync([tenantId, cancellationToken], cancellationToken: cancellationToken);
+        var tenant = await Tenants.FindAsync([tenantId], cancellationToken: cancellationToken);
         if (tenant is null)
             return new List<ApplicationUser>();
         var query = from userTenant in UserTenants
@@ -109,11 +98,37 @@ public class ApplicationUserStore :
         ArgumentNullException.ThrowIfNull(user);
         ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
 
-        var tenant = await Tenants.FindAsync([tenantId, cancellationToken], cancellationToken: cancellationToken);
+        var tenant = await Tenants.FindAsync([tenantId], cancellationToken: cancellationToken);
         if (tenant is null)
             return false;
 
-        return await UserTenants.AnyAsync(q => q.UserId == user.Id && q.TenantId == tenantId, cancellationToken: cancellationToken);
+        return await UserTenants.AnyAsync(q => q.UserId == user.Id && q.TenantId == tenantId, cancellationToken);
+    }
+
+    public async Task<bool> IsTenantOwnerAsync(ApplicationUser user, string tenantId, CancellationToken cancellationToken = default)
+    {
+        ThrowIfDisposed();
+        cancellationToken.ThrowIfCancellationRequested();
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
+
+        var roleId = ApplicationRole.GetTenantRole(tenantId, ApplicationRoleValues.Owner);
+        var userRoles = await UserRoles.Where(q => q.UserId == user.Id && q.RoleId == roleId).ToListAsync(cancellationToken);
+        if (userRoles is null || userRoles.Count == 0) return false;
+        return true;
+    }
+
+    public async Task<bool> HasOtherOwnersAsync(ApplicationUser user, string tenantId, CancellationToken cancellationToken = default)
+    {
+        ThrowIfDisposed();
+        cancellationToken.ThrowIfCancellationRequested();
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
+
+        var roleId = ApplicationRole.GetTenantRole(tenantId, ApplicationRoleValues.Owner);
+        var userRoles = await UserRoles.Where(q => q.UserId != user.Id && q.RoleId == roleId).ToListAsync(cancellationToken);
+        if (userRoles is null || userRoles.Count == 0) return true;
+        return false;
     }
 
     public async Task RemoveFromTenantAsync(ApplicationUser user, string tenantId, CancellationToken cancellationToken = default)
@@ -123,15 +138,17 @@ public class ApplicationUserStore :
         ArgumentNullException.ThrowIfNull(user);
         ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
 
-        var tenants = await UserTenants.Where(q => q.UserId == user.Id && q.TenantId == tenantId).ToListAsync(cancellationToken);
-        if (tenants is null || tenants.Count == 0)
-            return;
+        if (await IsTenantOwnerAsync(user, tenantId, cancellationToken))
+            if (!await HasOtherOwnersAsync(user, tenantId, cancellationToken))
+                throw new ApplicationException($"Tenant {tenantId} has no other owners than {user.Id}");
 
-        UserTenants.RemoveRange(tenants);
-        
-        var roles = await UserRoles.Where(q => q.UserId == user.Id && q.TenantId != tenantId).ToListAsync(cancellationToken: cancellationToken);
+        var roles = await UserRoles.Where(q => q.UserId == user.Id && q.TenantId == tenantId).ToListAsync(cancellationToken);
         if (roles is not null && roles.Count > 0)
             UserRoles.RemoveRange(roles);
+
+        var tenants = await UserTenants.Where(q => q.UserId == user.Id && q.TenantId == tenantId).ToListAsync(cancellationToken);
+        if (tenants is not null && tenants.Count != 0)
+            UserTenants.RemoveRange(tenants);
     }
 
     public override async Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken = default)

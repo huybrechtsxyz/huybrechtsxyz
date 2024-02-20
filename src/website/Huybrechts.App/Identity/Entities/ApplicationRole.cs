@@ -27,14 +27,14 @@ public sealed class ApplicationRole : IdentityRole
     public static readonly string SystemAdministrator = "Administrator";
     public static readonly string SystemUser = "User";
 
-	public static List<ApplicationRole> GetDefaultRoles(string tenant)
+	public static List<ApplicationRole> GetDefaultTenantRoles(string tenant)
 	{
 		List<ApplicationRole> list = [];
 		foreach (var value in Enum.GetValues(typeof(ApplicationRoleValues)).Cast<ApplicationRoleValues>())
 		{
 			var item = new ApplicationRole()
 			{
-				Name = ApplicationRole.GetRoleName(tenant, value.ToString()),
+				Name = ApplicationRole.GetTenantRole(tenant, value),
 				TenantId = tenant,
 				Label = value.ToString()
 			};
@@ -44,35 +44,77 @@ public sealed class ApplicationRole : IdentityRole
 		return list;
 	}
 
-	public static string GetTenantId(string rolename)
-	{
-        if (rolename.StartsWith(Hashtag))
-		    return string.Empty;
-        return rolename[0..(rolename.IndexOf(Hashtag) - 1)];
+    /// <summary>
+    /// Returns the label of the role (without tenantid if applicable)
+    /// </summary>
+    /// <param name="roleid"></param>
+    /// <returns>
+	/// Application role? Complete rolename is returned.
+	/// Tenant role? Label is returned without tenantid.
+    /// </returns>
+    public static string GetRoleLabel(string roleid)
+    {
+        return roleid.StartsWith(Hashtag) ? roleid : roleid[(roleid.IndexOf(Hashtag) + 1)..];
     }
 
-	public static string GetRoleLabel(string rolename)
-	{
-        return rolename.StartsWith(Hashtag) ? rolename : rolename[(rolename.IndexOf(Hashtag) + 1)..];
+    /// <summary>
+    /// Returns the enumerated role to a string
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns>
+    /// The role enumeration as string
+    /// </returns>
+    public static string GetRoleName(ApplicationRoleValues value)
+    {
+        return value.ToString();
     }
 
-    public static string GetRoleName(string tenant, string label)
+    /// <summary>
+    /// Returns the id of the tenant if available
+    /// </summary>
+    /// <param name="rolename"></param>
+    /// <returns>
+	/// Application role? Tenantid is Empty.
+	/// Tenant role? Tenantid is returned.
+	/// </returns>
+    public static string GetTenantId(string roleid)
+    {
+        if (roleid.StartsWith(Hashtag))
+            return string.Empty;
+        return roleid[0..(roleid.IndexOf(Hashtag) - 1)];
+    }
+
+    /// <summary>
+    /// Returns the name of the tenantrole based on tenant and role label
+    /// </summary>
+    /// <param name="tenant"></param>
+    /// <param name="label"></param>
+    /// <returns>
+    /// Returns the created tenant-role
+    /// </returns>
+    public static string GetTenantRole(string tenant, string label)
     {
         return $"{tenant}{Hashtag}{label}";
     }
 
-	public static string GetTenantRole(string tenant, string role)
-	{
-		if (role.Contains(Hashtag))
-			return role;
-		return GetRoleName(tenant, role);
-	}
+    /// <summary>
+    /// Returns the name of the tenantrole based on tenant and role label
+    /// </summary>
+    /// <param name="tenant"></param>
+    /// <param name="value"></param>
+    /// <returns>
+    /// Returns the created tenant-role
+    /// </returns>
+    public static string GetTenantRole(string tenant, ApplicationRoleValues value)
+    {
+        return $"{tenant}{Hashtag}{GetRoleName(value)}";
+    }
 
     public ApplicationRole() : base() { }
 
 	public ApplicationRole(string rolename) : base(rolename) { }
 
-	public ApplicationRole(string tenant, string rolename) : base(GetRoleName(tenant, rolename)) { }
+	public ApplicationRole(string tenant, string rolename) : base(GetTenantRole(tenant, rolename)) { }
 }
 
 public class ApplicationRoleConfiguration : IEntityTypeConfiguration<ApplicationRole>

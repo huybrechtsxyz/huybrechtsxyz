@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Runtime.InteropServices;
 
 namespace Huybrechts.App.Identity;
 
@@ -25,14 +26,6 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         UserStore = (ApplicationUserStore)store;
     }
 
-    public async Task<IList<ApplicationRole>> GetApplicationRolesAsync(ApplicationUser user)
-    {
-        ThrowIfDisposed();
-        CancellationToken.ThrowIfCancellationRequested();
-        ArgumentNullException.ThrowIfNull(user);
-        return await UserStore.GetAppliationRolesAsync(user);
-    }
-
     public async Task<IdentityResult> AddToTenantAsync(ApplicationUser user, string tenantId, string roleName)
     {
         ThrowIfDisposed();
@@ -48,7 +41,7 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
             return IdentityResult.Failed([new IdentityError() { Code = "UserInTenant", Description = $"User already member of tenant {tenantId} for role {roleName}" }]);
 
         if (!inTenant)
-            await UserStore.AddToTenantAsync(user, tenantId, CancellationToken);
+            await UserStore.AddToTenantAsync(user, tenantId, cancellationToken: CancellationToken);
 
         if (!inRole)
             await base.AddToRoleAsync(user, normalizedRole);
@@ -65,7 +58,7 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         ArgumentNullException.ThrowIfNull(roles);
 
         if (!await UserStore.IsInTenantAsync(user, tenantId, CancellationToken))
-            await UserStore.AddToTenantAsync(user, tenantId, CancellationToken);
+            await UserStore.AddToTenantAsync(user, tenantId, cancellationToken: CancellationToken);
 
         List<string> roleList = [];
         foreach (var role in roles)
@@ -92,7 +85,7 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         ThrowIfDisposed();
         CancellationToken.ThrowIfCancellationRequested();
         ArgumentNullException.ThrowIfNull(user);
-        return await UserStore.GetApplicationTenantsAsync(user);
+        return await UserStore.GetApplicationTenantsAsync(user, CancellationToken);
     }
 
     public async Task<IList<ApplicationUser>> GetUsersInTenantAsync(string tenantId)
