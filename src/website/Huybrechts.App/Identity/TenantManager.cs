@@ -33,7 +33,7 @@ public class TenantManager : ITenantManager
         _logger = logger;
     }
 
-    public async Task<IList<ApplicationTenant>> GetTenants()
+    public async Task<IList<ApplicationTenant>> GetTenantsAsync()
     {
         if (_userManager is null)
             return [];
@@ -50,7 +50,7 @@ public class TenantManager : ITenantManager
         return await _userManager.GetApplicationTenantsAsync(user);
     }
 
-    public async Task AddTenant(ApplicationTenant tenant)
+    public async Task AddTenantAsync(ApplicationTenant tenant)
     {
         var state = await _authenticationState.GetAuthenticationStateAsync();
         var user = await _userManager.GetUserAsync(state.User) ??
@@ -61,7 +61,7 @@ public class TenantManager : ITenantManager
         await _dbcontext.SaveChangesAsync();
     }
 
-    public async Task UpdateTenant(ApplicationTenant tenant)
+    public async Task UpdateTenantAsync(ApplicationTenant tenant)
     {
         var state = await _authenticationState.GetAuthenticationStateAsync();
         var user = await _userManager.GetUserAsync(state.User) ??
@@ -74,7 +74,7 @@ public class TenantManager : ITenantManager
         await _dbcontext.SaveChangesAsync();
     }
 
-    public async Task DeleteTenant(ApplicationTenant tenant)
+    public async Task DeleteTenantAsync(ApplicationTenant tenant)
     {
         var state = await _authenticationState.GetAuthenticationStateAsync();
         var user = await _userManager.GetUserAsync(state.User) ??

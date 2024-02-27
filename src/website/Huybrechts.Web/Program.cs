@@ -28,7 +28,7 @@ try
     Log.Information("Starting application");
 
     Log.Information("Creating application builder");
-    var builder = WebApplication.CreateBuilder(args);
+	var builder = WebApplication.CreateBuilder(args);
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
@@ -93,7 +93,7 @@ try
 			}
 		default: throw new NotSupportedException("Invalid database context type given for ApplicationDbType");
 	}
-	if (builder.Environment.IsDevelopment() || builder.Environment.IsLocalhost())
+	if (builder.Environment.IsDevelopment() || builder.Environment.IsTest())
 	{
 		builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 	}
@@ -121,7 +121,7 @@ try
 		.AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
 		.AddDefaultTokenProviders();
 
-	ClientSecretOption? google = applicationSettings.GetGoogleLoginClientSecret();
+	GoogleClientSecretOptions? google = applicationSettings.GetGoogleLoginClientSecret();
 	if (!(google is null || string.IsNullOrEmpty(google.ClientId) || string.IsNullOrEmpty(google.ClientSecret)))
 	{
 		builder.Services.AddAuthentication().AddGoogle(options =>
@@ -139,8 +139,11 @@ try
 			};
 		});
 	}
-	
-	Log.Information("Configuring user interface");
+
+    Log.Information("Add services to container");
+	builder.Services.AddTransient<TenantManager>();
+
+    Log.Information("Configuring user interface");
 	builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 	builder.Services.AddAntiforgery();
 	builder.Services.AddControllers();
@@ -160,7 +163,7 @@ try
 
     // Configure the HTTP request pipeline.
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    if (app.Environment.IsDevelopment() || app.Environment.IsLocalhost())
+    if (app.Environment.IsDevelopment() || app.Environment.IsTest())
 	{
 		Log.Information("Configure the HTTP request pipeline for development");
 		app.UseDeveloperExceptionPage();
@@ -186,16 +189,21 @@ try
 	}
 
 	Log.Information("Initializing application services");
-	app.UseResponseCompression();
-	if (!ApplicationSettings.IsRunningInContainer())
-		app.UseHttpsRedirection();
-	app.UseStaticFiles(new StaticFileOptions
+    if (app.Environment.IsStaging() || app.Environment.IsProduction())
 	{
-		OnPrepareResponse = ctx =>
+        app.UseResponseCompression();
+        if (!ApplicationSettings.IsRunningInContainer())
+            app.UseHttpsRedirection();
+        app.UseStaticFiles(new StaticFileOptions()
 		{
-			ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "public,max-age=86400"; //+ (int)(60 * 60 * 24);
-		}
-	});
+			OnPrepareResponse = ctx =>
+			{
+				ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "public,max-age=86400"; //+ (int)(60 * 60 * 24);
+			}
+		});
+	}
+	else
+		app.UseStaticFiles();
 	app.UseRequestLocalization(new RequestLocalizationOptions
 	{
 		SupportedCultures = ApplicationSettings.GetSupportedCultures(),

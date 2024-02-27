@@ -1,4 +1,5 @@
 ﻿using Huybrechts.App.Config;
+using Huybrechts.App.Extensions;
 using Huybrechts.App.Identity;
 using Huybrechts.App.Identity.Entities;
 using Microsoft.AspNetCore.Hosting;
@@ -40,7 +41,7 @@ public class DatabaseSeedWorker : IHostedService
         _userManager = (ApplicationUserManager)scope.ServiceProvider.GetRequiredService(typeof(ApplicationUserManager));
         _roleManager = (ApplicationRoleManager)scope.ServiceProvider.GetRequiredService(typeof(ApplicationRoleManager));
 
-        if (environment.IsDevelopment() && _applicationSettings.DoResetEnvironment())
+        if ((environment.IsDevelopment() || environment.IsTest() ) && _applicationSettings.DoResetEnvironment())
         {
             _logger.Warning("Running database initializer...deleting existing database");
             await _dbcontext.Database.EnsureDeletedAsync(cancellationToken);
@@ -53,6 +54,9 @@ public class DatabaseSeedWorker : IHostedService
 
         //if (environment.IsDevelopment())
         //    await InitializeForDevelopmentAsync(cancellationToken);
+
+        //if (environment.IsTest())
+        //    await InitializeForTestAsync(cancellationToken);
 
         //else if (environment.IsStaging())
         //    await InitializeForStagingAsync(cancellationToken);
@@ -73,6 +77,11 @@ public class DatabaseSeedWorker : IHostedService
     //private async Task InitializeForDevelopmentAsync(CancellationToken cancellationToken)
     //{
     //    _logger.Information("Running database initializer...applying development migrations");
+    //}
+
+    //private async Task InitializeForTestAsync(CancellationToken cancellationToken)
+    //{
+    //    _logger.Information("Running database initializer...applying test migrations");
     //}
 
     //private async Task InitializeForStagingAsync(CancellationToken cancellationToken)
