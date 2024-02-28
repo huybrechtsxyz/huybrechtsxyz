@@ -1,6 +1,6 @@
-# This workflow deploys the website to the development environment
+# This workflow deploys traefik to the test environment
 
-name: Deploy Website Build To Development
+name: Deploy Traefik To Test
 
 on:
   workflow_dispatch:
@@ -8,30 +8,19 @@ on:
   push:
     branches: [ "main" ]
     paths: 
-      - 'src/website/**'
-      - '!src/website/*.yml'
+      - 'src/traefik/**'
 
   pull_request:
     branches: [ "main" ]
     paths: 
-      - 'src/website/**'
-      - '!src/website/*.yml'
+      - 'src/traefik/**'
 
 jobs:
-  build-website:
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_build-website.yml@main
-    with:
-      environment: development
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      
   deploy-config:
-    needs: [ build-website ]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-config.yml@main
     with:
-      environment: development
-      component: whoami
+      environment: test
+      component: traefik
     secrets:
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
@@ -42,7 +31,7 @@ jobs:
     needs: [ deploy-config ]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-stack.yml@main
     with:
-      environment: development
+      environment: test
     secrets:
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}

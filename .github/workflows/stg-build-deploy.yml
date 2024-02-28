@@ -1,4 +1,4 @@
-# This workflow deploys traefik to the development environment
+# This workflow deploys all components to the staging environment
 
 name: Build and Deploy To Staging
 

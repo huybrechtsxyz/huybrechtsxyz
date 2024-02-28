@@ -1,6 +1,6 @@
-# This workflow deploys whoami to the development environment
+# This workflow deploys Postgres to the test environment
 
-name: Deploy Keycloak To Development
+name: Deploy Postgres To Test
 
 on:
   workflow_dispatch:
@@ -8,19 +8,19 @@ on:
   push:
     branches: [ "main" ]
     paths: 
-      - 'src/keycloak/**'
+      - 'src/postgres/**'
 
   pull_request:
     branches: [ "main" ]
     paths: 
-      - 'src/keycloak/**'
+      - 'src/postgres/**'
 
 jobs:
   deploy-config:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-config.yml@main
     with:
-      environment: development
-      component: keycloak
+      environment: test
+      component: postgres
     secrets:
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
@@ -31,7 +31,7 @@ jobs:
     needs: [ deploy-config ]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-stack.yml@main
     with:
-      environment: development
+      environment: test
     secrets:
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}

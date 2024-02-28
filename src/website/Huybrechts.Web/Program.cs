@@ -154,11 +154,15 @@ try
 	Log.Information("Adding database initializer as hosted service");
 	builder.Services.AddHostedService<DatabaseSeedWorker>();
 
-	Log.Information("Building the application and services");
+	Log.Information("Building the application with services");
     foreach (var service in builder.Services)
         Log.Information(service.ToString());
 
-    Log.Information("Building the application and services");
+	//Log.Debug("Building the application with configuration");
+	//foreach (var config in builder.Configuration.AsEnumerable())
+	//	Log.Debug(config.ToString());
+
+	Log.Information("Building the application and services");
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.

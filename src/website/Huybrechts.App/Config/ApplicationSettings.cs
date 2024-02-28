@@ -23,8 +23,26 @@ public sealed class ApplicationSettings
 
 	public string GetApplicationConnectionString()
 	{
-		return _configuration.GetConnectionString("DatabaseContext") ??
-		throw new InvalidOperationException("Connection string 'DatabaseContext' not found.");
+		var appdb = _configuration.GetConnectionString("DatabaseContext") ??
+			throw new InvalidOperationException("Connection string 'DatabaseContext' not found.");
+
+		var user = Environment.GetEnvironmentVariable(_configuration["Environment:Username"] ?? string.Empty);
+		if (!string.IsNullOrEmpty(user) && appdb.Contains("{username}"))
+		{
+			if (user.ToUpper().EndsWith("_FILE"))
+				user = File.ReadAllText(user);
+			appdb = appdb.Replace("{username}", user);
+		}
+
+        var pass = Environment.GetEnvironmentVariable(_configuration["Environment:Password"] ?? string.Empty);
+        if (!string.IsNullOrEmpty(pass) && appdb.Contains("{password}"))
+		{
+			if (pass.ToUpper().EndsWith("_FILE"))
+				pass = File.ReadAllText(pass);
+			appdb = appdb.Replace("{password}", pass);
+		}
+
+        return appdb;
 	}
 
 	public DatabaseProviderType GetApplicationConnectionType()

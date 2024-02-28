@@ -1,6 +1,6 @@
-# This workflow deploys traefik to the development environment
+# This workflow deploys whoami to the test environment
 
-name: Deploy Traefik To Development
+name: Deploy WhoAmI To Test
 
 on:
   workflow_dispatch:
@@ -8,30 +8,30 @@ on:
   push:
     branches: [ "main" ]
     paths: 
-      - 'src/traefik/**'
+      - 'src/whoami/**'
 
   pull_request:
     branches: [ "main" ]
     paths: 
-      - 'src/traefik/**'
+      - 'src/whoami/**'
 
 jobs:
   deploy-config:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-config.yml@main
     with:
-      environment: development
-      component: traefik
+      environment: test
+      component: whoami
     secrets:
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
       APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-      
+
   deploy-stack:
     needs: [ deploy-config ]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-stack.yml@main
     with:
-      environment: development
+      environment: test
     secrets:
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}

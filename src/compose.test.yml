@@ -1,31 +1,31 @@
 # https://docs.docker.com/compose/multiple-compose-files/extends/
-# Docker Compose for the staging environment
+# Docker Compose for the test environment
 version: '3.9'
 
 services:
   traefik:
     extends:
-      file: traefik.development.yml
+      file: traefik.test.yml
       service: traefik
   whoami:
     extends:
-      file: whoami.development.yml
+      file: whoami.test.yml
       service: whoami
   website:
     extends:
-      file: website.development.yml
+      file: website.test.yml
       service: website
   postgres:
     extends:
-      file: postgres.development.yml
+      file: postgres.test.yml
       service: postgres
   pgadmin:
     extends:
-      file: postgres.development.yml
+      file: postgres.test.yml
       service: pgadmin
   # keycloak:
   #   extends:
-  #     file: keycloak.development.yml
+  #     file: keycloak.test.yml
   #     service: keycloak
 
 networks:

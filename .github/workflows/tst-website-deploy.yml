@@ -1,6 +1,6 @@
-# This workflow deploys the website to the development environment
+# This workflow deploys the website to the test environment
 
-name: Deploy Website Config To Development
+name: Deploy Website Config To Test
 
 on:
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
   deploy-config:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-config.yml@main
     with:
-      environment: development
+      environment: test
       component: whoami
     secrets:
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
@@ -31,7 +31,7 @@ jobs:
     needs: [ deploy-config ]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-stack.yml@main
     with:
-      environment: development
+      environment: test
     secrets:
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}

@@ -48,7 +48,7 @@ services:
       - --providers.docker.exposedbydefault=false
       - --providers.docker.network=traefik
       - --providers.swarm
-      - --providers.swarm.constraints=Label(`traefik.tags`, `development`)
+      - --providers.swarm.constraints=Label(`traefik.tags`, `test`)
       # Dashboard. Optional. Default: true. 
       - --api
       - --api.dashboard=true
@@ -84,9 +84,9 @@ services:
       labels:
         # Dashboard
         - "traefik.enable=true"
-        - "traefik.tags=development"
+        - "traefik.tags=test"
         # Change the host url here
-        - "traefik.http.routers.traefik.rule=Host(`develop.huybrechts.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        - "traefik.http.routers.traefik.rule=Host(`test.huybrechts.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
         - "traefik.http.routers.traefik.tls.certresolver=leresolver"
