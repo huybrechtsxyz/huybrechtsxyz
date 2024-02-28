@@ -1,4 +1,4 @@
-# This workflow deploys whoami to the test environment
+# This workflow deploys keycloak to the test environment
 
 name: Deploy Keycloak To Test
 
