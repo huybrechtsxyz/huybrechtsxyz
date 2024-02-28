@@ -31,7 +31,7 @@ jobs:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-config.yml@main
     with:
       environment: test
-      component: whoami
+      component: website
     secrets:
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
