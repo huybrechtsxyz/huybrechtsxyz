@@ -6,14 +6,22 @@ For each environment set the required secrets and variables.
 ## Environments
 An overview of the environments
 
+INFO | DO NOT FORGET TO ASSIGN THE DNS REDIRECTION!
+
 ### Development
-The development environment. Runs by CI-CD. Unstable.
+The local development environment.
+
+### Test
+The test environment. Runs by CI-CD. Unstable.
+> test.huybrechts.xyz
 
 ### Staging
 The staging environment. Once development is approved, manually launch the action.
+> staging.huybrechts.xyz
 
 ### Production
 The production environment. Once staging is approved, manually launch the action.
+> huybrechts.xyz
 
 ## Variables
 The secrets and variables that are set for each environment.
