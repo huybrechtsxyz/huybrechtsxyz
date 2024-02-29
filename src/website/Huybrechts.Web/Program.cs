@@ -74,6 +74,7 @@ try
 	ApplicationSettings applicationSettings = new(builder.Configuration);
 	DatabaseProviderType connectionType = applicationSettings.GetApplicationConnectionType();
 	var connectionString = applicationSettings.GetApplicationConnectionString();
+	Log.Debug("Connecting to {DatabaseProvider} with {DatabaseContext}", connectionType, connectionString);
 	switch (connectionType)
 	{
 		case DatabaseProviderType.SqlLite:

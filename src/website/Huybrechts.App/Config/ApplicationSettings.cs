@@ -26,10 +26,18 @@ public sealed class ApplicationSettings
 		var appdb = _configuration.GetConnectionString("DatabaseContext") ??
 			throw new InvalidOperationException("Connection string 'DatabaseContext' not found.");
 
+		var dbname = Environment.GetEnvironmentVariable(_configuration["Environment:Database"] ?? string.Empty);
+		if (!string.IsNullOrEmpty(dbname) && appdb.Contains("{database}"))
+		{
+			if (dbname.ToUpper().EndsWith("_FILE") || dbname.ToLower().StartsWith("/run/secrets"))
+				dbname = File.ReadAllText(dbname);
+			appdb = appdb.Replace("{database}", dbname);
+		}
+
 		var user = Environment.GetEnvironmentVariable(_configuration["Environment:Username"] ?? string.Empty);
 		if (!string.IsNullOrEmpty(user) && appdb.Contains("{username}"))
 		{
-			if (user.ToUpper().EndsWith("_FILE"))
+			if (user.ToUpper().EndsWith("_FILE") || user.ToLower().StartsWith("/run/secrets"))
 				user = File.ReadAllText(user);
 			appdb = appdb.Replace("{username}", user);
 		}
@@ -37,7 +45,7 @@ public sealed class ApplicationSettings
         var pass = Environment.GetEnvironmentVariable(_configuration["Environment:Password"] ?? string.Empty);
         if (!string.IsNullOrEmpty(pass) && appdb.Contains("{password}"))
 		{
-			if (pass.ToUpper().EndsWith("_FILE"))
+			if (pass.ToUpper().EndsWith("_FILE") || pass.ToLower().StartsWith("/run/secrets"))
 				pass = File.ReadAllText(pass);
 			appdb = appdb.Replace("{password}", pass);
 		}
