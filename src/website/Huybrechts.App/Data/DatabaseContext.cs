@@ -1,6 +1,7 @@
 using Huybrechts.App.Identity.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Huybrechts.App.Data;
 
@@ -14,59 +15,31 @@ public class DatabaseContext
 		ApplicationRoleClaim, 
 		ApplicationUserToken>
 {
-    public DatabaseProviderType DatabaseProviderType { get; set; } = DatabaseProviderType.SqlServer;
+	public static DatabaseProviderType GlobalDatabaseProvider { get; set; }
 
-    public DatabaseContext(DbContextOptions options) : base(options)
-    {
-    }
+    public DatabaseProviderType DatabaseProviderType { get; set; }
+
+    public DatabaseContext(DbContextOptions options) : base(options) 
+	{
+		DatabaseProviderType = GlobalDatabaseProvider;
+	}
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        base.OnConfiguring(optionsBuilder);
+		base.OnConfiguring(optionsBuilder);
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
 		builder.Entity<ApplicationRole>();
-		switch (DatabaseProviderType)
-		{
-			case DatabaseProviderType.SqlLite:
-				OnModelCreatingSqlServer(builder);
-				break;
-			case DatabaseProviderType.SqlServer:
-				OnModelCreatingSqlServer(builder);
-				break;
-			case DatabaseProviderType.PostgreSQL:
-				OnModelCreatingPostgres(builder);
-				break;
-			default: 
-				throw new NotImplementedException("No or invalid database provider is registered");
-		}
-	}
-
-	private void OnModelCreatingSqlServer(ModelBuilder builder)
-	{
 		builder.ApplyConfiguration(new ApplicationRoleConfiguration());
-		builder.ApplyConfiguration(new ApplicationRoleClaimConfigurationMsSql());
+		builder.ApplyConfiguration(new ApplicationRoleClaimConfiguration());
 		builder.ApplyConfiguration(new ApplicationTenantConfiguration());
 		builder.ApplyConfiguration(new ApplicationUserConfiguration());
-		builder.ApplyConfiguration(new ApplicationUserClaimConfigurationMsSql());
+		builder.ApplyConfiguration(new ApplicationUserClaimConfiguration());
 		builder.ApplyConfiguration(new ApplicationUserLoginConfiguration());
 		builder.ApplyConfiguration(new ApplicationUserRoleConfiguration());
-		builder.ApplyConfiguration(new ApplicationUserTenantConfigurationMsSql());
-		builder.ApplyConfiguration(new ApplicationUserTokenConfiguration());
-	}
-
-	private void OnModelCreatingPostgres(ModelBuilder builder)
-	{
-		builder.ApplyConfiguration(new ApplicationRoleConfiguration());
-		builder.ApplyConfiguration(new ApplicationRoleClaimConfigurationPgSql());
-		builder.ApplyConfiguration(new ApplicationTenantConfiguration());
-		builder.ApplyConfiguration(new ApplicationUserConfiguration());
-		builder.ApplyConfiguration(new ApplicationUserClaimConfigurationPgSql());
-		builder.ApplyConfiguration(new ApplicationUserLoginConfiguration());
-		builder.ApplyConfiguration(new ApplicationUserRoleConfiguration());
-		builder.ApplyConfiguration(new ApplicationUserTenantConfigurationNpSql());
+		builder.ApplyConfiguration(new ApplicationUserTenantConfiguration());
 		builder.ApplyConfiguration(new ApplicationUserTokenConfiguration());
 	}
 

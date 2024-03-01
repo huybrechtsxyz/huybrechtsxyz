@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Huybrechts.App.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Huybrechts.App.Identity.Entities;
 
 [Table("IdentityTenant")]
+[EntityTypeConfiguration(typeof(ApplicationTenantConfiguration))]
 public record ApplicationTenant
 {
     [Key]
@@ -27,8 +29,7 @@ public record ApplicationTenant
 
     public byte[]? Picture { get; set; }
 
-    [StringLength(24)]
-    public string? DatabaseProvider { get; set; }
+    public DatabaseProviderType DatabaseProvider { get; set; }
 
     [StringLength(512)]
     public string? ConnectionString { get; set; }
@@ -49,14 +50,14 @@ public class ApplicationTenantConfiguration : IEntityTypeConfiguration<Applicati
     public void Configure(EntityTypeBuilder<ApplicationTenant> builder)
     {
         builder.Property<string>("Id").HasMaxLength(24).HasColumnType("nvarchar(24)");
+        builder.Property<ApplicationTenantState>("State").HasConversion<string>();
+		builder.Property<string>("Name").IsRequired().HasMaxLength(256).HasColumnType("nvarchar(256)");
+		builder.Property<string>("Description").HasMaxLength(512).HasColumnType("nvarchar(512)");
+		builder.Property<string>("Remark").HasColumnType("nvarchar(max)");
+		builder.Property<byte[]>("ProfilePicture").HasColumnType("varbinary(max)");
+		builder.Property<DatabaseProviderType>("DatabaseProvider").HasConversion<string>();
+		builder.Property<string>("ConnectionString").HasMaxLength(512).HasColumnType("nvarchar(512)");
         builder.Property<byte[]>("ConcurrencyStamp").IsConcurrencyToken().ValueGeneratedOnAddOrUpdate().HasColumnType("rowversion");
-        builder.Property<string>("ConnectionString").HasMaxLength(512).HasColumnType("nvarchar(512)");
-        builder.Property<string>("DatabaseProvider").HasMaxLength(24).HasColumnType("nvarchar(24)");
-        builder.Property<string>("Description").HasMaxLength(512).HasColumnType("nvarchar(512)");
-        builder.Property<string>("Name").IsRequired().HasMaxLength(256).HasColumnType("nvarchar(256)");
-        builder.Property<byte[]>("ProfilePicture").HasColumnType("varbinary(max)");
-        builder.Property<string>("Remark").HasColumnType("nvarchar(max)");
-        builder.Property(p => p.State).HasConversion(v => v.ToString(), v => (ApplicationTenantState)Enum.Parse(typeof(ApplicationTenantState), v));
         builder.HasKey("Id");
         builder.ToTable("IdentityTenant");
     }

@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Huybrechts.App.Identity.Entities;
 
 [Table("IdentityUserLogin")]
+[EntityTypeConfiguration(typeof(ApplicationUserLoginConfiguration))]
 public class ApplicationUserLogin : IdentityUserLogin<string>
 {
 }

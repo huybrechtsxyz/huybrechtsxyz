@@ -6,31 +6,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Huybrechts.App.Identity.Entities;
 
 [Table("IdentityUserRole")]
+[EntityTypeConfiguration(typeof(ApplicationUserRoleConfiguration))]
 public class ApplicationUserRole : IdentityUserRole<string>
 {
-	private const string Hashtag = "#";
+	[NotMapped]
+	public string TenantId => ApplicationRole.GetTenantId(RoleId);
 
 	[NotMapped]
-    public string TenantId
-    {
-        get
-        {
-            if (!RoleId.Contains(Hashtag))
-                return string.Empty;
-			return RoleId[0..(RoleId.IndexOf(Hashtag) - 1)];
-		}
-    }
-
-    [NotMapped]
-    public string Label
-    { 
-        get 
-        {
-            if (!RoleId.Contains(Hashtag))
-                return RoleId;
-            return RoleId[(RoleId.IndexOf(Hashtag) + 1)..];
-        } 
-    }
+	public string Label => ApplicationRole.GetRoleLabel(RoleId);
 }
 
 public class ApplicationUserRoleConfiguration : IEntityTypeConfiguration<ApplicationUserRole>

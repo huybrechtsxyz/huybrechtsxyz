@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Huybrechts.App.Identity.Entities;
 
 [Table("IdentityRole")]
+[EntityTypeConfiguration(typeof(ApplicationRoleConfiguration))]
 public sealed class ApplicationRole : IdentityRole
 {
 	[RegularExpression("^[a-z0-9]+$")]
@@ -127,7 +128,8 @@ public class ApplicationRoleConfiguration : IEntityTypeConfiguration<Application
 		builder.Property<string>("TenantId").HasMaxLength(24).HasColumnType("nvarchar(24)");
 		builder.Property<string>("Label").HasMaxLength(200).HasColumnType("nvarchar(200)");
 		builder.Property<string>("NormalizedName").HasMaxLength(256).HasColumnType("nvarchar(256)");
-        builder.HasKey("Id");
+		builder.Property<string>("Description").HasMaxLength(512).HasColumnType("nvarchar(512)");
+		builder.HasKey("Id");
         builder.HasIndex("TenantId", "Label").IsUnique().HasFilter("[Label] IS NOT NULL");
         builder.HasOne<ApplicationTenant>().WithMany().HasForeignKey("TenantId").OnDelete(DeleteBehavior.Cascade);
         builder.ToTable("IdentityRole");

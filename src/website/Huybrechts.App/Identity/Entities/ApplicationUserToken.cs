@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Huybrechts.App.Identity.Entities;
 
 [Table("IdentityUserToken")]
+[EntityTypeConfiguration(typeof(ApplicationUserTokenConfiguration))]
 public class ApplicationUserToken : IdentityUserToken<string>
 {
 }

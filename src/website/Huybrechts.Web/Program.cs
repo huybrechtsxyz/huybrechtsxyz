@@ -94,6 +94,7 @@ try
 			}
 		default: throw new NotSupportedException("Invalid database context type given for ApplicationDbType");
 	}
+	DatabaseContext.GlobalDatabaseProvider = connectionType;
 	if (builder.Environment.IsDevelopment() || builder.Environment.IsTest())
 	{
 		builder.Services.AddDatabaseDeveloperPageExceptionFilter();
