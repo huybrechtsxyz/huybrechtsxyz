@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Huybrechts.Infra.SqlLite.Migrations
 {
-    [DbContext(typeof(DatabaseContext))]
+    [DbContext(typeof(ApplicationContext))]
     [Migration("20240305151337_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {

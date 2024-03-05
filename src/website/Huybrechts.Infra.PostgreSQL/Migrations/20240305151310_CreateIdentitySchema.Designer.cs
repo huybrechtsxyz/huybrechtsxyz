@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Huybrechts.Infra.PostgreSQL.Migrations
 {
-    [DbContext(typeof(DatabaseContext))]
+    [DbContext(typeof(ApplicationContext))]
     [Migration("20240305151310_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {

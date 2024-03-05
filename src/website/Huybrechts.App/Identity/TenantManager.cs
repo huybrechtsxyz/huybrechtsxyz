@@ -16,14 +16,14 @@ public class TenantManager : ITenantManager
     private readonly AuthenticationStateProvider _authenticationState;
     private readonly ApplicationUserManager _userManager;
     private readonly ApplicationRoleManager _roleManager;
-    private readonly DatabaseContext _dbcontext;
+    private readonly ApplicationContext _dbcontext;
     private readonly ILogger<TenantManager> _logger;
 
     public TenantManager(
         AuthenticationStateProvider authenticationState,
         ApplicationUserManager userManager, 
         ApplicationRoleManager roleManager,
-        DatabaseContext dbcontext,
+        ApplicationContext dbcontext,
         ILogger<TenantManager> logger)
     {
         _authenticationState = authenticationState;

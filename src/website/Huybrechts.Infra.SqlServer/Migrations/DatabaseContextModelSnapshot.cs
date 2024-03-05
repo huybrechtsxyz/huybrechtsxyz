@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Huybrechts.Infra.SqlServer.Migrations
 {
-    [DbContext(typeof(DatabaseContext))]
+    [DbContext(typeof(ApplicationContext))]
     partial class DatabaseContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

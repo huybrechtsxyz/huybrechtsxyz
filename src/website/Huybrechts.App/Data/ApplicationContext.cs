@@ -15,7 +15,7 @@ namespace Huybrechts.App.Data;
 ///		Add-Migration xyz -args "--provider SqlServer"
 ///		Update-Database
 /// </summary>
-public class DatabaseContext
+public class ApplicationContext
 	: IdentityDbContext<
 		ApplicationUser,
 		ApplicationRole, string,
@@ -29,7 +29,7 @@ public class DatabaseContext
 
     public DatabaseProviderType DatabaseProviderType { get; set; }
 
-    public DatabaseContext(DbContextOptions options) : base(options) 
+    public ApplicationContext(DbContextOptions options) : base(options) 
 	{
 		DatabaseProviderType = GlobalDatabaseProvider;
 	}

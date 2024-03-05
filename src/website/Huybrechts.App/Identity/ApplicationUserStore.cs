@@ -8,10 +8,10 @@ using System.Data;
 namespace Huybrechts.App.Identity;
 
 public class ApplicationUserStore :
-	UserStore<ApplicationUser, ApplicationRole, DatabaseContext, string, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationUserToken, ApplicationRoleClaim>,
+	UserStore<ApplicationUser, ApplicationRole, ApplicationContext, string, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationUserToken, ApplicationRoleClaim>,
     IUserStore<ApplicationUser>
 {
-    private readonly DatabaseContext _dbcontext;
+    private readonly ApplicationContext _dbcontext;
 
     private DbSet<ApplicationRole> Roles { get { return Context.Set<ApplicationRole>(); } }
 
@@ -21,7 +21,7 @@ public class ApplicationUserStore :
 
     private DbSet<ApplicationUserTenant> UserTenants { get { return Context.Set<ApplicationUserTenant>(); } }
 
-    public ApplicationUserStore(DatabaseContext context, IdentityErrorDescriber? describer = null)
+    public ApplicationUserStore(ApplicationContext context, IdentityErrorDescriber? describer = null)
         : base(context, describer)
     {
         _dbcontext = context;

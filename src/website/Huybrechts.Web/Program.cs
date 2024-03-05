@@ -99,28 +99,28 @@ try
 	{
 		case DatabaseProviderType.SqlLite:
 			{
-				builder.Services.AddDbContext<DatabaseContext>(options => 
+				builder.Services.AddDbContext<ApplicationContext>(options => 
 					options.UseSqlite(connectionString, 
 					x => x.MigrationsAssembly("Huybrechts.Infra.SqlLite")));
 				break;
 			}
 		case DatabaseProviderType.SqlServer:
 			{
-				builder.Services.AddDbContext<DatabaseContext>(
+				builder.Services.AddDbContext<ApplicationContext>(
 					options => options.UseSqlServer(connectionString,
 					x => x.MigrationsAssembly("Huybrechts.Infra.SqlServer")));
 				break;
 			}
 		case DatabaseProviderType.PostgreSQL:
 			{
-				builder.Services.AddDbContext<DatabaseContext>(
+				builder.Services.AddDbContext<ApplicationContext>(
 					options => options.UseNpgsql(connectionString,
 					x => x.MigrationsAssembly("Huybrechts.Infra.PostgreSQL")));
 				break;
 			}
 		default: throw new NotSupportedException("Invalid database context type given for ApplicationDbType");
 	}
-	DatabaseContext.GlobalDatabaseProvider = connectionType;
+	ApplicationContext.GlobalDatabaseProvider = connectionType;
 	if (builder.Environment.IsDevelopment() || builder.Environment.IsTest())
 	{
 		builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -140,7 +140,7 @@ try
 		{
 			options.SignIn.RequireConfirmedAccount = false;
 		})
-		.AddEntityFrameworkStores<DatabaseContext>()
+		.AddEntityFrameworkStores<ApplicationContext>()
 		.AddRoleValidator<ApplicationRoleValidator>()
 		.AddRoleManager<ApplicationRoleManager>()
 		.AddUserStore<ApplicationUserStore>()

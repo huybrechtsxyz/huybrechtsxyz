@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Huybrechts.Infra.SqlServer.Migrations
 {
-    [DbContext(typeof(DatabaseContext))]
+    [DbContext(typeof(ApplicationContext))]
     [Migration("20240305151406_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {

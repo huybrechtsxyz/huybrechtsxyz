@@ -34,7 +34,7 @@ public class ApplicationUserTenantConfiguration : IEntityTypeConfiguration<Appli
     public void Configure(EntityTypeBuilder<ApplicationUserTenant> builder)
     {
 		builder.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("int");
-		switch (DatabaseContext.GlobalDatabaseProvider) {
+		switch (ApplicationContext.GlobalDatabaseProvider) {
 			case DatabaseProviderType.PostgreSQL: 
                 { NpgsqlPropertyBuilderExtensions.UseIdentityColumn(builder.Property<int>("Id")); break; }
 			default: //DatabaseProviderType.SqlServer || DatabaseProviderType.SqlLite
