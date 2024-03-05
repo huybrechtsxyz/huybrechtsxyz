@@ -6,25 +6,25 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Huybrechts.App.Identity;
 
-public interface ITenantManager
+public interface IApplicationTenantManager
 {
 
 }
 
-public class TenantManager : ITenantManager
+public class ApplicationTenantManager : IApplicationTenantManager
 {
     private readonly AuthenticationStateProvider _authenticationState;
     private readonly ApplicationUserManager _userManager;
     private readonly ApplicationRoleManager _roleManager;
     private readonly ApplicationContext _dbcontext;
-    private readonly ILogger<TenantManager> _logger;
+    private readonly ILogger<ApplicationTenantManager> _logger;
 
-    public TenantManager(
+    public ApplicationTenantManager(
         AuthenticationStateProvider authenticationState,
         ApplicationUserManager userManager, 
         ApplicationRoleManager roleManager,
         ApplicationContext dbcontext,
-        ILogger<TenantManager> logger)
+        ILogger<ApplicationTenantManager> logger)
     {
         _authenticationState = authenticationState;
         _userManager = userManager;

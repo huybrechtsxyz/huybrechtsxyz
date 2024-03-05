@@ -169,7 +169,7 @@ try
 	}
 
     Log.Information("Add services to container");
-	builder.Services.AddTransient<TenantManager>();
+	builder.Services.AddTransient<ApplicationTenantManager>();
 
     Log.Information("Configuring user interface");
 	builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
