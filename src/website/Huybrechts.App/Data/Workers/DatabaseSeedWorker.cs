@@ -98,15 +98,15 @@ public class DatabaseSeedWorker : IHostedService
     {
         _logger.Information("Running database initializer...creating default users");
 
-        var vincent = await CreateUser(new ApplicationUser()
+        var webmaster = await CreateUser(new ApplicationUser()
         {
-            UserName = "vincent@huybrechts.xyz",
-            Email = "vincent@huybrechts.xyz",
-            GivenName = "Vincent",
+            UserName = "webmaster@huybrechts.xyz",
+            Email = "webmaster@huybrechts.xyz",
+            GivenName = "Webmaster",
             Surname = "Huybrechts",
             EmailConfirmed = true
         });
-        if (vincent is null)
+        if (webmaster is null)
             _logger.Information("Running database initializer...error creating users");
 
         var sysadmin = await CreateRole(new ApplicationRole()
@@ -125,20 +125,20 @@ public class DatabaseSeedWorker : IHostedService
         if (user is null)
             _logger.Information("Running database initializer...error creating roles");
 
-        if (vincent is not null && sysadmin is not null)
+        if (webmaster is not null && sysadmin is not null)
         {
-            if (await _userManager!.IsInRoleAsync(vincent, sysadmin.Name!))
-                return vincent;
+            if (await _userManager!.IsInRoleAsync(webmaster, sysadmin.Name!))
+                return webmaster;
 
-            var result = await _userManager!.AddToRoleAsync(vincent, sysadmin.Name!);
+            var result = await _userManager!.AddToRoleAsync(webmaster, sysadmin.Name!);
             if (result.Succeeded)
-                return vincent;
+                return webmaster;
 
             foreach (var error in result.Errors)
-                _logger.Error("Error adding role {role} to user {user}: {errorcode} with {errortext}", sysadmin.Name, vincent.Email, error.Code, error.Description);
+                _logger.Error("Error adding role {role} to user {user}: {errorcode} with {errortext}", sysadmin.Name, webmaster.Email, error.Code, error.Description);
         }
 
-        return vincent;
+        return webmaster;
     }
 
     private async Task<ApplicationRole?> CreateRole(ApplicationRole role)
