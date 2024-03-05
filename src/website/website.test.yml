@@ -5,8 +5,8 @@ services:
   website:
     image: huybrechts/website:test
     environment:
-      - ASPNETCORE_ENVIRONMENT: Test
-      - DOTNET_RUNNING_IN_CONTAINER: 1
+      - ASPNETCORE_ENVIRONMENT=Test
+      - DOTNET_RUNNING_IN_CONTAINER=1
       - APP_HOST_USERNAME
       - APP_HOST_PASSWORD
     networks:
