@@ -37,6 +37,22 @@ try
 		//.WriteTo.File("logs/website-.txt", rollingInterval: RollingInterval.Day),
 		writeToProviders: true);
 
+	CommandLineOptions commandLineOptions = new();
+	if (args is not null && args.Length > 0)
+	{
+		Log.Information($"CommandLine options: {string.Join(" ", args)}");
+		int clreturn = commandLineOptions.Interpret(args);
+		if (clreturn != 0)
+		{
+			Log.Error(commandLineOptions.Exception ?? new ApplicationException("Error interpreting the command line options"),
+				"Error interpreting command line {args} with {Error}",
+				string.Join(" ", args),
+				clreturn);
+			throw new ApplicationException("Invalid command line");
+		}
+		Log.Information("Command line for provider: {DatabaseProviderType}", commandLineOptions.DatabaseProviderType);		
+	}
+
 	if (ApplicationSettings.IsRunningInContainer())
 		builder.Configuration.AddDockerSecrets("/run/secrets", ":", null);
 
@@ -72,24 +88,34 @@ try
 
 	Log.Information("Connect to the database");
 	ApplicationSettings applicationSettings = new(builder.Configuration);
-	DatabaseProviderType connectionType = applicationSettings.GetApplicationConnectionType();
+	DatabaseProviderType connectionType = DatabaseProviderType.None;
+	if (commandLineOptions.DatabaseProviderType != DatabaseProviderType.None)
+		connectionType = commandLineOptions.DatabaseProviderType;
+	else
+		connectionType = applicationSettings.GetApplicationConnectionType();
 	var connectionString = applicationSettings.GetApplicationConnectionString();
 	Log.Debug("Connecting to {DatabaseProvider} with {DatabaseContext}", connectionType, connectionString);
 	switch (connectionType)
 	{
 		case DatabaseProviderType.SqlLite:
 			{
-				builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlite(connectionString));
+				builder.Services.AddDbContext<DatabaseContext>(options => 
+					options.UseSqlite(connectionString, 
+					x => x.MigrationsAssembly("Huybrechts.Infra.SqlLite")));
 				break;
 			}
 		case DatabaseProviderType.SqlServer:
 			{
-				builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString));
+				builder.Services.AddDbContext<DatabaseContext>(
+					options => options.UseSqlServer(connectionString,
+					x => x.MigrationsAssembly("Huybrechts.Infra.SqlServer")));
 				break;
 			}
 		case DatabaseProviderType.PostgreSQL:
 			{
-				builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
+				builder.Services.AddDbContext<DatabaseContext>(
+					options => options.UseNpgsql(connectionString,
+					x => x.MigrationsAssembly("Huybrechts.Infra.PostgreSQL")));
 				break;
 			}
 		default: throw new NotSupportedException("Invalid database context type given for ApplicationDbType");
@@ -158,7 +184,7 @@ try
 
 	Log.Information("Building the application with services");
     foreach (var service in builder.Services)
-        Log.Information(service.ToString());
+        Log.Debug(service.ToString());
 
 	//Log.Debug("Building the application with configuration");
 	//foreach (var config in builder.Configuration.AsEnumerable())

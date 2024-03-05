@@ -1,3 +1,4 @@
+using Huybrechts.App.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -32,32 +33,39 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder.Property<int>("AccessFailedCount").HasColumnType("int");
         builder.Property<string>("ConcurrencyStamp").IsConcurrencyToken().HasColumnType("nvarchar(max)");
         builder.Property<string>("Email").HasMaxLength(256).HasColumnType("nvarchar(256)");
-
-        /// TODO
-        builder.Property<bool>("EmailConfirmed").HasColumnType("bit");
-
-        builder.Property<string>("GivenName").HasMaxLength(128).HasColumnType("nvarchar(128)");
-
-        /// TODO
-        builder.Property<bool>("LockoutEnabled").HasColumnType("bit");
-
+        switch (DatabaseContext.GlobalDatabaseProvider) {
+		    case DatabaseProviderType.PostgreSQL:
+			{ builder.Property<bool>("EmailConfirmed").HasColumnType("boolean"); break; }
+		    default: //DatabaseProviderType.SqlServer || DatabaseProviderType.SqlLite
+			{ builder.Property<bool>("EmailConfirmed").HasColumnType("bit"); break; }
+		}
+		builder.Property<string>("GivenName").HasMaxLength(128).HasColumnType("nvarchar(128)");
+        switch (DatabaseContext.GlobalDatabaseProvider) {
+			case DatabaseProviderType.PostgreSQL:
+			{ builder.Property<bool>("LockoutEnabled").HasColumnType("boolean"); break; }
+		    default: //DatabaseProviderType.SqlServer || DatabaseProviderType.SqlLite
+			{ builder.Property<bool>("LockoutEnabled").HasColumnType("bit"); break; }
+		}
         builder.Property<DateTimeOffset?>("LockoutEnd").HasColumnType("datetimeoffset");
         builder.Property<string>("NormalizedEmail").HasMaxLength(256).HasColumnType("nvarchar(256)");
         builder.Property<string>("NormalizedUserName").HasMaxLength(256).HasColumnType("nvarchar(256)");
         builder.Property<string>("PasswordHash").HasColumnType("nvarchar(max)");
         builder.Property<string>("PhoneNumber").HasColumnType("nvarchar(max)");
-
-        /// TODO
-        builder.Property<bool>("PhoneNumberConfirmed").HasColumnType("bit");
-
+		switch (DatabaseContext.GlobalDatabaseProvider) {
+			case DatabaseProviderType.PostgreSQL:
+				{ builder.Property<bool>("PhoneNumberConfirmed").HasColumnType("boolean"); break; }
+			default: //DatabaseProviderType.SqlServer || DatabaseProviderType.SqlLite
+				{ builder.Property<bool>("PhoneNumberConfirmed").HasColumnType("bit"); break; }
+		}
         builder.Property<byte[]>("ProfilePicture").HasColumnType("varbinary(max)");
         builder.Property<string>("SecurityStamp").HasColumnType("nvarchar(max)");
         builder.Property<string>("Surname").HasMaxLength(128).HasColumnType("nvarchar(128)");
-
-        /// TODO
-        builder.Property<bool>("TwoFactorEnabled").HasColumnType("bit");
-
-
+		switch (DatabaseContext.GlobalDatabaseProvider) {
+			case DatabaseProviderType.PostgreSQL:
+				{ builder.Property<bool>("TwoFactorEnabled").HasColumnType("boolean"); break; }
+			default: //DatabaseProviderType.SqlServer || DatabaseProviderType.SqlLite
+				{ builder.Property<bool>("TwoFactorEnabled").HasColumnType("bit"); break; }
+		}
         builder.Property<string>("UserName").HasMaxLength(256).HasColumnType("nvarchar(256)");
         builder.HasKey("Id");
         builder.HasIndex("NormalizedEmail").HasDatabaseName("EmailIndex");

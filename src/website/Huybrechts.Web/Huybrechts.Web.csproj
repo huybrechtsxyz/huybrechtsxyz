@@ -19,6 +19,9 @@
 
    <ItemGroup>
      <ProjectReference Include="..\Huybrechts.App\Huybrechts.App.csproj" />
+     <ProjectReference Include="..\Huybrechts.Infra.PostgreSQL\Huybrechts.Infra.PostgreSQL.csproj" />
+     <ProjectReference Include="..\Huybrechts.Infra.SqlLite\Huybrechts.Infra.SqlLite.csproj" />
+     <ProjectReference Include="..\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj" />
    </ItemGroup>
 
    <ItemGroup>

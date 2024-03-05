@@ -5,6 +5,16 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Huybrechts.App.Data;
 
+/// <summary>
+/// The database context for the application.
+/// Uses migration in the different infra projects
+/// Package Manager:
+///		Select appropriate infra package
+///		Add-Migration xyz -Args "--provider PostgreSQL"
+///		Add-Migration xyz -Args "--provider SqlLite"
+///		Add-Migration xyz -args "--provider SqlServer"
+///		Update-Database
+/// </summary>
 public class DatabaseContext
 	: IdentityDbContext<
 		ApplicationUser,

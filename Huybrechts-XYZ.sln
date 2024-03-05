@@ -8,7 +8,22 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Web", "src\websi
 		{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC} = {2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.App", "src\website\Huybrechts.App\Huybrechts.App.csproj", "{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.App", "src\website\Huybrechts.App\Huybrechts.App.csproj", "{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.SqlLite", "src\website\Huybrechts.Infra.SqlLite\Huybrechts.Infra.SqlLite.csproj", "{F74BD497-5364-438F-9A38-F3CBDA041912}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC} = {2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.SqlServer", "src\website\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj", "{7B591A19-8072-4FD1-AC5F-49506BD269E2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC} = {2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.PostgreSQL", "src\website\Huybrechts.Infra.PostgreSQL\Huybrechts.Infra.PostgreSQL.csproj", "{38A2FAD4-04D8-48E6-A9AC-59CBBF57160F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC} = {2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +39,18 @@ Global
 		{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B921FEB-83BF-4BB5-854F-4CDD7BDB65EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F74BD497-5364-438F-9A38-F3CBDA041912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F74BD497-5364-438F-9A38-F3CBDA041912}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F74BD497-5364-438F-9A38-F3CBDA041912}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F74BD497-5364-438F-9A38-F3CBDA041912}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B591A19-8072-4FD1-AC5F-49506BD269E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B591A19-8072-4FD1-AC5F-49506BD269E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B591A19-8072-4FD1-AC5F-49506BD269E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B591A19-8072-4FD1-AC5F-49506BD269E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38A2FAD4-04D8-48E6-A9AC-59CBBF57160F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38A2FAD4-04D8-48E6-A9AC-59CBBF57160F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38A2FAD4-04D8-48E6-A9AC-59CBBF57160F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38A2FAD4-04D8-48E6-A9AC-59CBBF57160F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
