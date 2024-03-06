@@ -94,7 +94,7 @@ try
 	else
 		connectionType = applicationSettings.GetApplicationConnectionType();
 	var connectionString = applicationSettings.GetApplicationConnectionString();
-	Log.Debug("Connecting to {DatabaseProvider} with {DatabaseContext}", connectionType, connectionString);
+	//Log.Debug("Connecting to {DatabaseProvider} with {DatabaseContext}", connectionType, connectionString);
 	switch (connectionType)
 	{
 		case DatabaseProviderType.SqlLite:
