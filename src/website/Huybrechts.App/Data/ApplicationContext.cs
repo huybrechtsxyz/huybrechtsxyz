@@ -1,6 +1,7 @@
 using Huybrechts.App.Identity.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace Huybrechts.App.Data;
 
@@ -57,3 +58,19 @@ public class ApplicationContext
     public DbSet<ApplicationUserTenant> ApplicationUserTenants { get; set; }
 }
 
+public class ApplicationContextFactory : IDesignTimeDbContextFactory<ApplicationContext>
+{
+	public ApplicationContext CreateDbContext(string[] args)
+	{
+		var builder = new DbContextOptionsBuilder<ApplicationContext>();
+
+		switch (ApplicationContext.GlobalDatabaseProvider)
+		{
+			case DatabaseProviderType.SqlLite: { builder.UseSqlite(); break; }
+			case DatabaseProviderType.SqlServer: { builder.UseSqlServer(); break; }
+			case DatabaseProviderType.PostgreSQL: { builder.UseNpgsql(); break; }
+		}
+
+		return new ApplicationContext(builder.Options);
+	}
+}

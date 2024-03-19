@@ -23,6 +23,10 @@ services:
     extends:
       file: postgres.test.yml
       service: pgadmin
+  sqlite:
+    extends:
+      file: sqlite.test.yml
+      service: sqlite
   # keycloak:
   #   extends:
   #     file: keycloak.test.yml

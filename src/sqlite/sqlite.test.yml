@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  sqlite:
+    image: keinos/sqlite3:latest
+    networks:
+      - traefik
+    ports:
+      - "5432:5432"
+    volumes:
+      - /app/data:/workspace
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=test"
+        - "traefik.http.routers.sqlite.rule=Host(`test.huybrechts.xyz`) && PathPrefix(`/sqlite`)"
+        - "traefik.http.services.sqlite.loadbalancer.server.port=8080"
+        - "traefik.http.routers.sqlite.middlewares=authadmin"
+        - "traefik.http.routers.sqlite.entrypoints=websecure"
+        - "traefik.http.routers.sqlite.tls=true"
+        - "traefik.http.routers.sqlite.tls.certresolver=leresolver"
