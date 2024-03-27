@@ -15,14 +15,14 @@ services:
     extends:
       file: website.test.yml
       service: website
-  postgres:
-    extends:
-      file: postgres.test.yml
-      service: postgres
-  pgadmin:
-    extends:
-      file: postgres.test.yml
-      service: pgadmin
+  # postgres:
+  #   extends:
+  #     file: postgres.test.yml
+  #     service: postgres
+  # pgadmin:
+  #   extends:
+  #     file: postgres.test.yml
+  #     service: pgadmin
   sqlite:
     extends:
       file: sqlite.test.yml
