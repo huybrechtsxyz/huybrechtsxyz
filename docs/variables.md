@@ -49,7 +49,11 @@ For the .Net runtime environment.
 > APP_HOST_USERNAME=[the-chosen-username-secret]
 > APP_HOST_PASSWORD=[the-chosen-password-secret]
 > APP_HOST_EMAIL=[the-chosen-email-secret]
-> APP_DBASE_NAME=applicationdb
+> APP_DATA_PROVIDER=[None, SqlLite, SqlServer, PostgreSQL]
+> APP_DATA_URL={connectionstring}
+> APP_DATA_NAME=applicationdb
+> APP_DATA_USERNAME=[the-chosen-username-secret]
+> APP_DATA_PASSWORD=[the-chosen-password-secret]
 
 **Used for the docker container repository**
 > REGISTRY_USERNAME=[the-chosen-docker-username]
@@ -60,7 +64,7 @@ Postgres database environment variables, set with secrets.
 
 **Used by postgres**
 > PGDATA=/var/lib/postgresql/data/pgdata // Refers to app/data/pgdata
-> POSTGRES_DB_FILE=/run/secrets/app_dbase_name
+> POSTGRES_DB_FILE=/run/secrets/app_data_name
 > POSTGRES_USER
 > POSTGRES_USER_FILE=/run/secrets/app_host_username
 > POSTGRES_PASSWORD

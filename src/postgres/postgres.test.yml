@@ -4,12 +4,12 @@ services:
   postgres:
     image: postgres
     secrets:
-      - app_dbase_name
+      - app_data_name
       - app_host_username
       - app_host_password
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_DB_FILE: /run/secrets/app_dbase_name
+      POSTGRES_DB_FILE: /run/secrets/app_data_name
       POSTGRES_USER_FILE: /run/secrets/app_host_username
       POSTGRES_PASSWORD_FILE: /run/secrets/app_host_password
     networks:

@@ -6,7 +6,9 @@ namespace Huybrechts.App.Config;
 
 public class CommandLineOptions
 {
-	public DatabaseProviderType DatabaseProviderType { get; private set; }
+    public DatabaseProviderType DatabaseProviderType { get; private set; }
+
+	public string ConnectionString { get; private set; } = string.Empty;
 
 	public bool IsError => Exception is null;
 
@@ -15,16 +17,28 @@ public class CommandLineOptions
 	public int Interpret(string[] args)
 	{
 		DatabaseProviderType = DatabaseProviderType.None;
+		ConnectionString = string.Empty;
+		string provider = "--provider";
+		string connection = "--connection";
 
 		if (args.Length == 0)
 			return 0;
 
-		if (args[0].Equals("--provider", StringComparison.CurrentCultureIgnoreCase))
+		var values = args.Select(s => s.Trim().ToLower()).ToList();
+
+		int pos = values.IndexOf(provider);
+		if (pos >= 0 && values.Count >= pos + 1)
 		{
-			if (Enum.TryParse(typeof(DatabaseProviderType), args[1], true, out var result))
+			if (Enum.TryParse(typeof(DatabaseProviderType), args[pos + 1], true, out var result))
 			{
 				DatabaseProviderType = (DatabaseProviderType)result;
 			}
+		}
+
+		pos = values.IndexOf(connection);
+		if (pos >= 0 && values.Count >= pos + 1)
+		{
+			ConnectionString = args[pos + 1];
 		}
 
 		return 0;

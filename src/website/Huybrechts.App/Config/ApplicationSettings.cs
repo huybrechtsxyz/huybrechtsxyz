@@ -7,14 +7,19 @@ namespace Huybrechts.App.Config;
 public sealed class ApplicationSettings
 {
 	private readonly IConfiguration _configuration;
+	private readonly CommandLineOptions? _options;
 
 	public static readonly string ENV_DOTNET_RUNNING_IN_CONTAINER = "DOTNET_RUNNING_IN_CONTAINER";
+	public static readonly string ENV_APP_DATA_TYPE = "APP_DATA_TYPE";
+	public static readonly string ENV_APP_DATA_URL = "APP_DATA_URL";
+	public static readonly string ENV_APP_DATA_NAME = "APP_DATA_NAME";
 
-    public static bool IsRunningInContainer() => (System.Environment.GetEnvironmentVariable(ENV_DOTNET_RUNNING_IN_CONTAINER) == "true");
+	public static bool IsRunningInContainer() => (System.Environment.GetEnvironmentVariable(ENV_DOTNET_RUNNING_IN_CONTAINER) == "true");
 
-	public ApplicationSettings(IConfiguration configuration)
+	public ApplicationSettings(IConfiguration configuration, CommandLineOptions? options = default)
 	{
 		_configuration = configuration;
+		_options = options;
 	}
 
 	public bool DoInitializeEnvironment() => GetEnvironmentInitialization() == EnvironmentInitialization.Initialize;
@@ -23,41 +28,61 @@ public sealed class ApplicationSettings
 
 	public string GetApplicationConnectionString()
 	{
-		var appdb = _configuration.GetConnectionString("DatabaseContext") ??
-			throw new InvalidOperationException("Connection string 'DatabaseContext' not found.");
-
-		var dbname = Environment.GetEnvironmentVariable(_configuration["Environment:Database"] ?? string.Empty);
-		if (!string.IsNullOrEmpty(dbname) && appdb.Contains("{database}"))
+		string? dataUrl = Environment.GetEnvironmentVariable(ENV_APP_DATA_URL);
+		if (string.IsNullOrEmpty(dataUrl))
 		{
-			if (dbname.ToUpper().EndsWith("_FILE") || dbname.ToLower().StartsWith("/run/secrets"))
+			if (_options is not null && !string.IsNullOrEmpty(_options.ConnectionString))
+				dataUrl = _options.ConnectionString;
+			else
+				dataUrl = _configuration.GetConnectionString("DatabaseContext");
+		}
+		if (dataUrl is null)
+			throw new InvalidOperationException("Connection string for DatabaseContext not found.");
+
+		var dbname = Environment.GetEnvironmentVariable(ENV_APP_DATA_NAME);
+		if (!string.IsNullOrEmpty(dbname) && dataUrl.Contains("{database}"))
+		{
+			if (dbname.ToUpper().EndsWith("_FILE") || dbname.StartsWith("/run/secrets", StringComparison.CurrentCultureIgnoreCase))
 				dbname = File.ReadAllText(dbname);
-			appdb = appdb.Replace("{database}", dbname);
+			dataUrl = dataUrl.Replace("{database}", dbname);
 		}
 
 		var user = Environment.GetEnvironmentVariable(_configuration["Environment:Username"] ?? string.Empty);
-		if (!string.IsNullOrEmpty(user) && appdb.Contains("{username}"))
+		if (!string.IsNullOrEmpty(user) && dataUrl.Contains("{username}"))
 		{
-			if (user.ToUpper().EndsWith("_FILE") || user.ToLower().StartsWith("/run/secrets"))
+			if (user.ToUpper().EndsWith("_FILE") || user.StartsWith("/run/secrets", StringComparison.CurrentCultureIgnoreCase))
 				user = File.ReadAllText(user);
-			appdb = appdb.Replace("{username}", user);
+			dataUrl = dataUrl.Replace("{username}", user);
 		}
 
-        var pass = Environment.GetEnvironmentVariable(_configuration["Environment:Password"] ?? string.Empty);
-        if (!string.IsNullOrEmpty(pass) && appdb.Contains("{password}"))
+		var pass = Environment.GetEnvironmentVariable(_configuration["Environment:Password"] ?? string.Empty);
+		if (!string.IsNullOrEmpty(pass) && dataUrl.Contains("{password}"))
 		{
-			if (pass.ToUpper().EndsWith("_FILE") || pass.ToLower().StartsWith("/run/secrets"))
+			if (pass.ToUpper().EndsWith("_FILE") || pass.StartsWith("/run/secrets", StringComparison.CurrentCultureIgnoreCase))
 				pass = File.ReadAllText(pass);
-			appdb = appdb.Replace("{password}", pass);
+			dataUrl = dataUrl.Replace("{password}", pass);
 		}
 
-        return appdb;
+		return dataUrl;
 	}
 
 	public DatabaseProviderType GetApplicationConnectionType()
 	{
-		if (Enum.TryParse<DatabaseProviderType>(_configuration["Environment:DatabaseType"], out DatabaseProviderType dbtype))
+		string? provider = Environment.GetEnvironmentVariable(ENV_APP_DATA_TYPE);
+		if (string.IsNullOrEmpty(provider))
+		{
+			if (_options is not null && _options.DatabaseProviderType != DatabaseProviderType.None)
+				return _options.DatabaseProviderType;
+
+			provider = _configuration["Environment:DatabaseType"];
+			if (string.IsNullOrEmpty(provider))
+				throw new InvalidOperationException("DatabaseProviderType not found.");
+		}
+		
+		if (Enum.TryParse<DatabaseProviderType>(provider, out DatabaseProviderType dbtype))
 			return dbtype;
-		throw new InvalidCastException("Invalid Environment:DatabaseType for type of DatabaseProviderType");
+
+		throw new InvalidCastException($"Invalid DatabaseProviderType for {provider}");
 	}
 
 	public string GetDefaultPassword()

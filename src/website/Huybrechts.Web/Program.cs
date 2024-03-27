@@ -50,7 +50,9 @@ try
 				clreturn);
 			throw new ApplicationException("Invalid command line");
 		}
-		Log.Information("Command line for provider: {DatabaseProviderType}", commandLineOptions.DatabaseProviderType);		
+		Log.Information("Command line for provider: {DatabaseProviderType}, {ConnectionString}", 
+			commandLineOptions.DatabaseProviderType,
+			commandLineOptions.ConnectionString);
 	}
 
 	if (ApplicationSettings.IsRunningInContainer())
@@ -87,12 +89,8 @@ try
 	});
 
 	Log.Information("Connect to the database");
-	ApplicationSettings applicationSettings = new(builder.Configuration);
-	DatabaseProviderType connectionType = DatabaseProviderType.None;
-	if (commandLineOptions.DatabaseProviderType != DatabaseProviderType.None)
-		connectionType = commandLineOptions.DatabaseProviderType;
-	else
-		connectionType = applicationSettings.GetApplicationConnectionType();
+	ApplicationSettings applicationSettings = new(builder.Configuration, commandLineOptions);
+	DatabaseProviderType connectionType = applicationSettings.GetApplicationConnectionType();
 	var connectionString = applicationSettings.GetApplicationConnectionString();
 	//Log.Debug("Connecting to {DatabaseProvider} with {DatabaseContext}", connectionType, connectionString);
 	switch (connectionType)

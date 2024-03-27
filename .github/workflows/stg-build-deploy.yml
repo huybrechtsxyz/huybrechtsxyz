@@ -70,4 +70,8 @@ jobs:
       APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
       APP_HOST_EMAIL: ${{ secrets.APP_HOST_EMAIL }}
-      APP_DBASE_NAME: ${{ secrets.APP_DBASE_NAME }}
+      APP_DATA_PROVIDER: ${{ secrets.APP_DATA_PROVIDER }}
+      APP_DATA_URL: ${{ secrets.APP_DATA_URL }}
+      APP_DATA_NAME: ${{ secrets.APP_DATA_NAME }}
+      APP_DATA_USERNAME: ${{ secrets.APP_DATA_USERNAME }}
+      APP_DATA_PASSWORD: ${{ secrets.APP_DATA_PASSWORD }}

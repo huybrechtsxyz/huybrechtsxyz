@@ -29,7 +29,15 @@ networks:
     external: true
 
 secrets:
-  app_dbase_name:
+  app_data_provider:
+    external: true
+  app_data_url:
+    external: true
+  app_data_name:
+    external: true
+  app_data_username:
+    external: true
+  app_data_password:
     external: true
   app_host_username:
     external: true

@@ -7,11 +7,21 @@ services:
     secrets:
       - app_host_username
       - app_host_password
+      - app_data_provider
+      - app_data_url
+      - app_data_name
+      - app_data_username
+      - app_data_password
     environment:
       - ASPNETCORE_ENVIRONMENT=Test
       - DOTNET_RUNNING_IN_CONTAINER=1
       - APP_HOST_USERNAME_FILE=/run/secrets/app_host_username
       - APP_HOST_PASSWORD_FILE=/run/secrets/app_host_password
+      - APP_DATA_PROVIDER=/run/secrets/app_data_provider
+      - APP_DATA_URL=/run/secrets/app_data_url
+      - APP_DATA_NAME=/run/secrets/app_data_name
+      - APP_DATA_USERNAME=/run/secrets/app_data_username
+      - APP_DATA_PASSWORD=/run/secrets/app_data_password
     networks:
       - traefik
     volumes:
