@@ -6,10 +6,8 @@ services:
     command: antora --stacktrace playbook.yml
     networks:
       - traefik
-    ports:
-      - "80:80"
     volumes:
-      - /app/docs:/antora
+      - /app:/antora
     deploy:
       labels:
         - "traefik.enable=true"

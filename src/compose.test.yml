@@ -30,7 +30,7 @@ services:
   antora:
     extends:
       file: antora.test.yml
-      service: sqlite
+      service: antora
   # keycloak:
   #   extends:
   #     file: keycloak.test.yml
