@@ -64,6 +64,9 @@ jobs:
               mkdir -p /app/data/pgadmin;
               sudo chown -R 5050:5050 /app/data/pgadmin
             fi
+            if [ ! -d /app/docs ]; then
+              mkdir -p /app/docs;
+            fi
             if [ ! -d /app/logs ]; then
               mkdir -p /app/logs;
             fi

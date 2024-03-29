@@ -1,0 +1,25 @@
+= Huybrechts.xyz
+
+== Hi there 👋
+The Huybrechts.xyz website is a website for Vincent Huybrechts. The goal was to create a clean simple architecture that can support an ERP system. The goal of this project is to learn about development and deployment of modern software.
+
+== Getting Started
+The building blocks to create and deploy Huybrechts.xyz. You require the software and accounts mentioned. Alternatives are possible but not documented.
+
+=== Online Accounts
+Accounts required to build the software. Create an account to each of the services (or alternatives below).
+
+- https://github.com/[Github] for Work Management, GIT Repositories, and Build and Release pipelines.
+- https://docker.com/[Docker Hub] for Docker Container Registry/Repository.
+- https://www.kamatera.com/[Kamatera] for hosting of the virtual private servers.
+- https://console.developers.google.com/[Google Developer Console] for Google API's.
+- https://www.google.com/recaptcha/admin[Google Captcha Console] for form validation against robots.
+
+=== Required Software
+The following software is required for building Huybrechts.xyz. Install the software on your local machine.
+
+- https://code.visualstudio.com/[Visual Studio Code] as integrated development environment (IDE).
+- https://gitforwindows.org/[GIT for Windows] for source control (required by VSCode).
+- https://dotnet.microsoft.com/download[ASP.NET Core] as software development kit.
+- https://docs.docker.com/install/[Docker] for containerization and orchestration (swarm).
+- https://putty.org/[Putty] as SSH terminal to connect to virtual private server.

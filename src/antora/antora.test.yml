@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  antora:
+    image: antora/antora
+    command: antora --stacktrace playbook.yml
+    networks:
+      - traefik
+    ports:
+      - "80:80"
+    volumes:
+      - /app/docs:/antora
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=test"
+        - "traefik.http.routers.antora.rule=Host(`test.huybrechts.xyz`) && PathPrefix(`/docs`)"
+        - "traefik.http.services.antora.loadbalancer.server.port=8080"
+        - "traefik.http.routers.antora.entrypoints=websecure"
+        - "traefik.http.routers.antora.tls=true"
+        - "traefik.http.routers.antora.tls.certresolver=leresolver"

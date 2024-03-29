@@ -11,10 +11,10 @@ services:
     extends:
       file: whoami.test.yml
       service: whoami
-  website:
-    extends:
-      file: website.test.yml
-      service: website
+  #website:
+  #  extends:
+  #    file: website.test.yml
+  #    service: website
   # postgres:
   #   extends:
   #     file: postgres.test.yml
@@ -26,6 +26,10 @@ services:
   sqlite:
     extends:
       file: sqlite.test.yml
+      service: sqlite
+  antora:
+    extends:
+      file: antora.test.yml
       service: sqlite
   # keycloak:
   #   extends:
