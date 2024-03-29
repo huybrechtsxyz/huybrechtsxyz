@@ -1,3 +1,5 @@
+# Do not forget to copy the file to the root directory
+# Overwrite the current antora.yml file
 site:
   title: Huybrechts.xyz
   start_page: index.adoc
