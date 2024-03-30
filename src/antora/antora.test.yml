@@ -3,7 +3,7 @@ version: '3.9'
 services:
   antora:
     image: antora/antora
-    command: antora --stacktrace --fetch antora.yml
+    command: antora --stacktrace --fetch playbook.yml
     networks:
       - traefik
     volumes:
