@@ -1,6 +1,6 @@
-# This workflow deploys keycloak to the test environment
+# This workflow deploys the website to the test environment
 
-name: Deploy Keycloak To Test
+name: Deploy Documentation Config To Test
 
 on:
   workflow_dispatch:
@@ -8,25 +8,25 @@ on:
   push:
     branches: [ "main" ]
     paths: 
-      - 'src/keycloak/**'
+      - 'src/asciidoc/*.yml'
 
   pull_request:
     branches: [ "main" ]
     paths: 
-      - 'src/keycloak/**'
+      - 'src/asciidoc/*.yml'
 
 jobs:
   deploy-config:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-config.yml@main
     with:
       environment: test
-      component: keycloak
+      component: asciidoc
     secrets:
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
       APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-
+      
   deploy-stack:
     needs: [ deploy-config ]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-stack.yml@main

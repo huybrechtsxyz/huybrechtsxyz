@@ -11,30 +11,18 @@ services:
     extends:
       file: whoami.test.yml
       service: whoami
-  #website:
-  #  extends:
-  #    file: website.test.yml
-  #    service: website
-  # postgres:
-  #   extends:
-  #     file: postgres.test.yml
-  #     service: postgres
-  # pgadmin:
-  #   extends:
-  #     file: postgres.test.yml
-  #     service: pgadmin
+  website:
+    extends:
+      file: website.test.yml
+      service: website
   sqlite:
     extends:
       file: sqlite.test.yml
       service: sqlite
-  antora:
+  asciidoc:
     extends:
-      file: antora.test.yml
-      service: antora
-  # keycloak:
-  #   extends:
-  #     file: keycloak.test.yml
-  #     service: keycloak
+      file: asciidoc.test.yml
+      service: asciidoc
 
 networks:
   traefik:

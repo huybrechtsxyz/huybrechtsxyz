@@ -15,14 +15,6 @@ services:
     extends:
       file: whoami.staging.yml
       service: whoami
-  postgres:
-    extends:
-      file: postgres.staging.yml
-      service: postgres
-  pgadmin:
-    extends:
-      file: postgres.staging.yml
-      service: pgadmin
 
 networks:
   traefik:

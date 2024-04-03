@@ -48,41 +48,19 @@ jobs:
       APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
 
-  deploy-postgres:
+  deploy-sqlite:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-config.yml@main
     with:
       environment: test
-      component: postgres
+      component: sqlite
     secrets:
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
       APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
 
-  deploy-antora:
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-config.yml@main
-    with:
-      environment: test
-      component: antora
-    secrets:
-      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
-      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
-      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
-      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-
-  # deploy-keycloak:
-  #   uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-config.yml@main
-  #   with:
-  #     environment: test
-  #     component: keycloak
-  #   secrets:
-  #     APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
-  #     APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
-  #     APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
-  #     APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-    
   deploy-stack:
-    needs: [ deploy-traefik, deploy-website, deploy-whoami, deploy-postgres, deploy-antora ] #, deploy-keycloak ]
+    needs: [ deploy-traefik, deploy-website, deploy-whoami, deploy-sqlite ]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_deploy-stack.yml@main
     with:
       environment: test

@@ -15,14 +15,6 @@ services:
     extends:
       file: whoami.production.yml
       service: whoami
-  postgres:
-    extends:
-      file: postgres.production.yml
-      service: postgres
-  pgadmin:
-    extends:
-      file: postgres.production.yml
-      service: pgadmin
 
 networks:
   traefik:

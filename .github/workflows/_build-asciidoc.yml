@@ -1,0 +1,45 @@
+# This workflow will build the documentation folder, create and publish the container to the registry
+
+name: Reusable - Build Documentation
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      REGISTRY_USERNAME:
+        required: true
+      REGISTRY_PASSWORD:
+        required: true
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Convert AsciiDocs to HTML
+        run: |
+          docker run -it -u  $(id -u):$(id -g)  -v  ${{ github.workspace }}:/docs/ asciidoctor/docker-asciidoctor asciidoctor *.adoc
+
+      - name: Build Docker image
+        run: |
+          echo "FROM nginx" > Dockerfile
+          echo "COPY . /usr/share/nginx/html" >> Dockerfile
+          docker build -t asciidocs .
+      
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker tag asciidocs:latest ${{ secrets.DOCKER_USERNAME }}/asciidocs:latest
+          docker tag asciidocs:${{ inputs.environment }} ${{ secrets.DOCKER_USERNAME }}/asciidocs:${{ inputs.environment }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/asciidocs:latest
+      
