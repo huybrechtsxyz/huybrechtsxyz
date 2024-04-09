@@ -23,7 +23,7 @@ jobs:
 
       - name: Convert AsciiDocs to HTML
         run: |
-          docker run -v  ${{ github.workspace }}:/docs/ asciidoctor/docker-asciidoctor asciidoctor *.adoc
+          docker run -v  ${{ github.workspace }}/docs:/documents/ asciidoctor/docker-asciidoctor asciidoctor *.adoc
 
       - name: Build Docker image
         run: |
