@@ -30,6 +30,8 @@ jobs:
           echo "FROM nginx" > Dockerfile
           echo "COPY . /usr/share/nginx/html" >> Dockerfile
           docker build -t asciidocs .
+          docker tag asciidocs:latest ${{ secrets.DOCKER_USERNAME }}/asciidocs:latest
+          docker tag asciidocs:${{ inputs.environment }} ${{ secrets.DOCKER_USERNAME }}/asciidocs:${{ inputs.environment }}
       
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
@@ -39,7 +41,5 @@ jobs:
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker tag asciidocs:latest ${{ secrets.DOCKER_USERNAME }}/asciidocs:latest
-          docker tag asciidocs:${{ inputs.environment }} ${{ secrets.DOCKER_USERNAME }}/asciidocs:${{ inputs.environment }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/asciidocs:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/asciidocs:${{ inputs.environment }}
       
