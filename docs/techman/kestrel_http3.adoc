@@ -1,8 +1,8 @@
-# Enabling HTTP3/3
-## Intro
+= Enabling HTTP3/3
+== Intro
 HTTP/3 has different requirements depending on the operating system. If the platform that Kestrel is running on doesn't have all the requirements for HTTP/3, then it's disabled, and Kestrel will fall back to other HTTP protocols.
 
-## Requirements
+== Requirements
 
     libmsquic package installed.
 
@@ -15,7 +15,7 @@ Note: .NET 6 is only compatible with the 1.9.x versions of libmsquic. Libmsquic 
 
 Because not all routers, firewalls, and proxies properly support HTTP/3, HTTP/3 should be configured together with HTTP/1.1 and HTTP/2.
 
-## Benefits
+== Benefits
 HTTP/3 benefits
 
 HTTP/3 uses the same semantics as HTTP/1.1 and HTTP/2: the same request methods, status codes, and message fields apply to all versions. The differences are in the underlying transport. Both HTTP/1.1 and HTTP/2 use TCP as their transport. HTTP/3 uses a new transport technology developed alongside HTTP/3 called QUIC.

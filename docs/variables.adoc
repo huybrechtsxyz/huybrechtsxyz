@@ -1,33 +1,33 @@
-# Environments, Secrets and Variables
+= Environments, Secrets and Variables
 About environments and their required secrets and environment variables. \
 Variables and secrets are set in the github settings per environment. \
 For each environment set the required values.
 
-## Environments
+== Environments
 An overview of the environments
 
 INFO | DO NOT FORGET TO ASSIGN THE DNS REDIRECTION!
 
-### Development
+=== Development
 The development environment on the local machine.
 All data is in the appsettings or secrets.json file.
 
-### Test
+=== Test
 The test environment. Runs by CI-CD. Unstable environment that gets updated after the CI-CD workflow ran.
 > test.huybrechts.xyz
 
-### Staging
+=== Staging
 The staging environment. Once test is approved, manually launch the workflow action to update the environment.
 > staging.huybrechts.xyz
 
-### Production
+=== Production
 The production environment. Once staging is approved, manually launch the workflow action to update the environment.
 > huybrechts.xyz
 
-## Variables and Secrets
+== Variables and Secrets
 The secrets and variables that are set for each environment.
 
-### Dotnet environment variables
+=== Dotnet environment variables
 For the .Net runtime environment.
 
 > ASPNETCORE_ENVIRONMENT=[development,test,staging,production]
@@ -35,14 +35,14 @@ For the .Net runtime environment.
 > DOTNET_CLI_TELEMETRY_OPTOUT '1'
 > DOTNET_EnableDiagnostics=0
 
-### Application environment variables
+=== Application environment variables
 
-**Used by Let's Encrypt for refreshing the https certificate**
+*Used by Let's Encrypt for refreshing the https certificate*
 > APP_CERT_SERVER=https://acme-staging-v02.api.letsencrypt.org/directory
 > APP_CERT_SERVER=https://acme-v02.api.letsencrypt.org/directory
 > APP_CERT_MAIL=webmaster@huybrechts.xyz
 
-**Used by the server and application for service configuration**
+*Used by the server and application for service configuration*
 > APP_HOST_DOMAIN=[,test,staging].huybrechts.xyz
 > APP_HOST_SERVER=$SERVERIP
 > APP_HOST_PORT=22
@@ -55,14 +55,14 @@ For the .Net runtime environment.
 > APP_DATA_USERNAME=[the-chosen-username-secret]
 > APP_DATA_PASSWORD=[the-chosen-password-secret]
 
-**Used for the docker container repository**
+*Used for the docker container repository*
 > REGISTRY_USERNAME=[the-chosen-docker-username]
 > REGISTRY_PASSWORD=[the-chosen-docker-password]
 
-### Postgres variables
+=== Postgres variables
 Postgres database environment variables, set with secrets.
 
-**Used by postgres**
+*Used by postgres*
 > PGDATA=/var/lib/postgresql/data/pgdata // Refers to app/data/pgdata
 > POSTGRES_DB_FILE=/run/secrets/app_data_name
 > POSTGRES_USER
@@ -70,7 +70,7 @@ Postgres database environment variables, set with secrets.
 > POSTGRES_PASSWORD
 > POSTGRES_PASSWORD_FILE=/run/secrets/app_host_password
 
-**Used by PGAdmin**
+*Used by PGAdmin*
 > POSTGRES_PASSWORD=$APP_HOST_PASSWORD
 > PGADMIN_DEFAULT_EMAIL=$APP_HOST_USERNAME
 > PGADMIN_DEFAULT_PASSWORD=$APP_HOST_PASSWORD
