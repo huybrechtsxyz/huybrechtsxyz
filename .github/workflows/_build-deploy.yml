@@ -137,7 +137,7 @@ jobs:
     environment: ${{ inputs.environment }}
     strategy:
       matrix:
-        component: [traefik, whoami]
+        component: [traefik, whoami, sqlite]
     steps:
       - name: Deploy configuration files
         uses: appleboy/scp-action@v0.1.7
