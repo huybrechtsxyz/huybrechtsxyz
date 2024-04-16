@@ -1,0 +1,208 @@
+# This reusable workflow
+name: Reusable Build and Deploy Workflow
+
+on:
+  workflow_call:
+    secrets:
+      APP_HOST_SERVER:
+        required: true
+      APP_HOST_USERNAME:
+        required: true
+      APP_HOST_PASSWORD:
+        required: true
+      APP_HOST_PORT:
+        required: true
+      APP_DATA_TYPE:
+        required: true
+      APP_DATA_URL:
+        required: true
+      APP_DATA_NAME:
+        required: true
+      APP_DATA_USERNAME:
+        required: true
+      APP_DATA_PASSWORD:
+        required: true
+      REGISTRY_USERNAME:
+        required: true
+      REGISTRY_PASSWORD:
+        required: true
+
+jobs:
+  init-server:
+    name: Initialize Server Job
+    if: inputs.initialize == 'true'
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Initialize server script
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APPHOST_PORT }}
+          script: |
+            cd /;
+            echo "Initializing server";
+
+  update-server:
+    name: Update Server Job
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Update server script
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APPHOST_PORT }}
+          script: |
+            cd /;
+            echo "Updating server";
+            echo "Creating application directories";
+            cd /;
+            if [ ! -d /app }} ]; then
+              mkdir -p /app }};
+            fi
+            if [ ! -d /app/cert ]; then
+              mkdir -p /app/cert;
+            fi
+            if [ ! -d /app/conf ]; then
+              mkdir -p /app/conf;
+            fi
+            if [ ! -d /app/data ]; then
+              mkdir -p /app/data;
+            fi
+            if [ ! -d /app/data/pgdata ]; then
+              mkdir -p /app/data/pgdata;
+            fi
+            if [ ! -d /app/data/pgadmin ]; then
+              mkdir -p /app/data/pgadmin;
+              sudo chown -R 5050:5050 /app/data/pgadmin
+            fi
+            if [ ! -d /app/docs ]; then
+              mkdir -p /app/docs;
+            fi
+            if [ ! -d /app/logs ]; then
+              mkdir -p /app/logs;
+            fi
+
+  build-website:
+    name: Build Website Image
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build website
+        run: dotnet build --no-restore
+      - name: Test website
+        run: dotnet test --no-build --verbosity normal
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: huybrechts/website
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+            type=raw,value=${{ inputs.environment }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./src/website/Huybrechts.Web/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy-component:
+    name: Deploy Component Configuration
+    needs: [update-server]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    strategy:
+      matrix:
+        component: [traefik, whoami]
+    steps:
+      - name: Deploy configuration files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APP_HOST_PORT }}
+          source: "src/${{ matrix.component }}/*${{ inputs.environment }}*"
+          strip_components: 2
+          overwrite: true
+          target: "/app"
+  
+  deploy-generic:
+    name: Deploy Generic Configuration
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Deploy generic files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APP_HOST_PORT }}
+          source: "src/compose.${{ inputs.environment }}.yml"
+          strip_components: 1
+          overwrite: true
+          target: "/app"
+
+  deploy-stack:
+    name: Deploy Docker Swarm Stack
+    needs: [build-website, deploy-component, deploy-generic]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Update docker stack
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APP_HOST_PORT }}
+          script: |
+            cd /;
+            cd /app;
+            if [ -f compose.${{ inputs.environment }}.yml ]; then
+              mv compose.${{ inputs.environment }}.yml compose.yml;
+            fi
+            docker network inspect traefik --format {{.Id}} 2>/dev/null \
+              || docker network create --driver overlay traefik;
+            docker secret rm app_host_username &> /dev/null;
+            echo '${{ secrets.APP_HOST_USERNAME }}' | docker secret create app_host_username - &> /dev/null;
+            docker secret rm app_host_email &> /dev/null;
+            echo '${{ secrets.APP_HOST_EMAIL }}' | docker secret create app_host_email - &> /dev/null;
+            docker secret rm app_host_password &> /dev/null;
+            echo '${{ secrets.APP_HOST_PASSWORD }}' | docker secret create app_host_password - &> /dev/null;
+            docker secret rm app_data_provider &> /dev/null;
+            echo '${{ secrets.APP_DATA_PROVIDER }}' | docker secret create app_data_provider -;
+            docker secret rm app_data_url &> /dev/null;
+            echo '${{ secrets.APP_DATA_URL }}' | docker secret create app_data_url; -;
+            docker secret rm app_data_name &> /dev/null;
+            echo '${{ secrets.APP_DATA_NAME }}' | docker secret create app_data_name -;
+            docker secret rm app_data_username &> /dev/null;
+            echo '${{ secrets.APP_DATA_USERNAME }}' | docker secret create app_data_username -;
+            docker secret rm app_data_password &> /dev/null;
+            echo '${{ secrets.APP_DATA_PASSWORD }}' | docker secret create app_data_password -;
+            docker stack deploy -c <(docker-compose -f compose.yml config) app &> /dev/null;
