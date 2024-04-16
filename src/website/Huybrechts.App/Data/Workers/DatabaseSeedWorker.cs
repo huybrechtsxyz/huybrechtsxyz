@@ -1,4 +1,4 @@
-﻿using Huybrechts.App.Config;
+﻿using Huybrechts.App.Config._old;
 using Huybrechts.App.Extensions;
 using Huybrechts.App.Identity;
 using Huybrechts.App.Identity.Entities;

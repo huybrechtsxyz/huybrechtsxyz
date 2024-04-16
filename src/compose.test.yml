@@ -11,18 +11,18 @@ services:
     extends:
       file: whoami.test.yml
       service: whoami
-  website:
-    extends:
-      file: website.test.yml
-      service: website
-  sqlite:
-    extends:
-      file: sqlite.test.yml
-      service: sqlite
-  asciidoc:
-    extends:
-      file: asciidoc.test.yml
-      service: asciidoc
+  # website:
+  #   extends:
+  #     file: website.test.yml
+  #     service: website
+  # sqlite:
+  #   extends:
+  #     file: sqlite.test.yml
+  #     service: sqlite
+  # asciidoc:
+  #   extends:
+  #     file: asciidoc.test.yml
+  #     service: asciidoc
 
 networks:
   traefik:

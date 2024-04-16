@@ -10,19 +10,19 @@ INFO | DO NOT FORGET TO ASSIGN THE DNS REDIRECTION!
 
 === Development
 The development environment on the local machine.
-All data is in the appsettings or secrets.json file.
+All data is in the appsettings.json or secrets.json file.
 
 === Test
 The test environment. Runs by CI-CD. Unstable environment that gets updated after the CI-CD workflow ran.
-> test.huybrechts.xyz
+> Redirect test.huybrechts.xyz to server-ip
 
 === Staging
 The staging environment. Once test is approved, manually launch the workflow action to update the environment.
-> staging.huybrechts.xyz
+> Redirect staging.huybrechts.xyz to server-ip
 
 === Production
 The production environment. Once staging is approved, manually launch the workflow action to update the environment.
-> huybrechts.xyz
+> Redirect huybrechts.xyz to server-ip
 
 == Variables and Secrets
 The secrets and variables that are set for each environment.
@@ -49,8 +49,10 @@ For the .Net runtime environment.
 > APP_HOST_USERNAME=[the-chosen-username-secret]
 > APP_HOST_PASSWORD=[the-chosen-password-secret]
 > APP_HOST_EMAIL=[the-chosen-email-secret]
+
+*Used to configure access to the database*
 > APP_DATA_PROVIDER=[None, SqlLite, SqlServer, PostgreSQL]
-> APP_DATA_URL={connectionstring}
+> APP_DATA_URL={connectionstring to database}
 > APP_DATA_NAME=applicationdb
 > APP_DATA_USERNAME=[the-chosen-username-secret]
 > APP_DATA_PASSWORD=[the-chosen-password-secret]

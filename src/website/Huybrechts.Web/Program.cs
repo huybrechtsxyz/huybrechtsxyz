@@ -1,4 +1,4 @@
-using Huybrechts.App.Config;
+using Huybrechts.App.Config._old;
 using Huybrechts.App.Data;
 using Huybrechts.App.Data.Workers;
 using Huybrechts.App.Extensions;
@@ -14,9 +14,11 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog;
 using System.IO.Compression;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 try
 {
@@ -28,32 +30,20 @@ try
     Log.Information("Starting application");
 
     Log.Information("Creating application builder");
+	/* https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-8.0#command-line
+	 * provides default configuration for the app in the following order, from highest to lowest priority:
+	 * Command-line arguments using the Command-line configuration provider.
+	 * Non-prefixed environment variables using the Non-prefixed environment variables configuration provider.
+	 * User secrets when the app runs in the Development environment.
+	 * appsettings.{Environment}.json using the JSON configuration provider. For example, appsettings.Production.json and appsettings.Development.json.
+	 * appsettings.json using the JSON configuration provider.
+	 */
 	var builder = WebApplication.CreateBuilder(args);
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext(),
-        //.WriteTo.Console(new RenderedCompactJsonFormatter())
-		//.WriteTo.File("logs/website-.txt", rollingInterval: RollingInterval.Day),
 		writeToProviders: true);
-
-	CommandLineOptions commandLineOptions = new();
-	if (args is not null && args.Length > 0)
-	{
-		Log.Information($"CommandLine options: {string.Join(" ", args)}");
-		int clreturn = commandLineOptions.Interpret(args);
-		if (clreturn != 0)
-		{
-			Log.Error(commandLineOptions.Exception ?? new ApplicationException("Error interpreting the command line options"),
-				"Error interpreting command line {args} with {Error}",
-				string.Join(" ", args),
-				clreturn);
-			throw new ApplicationException("Invalid command line");
-		}
-		Log.Information("Command line for provider: {DatabaseProviderType}, {ConnectionString}", 
-			commandLineOptions.DatabaseProviderType,
-			commandLineOptions.ConnectionString);
-	}
 
 	if (ApplicationSettings.IsRunningInContainer())
 		builder.Configuration.AddDockerSecrets("/run/secrets", ":", null);
@@ -89,31 +79,31 @@ try
 	});
 
 	Log.Information("Connect to the database");
-	ApplicationSettings applicationSettings = new(builder.Configuration, commandLineOptions);
+	ApplicationSettings applicationSettings = new(builder.Configuration);
 	DatabaseProviderType connectionType = applicationSettings.GetApplicationConnectionType();
 	var connectionString = applicationSettings.GetApplicationConnectionString();
-	//Log.Debug("Connecting to {DatabaseProvider} with {DatabaseContext}", connectionType, connectionString);
+	Log.Debug("Connecting to {DatabaseProvider} with {DatabaseContext}", connectionType, connectionString);
 	switch (connectionType)
 	{
 		case DatabaseProviderType.SqlLite:
 			{
 				builder.Services.AddDbContext<ApplicationContext>(options => 
 					options.UseSqlite(connectionString, 
-					x => x.MigrationsAssembly("Huybrechts.Infra.SqlLite")));
+					x => x.MigrationsAssembly(nameof(Huybrechts.Infra.SqlLite))));
 				break;
 			}
 		case DatabaseProviderType.SqlServer:
 			{
 				builder.Services.AddDbContext<ApplicationContext>(
 					options => options.UseSqlServer(connectionString,
-					x => x.MigrationsAssembly("Huybrechts.Infra.SqlServer")));
+					x => x.MigrationsAssembly(nameof(Huybrechts.Infra.SqlServer))));
 				break;
 			}
 		case DatabaseProviderType.PostgreSQL:
 			{
 				builder.Services.AddDbContext<ApplicationContext>(
 					options => options.UseNpgsql(connectionString,
-					x => x.MigrationsAssembly("Huybrechts.Infra.PostgreSQL")));
+					x => x.MigrationsAssembly(nameof(Huybrechts.Infra.PostgreSQL))));
 				break;
 			}
 		default: throw new NotSupportedException("Invalid database context type given for ApplicationDbType");
@@ -147,6 +137,7 @@ try
 		.AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
 		.AddDefaultTokenProviders();
 
+	Log.Information("Configure authentication for google");
 	GoogleClientSecretOptions? google = applicationSettings.GetGoogleLoginClientSecret();
 	if (!(google is null || string.IsNullOrEmpty(google.ClientId) || string.IsNullOrEmpty(google.ClientSecret)))
 	{
@@ -184,9 +175,9 @@ try
     foreach (var service in builder.Services)
         Log.Debug(service.ToString());
 
-	//Log.Debug("Building the application with configuration");
-	//foreach (var config in builder.Configuration.AsEnumerable())
-	//	Log.Debug(config.ToString());
+	Log.Debug("Building the application with configuration");
+	foreach (var config in builder.Configuration.AsEnumerable())
+		Log.Debug(config.ToString());
 
 	Log.Information("Building the application and services");
     var app = builder.Build();

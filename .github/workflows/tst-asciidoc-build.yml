@@ -1,6 +1,6 @@
 # This workflow deploys the website to the test environment
 
-name: Deploy Dcoumentation Build To Test
+name: Deploy Documentation Build To Test
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-﻿using Huybrechts.App.Config;
+﻿using Huybrechts.App.Config._old;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
 

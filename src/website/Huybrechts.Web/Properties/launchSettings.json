@@ -2,7 +2,7 @@
   "profiles": {
     "Huybrechts.Web": {
       "commandName": "Project",
-      "commandLineArgs": "",
+      "commandLineArgs": "--key1=aap --key2=banaan --key3=citroen",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
