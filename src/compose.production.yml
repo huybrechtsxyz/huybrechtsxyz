@@ -1,0 +1,17 @@
+# https://docs.docker.com/compose/multiple-compose-files/extends/
+# Docker Compose for the production environment
+version: '3.9'
+
+services:
+  traefik:
+    extends:
+      file: traefik.production.yml
+      service: traefik
+  whoami:
+    extends:
+      file: whoami.production.yml
+      service: whoami
+
+networks:
+  traefik:
+    external: true

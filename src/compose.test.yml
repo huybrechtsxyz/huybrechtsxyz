@@ -1,0 +1,17 @@
+# https://docs.docker.com/compose/multiple-compose-files/extends/
+# Docker Compose for the test environment
+version: '3.9'
+
+services:
+  traefik:
+    extends:
+      file: traefik.test.yml
+      service: traefik
+  whoami:
+    extends:
+      file: whoami.test.yml
+      service: whoami
+
+networks:
+  traefik:
+    external: true
