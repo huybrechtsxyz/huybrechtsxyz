@@ -1,7 +1,13 @@
-﻿using Huybrechts.App.Data;
+﻿using Humanizer.Configuration;
+using Huybrechts.App.Config.Options;
+using Huybrechts.App.Data;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.Configuration;
 using System.Globalization;
+using System.Xml.Linq;
 
 namespace Huybrechts.App.Config;
 
@@ -12,6 +18,7 @@ public sealed class ApplicationSettings
 	private const string ENV_APP_DATA_NAME = "APP_DATA_NAME";
 	private const string ENV_APP_DATA_USERNAME = "APP_DATA_USERNAME";
 	private const string ENV_APP_DATA_PASSWORD = "APP_DATA_PASSWORD";
+	private const string ENV_APP_SMTP_OPTIONS = "APP_SMTP_OPTIONS";
 
 	public static CultureInfo[] GetSupportedCultures() => [new("EN"), new("NL")];
 
@@ -33,7 +40,8 @@ public sealed class ApplicationSettings
 			if (dbname.EndsWith("_FILE", StringComparison.InvariantCultureIgnoreCase)
 				|| dbname.StartsWith("/run/secrets", StringComparison.CurrentCultureIgnoreCase))
 				dbname = File.ReadAllText(dbname);
-			dataUrl = dataUrl.Replace("{database}", dbname, StringComparison.InvariantCultureIgnoreCase);
+			if (!string.IsNullOrEmpty(dbname))
+				dataUrl = dataUrl.Replace("{database}", dbname, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		if (dataUrl.Contains("{username}", StringComparison.InvariantCultureIgnoreCase))
@@ -42,7 +50,8 @@ public sealed class ApplicationSettings
 			if (username.EndsWith("_FILE", StringComparison.InvariantCultureIgnoreCase)
 				|| username.StartsWith("/run/secrets", StringComparison.CurrentCultureIgnoreCase))
 				username = File.ReadAllText(username);
-			dataUrl = dataUrl.Replace("{username}", username, StringComparison.InvariantCultureIgnoreCase);
+			if (!string.IsNullOrEmpty(username))
+				dataUrl = dataUrl.Replace("{username}", username, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		if (dataUrl.Contains("{password}", StringComparison.InvariantCultureIgnoreCase))
@@ -51,7 +60,8 @@ public sealed class ApplicationSettings
 			if (pass.EndsWith("_FILE", StringComparison.InvariantCultureIgnoreCase)
 				|| pass.StartsWith("/run/secrets", StringComparison.CurrentCultureIgnoreCase))
 				pass = File.ReadAllText(pass);
-			dataUrl = dataUrl.Replace("{password}", pass, StringComparison.InvariantCultureIgnoreCase);
+			if (!string.IsNullOrEmpty(pass)) 
+				dataUrl = dataUrl.Replace("{password}", pass, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		return dataUrl;
@@ -77,5 +87,37 @@ public sealed class ApplicationSettings
 		// Unable to determine database provider
 		else
 			throw new ArgumentException("Unsupported or invalid connection string format.");
+	}
+
+	public static void AddSmtpServerOptions(WebApplicationBuilder builder)
+	{
+		SmtpServerOptions item = new();
+		builder.Configuration.GetSection(nameof(SmtpServerOptions)).Bind(item);
+
+		SmtpServerOptions? secret = null;
+		var value = builder.Configuration.GetValue<string>(ENV_APP_SMTP_OPTIONS) ?? string.Empty;
+		if (value.EndsWith("_FILE", StringComparison.InvariantCultureIgnoreCase)
+			|| value.StartsWith("/run/secrets", StringComparison.CurrentCultureIgnoreCase))
+			value = File.ReadAllText(value);
+
+		if (!string.IsNullOrEmpty(value))
+			secret = System.Text.Json.JsonSerializer.Deserialize<SmtpServerOptions>(value);
+
+		if (secret is not null)
+			builder.Services.AddSingleton(secret);
+		else
+			builder.Services.AddSingleton(item);
+	}
+
+	private static string GetConfigurationValue(IConfiguration configuration, string key)
+	{
+		var value = configuration.GetValue<string>(key) ?? string.Empty;
+		if (string.IsNullOrEmpty(value) ||
+			(!value.EndsWith("_FILE", StringComparison.InvariantCultureIgnoreCase)
+			&& !value.StartsWith("/run/secrets", StringComparison.CurrentCultureIgnoreCase)))
+			return value;
+
+		value = File.ReadAllText(value);
+		return value;
 	}
 }
