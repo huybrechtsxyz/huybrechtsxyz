@@ -15,7 +15,22 @@ APP_DATA_NAME    : The name of the database
 APP_DATA_USERNAME: The admin username of the database
 APP_DATA_PASSWORD: The admin password of the database
 
+APP_AUTH_GOOGLE  : The google client id and secret for SSO
+
 APP_SMTP_OPTIONS : JSON configuration of the smtp server <SmtpServerOptions>
 
 REGISTRY_USERNAME: Docker Hub username
 REGISTRY_PASSWORD: Docker Hub password
+
+### Registering a new secret
+Steps to register a new secret.
+
+1. Add the secret to Git Hub Environment Secrets
+
+2. Add the secret the deployment pipeline
+	- Github Workflow _build-deploy.yml
+	- Github Workflow deploy_{environment}.yml
+
+3. Add the secret to the docker-compose
+	- Compose.{environment}.yml
+	- {service}.{environment}.yml

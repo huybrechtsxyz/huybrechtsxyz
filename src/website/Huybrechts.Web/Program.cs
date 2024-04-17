@@ -109,7 +109,7 @@ try
 
 	Log.Information("Read options from configuration");
 	builder.Services.AddOptions<SmtpServerOptions>().BindConfiguration(ApplicationSettings.ENV_APP_SMTP_OPTIONS).ValidateDataAnnotations().ValidateOnStart();
-
+	
 	Log.Information("Connect to the database");
 	var connectionString = ApplicationSettings.GetApplicationContextConnectionString(builder.Configuration);
 	var contextProviderType = ApplicationSettings.GetContextProvider(connectionString);
@@ -170,6 +170,26 @@ try
 		.AddSignInManager<ApplicationSignInManager>()
 		.AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
 		.AddDefaultTokenProviders();
+
+	Log.Information("Configure authentication for google");
+	GoogleLoginOptions? google = ApplicationSettings.GetGoogleLogingOptions(builder.Configuration);
+	if (!(google is null || string.IsNullOrEmpty(google.ClientId) || string.IsNullOrEmpty(google.ClientSecret)))
+	{
+		builder.Services.AddAuthentication().AddGoogle(options =>
+		{
+			options.ClientId = google.ClientId;
+			options.ClientSecret = google.ClientSecret;
+			//options.ClaimActions.MapJsonKey("image", "picture"); maps claim name to othername if needed
+			options.Scope.Add("profile");
+			options.Events.OnCreatingTicket = (context) =>
+			{
+				var picture = context.User.GetProperty("picture").GetString();
+				if (context.Identity is not null && picture is not null)
+					context.Identity.AddClaim(new System.Security.Claims.Claim("picture", picture));
+				return Task.CompletedTask;
+			};
+		});
+	}
 
 	Log.Information("Configuring user interface");
 	builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");

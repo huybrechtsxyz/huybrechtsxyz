@@ -1,6 +1,5 @@
 ﻿using Huybrechts.App.Config.Options;
 using Huybrechts.App.Data;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.Configuration;
@@ -15,7 +14,8 @@ public sealed class ApplicationSettings
 	private const string ENV_APP_DATA_NAME = "APP_DATA_NAME";
 	private const string ENV_APP_DATA_USERNAME = "APP_DATA_USERNAME";
 	private const string ENV_APP_DATA_PASSWORD = "APP_DATA_PASSWORD";
-	
+
+	public const string ENV_APP_AUTH_GOOGLE = "APP_AUTH_GOOGLE";
 	public const string ENV_APP_SMTP_OPTIONS = "APP_SMTP_OPTIONS";
 
 	public static CultureInfo[] GetSupportedCultures() => [new("EN"), new("NL")];
@@ -85,5 +85,12 @@ public sealed class ApplicationSettings
 		// Unable to determine database provider
 		else
 			throw new ArgumentException("Unsupported or invalid connection string format.");
+	}
+
+	public static GoogleLoginOptions GetGoogleLogingOptions(IConfiguration configuration)
+	{
+		GoogleLoginOptions options = new ();
+		configuration.GetSection(ENV_APP_AUTH_GOOGLE).Bind(options);
+		return options;
 	}
 }

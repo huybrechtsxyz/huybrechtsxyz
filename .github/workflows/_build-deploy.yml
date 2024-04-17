@@ -20,8 +20,10 @@ on:
         required: true
       APP_DATA_PASSWORD:
         required: true
-			APP_SMTP_OPTIONS:
-				required: true
+      APP_AUTH_GOOGLE:
+        required: true
+      APP_SMTP_OPTIONS:
+        required: true
       REGISTRY_USERNAME:
         required: true
       REGISTRY_PASSWORD:
@@ -203,6 +205,8 @@ jobs:
             echo '${{ secrets.APP_DATA_USERNAME }}' | docker secret create app_data_username -;
             docker secret rm app_data_password &> /dev/null;
             echo '${{ secrets.APP_DATA_PASSWORD }}' | docker secret create app_data_password -;
-						docker secret rm app_smtp_options &> /dev/null;
+            docker secret rm app_auth_google &> /dev/null;
+            echo '${{ secrets.APP_AUTH_GOOGLE }}' | docker secret create app_auth_google -;
+            docker secret rm app_smtp_options &> /dev/null;
             echo '${{ secrets.APP_SMTP_OPTIONS }}' | docker secret create app_smtp_options -;
             docker stack deploy -c <(docker-compose -f compose.yml config) app &> /dev/null;
