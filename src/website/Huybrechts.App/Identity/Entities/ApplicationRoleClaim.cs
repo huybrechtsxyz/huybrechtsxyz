@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Huybrechts.App.Identity.Entities;
 
-[Table("IdentityRoleClaim")]
+[Table("ApplicationRoleClaim")]
 public sealed class ApplicationRoleClaim : IdentityRoleClaim<string>
 {
 }

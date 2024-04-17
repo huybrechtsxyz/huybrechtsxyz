@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Huybrechts.App.Identity.Entities;
 
-[Table("IdentityUser")]
+[Table("ApplicationUser")]
 public sealed class ApplicationUser : IdentityUser
 {
     [StringLength(128)]

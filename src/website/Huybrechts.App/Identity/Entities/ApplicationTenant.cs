@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Huybrechts.App.Identity.Entities;
 
-[Table("IdentityTenant")]
+[Table("ApplicationTenant")]
 public sealed record ApplicationTenant
 {
     [Key]

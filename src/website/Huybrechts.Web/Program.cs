@@ -1,11 +1,17 @@
 using Huybrechts.App.Config;
+using Huybrechts.App.Data;
+using Huybrechts.App.Data.Workers;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using System;
 using System.IO.Compression;
+using System.Threading;
 
 try
 {
@@ -94,6 +100,14 @@ try
 		throw new Exception("Invalid application environment");
 	}
 
+	Log.Information("Connect to the database");
+	var connectionString = builder.Configuration.GetConnectionString(nameof(ApplicationContext));
+	builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite")));
+	if (builder.Environment.IsDevelopment() || builder.Environment.IsTest())
+	{
+		builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+	}
+
 	if (ApplicationSettings.IsRunningInContainer())
 	{
 		builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -135,6 +149,10 @@ try
 
 	Log.Debug("Building the application with configuration");
 	Log.Debug(builder.Configuration.GetDebugView());
+
+	// Database migrations
+	Log.Information("Adding database initializer as hosted service");
+	builder.Services.AddHostedService<DatabaseSeedWorker>();
 
 	Log.Information("Building the application and services");
 	var app = builder.Build();

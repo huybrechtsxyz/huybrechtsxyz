@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Huybrechts.App.Identity.Entities;
 
-[Table("IdentityUserTenant")]
+[Table("ApplicationUserTenant")]
 [Index(nameof(UserId), nameof(TenantId), IsUnique = true)]
 public sealed class ApplicationUserTenant
 {

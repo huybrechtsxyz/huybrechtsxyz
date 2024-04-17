@@ -4,10 +4,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Web", "src\website\Huybrechts.Web\Huybrechts.Web.csproj", "{2D478560-30BC-4D37-96D9-18F64A1B68FE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{93BCBF2D-9858-4801-B6D9-529C2208293D} = {93BCBF2D-9858-4801-B6D9-529C2208293D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.App", "src\website\Huybrechts.App\Huybrechts.App.csproj", "{93BCBF2D-9858-4801-B6D9-529C2208293D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.Sqlite", "src\website\Huybrechts.Infra.Sqlite\Huybrechts.Infra.Sqlite.csproj", "{B0128DE0-39E8-46D3-A80D-4AAB38CB5570}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.Sqlite", "src\website\Huybrechts.Infra.Sqlite\Huybrechts.Infra.Sqlite.csproj", "{B0128DE0-39E8-46D3-A80D-4AAB38CB5570}"
+	ProjectSection(ProjectDependencies) = postProject
+		{93BCBF2D-9858-4801-B6D9-529C2208293D} = {93BCBF2D-9858-4801-B6D9-529C2208293D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

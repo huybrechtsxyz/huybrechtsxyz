@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Huybrechts.App.Identity.Entities;
 
-[Table("IdentityRole")]
+[Table("ApplicationRole")]
 public sealed class ApplicationRole : IdentityRole
 {
     [RegularExpression("^[a-z0-9]+$")]
