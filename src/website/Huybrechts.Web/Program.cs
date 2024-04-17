@@ -19,6 +19,7 @@ using Serilog;
 using System;
 using System.IO.Compression;
 using System.Threading;
+using Huybrechts.Web.Components.Account;
 
 try
 {
@@ -149,9 +150,9 @@ try
 
 	Log.Information("Configure authentication");
 	builder.Services.AddCascadingAuthenticationState();
-	//builder.Services.AddScoped<IdentityUserAccessor>();
-	//builder.Services.AddScoped<IdentityRedirectManager>();
-	//builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+	builder.Services.AddScoped<IdentityUserAccessor>();
+	builder.Services.AddScoped<IdentityRedirectManager>();
+	builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 	builder.Services.TryAddScoped<ApplicationUserStore>();
 	builder.Services.TryAddScoped<ApplicationUserManager>();
 	builder.Services.TryAddScoped<ApplicationSignInManager>();
@@ -280,7 +281,9 @@ try
 	Log.Information("Mapping and routing razor components");
 	app.MapControllers();
 	app.MapRazorPages();
-	app.Map("/", x => { Console.WriteLine("Hello world"); });
+	app.MapRazorComponents<Huybrechts.Web.Components.App>()
+		.AddInteractiveServerRenderMode();
+	app.MapAdditionalIdentityEndpoints();
 
 	Log.Information("Run configured application");
 	app.Run();
