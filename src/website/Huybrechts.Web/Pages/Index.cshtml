@@ -1,0 +1,70 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment webHostingEnv
+@inject IViewLocalizer Localizer
+@model IndexModel
+@{
+	ViewData["Title"] = "Huybrechts.xyz";
+	Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" />
+    <style>
+        .masthead {
+            height: 100vh;
+            min-height: 500px;
+            background-image: url('/img/welcome.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body>
+	<!-- Full Page Image Header with Vertically Centered Content -->
+	<header class="masthead">
+		<div class="container h-100">
+			<partial name="_CookieConsentPartial" />
+			<!--<partial name="_LoginPartial" />-->
+			<div class="row h-50 align-items-center">
+				<div class="col-12 text-center">
+					<h1 class="font-weight-light">Vincent Huybrechts</h1>
+					<p>IT Development Professional</p>
+					<a class="btn btn-scondary" role="button" aria-pressed="true" href="https://www.linkedin.com/in/vincent-huybrechts-23b18031/">@Localizer["About Vincent"]</a>
+					<environment names="Development">
+						<p />
+						<h2>DEVELOPMENT ENVIRONMENT</h2>
+					</environment>
+					<environment names="Test">
+						<p />
+						<h2>TEST ENVIRONMENT</h2>
+					</environment>
+					<environment names="Staging">
+						<p />
+						<h2>STAGING ENVIRONMENT</h2>
+					</environment>
+				</div>
+			</div>
+			<div class="container">
+				<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light fixed-bottom bg-transparent mb-3">
+					<div class="container">
+						<div class="float-left">
+							&copy; @DateTime.Now.Year - Huybrechts.xyz | <a class="" asp-area="" asp-page="Privacy">Privacy</a> | @webHostingEnv.EnvironmentName
+						</div>
+						<div class="float-right">
+							<partial name="_SelectLanguagePartial" />
+						</div>
+					</div>
+				</nav>
+			</div>
+		</div>
+	</header>
+	<script src="~/lib/jquery/jquery.js"></script>
+	<script src="~/lib/bootstrap/js/bootstrap.bundle.js"></script>
+</body>
+</html>
