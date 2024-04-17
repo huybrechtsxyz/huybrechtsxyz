@@ -16,16 +16,23 @@ public class ApplicationContext
 {
 	public ApplicationContext(DbContextOptions options) : base(options)
 	{
+		
 	}
 
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
 		builder.Entity<ApplicationRole>().ToTable(nameof(ApplicationRole));
 		builder.Entity<ApplicationRoleClaim>().ToTable(nameof(ApplicationRoleClaim));
+		builder.Entity<ApplicationTenant>().ToTable(nameof(ApplicationTenant));
 		builder.Entity<ApplicationUser>().ToTable(nameof(ApplicationUser));
 		builder.Entity<ApplicationUserClaim>().ToTable(nameof(ApplicationUserClaim));
 		builder.Entity<ApplicationUserLogin>().ToTable(nameof(ApplicationUserLogin));
 		builder.Entity<ApplicationUserRole>().ToTable(nameof(ApplicationUserRole));
+		builder.Entity<ApplicationUserTenant>().ToTable(nameof(ApplicationUserTenant)); 
 		builder.Entity<ApplicationUserToken>().ToTable(nameof(ApplicationUserToken));
 	}
+
+	public DbSet<ApplicationTenant> ApplicationTenants { get; set; }
+
+	public DbSet<ApplicationUserTenant> ApplicationUserTenants { get; set; }
 }

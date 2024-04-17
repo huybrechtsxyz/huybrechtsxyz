@@ -1,4 +1,5 @@
 using Huybrechts.App.Config;
+using Huybrechts.App.Config.Options;
 using Huybrechts.App.Data;
 using Huybrechts.App.Data.Workers;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -101,6 +102,7 @@ try
 	}
 
 	Log.Information("Read options from configuration");
+	builder.Services.AddOptions<SmtpServerOptions>().BindConfiguration(ApplicationSettings.ENV_APP_SMTP_OPTIONS).ValidateDataAnnotations().ValidateOnStart();
 
 	Log.Information("Connect to the database");
 	var connectionString = ApplicationSettings.GetApplicationContextConnectionString(builder.Configuration);

@@ -19,5 +19,6 @@ jobs:
       APP_DATA_NAME: ${{ secrets.APP_DATA_NAME }}
       APP_DATA_USERNAME: ${{ secrets.APP_DATA_USERNAME }}
       APP_DATA_PASSWORD: ${{ secrets.APP_DATA_PASSWORD }}
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
+			REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
