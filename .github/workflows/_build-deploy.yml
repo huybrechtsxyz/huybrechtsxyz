@@ -195,8 +195,8 @@ jobs:
             echo '${{ secrets.APP_HOST_EMAIL }}' | docker secret create app_host_email - &> /dev/null;
             docker secret rm app_host_password &> /dev/null;
             echo '${{ secrets.APP_HOST_PASSWORD }}' | docker secret create app_host_password - &> /dev/null;
-            docker secret rm app_data_provider &> /dev/null;
-            echo '${{ secrets.APP_DATA_PROVIDER }}' | docker secret create app_data_provider -;
+            docker secret rm app_data_type &> /dev/null;
+            echo '${{ secrets.APP_DATA_TYPE }}' | docker secret create app_data_type -;
             docker secret rm app_data_url &> /dev/null;
             echo '${{ secrets.APP_DATA_URL }}' | docker secret create app_data_url; -;
             docker secret rm app_data_name &> /dev/null;

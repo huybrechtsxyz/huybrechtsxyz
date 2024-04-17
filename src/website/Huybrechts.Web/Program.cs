@@ -180,16 +180,15 @@ try
 			}
 		});
 	}
-	else
-		app.UseStaticFiles();
+	else app.UseStaticFiles();
 	app.UseRequestLocalization(new RequestLocalizationOptions
 	{
 		SupportedCultures = ApplicationSettings.GetSupportedCultures(),
 		SupportedUICultures = ApplicationSettings.GetSupportedCultures(),
 		DefaultRequestCulture = new RequestCulture(ApplicationSettings.GetDefaultCulture())
 	});
-
 	app.UseCookiePolicy();
+
 	Log.Information("Configuring running in containers");
 	if (ApplicationSettings.IsRunningInContainer())
 	{
@@ -208,6 +207,7 @@ try
 	Log.Information("Mapping and routing razor components");
 	app.MapControllers();
 	app.MapRazorPages();
+	app.Map("/", x => { Console.WriteLine("Hello world"); });
 
 	Log.Information("Run configured application");
 	app.Run();
