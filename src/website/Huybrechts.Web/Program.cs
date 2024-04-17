@@ -100,8 +100,10 @@ try
 		throw new Exception("Invalid application environment");
 	}
 
+	Log.Information("Read options from configuration");
+
 	Log.Information("Connect to the database");
-	var connectionString = builder.Configuration.GetConnectionString(nameof(ApplicationContext));
+	var connectionString = ApplicationSettings.GetApplicationContextConnectionString(builder.Configuration);
 	var contextProviderType = ApplicationSettings.GetContextProvider(connectionString);
 	builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite")));
 	if (builder.Environment.IsDevelopment() || builder.Environment.IsTest())
