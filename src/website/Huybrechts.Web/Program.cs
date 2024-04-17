@@ -2,13 +2,19 @@ using Huybrechts.App.Config;
 using Huybrechts.App.Config.Options;
 using Huybrechts.App.Data;
 using Huybrechts.App.Data.Workers;
+using Huybrechts.App.Identity.Entities;
+using Huybrechts.App.Identity.Services;
+using Huybrechts.App.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog;
 using System;
 using System.IO.Compression;
@@ -140,6 +146,30 @@ try
 		options.CheckConsentNeeded = context => true;
 		options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
 	});
+
+	Log.Information("Configure authentication");
+	builder.Services.AddCascadingAuthenticationState();
+	//builder.Services.AddScoped<IdentityUserAccessor>();
+	//builder.Services.AddScoped<IdentityRedirectManager>();
+	//builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+	builder.Services.TryAddScoped<ApplicationUserStore>();
+	builder.Services.TryAddScoped<ApplicationUserManager>();
+	builder.Services.TryAddScoped<ApplicationSignInManager>();
+	builder.Services.TryAddScoped<ApplicationUserClaimsPrincipalFactory>();
+	builder.Services.AddSingleton<IEmailSender<ApplicationUser>, AuthenticationSender>();
+	builder.Services
+		.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+		{
+			options.SignIn.RequireConfirmedAccount = false;
+		})
+		.AddEntityFrameworkStores<ApplicationContext>()
+		.AddRoleValidator<ApplicationRoleValidator>()
+		.AddRoleManager<ApplicationRoleManager>()
+		.AddUserStore<ApplicationUserStore>()
+		.AddUserManager<ApplicationUserManager>()
+		.AddSignInManager<ApplicationSignInManager>()
+		.AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
+		.AddDefaultTokenProviders();
 
 	Log.Information("Configuring user interface");
 	builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
