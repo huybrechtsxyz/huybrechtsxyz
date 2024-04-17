@@ -102,6 +102,7 @@ try
 
 	Log.Information("Connect to the database");
 	var connectionString = builder.Configuration.GetConnectionString(nameof(ApplicationContext));
+	var contextProviderType = ApplicationSettings.GetContextProvider(connectionString);
 	builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite")));
 	if (builder.Environment.IsDevelopment() || builder.Environment.IsTest())
 	{
