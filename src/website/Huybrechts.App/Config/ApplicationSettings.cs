@@ -11,6 +11,7 @@ namespace Huybrechts.App.Config;
 public sealed class ApplicationSettings
 {
 	private const string ENV_DOTNET_RUNNING_IN_CONTAINER = "DOTNET_RUNNING_IN_CONTAINER";
+	private const string ENV_CONTEXT = "CONTEXT";
 	private const string ENV_APP_DATA_URL = "APP_DATA_URL";
 	private const string ENV_APP_DATA_NAME = "APP_DATA_NAME";
 	private const string ENV_APP_DATA_USERNAME = "APP_DATA_USERNAME";
@@ -30,11 +31,13 @@ public sealed class ApplicationSettings
 
 	public static string GetApplicationContextConnectionString(IConfiguration configuration)
 	{
-		var dataUrl = configuration.GetValue<string>(ENV_APP_DATA_URL);
+		var context = (configuration.GetValue<string>(ENV_CONTEXT) ?? string.Empty) + nameof(ApplicationContext);
+
+        var dataUrl = configuration.GetValue<string>(ENV_APP_DATA_URL) ?? string.Empty;
 		if (string.IsNullOrWhiteSpace(dataUrl))
-			dataUrl = configuration.GetConnectionString(nameof(ApplicationContext));
+			dataUrl = configuration.GetConnectionString(context);
 		if (dataUrl is null)
-			throw new InvalidConfigurationException($"Connection string for {nameof(ApplicationContext)} not found.");
+			throw new InvalidConfigurationException($"Connection string for '{context}' not found.");
 
 		if (dataUrl.Contains("{database}", StringComparison.InvariantCultureIgnoreCase))
 		{
@@ -70,8 +73,8 @@ public sealed class ApplicationSettings
 			return ContextProviderType.Sqlite;
 
 		// SQL Server connection string pattern
-		//else if (connectionString.Contains("Server=") || connectionString.Contains("Data Source="))
-		//	return ContextProviderType.SqlServer;
+		else if (connectionString.Contains("Server=") || connectionString.Contains("Data Source="))
+			return ContextProviderType.SqlServer;
 
 		// PostgreSQL connection string pattern
 		//else if (connectionString.Contains("Host=") && connectionString.Contains("Port="))

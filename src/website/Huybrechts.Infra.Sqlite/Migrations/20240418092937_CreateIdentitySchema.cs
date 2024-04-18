@@ -44,6 +44,25 @@ namespace Huybrechts.Infra.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ApplicationTenant",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "TEXT", maxLength: 24, nullable: false),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                    Remark = table.Column<string>(type: "TEXT", nullable: true),
+                    Picture = table.Column<byte[]>(type: "BLOB", nullable: true),
+                    DatabaseProvider = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                    ConnectionString = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                    ConcurrencyStamp = table.Column<byte[]>(type: "BLOB", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplicationTenant", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ApplicationUser",
                 columns: table => new
                 {
@@ -168,6 +187,9 @@ namespace Huybrechts.Infra.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "ApplicationRoleClaim");
+
+            migrationBuilder.DropTable(
+                name: "ApplicationTenant");
 
             migrationBuilder.DropTable(
                 name: "ApplicationUserClaim");

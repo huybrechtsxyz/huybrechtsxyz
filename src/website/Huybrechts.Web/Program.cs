@@ -2,9 +2,10 @@ using Huybrechts.App.Config;
 using Huybrechts.App.Config.Options;
 using Huybrechts.App.Data;
 using Huybrechts.App.Data.Workers;
+using Huybrechts.App.Identity;
 using Huybrechts.App.Identity.Entities;
 using Huybrechts.App.Identity.Services;
-using Huybrechts.App.Identity;
+using Huybrechts.Web.Components.Account;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -13,13 +14,9 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog;
-using System;
 using System.IO.Compression;
-using System.Threading;
-using Huybrechts.Web.Components.Account;
 
 try
 {
@@ -114,8 +111,21 @@ try
 	Log.Information("Connect to the database");
 	var connectionString = ApplicationSettings.GetApplicationContextConnectionString(builder.Configuration);
 	var contextProviderType = ApplicationSettings.GetContextProvider(connectionString);
-	builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite")));
-	if (builder.Environment.IsDevelopment() || builder.Environment.IsTest())
+    switch (contextProviderType)
+    {
+        case ContextProviderType.Sqlite:
+            {
+                builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite")));
+                break;
+            }
+
+        case ContextProviderType.SqlServer:
+            {
+                builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.SqlServer")));
+                break;
+            }
+    }
+    if (builder.Environment.IsDevelopment() || builder.Environment.IsTest())
 	{
 		builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 	}

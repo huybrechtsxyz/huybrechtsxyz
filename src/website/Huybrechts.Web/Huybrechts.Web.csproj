@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Huybrechts.App\Huybrechts.App.csproj" />
     <ProjectReference Include="..\Huybrechts.Infra.Sqlite\Huybrechts.Infra.Sqlite.csproj" />
+    <ProjectReference Include="..\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj" />
   </ItemGroup>
    
 </Project>
