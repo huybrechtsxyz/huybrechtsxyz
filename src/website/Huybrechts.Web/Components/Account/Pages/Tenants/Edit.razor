@@ -1,0 +1,86 @@
+﻿@page "/Account/Tenants/Edit/{TenantId}"
+
+@using Huybrechts.App.Identity
+@using Huybrechts.App.Identity.Entities
+
+@inject NavigationManager NavigationManager
+@inject IdentityUserAccessor UserAccessor
+@inject ApplicationTenantManager TenantManager
+
+<div class="row">
+    <div class="col-md-6">
+        <PageTitle>Manage Tenants</PageTitle>
+
+        @if (string.IsNullOrEmpty(TenantId))
+        {
+            <h3>Create new tenant</h3>
+        }
+        else
+        {
+            <h3>Edit tenant</h3>
+        }
+
+        <a href="/Account/Tenants" class="btn btn-light" role="button">
+            <span class="oi oi-arrow-left" aria-hidden="true"></span> Cancel
+        </a>
+
+        @if (string.IsNullOrEmpty(TenantId) || model is not null)
+        {
+            <EditForm EditContext="@editContext" OnValidSubmit="HandleSubmit">
+                <div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button class="btn btn-light" @onclick="CancelItem">Cancel</button>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <p>Invalid page mode</p>
+        }
+    </div>
+</div>
+
+@code {
+    private EditContext? editContext { get; set; }
+    private ValidationMessageStore? messageStore { get; set; }
+    private ApplicationUser user = default!;
+    private ApplicationTenant? model;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [Parameter]
+    public string? TenantId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+
+        if (!string.IsNullOrEmpty(TenantId))
+            model = await TenantManager.GetTenantAsync(TenantId);
+        else
+            model = TenantManager.NewTenant();
+    }
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    {
+        messageStore!.Clear();
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (model is null || editContext is null || messageStore is null)
+            return;
+
+
+        await TenantManager.AddTenantAsync(model);
+
+        editContext.Validate();
+        StateHasChanged();
+    }
+
+    private void CancelItem()
+    {
+        NavigationManager.NavigateTo("/Account/Tenants");
+    }
+}

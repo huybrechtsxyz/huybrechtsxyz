@@ -1,7 +1,9 @@
 ﻿using Huybrechts.App.Data;
 using Huybrechts.App.Identity.Entities;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
 
 namespace Huybrechts.App.Identity;
 
@@ -47,6 +49,28 @@ public class ApplicationTenantManager : IApplicationTenantManager
         }
 
         return await _userManager.GetApplicationTenantsAsync(user);
+    }
+
+    public async Task<ApplicationTenant?> GetTenantAsync(string tenantId)
+    {
+        var state = await _authenticationState.GetAuthenticationStateAsync();
+        var user = await _userManager.GetUserAsync(state.User) ??
+            throw new ApplicationException("User not found while trying to retrieve tenant");
+
+        var item = _dbcontext.ApplicationUserTenants.FirstOrDefaultAsync(q => q.UserId == user.Id && q.TenantId == tenantId);
+        if (item is null)
+            return null;
+
+        return await _dbcontext.ApplicationTenants.FindAsync(tenantId);
+    }
+
+    public ApplicationTenant NewTenant()
+    {
+        return new ApplicationTenant()
+        {
+            Id = string.Empty,
+            State = ApplicationTenantState.New
+        };
     }
 
     public async Task AddTenantAsync(ApplicationTenant tenant)
