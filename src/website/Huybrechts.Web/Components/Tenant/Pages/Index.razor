@@ -6,8 +6,11 @@
 
 <h3>Your Tenants</h3>
 
-@if (model is not null)
+
+
+@if (model is not null && model.Count > 0)
 {
+    <p>An overview of the accessible tenants.</p>
     <table>
         <tr>
             <th></th>
@@ -35,6 +38,10 @@
             </tr>
         }
     </table>
+}
+else
+{
+    <p>There are no tenants available at the moment</p>
 }
 
 @code {
