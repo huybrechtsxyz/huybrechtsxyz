@@ -3,6 +3,13 @@ name: Reusable Build and Deploy Workflow
 
 on:
   workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      initialize:
+        required: true
+        type: string
     secrets:
       APP_HOST_SERVER:
         required: true
