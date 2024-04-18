@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy_components:
-    uses: _build-deploy.yml@main
+    uses: _pipeline.yml@main
     with:
       environment: test
       initialize: 'false'
