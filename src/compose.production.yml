@@ -13,7 +13,7 @@ services:
       service: whoami
   sqlite:
     extends:
-      file: sqlite.test.yml
+      file: sqlite.production.yml
       service: sqlite
 
 networks:
