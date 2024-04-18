@@ -205,10 +205,6 @@ jobs:
             echo Traefik Network
             docker network inspect traefik --format {{.Id}} 2>/dev/null \
               || docker network create --driver overlay traefik;
-            
-            if [ -n '${{ secrets.APP_AUTH_GOOGLE }}' ] then
-            fi
-            
             echo Google Login
             docker secret rm APP_AUTH_GOOGLE &> /dev/null;
             if [ -n '${{ secrets.APP_AUTH_GOOGLE }}' ] then
