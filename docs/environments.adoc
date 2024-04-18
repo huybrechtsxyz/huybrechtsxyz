@@ -9,6 +9,7 @@ APP_HOST_SERVER  : The IP of the server
 APP_HOST_PORT    : The Port to connect to the server
 APP_HOST_USERNAME: The username to logon to the server
 APP_HOST_PASSWORD: The password to logon to the server
+APP_HOST_EMAIL   : The email from the administrator
 
 APP_DATA_URL     : The connection string to the database
 APP_DATA_NAME    : The name of the database

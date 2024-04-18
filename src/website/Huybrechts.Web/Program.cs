@@ -173,7 +173,7 @@ try
 		.AddDefaultTokenProviders();
 
 	Log.Information("Configure authentication for google");
-	GoogleLoginOptions? google = ApplicationSettings.GetGoogleLogingOptions(builder.Configuration);
+	GoogleLoginOptions? google = ApplicationSettings.GetGoogleLoginOptions(builder.Configuration);
 	if (!(google is null || string.IsNullOrEmpty(google.ClientId) || string.IsNullOrEmpty(google.ClientSecret)))
 	{
 		builder.Services.AddAuthentication().AddGoogle(options =>

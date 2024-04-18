@@ -23,8 +23,8 @@ public sealed class ApplicationRole : IdentityRole
     //
 
     private const string Hashtag = "#";
-    public static readonly string SystemAdministrator = "Administrator";
-    public static readonly string SystemUser = "User";
+    public const string SystemAdministrator = "Administrator";
+    public const string SystemUser = "User";
 
     public static List<ApplicationRole> GetDefaultTenantRoles(string tenant)
     {

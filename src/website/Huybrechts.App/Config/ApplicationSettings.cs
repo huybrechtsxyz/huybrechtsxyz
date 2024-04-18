@@ -1,5 +1,6 @@
 ﻿using Huybrechts.App.Config.Options;
 using Huybrechts.App.Data;
+using Huybrechts.App.Identity.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.Configuration;
@@ -15,6 +16,9 @@ public sealed class ApplicationSettings
 	private const string ENV_APP_DATA_USERNAME = "APP_DATA_USERNAME";
 	private const string ENV_APP_DATA_PASSWORD = "APP_DATA_PASSWORD";
 
+	public const string ENV_APP_HOST_EMAIL = "APP_HOST_EMAIL";
+	public const string ENV_APP_HOST_USERNAME = "APP_HOST_USERNAME";
+	public const string ENV_APP_HOST_PASSWORD = "APP_HOST_PASSWORD";
 	public const string ENV_APP_AUTH_GOOGLE = "APP_AUTH_GOOGLE";
 	public const string ENV_APP_SMTP_OPTIONS = "APP_SMTP_OPTIONS";
 
@@ -34,32 +38,23 @@ public sealed class ApplicationSettings
 
 		if (dataUrl.Contains("{database}", StringComparison.InvariantCultureIgnoreCase))
 		{
-			var dbname = configuration.GetValue<string>(ENV_APP_DATA_NAME) ?? string.Empty;
-			if (dbname.EndsWith("_FILE", StringComparison.InvariantCultureIgnoreCase)
-				|| dbname.StartsWith("/run/secrets", StringComparison.CurrentCultureIgnoreCase))
-				dbname = File.ReadAllText(dbname);
-			if (!string.IsNullOrEmpty(dbname))
-				dataUrl = dataUrl.Replace("{database}", dbname, StringComparison.InvariantCultureIgnoreCase);
+			var database = configuration.GetValue<string>(ENV_APP_DATA_NAME) ?? string.Empty;
+			if (!string.IsNullOrEmpty(database))
+				dataUrl = dataUrl.Replace("{database}", database, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		if (dataUrl.Contains("{username}", StringComparison.InvariantCultureIgnoreCase))
 		{
 			var username = configuration.GetValue<string>(ENV_APP_DATA_USERNAME) ?? string.Empty;
-			if (username.EndsWith("_FILE", StringComparison.InvariantCultureIgnoreCase)
-				|| username.StartsWith("/run/secrets", StringComparison.CurrentCultureIgnoreCase))
-				username = File.ReadAllText(username);
 			if (!string.IsNullOrEmpty(username))
 				dataUrl = dataUrl.Replace("{username}", username, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		if (dataUrl.Contains("{password}", StringComparison.InvariantCultureIgnoreCase))
 		{
-			var pass = configuration.GetValue<string>(ENV_APP_DATA_PASSWORD) ?? string.Empty;
-			if (pass.EndsWith("_FILE", StringComparison.InvariantCultureIgnoreCase)
-				|| pass.StartsWith("/run/secrets", StringComparison.CurrentCultureIgnoreCase))
-				pass = File.ReadAllText(pass);
-			if (!string.IsNullOrEmpty(pass)) 
-				dataUrl = dataUrl.Replace("{password}", pass, StringComparison.InvariantCultureIgnoreCase);
+			var password = configuration.GetValue<string>(ENV_APP_DATA_PASSWORD) ?? string.Empty;
+			if (!string.IsNullOrEmpty(password)) 
+				dataUrl = dataUrl.Replace("{password}", password, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		return dataUrl;
@@ -87,7 +82,7 @@ public sealed class ApplicationSettings
 			throw new ArgumentException("Unsupported or invalid connection string format.");
 	}
 
-	public static GoogleLoginOptions GetGoogleLogingOptions(IConfiguration configuration)
+	public static GoogleLoginOptions GetGoogleLoginOptions(IConfiguration configuration)
 	{
 		GoogleLoginOptions options = new ();
 		configuration.GetSection(ENV_APP_AUTH_GOOGLE).Bind(options);

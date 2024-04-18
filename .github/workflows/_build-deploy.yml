@@ -12,6 +12,8 @@ on:
         required: true
       APP_HOST_PORT:
         required: true
+      APP_HOST_EMAIL:
+        required: true
       APP_DATA_URL:
         required: true
       APP_DATA_NAME:
@@ -191,22 +193,22 @@ jobs:
             fi
             docker network inspect traefik --format {{.Id}} 2>/dev/null \
               || docker network create --driver overlay traefik;
-            docker secret rm app_host_username &> /dev/null;
-            echo '${{ secrets.APP_HOST_USERNAME }}' | docker secret create app_host_username - &> /dev/null;
-            docker secret rm app_host_email &> /dev/null;
-            echo '${{ secrets.APP_HOST_EMAIL }}' | docker secret create app_host_email - &> /dev/null;
-            docker secret rm app_host_password &> /dev/null;
-            echo '${{ secrets.APP_HOST_PASSWORD }}' | docker secret create app_host_password - &> /dev/null;
-            docker secret rm app_data_url &> /dev/null;
-            echo '${{ secrets.APP_DATA_URL }}' | docker secret create app_data_url; -;
-            docker secret rm app_data_name &> /dev/null;
-            echo '${{ secrets.APP_DATA_NAME }}' | docker secret create app_data_name -;
-            docker secret rm app_data_username &> /dev/null;
-            echo '${{ secrets.APP_DATA_USERNAME }}' | docker secret create app_data_username -;
-            docker secret rm app_data_password &> /dev/null;
-            echo '${{ secrets.APP_DATA_PASSWORD }}' | docker secret create app_data_password -;
-            docker secret rm app_auth_google &> /dev/null;
-            echo '${{ secrets.APP_AUTH_GOOGLE }}' | docker secret create app_auth_google -;
-            docker secret rm app_smtp_options &> /dev/null;
-            echo '${{ secrets.APP_SMTP_OPTIONS }}' | docker secret create app_smtp_options -;
+            docker secret rm APP_HOST_USERNAME &> /dev/null;
+            echo '${{ secrets.APP_HOST_USERNAME }}' | docker secret create APP_HOST_USERNAME - &> /dev/null;
+            docker secret rm APP_HOST_EMAIL &> /dev/null;
+            echo '${{ secrets.APP_HOST_EMAIL }}' | docker secret create APP_HOST_EMAIL - &> /dev/null;
+            docker secret rm APP_HOST_PASSWORD &> /dev/null;
+            echo '${{ secrets.APP_HOST_PASSWORD }}' | docker secret create APP_HOST_PASSWORD - &> /dev/null;
+            docker secret rm APP_DATA_URL &> /dev/null;
+            echo '${{ secrets.APP_DATA_URL }}' | docker secret create APP_DATA_URL; -;
+            docker secret rm APP_DATA_NAME &> /dev/null;
+            echo '${{ secrets.APP_DATA_NAME }}' | docker secret create APP_DATA_NAME -;
+            docker secret rm APP_DATA_USERNAME &> /dev/null;
+            echo '${{ secrets.APP_DATA_USERNAME }}' | docker secret create APP_DATA_USERNAME -;
+            docker secret rm APP_DATA_PASSWORD &> /dev/null;
+            echo '${{ secrets.APP_DATA_PASSWORD }}' | docker secret create APP_DATA_PASSWORD -;
+            docker secret rm APP_AUTH_GOOGLE &> /dev/null;
+            echo '${{ secrets.APP_AUTH_GOOGLE }}' | docker secret create APP_AUTH_GOOGLE -;
+            docker secret rm APP_SMTP_OPTIONS &> /dev/null;
+            echo '${{ secrets.APP_SMTP_OPTIONS }}' | docker secret create APP_SMTP_OPTIONS -;
             docker stack deploy -c <(docker-compose -f compose.yml config) app &> /dev/null;
