@@ -208,7 +208,7 @@ jobs:
             echo Google Login
             docker secret rm APP_AUTH_GOOGLE &> /dev/null;
             if [ -n '${{ secrets.APP_AUTH_GOOGLE }}' ] then
-              echo '${{ secrets.APP_AUTH_GOOGLE }}' | docker secret create APP_AUTH_GOOGLE -;
+              echo '${{ secrets.APP_AUTH_GOOGLE }}' | docker secret create APP_AUTH_GOOGLE -
             fi;
             echo Database Name
             docker secret rm APP_DATA_NAME &> /dev/null;
