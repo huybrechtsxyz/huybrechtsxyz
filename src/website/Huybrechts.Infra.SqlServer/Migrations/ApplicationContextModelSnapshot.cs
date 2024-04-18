@@ -93,7 +93,6 @@ namespace Huybrechts.Infra.SqlServer.Migrations
                         .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("DatabaseProvider")
-                        .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 

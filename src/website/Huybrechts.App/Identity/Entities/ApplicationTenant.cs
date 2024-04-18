@@ -28,8 +28,7 @@ public sealed record ApplicationTenant
 
     public byte[]? Picture { get; set; }
 
-    [Required]
-	[StringLength(32)]
+    [StringLength(32)]
 	public string? DatabaseProvider { get; set; } = string.Empty;
 
 	[StringLength(512)]

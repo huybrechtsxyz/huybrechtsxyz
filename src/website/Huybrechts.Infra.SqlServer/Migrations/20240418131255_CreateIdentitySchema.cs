@@ -53,7 +53,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations
                     Description = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Picture = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    DatabaseProvider = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+                    DatabaseProvider = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
                     ConnectionString = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
                     ConcurrencyStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },

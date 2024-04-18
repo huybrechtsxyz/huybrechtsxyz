@@ -86,7 +86,6 @@ namespace Huybrechts.Infra.Sqlite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DatabaseProvider")
-                        .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("TEXT");
 

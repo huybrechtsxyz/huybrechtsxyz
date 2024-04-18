@@ -53,7 +53,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations
                     Description = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
                     Remark = table.Column<string>(type: "TEXT", nullable: true),
                     Picture = table.Column<byte[]>(type: "BLOB", nullable: true),
-                    DatabaseProvider = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                    DatabaseProvider = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
                     ConnectionString = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
                     ConcurrencyStamp = table.Column<byte[]>(type: "BLOB", rowVersion: true, nullable: true)
                 },
