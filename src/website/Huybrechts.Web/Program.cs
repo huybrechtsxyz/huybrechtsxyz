@@ -172,7 +172,10 @@ try
 		.AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
 		.AddDefaultTokenProviders();
 
-	Log.Information("Configure authentication for google");
+    Log.Information("Configure application services");
+    builder.Services.AddTransient<ApplicationTenantManager>();
+
+    Log.Information("Configure authentication for google");
 	GoogleLoginOptions? google = ApplicationSettings.GetGoogleLoginOptions(builder.Configuration);
 	if (!(google is null || string.IsNullOrEmpty(google.ClientId) || string.IsNullOrEmpty(google.ClientSecret)))
 	{
