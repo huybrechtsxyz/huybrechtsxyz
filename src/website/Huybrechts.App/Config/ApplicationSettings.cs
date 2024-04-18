@@ -69,11 +69,11 @@ public sealed class ApplicationSettings
 			return ContextProviderType.None;
 
 		// SQLite connection string pattern
-		else if (connectionString.Contains("Data Source="))
+		else if (connectionString.Contains("Data Source=", StringComparison.InvariantCultureIgnoreCase))
 			return ContextProviderType.Sqlite;
 
 		// SQL Server connection string pattern
-		else if (connectionString.Contains("Server=") || connectionString.Contains("Data Source="))
+		else if (connectionString.Contains("Server="), StringComparison.InvariantCultureIgnoreCase)
 			return ContextProviderType.SqlServer;
 
 		// PostgreSQL connection string pattern
