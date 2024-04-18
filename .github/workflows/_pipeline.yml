@@ -223,6 +223,7 @@ jobs:
   
   deploy-generic:
     name: Deploy Generic Configuration
+		needs: [update-server]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
