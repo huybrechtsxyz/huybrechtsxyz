@@ -150,6 +150,8 @@ jobs:
       matrix:
         component: [traefik, whoami, sqlite]
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
       - name: Deploy configuration files
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -167,6 +169,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
       - name: Deploy generic files
         uses: appleboy/scp-action@v0.1.7
         with:
