@@ -201,7 +201,7 @@ jobs:
             cd /app;
             if [ -f compose.${{ inputs.environment }}.yml ]; then
               mv compose.${{ inputs.environment }}.yml compose.yml;
-            fi
+            fi;
             echo Traefik Network
             docker network inspect traefik --format {{.Id}} 2>/dev/null \
               || docker network create --driver overlay traefik;
@@ -209,56 +209,56 @@ jobs:
             docker secret rm APP_AUTH_GOOGLE &> /dev/null;
             if [ -n '${{ secrets.APP_AUTH_GOOGLE }}' ] then
               echo '${{ secrets.APP_AUTH_GOOGLE }}' | docker secret create APP_AUTH_GOOGLE -;
-            fi            
+            fi;
             echo Database Name
             docker secret rm APP_DATA_NAME &> /dev/null;
             if [ -n '${{ secrets.APP_DATA_NAME }}' ] then
               echo '${{ secrets.APP_DATA_NAME }}' | docker secret create APP_DATA_NAME -;
-            fi
+            fi;
             echo Database Password
             docker secret rm APP_HOST_PASSWORD &> /dev/null;
             if [ -n '${{ secrets.APP_HOST_PASSWORD }}' ] then
               echo '${{ secrets.APP_HOST_PASSWORD }}' | docker secret create APP_HOST_PASSWORD - &> /dev/null;
-            fi
+            fi;
             echo Database Connection
             docker secret rm APP_DATA_URL &> /dev/null;
             if [ -n '${{ secrets.APP_DATA_URL }}' ] then
               echo '${{ secrets.APP_DATA_URL }}' | docker secret create APP_DATA_URL; -;
-            fi
+            fi;
             echo Database Username
             docker secret rm APP_DATA_USERNAME &> /dev/null;
             if [ -n '${{ secrets.APP_DATA_USERNAME }}' ] then
               echo '${{ secrets.APP_DATA_USERNAME }}' | docker secret create APP_DATA_USERNAME -;
-            fi
+            fi;
             echo Server Email
             docker secret rm APP_HOST_EMAIL &> /dev/null;
             if [ -n '${{ secrets.APP_HOST_EMAIL }}' ] then
               echo '${{ secrets.APP_HOST_EMAIL }}' | docker secret create APP_HOST_EMAIL - &> /dev/null;
-            fi
+            fi;
             echo Server Password
             docker secret rm APP_HOST_PASSWORD &> /dev/null;
             if [ -n '${{ secrets.APP_HOST_PASSWORD }}' ] then
               echo '${{ secrets.APP_HOST_PASSWORD }}' | docker secret create APP_HOST_PASSWORD -;
-            fi
+            fi;
             echo Server Port
             docker secret rm APP_HOST_PORT &> /dev/null;
             if [ -n '${{ secrets.APP_HOST_PORT }}' ] then
               echo '${{ secrets.APP_HOST_PORT }}' | docker secret create APP_HOST_PORT -;
-            fi
+            fi;
             echo Server Connection
             docker secret rm APP_HOST_SERVER &> /dev/null;
             if [ -n '${{ secrets.APP_HOST_SERVER }}' ] then
               echo '${{ secrets.APP_HOST_SERVER }}' | docker secret create APP_HOST_SERVER -;
-            fi
+            fi;
             echo Server Username
             docker secret rm APP_HOST_USERNAME &> /dev/null;
             if [ -n '${{ secrets.APP_HOST_USERNAME }}' ] then
               echo '${{ secrets.APP_HOST_USERNAME }}' | docker secret create APP_HOST_USERNAME - &> /dev/null;
-            fi
+            fi;
             echo SMTP Server Options
             docker secret rm APP_SMTP_OPTIONS &> /dev/null;
             if [ -n '${{ secrets.APP_SMTP_OPTIONS }}' ] then
               echo '${{ secrets.APP_SMTP_OPTIONS }}' | docker secret create APP_SMTP_OPTIONS -;
-            fi
+            fi;
             echo DOCKER DEPLOY
             docker stack deploy -c <(docker-compose -f compose.yml config) app &> /dev/null;
