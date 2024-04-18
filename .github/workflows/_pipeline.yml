@@ -204,22 +204,38 @@ jobs:
             fi
             docker network inspect traefik --format {{.Id}} 2>/dev/null \
               || docker network create --driver overlay traefik;
-            docker secret rm APP_HOST_USERNAME &> /dev/null;
-            echo '${{ secrets.APP_HOST_USERNAME }}' | docker secret create APP_HOST_USERNAME - &> /dev/null;
-            docker secret rm APP_HOST_EMAIL &> /dev/null;
-            echo '${{ secrets.APP_HOST_EMAIL }}' | docker secret create APP_HOST_EMAIL - &> /dev/null;
-            docker secret rm APP_HOST_PASSWORD &> /dev/null;
-            echo '${{ secrets.APP_HOST_PASSWORD }}' | docker secret create APP_HOST_PASSWORD - &> /dev/null;
-            docker secret rm APP_DATA_URL &> /dev/null;
-            echo '${{ secrets.APP_DATA_URL }}' | docker secret create APP_DATA_URL; -;
-            docker secret rm APP_DATA_NAME &> /dev/null;
-            echo '${{ secrets.APP_DATA_NAME }}' | docker secret create APP_DATA_NAME -;
-            docker secret rm APP_DATA_USERNAME &> /dev/null;
-            echo '${{ secrets.APP_DATA_USERNAME }}' | docker secret create APP_DATA_USERNAME -;
-            docker secret rm APP_DATA_PASSWORD &> /dev/null;
-            echo '${{ secrets.APP_DATA_PASSWORD }}' | docker secret create APP_DATA_PASSWORD -;
+            echo Google Login
             docker secret rm APP_AUTH_GOOGLE &> /dev/null;
             echo '${{ secrets.APP_AUTH_GOOGLE }}' | docker secret create APP_AUTH_GOOGLE -;
+            echo Database Name
+            docker secret rm APP_DATA_NAME &> /dev/null;
+            echo '${{ secrets.APP_DATA_NAME }}' | docker secret create APP_DATA_NAME -;
+            echo Database Password
+            docker secret rm APP_HOST_PASSWORD &> /dev/null;
+            echo '${{ secrets.APP_HOST_PASSWORD }}' | docker secret create APP_HOST_PASSWORD - &> /dev/null;
+            echo Database Connection
+            docker secret rm APP_DATA_URL &> /dev/null;
+            echo '${{ secrets.APP_DATA_URL }}' | docker secret create APP_DATA_URL; -;
+            echo Database Username
+            docker secret rm APP_DATA_USERNAME &> /dev/null;
+            echo '${{ secrets.APP_DATA_USERNAME }}' | docker secret create APP_DATA_USERNAME -;
+            echo Server Email
+            docker secret rm APP_HOST_EMAIL &> /dev/null;
+            echo '${{ secrets.APP_HOST_EMAIL }}' | docker secret create APP_HOST_EMAIL - &> /dev/null;
+            echo Server Password
+            docker secret rm APP_HOST_PASSWORD &> /dev/null;
+            echo '${{ secrets.APP_HOST_PASSWORD }}' | docker secret create APP_HOST_PASSWORD -;
+            echo Server Port
+            docker secret rm APP_HOST_PORT &> /dev/null;
+            echo '${{ secrets.APP_HOST_PORT }}' | docker secret create APP_HOST_PORT -;
+            echo Server Connection
+            docker secret rm APP_HOST_SERVER &> /dev/null;
+            echo '${{ secrets.APP_HOST_SERVER }}' | docker secret create APP_HOST_SERVER -;
+            echo Server Username
+            docker secret rm APP_HOST_USERNAME &> /dev/null;
+            echo '${{ secrets.APP_HOST_USERNAME }}' | docker secret create APP_HOST_USERNAME - &> /dev/null;
+            echo SMTP Server Options
             docker secret rm APP_SMTP_OPTIONS &> /dev/null;
             echo '${{ secrets.APP_SMTP_OPTIONS }}' | docker secret create APP_SMTP_OPTIONS -;
+            echo DOCKER DEPLOY
             docker stack deploy -c <(docker-compose -f compose.yml config) app &> /dev/null;
