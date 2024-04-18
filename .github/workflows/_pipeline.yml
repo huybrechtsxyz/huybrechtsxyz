@@ -205,7 +205,7 @@ jobs:
     environment: ${{ inputs.environment }}
     strategy:
       matrix:
-        component: [traefik, whoami, sqlite]
+        component: [traefik, whoami, sqlite, website]
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
