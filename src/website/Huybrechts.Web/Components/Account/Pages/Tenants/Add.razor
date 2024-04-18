@@ -1,0 +1,106 @@
+﻿@page "/Account/Tenants/Add"
+
+@using Huybrechts.App.Identity
+@using Huybrechts.App.Identity.Entities
+
+@inject NavigationManager NavigationManager
+@inject IdentityUserAccessor UserAccessor
+@inject ApplicationTenantManager TenantManager
+
+<div class="row">
+    <div class="col-md-6">
+        <PageTitle>Manage Tenants</PageTitle>
+
+        <h3>Create new tenant</h3>
+
+        @if(model is not null && editContext is not null)
+        {
+            <EditForm FormName="AddTenant" EditContext="@editContext" OnValidSubmit="HandleSubmit">
+                <div>
+                    <p>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button class="btn btn-light" @onclick="CancelItem">Cancel</button>
+                    </p>
+                </div>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-floating mb-3">
+                    <input type="text" value="@model.Id" class="form-control" placeholder="Please choose a tenant identifier." />
+                    <label for="model.Id" class="form-label">Tenant</label>
+                    <ValidationMessage For="@(() => model.Id)" />
+                </div>
+                <div class="form-floating mb-3">
+
+                    <InputText @bind-Value="model.Name" class="form-control" placeholder="Please choose a tenant name." />
+
+                    <input type="text" value="@model.Name" class="form-control"  />
+                    <label for="model.Name" class="form-label">Name</label>
+                    <ValidationMessage For="@(() => model.Name)" />
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" value="@model.Description" class="form-control" placeholder="Please choose a tenant description." />
+                    <label for="model.Description" class="form-label">Description</label>
+                    <ValidationMessage For="@(() => model.Description)" />
+                </div>
+                <div class="form-floating mb-3">
+                    <textarea type="text" value="@model.Remark" class="form-control" placeholder="Please choose a tenant remark." />
+                    <label for="model.Remark" class="form-label">Remark</label>
+                    <ValidationMessage For="@(() => model.Remark)" />
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" value="@model.State" class="form-control" placeholder="Please choose a tenant identifier." disabled />
+                    <label for="model.State" class="form-label">State</label>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button class="btn btn-light" @onclick="CancelItem">Cancel</button>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <p>Loading...</p>
+        }
+    </div>
+</div>
+
+@code {
+    private EditContext? editContext { get; set; }
+    private ValidationMessageStore? messageStore { get; set; }
+    private ApplicationUser user = default!;
+    private ApplicationTenant model = new();
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        model = TenantManager.NewTenant();
+        editContext = new(model);
+        editContext.OnValidationRequested += HandleValidationRequested;
+        messageStore = new(editContext);
+    }
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    {
+        messageStore!.Clear();
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (model is null || editContext is null || messageStore is null)
+            return;
+
+        await TenantManager.AddTenantAsync(model);
+
+        //editContext.Validate();
+        //StateHasChanged();
+        return;
+    }
+
+    private void CancelItem()
+    {
+        NavigationManager.NavigateTo("/Account/Tenants");
+    }
+}

@@ -1,0 +1,41 @@
+# Docker Compose for the staging environment
+version: '3.9'
+
+services:
+  website:
+    image: huybrechts/website:staging
+    secrets:
+      - APP_HOST_USERNAME
+      - APP_HOST_PASSWORD
+      - APP_HOST_EMAIL
+      - APP_DATA_URL
+      - APP_DATA_NAME
+      - APP_DATA_USERNAME
+      - APP_DATA_PASSWORD
+      - APP_AUTH_GOOGLE
+      - APP_SMTP_OPTIONS
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - DOTNET_RUNNING_IN_CONTAINER=1
+      - APP_HOST_USERNAME=/run/secrets/APP_HOST_USERNAME
+      - APP_HOST_PASSWORD=/run/secrets/APP_HOST_PASSWORD
+      - APP_HOST_EMAIL=/run/secrets/APP_HOST_EMAIL
+      - APP_DATA_URL=/run/secrets/APP_DATA_URL
+      - APP_DATA_NAME=/run/secrets/APP_DATA_NAME
+      - APP_DATA_USERNAME=/run/secrets/APP_DATA_USERNAME
+      - APP_DATA_PASSWORD=/run/secrets/APP_DATA_PASSWORD
+      - APP_AUTH_GOOGLE=/run/secrets/APP_AUTH_GOOGLE
+      - APP_SMTP_OPTIONS=/run/secrets/APP_SMTP_OPTIONS
+    networks:
+      - traefik
+    volumes:
+      - "/app/logs:/app/logs"
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=staging"
+        - "traefik.http.routers.website.rule=Host(`staging.huybrechts.xyz`)"
+        - "traefik.http.services.website.loadbalancer.server.port=8080"
+        - "traefik.http.routers.website.entrypoints=websecure"
+        - "traefik.http.routers.website.tls=true"
+        - "traefik.http.routers.website.tls.certresolver=leresolver"

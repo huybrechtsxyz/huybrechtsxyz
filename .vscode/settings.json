@@ -1,0 +1,12 @@
+{
+  "cSpell.words": [
+    "huybrechts"
+  ],
+  "asciidoc.antora.enableAntoraSupport": true,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": false,
+  "editor.detectIndentation": false,
+  "[csharp]": {
+    "editor.tabSize": 4
+  },
+}

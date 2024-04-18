@@ -1,0 +1,49 @@
+# https://docs.docker.com/compose/multiple-compose-files/extends/
+# Docker Compose for the test environment
+version: '3.9'
+
+services:
+  traefik:
+    extends:
+      file: traefik.test.yml
+      service: traefik
+  whoami:
+    extends:
+      file: whoami.test.yml
+      service: whoami
+  sqlite:
+    extends:
+      file: sqlite.test.yml
+      service: sqlite
+
+networks:
+  traefik:
+    external: true
+
+secrets:
+  APP_HOST_SERVER:
+    required: true
+  APP_HOST_USERNAME:
+    required: true
+  APP_HOST_PASSWORD:
+    required: true
+  APP_HOST_PORT:
+    required: true
+  APP_HOST_EMAIL:
+    required: true
+  APP_DATA_URL:
+    required: true
+  APP_DATA_NAME:
+    required: true
+  APP_DATA_USERNAME:
+    required: true
+  APP_DATA_PASSWORD:
+    required: true
+  APP_AUTH_GOOGLE:
+    required: true
+  APP_SMTP_OPTIONS:
+    required: true
+  REGISTRY_USERNAME:
+    required: true
+  REGISTRY_PASSWORD:
+    required: true
