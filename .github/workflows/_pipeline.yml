@@ -103,79 +103,101 @@ jobs:
               || docker network create --driver overlay traefik
             echo Google Login
             if [ docker secret inspect APP_AUTH_GOOGLE &> /dev/null ]; then
-              docker secret rm APP_AUTH_GOOGLE &> /dev/null
+              echo Google Login - Remove existing
+              docker secret rm APP_AUTH_GOOGLE
             fi
             if [ -n '${{ secrets.APP_AUTH_GOOGLE }}' ]; then
+              echo Google Login - Create new secret
               echo '${{ secrets.APP_AUTH_GOOGLE }}' | docker secret create APP_AUTH_GOOGLE -
             fi
             echo Database Name
             if [ docker secret inspect APP_DATA_NAME &> /dev/null ]; then
+              echo Database Name - Remove existing
               docker secret rm APP_DATA_NAME &> /dev/null
             fi
             if [ -n '${{ secrets.APP_DATA_NAME }}' ]; then
+              echo Database Name - Create new secret
               echo '${{ secrets.APP_DATA_NAME }}' | docker secret create APP_DATA_NAME -
             fi
             echo Database Password
             if [ docker secret inspect APP_HOST_PASSWORD &> /dev/null ]; then
+              echo Database Password - Remove existing
               docker secret rm APP_HOST_PASSWORD &> /dev/null
             fi
             if [ -n '${{ secrets.APP_HOST_PASSWORD }}' ]; then
+              echo Database Password - Create new secret
               echo '${{ secrets.APP_HOST_PASSWORD }}' | docker secret create APP_HOST_PASSWORD - &> /dev/null
             fi
             echo Database Connection
             if [ docker secret inspect APP_DATA_URL &> /dev/null ]; then
+              echo Database Connection - Remove existing
               docker secret rm APP_DATA_URL &> /dev/null
             fi
             if [ -n '${{ secrets.APP_DATA_URL }}' ]; then
+              echo Database Connection - Create new secret
               echo '${{ secrets.APP_DATA_URL }}' | docker secret create APP_DATA_URL -
             fi
             echo Database Username
             if [ docker secret inspect APP_DATA_USERNAME &> /dev/null ]; then
+              echo Database Username - Remove existing
               docker secret rm APP_DATA_USERNAME &> /dev/null
             fi
             if [ -n '${{ secrets.APP_DATA_USERNAME }}' ]; then
+              echo Database Username - Create new secret
               echo '${{ secrets.APP_DATA_USERNAME }}' | docker secret create APP_DATA_USERNAME -
             fi
             echo Server Email
             if [ docker secret inspect APP_HOST_EMAIL &> /dev/null ]; then
+              echo Server Email - Remove existing
               docker secret rm APP_HOST_EMAIL &> /dev/null
             fi
             if [ -n '${{ secrets.APP_HOST_EMAIL }}' ]; then
+              echo Server Email - Create new secret
               echo '${{ secrets.APP_HOST_EMAIL }}' | docker secret create APP_HOST_EMAIL - &> /dev/null
             fi
             echo Server Password
             if [ docker secret inspect APP_HOST_PASSWORD &> /dev/null ]; then
+              echo Server Password - Remove existing
               docker secret rm APP_HOST_PASSWORD &> /dev/null
             fi
             if [ -n '${{ secrets.APP_HOST_PASSWORD }}' ]; then
+              echo Server Password - Create new secret
               echo '${{ secrets.APP_HOST_PASSWORD }}' | docker secret create APP_HOST_PASSWORD -
             fi
             echo Server Port
             if [ docker secret inspect APP_HOST_PORT &> /dev/null ]; then
+              echo Server Port - Remove existing
               docker secret rm APP_HOST_PORT &> /dev/null
             fi
             if [ -n '${{ secrets.APP_HOST_PORT }}' ]; then
+              echo Server Port - Create new secret
               echo '${{ secrets.APP_HOST_PORT }}' | docker secret create APP_HOST_PORT -
             fi
             echo Server Connection
             if [ docker secret inspect APP_HOST_SERVER &> /dev/null ]; then
+              echo Server Connection - Remove existing
               docker secret rm APP_HOST_SERVER &> /dev/null
             fi
             if [ -n '${{ secrets.APP_HOST_SERVER }}' ]; then
+              echo Server Connection - Create new secret
               echo '${{ secrets.APP_HOST_SERVER }}' | docker secret create APP_HOST_SERVER -
             fi
             echo Server Username
             if [ docker secret inspect APP_HOST_USERNAME &> /dev/null ]; then
+              echo Server Username - Remove existing
               docker secret rm APP_HOST_USERNAME &> /dev/null
             fi
             if [ -n '${{ secrets.APP_HOST_USERNAME }}' ]; then
+              echo Server Username - Create new secret
               echo '${{ secrets.APP_HOST_USERNAME }}' | docker secret create APP_HOST_USERNAME - &> /dev/null
             fi
             echo SMTP Server Options
             if [ docker secret inspect APP_SMTP_OPTIONS &> /dev/null ]; then
+              echo SMTP Server Options - Remove existing
               docker secret rm APP_SMTP_OPTIONS &> /dev/null
             fi
             if [ -n '${{ secrets.APP_SMTP_OPTIONS }}' ]; then
+              echo SMTP Server Options - Create new secret
               echo '${{ secrets.APP_SMTP_OPTIONS }}' | docker secret create APP_SMTP_OPTIONS -
             fi
   build-website:
