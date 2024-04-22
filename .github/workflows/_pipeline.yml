@@ -102,13 +102,17 @@ jobs:
             docker network inspect traefik --format {{.Id}} 2>/dev/null \
               || docker network create --driver overlay traefik
             echo Google Login
-            if [ docker secret inspect APP_AUTH_GOOGLE &> /dev/null ]; then
+            if docker secret inspect APP_AUTH_GOOGLE &> /dev/null; then
               echo Google Login - Remove existing
               docker secret rm APP_AUTH_GOOGLE
+            else 
+              echo Google Login - Does not exists
             fi
             if [ -n '${{ secrets.APP_AUTH_GOOGLE }}' ]; then
               echo Google Login - Create new secret
               echo '${{ secrets.APP_AUTH_GOOGLE }}' | docker secret create APP_AUTH_GOOGLE -
+            else
+              echo Google Login - Not defined
             fi
             echo Database Name
             if [ docker secret inspect APP_DATA_NAME &> /dev/null ]; then
