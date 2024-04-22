@@ -73,7 +73,7 @@ public sealed class ApplicationSettings
 			return ContextProviderType.Sqlite;
 
 		// SQL Server connection string pattern
-		else if (connectionString.Contains("Server="), StringComparison.InvariantCultureIgnoreCase)
+		else if (connectionString.Contains("Server=", StringComparison.InvariantCultureIgnoreCase))
 			return ContextProviderType.SqlServer;
 
 		// PostgreSQL connection string pattern
