@@ -106,7 +106,7 @@ jobs:
                 echo "$secret_label - Secret already exists"
                 # Check if the secret is in use
                 echo "Checking if $secret_label is in use"
-                if is_secret_in_use "$secret_name"; then
+                if issecretinuse "$secret_name"; then
                   echo "$secret_label is in use by services or containers. Skipping deletion."
                   return 0
                 fi
