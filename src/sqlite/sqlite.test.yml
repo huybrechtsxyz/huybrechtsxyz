@@ -3,7 +3,7 @@ version: '3.9'
 services:
   sqlite:
     image: keinos/sqlite3:latest
-    command: sqlite3 /data/application-xyz.db
+    command: sqlite3 /data/xyz-application.db
     networks:
       - traefik
     ports:
