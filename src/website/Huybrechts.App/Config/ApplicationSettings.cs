@@ -32,7 +32,9 @@ public sealed class ApplicationSettings
 
     public static string GetRunningInContainer() => Environment.GetEnvironmentVariable(ENV_DOTNET_RUNNING_IN_CONTAINER) ?? string.Empty;
 
-    public static bool IsRunningInContainer() => GetRunningInContainer() == "true";
+    public static bool IsRunningInContainer() => 
+		GetRunningInContainer().Trim().Equals("true", StringComparison.InvariantCultureIgnoreCase)
+		|| GetRunningInContainer().Trim().Equals("1");
 
 	public static string GetApplicationContextConnectionString(IConfiguration configuration)
 	{
