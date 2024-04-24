@@ -44,9 +44,13 @@ try
 		writeToProviders: true);
 
 	if (ApplicationSettings.IsRunningInContainer())
-		builder.Configuration.AddDockerSecrets("/run/secrets", ":", null);
+	{
+        Log.Information("Running in container");
+        Log.Information("Reading configuration for docker secrets");
+        builder.Configuration.AddDockerSecrets("/run/secrets", "__", null);
+    }
 
-	Log.Information("Configuring webserver");
+    Log.Information("Configuring webserver");
 	builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
 	if (builder.Environment.IsProduction())
 	{
@@ -211,9 +215,11 @@ try
 	builder.Services.AddAntiforgery();
 	builder.Services.AddControllers();
 	builder.Services.AddRazorPages().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
-	builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+	builder.Services.AddRazorComponents()
+		.AddInteractiveServerComponents()
+		;
 
-	Log.Information("Building the application with services");
+    Log.Information("Building the application with services");
 	foreach (var service in builder.Services)
 		Log.Debug(service.ToString());
 
