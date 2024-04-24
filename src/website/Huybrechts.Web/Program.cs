@@ -43,15 +43,20 @@ try
 		.Enrich.FromLogContext(),
 		writeToProviders: true);
 
-    Log.Debug("Startup configuration begin.......................");
-    Log.Debug(builder.Configuration.GetDebugView());
-    Log.Debug("Startup configuration end.........................");
+    Log.Information("Startup configuration begin.......................");
+    Log.Information(builder.Configuration.GetDebugView());
+    Log.Information("Startup configuration end.........................");
 
+    Log.Information("Running in container: " + ApplicationSettings.ENV_DOTNET_RUNNING_IN_CONTAINER);
     if (ApplicationSettings.IsRunningInContainer())
 	{
         Log.Information("Running in container");
         Log.Information("Reading configuration for docker secrets");
         builder.Configuration.AddDockerSecrets("/run/secrets", "__", null);
+
+        Log.Information("Startup configuration before secrets..............");
+        Log.Information(builder.Configuration.GetDebugView());
+        Log.Information("Startup configuration after secrets...............");
     }
 
     Log.Information("Configuring webserver");
