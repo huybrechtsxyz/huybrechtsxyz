@@ -11,8 +11,10 @@ namespace Huybrechts.App.Config;
 public sealed class ApplicationSettings
 {
 	private const string ENV_DOTNET_RUNNING_IN_CONTAINER = "DOTNET_RUNNING_IN_CONTAINER";
-	private const string ENV_CONTEXT = "CONTEXT";
-	private const string ENV_APP_DATA_URL = "APP_DATA_URL";
+
+	private const string ENV_APPLICATIONCONTEXT = "APPLICATIONCONTEXT";
+
+    private const string ENV_APP_DATA_URL = "APP_DATA_URL";
 	private const string ENV_APP_DATA_NAME = "APP_DATA_NAME";
 	private const string ENV_APP_DATA_USERNAME = "APP_DATA_USERNAME";
 	private const string ENV_APP_DATA_PASSWORD = "APP_DATA_PASSWORD";
@@ -20,6 +22,7 @@ public sealed class ApplicationSettings
 	public const string ENV_APP_HOST_EMAIL = "APP_HOST_EMAIL";
 	public const string ENV_APP_HOST_USERNAME = "APP_HOST_USERNAME";
 	public const string ENV_APP_HOST_PASSWORD = "APP_HOST_PASSWORD";
+
 	public const string ENV_APP_AUTH_GOOGLE = "APP_AUTH_GOOGLE";
 	public const string ENV_APP_SMTP_OPTIONS = "APP_SMTP_OPTIONS";
 
@@ -31,32 +34,37 @@ public sealed class ApplicationSettings
 
 	public static string GetApplicationContextConnectionString(IConfiguration configuration)
 	{
-		var context = (configuration.GetValue<string>(ENV_CONTEXT) ?? string.Empty) + nameof(ApplicationContext);
-
         var dataUrl = configuration.GetValue<string>(ENV_APP_DATA_URL) ?? string.Empty;
-		if (string.IsNullOrWhiteSpace(dataUrl))
-			dataUrl = configuration.GetConnectionString(context);
-		if (dataUrl is null)
-			throw new InvalidConfigurationException($"Connection string for '{context}' not found.");
+        if (string.IsNullOrWhiteSpace(dataUrl) || 1 == dataUrl.Length)
+		{
+            var dbcontext = configuration.GetValue<string>(ENV_APPLICATIONCONTEXT) ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(dbcontext) && dbcontext.Length > 1)
+                dataUrl = configuration.GetConnectionString(dbcontext);
+			else
+                dataUrl = configuration.GetConnectionString(nameof(ApplicationContext));
+        }
+            
+        if (string.IsNullOrEmpty(dataUrl))
+			throw new InvalidConfigurationException($"Connection string is not found with APP_DATA_URL='{ENV_APP_DATA_URL}' and APPLICATIONCONTEXT='{ENV_APPLICATIONCONTEXT}'");
 
 		if (dataUrl.Contains("{database}", StringComparison.InvariantCultureIgnoreCase))
 		{
 			var database = configuration.GetValue<string>(ENV_APP_DATA_NAME) ?? string.Empty;
-			if (!string.IsNullOrEmpty(database))
+			if (!string.IsNullOrEmpty(database) && database.Length > 1)
 				dataUrl = dataUrl.Replace("{database}", database, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		if (dataUrl.Contains("{username}", StringComparison.InvariantCultureIgnoreCase))
 		{
 			var username = configuration.GetValue<string>(ENV_APP_DATA_USERNAME) ?? string.Empty;
-			if (!string.IsNullOrEmpty(username))
+			if (!string.IsNullOrEmpty(username) && username.Length > 1)
 				dataUrl = dataUrl.Replace("{username}", username, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		if (dataUrl.Contains("{password}", StringComparison.InvariantCultureIgnoreCase))
 		{
 			var password = configuration.GetValue<string>(ENV_APP_DATA_PASSWORD) ?? string.Empty;
-			if (!string.IsNullOrEmpty(password)) 
+			if (!string.IsNullOrEmpty(password) && password.Length > 1) 
 				dataUrl = dataUrl.Replace("{password}", password, StringComparison.InvariantCultureIgnoreCase);
 		}
 
@@ -69,7 +77,7 @@ public sealed class ApplicationSettings
 			return ContextProviderType.None;
 
 		// SQLite connection string pattern
-		else if (connectionString.Contains("Data Source=", StringComparison.InvariantCultureIgnoreCase))
+		if (connectionString.Contains("Data Source=", StringComparison.InvariantCultureIgnoreCase))
 			return ContextProviderType.Sqlite;
 
 		// SQL Server connection string pattern
@@ -82,7 +90,7 @@ public sealed class ApplicationSettings
 
 		// Unable to determine database provider
 		else
-			throw new ArgumentException("Unsupported or invalid connection string format.");
+			return ContextProviderType.None;
 	}
 
 	public static GoogleLoginOptions GetGoogleLoginOptions(IConfiguration configuration)

@@ -124,6 +124,7 @@ try
                 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.SqlServer")));
                 break;
             }
+		default: throw new ArgumentException($"Unsupported or invalid connection string format: {connectionString}.");
     }
     if (builder.Environment.IsDevelopment() || builder.Environment.IsTest())
 	{
