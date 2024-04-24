@@ -10,7 +10,7 @@ namespace Huybrechts.App.Config;
 
 public sealed class ApplicationSettings
 {
-	private const string ENV_DOTNET_RUNNING_IN_CONTAINER = "DOTNET_RUNNING_IN_CONTAINER";
+	public const string ENV_DOTNET_RUNNING_IN_CONTAINER = "DOTNET_RUNNING_IN_CONTAINER";
 
 	private const string ENV_APPLICATIONCONTEXT = "APPLICATIONCONTEXT";
 
