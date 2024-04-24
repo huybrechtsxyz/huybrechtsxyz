@@ -47,7 +47,7 @@ try
     Log.Information(builder.Configuration.GetDebugView());
     Log.Information("Startup configuration end.........................");
 
-    Log.Information("Running in container: " + ApplicationSettings.ENV_DOTNET_RUNNING_IN_CONTAINER);
+    Log.Information("Running in container: " + ApplicationSettings.GetRunningInContainer());
     if (ApplicationSettings.IsRunningInContainer())
 	{
         Log.Information("Running in container");

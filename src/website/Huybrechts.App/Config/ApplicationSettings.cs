@@ -10,7 +10,7 @@ namespace Huybrechts.App.Config;
 
 public sealed class ApplicationSettings
 {
-	public const string ENV_DOTNET_RUNNING_IN_CONTAINER = "DOTNET_RUNNING_IN_CONTAINER";
+    private const string ENV_DOTNET_RUNNING_IN_CONTAINER = "DOTNET_RUNNING_IN_CONTAINER";
 
 	private const string ENV_APPLICATIONCONTEXT = "APPLICATIONCONTEXT";
 
@@ -30,7 +30,9 @@ public sealed class ApplicationSettings
 
 	public static CultureInfo GetDefaultCulture() => new("EN");
 
-	public static bool IsRunningInContainer() => Environment.GetEnvironmentVariable(ENV_DOTNET_RUNNING_IN_CONTAINER) == "true";
+    public static string GetRunningInContainer() => Environment.GetEnvironmentVariable(ENV_DOTNET_RUNNING_IN_CONTAINER) ?? string.Empty;
+
+    public static bool IsRunningInContainer() => GetRunningInContainer() == "true";
 
 	public static string GetApplicationContextConnectionString(IConfiguration configuration)
 	{
