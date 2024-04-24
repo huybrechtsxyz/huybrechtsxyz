@@ -43,7 +43,11 @@ try
 		.Enrich.FromLogContext(),
 		writeToProviders: true);
 
-	if (ApplicationSettings.IsRunningInContainer())
+    Log.Debug("Startup configuration begin.......................");
+    Log.Debug(builder.Configuration.GetDebugView());
+    Log.Debug("Startup configuration end.........................");
+
+    if (ApplicationSettings.IsRunningInContainer())
 	{
         Log.Information("Running in container");
         Log.Information("Reading configuration for docker secrets");
