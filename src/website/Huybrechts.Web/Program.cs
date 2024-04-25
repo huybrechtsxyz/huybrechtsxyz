@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog;
@@ -43,20 +44,11 @@ try
 		.Enrich.FromLogContext(),
 		writeToProviders: true);
 
-    Log.Information("Startup configuration begin.......................");
-    Log.Information(builder.Configuration.GetDebugView());
-    Log.Information("Startup configuration end.........................");
-
-    Log.Information("Running in container: " + ApplicationSettings.GetRunningInContainer());
     if (ApplicationSettings.IsRunningInContainer())
 	{
-        Log.Information("Running in container");
+        Log.Information("Running application in container");
         Log.Information("Reading configuration for docker secrets");
         builder.Configuration.AddDockerSecrets("/run/secrets", "__", null);
-
-        Log.Information("Startup configuration before secrets..............");
-        Log.Information(builder.Configuration.GetDebugView());
-        Log.Information("Startup configuration after secrets...............");
     }
 
     Log.Information("Configuring webserver");
@@ -118,10 +110,16 @@ try
 		throw new Exception("Invalid application environment");
 	}
 
+	Log.Information("Startup configuration.............................");
+    Log.Information(builder.Configuration.GetDebugView());
+    Log.Information("Startup configuration.............................");
+
 	Log.Information("Read options from configuration");
-	builder.Services.AddOptions<SmtpServerOptions>().BindConfiguration(ApplicationSettings.ENV_APP_SMTP_OPTIONS).ValidateDataAnnotations().ValidateOnStart();
-	
-	Log.Information("Connect to the database");
+	builder.Services.AddOptions();
+	builder.Services.AddOptions<GoogleLoginOptions>().Configure(options => options = ApplicationSettings.GetGoogleLoginOptions(builder.Configuration));
+    builder.Services.AddOptions<SmtpServerOptions>().Configure(options => options = ApplicationSettings.GetSmtpServerOptions(builder.Configuration));
+
+    Log.Information("Connect to the database");
 	var connectionString = ApplicationSettings.GetApplicationContextConnectionString(builder.Configuration);
 	var contextProviderType = ApplicationSettings.GetContextProvider(connectionString);
     switch (contextProviderType)

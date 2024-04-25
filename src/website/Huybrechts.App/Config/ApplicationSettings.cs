@@ -30,11 +30,9 @@ public sealed class ApplicationSettings
 
 	public static CultureInfo GetDefaultCulture() => new("EN");
 
-    public static string GetRunningInContainer() => Environment.GetEnvironmentVariable(ENV_DOTNET_RUNNING_IN_CONTAINER) ?? string.Empty;
+    public static string GetRunningInContainer() => (Environment.GetEnvironmentVariable(ENV_DOTNET_RUNNING_IN_CONTAINER) ?? string.Empty).Trim().ToLower();
 
-    public static bool IsRunningInContainer() => 
-		GetRunningInContainer().Trim().Equals("true", StringComparison.InvariantCultureIgnoreCase)
-		|| GetRunningInContainer().Trim().Equals("1");
+    public static bool IsRunningInContainer() => GetRunningInContainer().Equals("true") || GetRunningInContainer().Equals("1");
 
 	public static string GetApplicationContextConnectionString(IConfiguration configuration)
 	{
@@ -99,8 +97,27 @@ public sealed class ApplicationSettings
 
 	public static GoogleLoginOptions GetGoogleLoginOptions(IConfiguration configuration)
 	{
-		GoogleLoginOptions options = new ();
-		configuration.GetSection(ENV_APP_AUTH_GOOGLE).Bind(options);
-		return options;
+		GoogleLoginOptions? options;
+
+		options = configuration.GetValue<GoogleLoginOptions>(ENV_APP_AUTH_GOOGLE);
+		if (options is not null)
+			return options;
+
+		options = new();
+		configuration.GetSection(nameof(GoogleLoginOptions)).Bind(options);
+		return options ?? new();
 	}
+
+	public static SmtpServerOptions GetSmtpServerOptions(IConfiguration configuration)
+	{
+        SmtpServerOptions? options;
+
+        options = configuration.GetValue<SmtpServerOptions>(ENV_APP_SMTP_OPTIONS);
+        if (options is not null)
+            return options;
+
+        options = new();
+        configuration.GetSection(nameof(SmtpServerOptions)).Bind(options);
+        return options ?? new();
+    }
 }
