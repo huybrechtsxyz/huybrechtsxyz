@@ -16,6 +16,9 @@ services:
       file: sqlite.test.yml
       service: sqlite
   website:
+    depends_on:
+      sqlite:
+        condition: service_healthy
     extends:
       file: website.test.yml
       service: website
