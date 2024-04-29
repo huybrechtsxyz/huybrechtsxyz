@@ -31,12 +31,6 @@ services:
     volumes:
       - "/app/data:/app/data"
       - "/app/logs:/app/logs"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://sqlite:5432"]
-      interval: 10s
-      timeout: 10s
-      retries: 3
-    command: ["./run.test.sh", "sqlite:5432", "dotnet", "Huybrechts.Web.dll"]
     deploy:
       labels:
         - "traefik.enable=true"

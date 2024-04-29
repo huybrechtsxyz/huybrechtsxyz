@@ -13,9 +13,9 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using System.IO.Compression;
 
@@ -122,20 +122,28 @@ try
     Log.Information("Connect to the database");
 	var connectionString = ApplicationSettings.GetApplicationContextConnectionString(builder.Configuration);
 	var contextProviderType = ApplicationSettings.GetContextProvider(connectionString);
+	Huybrechts.App.Data.Services.IContextHealthValidationService contextHealthService;
     switch (contextProviderType)
     {
         case ContextProviderType.Sqlite:
             {
+				contextHealthService = new Huybrechts.App.Data.Services.SqliteHealthValidationService();
                 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite")));
                 break;
             }
 
         case ContextProviderType.SqlServer:
             {
+                contextHealthService = new Huybrechts.App.Data.Services.SqlServerHealthValidationService();
                 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.SqlServer")));
                 break;
             }
 		default: throw new ArgumentException($"Unsupported or invalid connection string format: {connectionString}.");
+    }
+    if (HealthStatus.Unhealthy == contextHealthService.GetHealthStatus(connectionString, 5, 5))
+	{
+		Log.Fatal("Unable to connect to database");
+        throw new ApplicationException("Unable to reach database...ending program.");
     }
     if (builder.Environment.IsDevelopment() || builder.Environment.IsTest())
 	{
