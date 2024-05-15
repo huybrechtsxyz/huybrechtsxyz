@@ -22,12 +22,12 @@ services:
       replicas: 1
       restart_policy:
         condition: any
-      labels:
-        - "traefik.enable=true"
-        - "traefik.tags=test"
-        - "traefik.http.routers.sqlite.rule=Host(`test.huybrechts.xyz`) && PathPrefix(`/sqlite`)"
-        - "traefik.http.services.sqlite.loadbalancer.server.port=8080"
-        - "traefik.http.routers.sqlite.middlewares=authadmin"
-        - "traefik.http.routers.sqlite.entrypoints=websecure"
-        - "traefik.http.routers.sqlite.tls=true"
-        - "traefik.http.routers.sqlite.tls.certresolver=leresolver"
+      #labels:
+      #  - "traefik.enable=true"
+      #  - "traefik.tags=test"
+      #  - "traefik.http.routers.sqlite.rule=Host(`test.huybrechts.xyz`) && PathPrefix(`/sqlite`)"
+      #  - "traefik.http.services.sqlite.loadbalancer.server.port=8080"
+      #  - "traefik.http.routers.sqlite.middlewares=authadmin"
+      #  - "traefik.http.routers.sqlite.entrypoints=websecure"
+      #  - "traefik.http.routers.sqlite.tls=true"
+      #  - "traefik.http.routers.sqlite.tls.certresolver=leresolver"
