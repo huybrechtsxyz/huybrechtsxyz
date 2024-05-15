@@ -3,18 +3,18 @@ version: '3.9'
 services:
   sqlite:
     image: keinos/sqlite3:latest
-    command: sqlite3 /data/xyz-application.db
+    command: [ "sqlite3", "/db/xyz.db" ]
     networks:
       - traefik
     ports:
       - "5432:5432"
     volumes:
-      - /app/data:/data
-    working_dir: /data
+      - /app/data:/db
+    working_dir: /db
     stdin_open: true
     tty: true
     healthcheck:
-      test: ["CMD-SHELL", "sqlite3 /data/application-xyz.db -line '.tables'"]
+      test: ["CMD-SHELL", "sqlite3 /db/xyz.db -line '.tables'"]
       interval: 30s
       retries: 3
       timeout: 10s
