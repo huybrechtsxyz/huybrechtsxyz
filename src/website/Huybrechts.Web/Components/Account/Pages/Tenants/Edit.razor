@@ -26,7 +26,7 @@
 
         @if (string.IsNullOrEmpty(TenantId) || model is not null)
         {
-            <EditForm EditContext="@editContext" OnValidSubmit="HandleSubmit">
+            <EditForm FormName="EditTenant" EditContext="@editContext" OnValidSubmit="HandleSubmit">
                 <div>
                     <button type="submit" class="btn btn-primary">Save</button>
                     <button class="btn btn-light" @onclick="CancelItem">Cancel</button>

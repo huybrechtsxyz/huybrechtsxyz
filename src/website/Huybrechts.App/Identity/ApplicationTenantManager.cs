@@ -79,6 +79,8 @@ public class ApplicationTenantManager : IApplicationTenantManager
         var user = await _userManager.GetUserAsync(state.User) ??
             throw new ApplicationException("User not found while trying to create tenant");
 
+        tenant.Id = tenant.Id.Trim().ToLowerInvariant();
+
         _dbcontext.ApplicationTenants.Add(tenant);
         await _userManager.AddToTenantAsync(user, tenant.Id, ApplicationRole.GetRoleName(ApplicationRoleValues.Owner));
         await _dbcontext.SaveChangesAsync();
