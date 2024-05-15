@@ -122,6 +122,7 @@ try
     Log.Information("Connect to the database");
 	var connectionString = ApplicationSettings.GetApplicationContextConnectionString(builder.Configuration);
 	var contextProviderType = ApplicationSettings.GetContextProvider(connectionString);
+	Log.Information($"Connect to the {contextProviderType} database: {connectionString}");
 	Huybrechts.App.Data.Services.IContextHealthValidationService contextHealthService;
     switch (contextProviderType)
     {
