@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.Configuration;
 using System.Globalization;
+using System.Text.Json;
 
 namespace Huybrechts.App.Config;
 
@@ -99,11 +100,19 @@ public sealed class ApplicationSettings
 	{
 		GoogleLoginOptions? options;
 
-		options = configuration.GetValue<GoogleLoginOptions>(ENV_APP_AUTH_GOOGLE);
-		if (options is not null)
-			return options;
+		//var value = configuration.GetValue<string>(ENV_APP_AUTH_GOOGLE);
+		//if (!string.IsNullOrEmpty(value) && value.Length > 1)
+		//{
+		//	options = JsonSerializer.Deserialize<GoogleLoginOptions>(value);
+  //          if (options is not null)
+  //              return options;
+  //      }
 
-		options = new();
+        options = configuration.GetValue<GoogleLoginOptions>(ENV_APP_AUTH_GOOGLE);
+        if (options is not null)
+            return options;
+
+        options = new();
 		configuration.GetSection(nameof(GoogleLoginOptions)).Bind(options);
 		return options ?? new();
 	}
