@@ -21,7 +21,7 @@ public class SmtpMailSender : IEmailSender
 	{
 		try
 		{
-            _logger.Debug("Sending an email with MailKit to {to} with subject {subject}", toEmail, subject);
+            _logger.Debug("Sending an email with MailKit {sendMailFrom} to {sendMailTo} with subject {sendMailSubject} (", _mailSettings.MailServer, toEmail, subject);
             using MimeMessage message = new();
 			message.From.Add(new MailboxAddress(_mailSettings.SenderName, _mailSettings.SenderMail));
 			message.To.Add(new MailboxAddress(toName, toEmail));
