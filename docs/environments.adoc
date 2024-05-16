@@ -1,22 +1,23 @@
 # Environment Variables
 
-## Summary
+## Environment Setup
 
-### Environment Variables and Secrets
+### Creating a new environment
 A list of environment variables and docker secrets.
+Create a new environment by adding the list below:
 
-APP_HOST_SERVER  : The IP of the server
-APP_HOST_PORT    : The Port to connect to the server
-APP_HOST_USERNAME: The username to logon to the server
-APP_HOST_PASSWORD: The password to logon to the server
-APP_HOST_EMAIL   : The email from the administrator
+APP_AUTH_GOOGLE  : JSON configuration with the google client id and secret
 
 APP_DATA_URL     : The connection string to the database
 APP_DATA_NAME    : The name of the database
 APP_DATA_USERNAME: The admin username of the database
 APP_DATA_PASSWORD: The admin password of the database
 
-APP_AUTH_GOOGLE  : The google client id and secret for SSO
+APP_HOST_SERVER  : The IP of the server
+APP_HOST_PORT    : The Port to connect to the server
+APP_HOST_USERNAME: The username to logon to the server
+APP_HOST_PASSWORD: The password to logon to the server
+APP_HOST_EMAIL   : The email from the administrator
 
 APP_SMTP_OPTIONS : JSON configuration of the smtp server <SmtpServerOptions>
 
@@ -29,9 +30,9 @@ Steps to register a new secret.
 1. Add the secret to Git Hub Environment Secrets
 
 2. Add the secret the deployment pipeline
-	- Github Workflow _build-deploy.yml
+	- Github Workflow _pipeline.yml
 	- Github Workflow deploy_{environment}.yml
 
-3. Add the secret to the docker-compose
+3. Add the secret to the docker-compose files
 	- Compose.{environment}.yml
 	- {service}.{environment}.yml
