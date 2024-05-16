@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace Huybrechts.App.Config.Options;
 
@@ -21,4 +22,18 @@ public sealed class SmtpServerOptions
 	public string SenderMail { get; set; } = string.Empty;
 
 	public string SenderName { get; set; } = string.Empty;
+
+	public string ToLogString() 
+	{ 
+		var builder = new StringBuilder();
+		builder.AppendLine("SmtpServerOptions");
+		builder.Append("    Username: ").AppendLine(Username);
+		builder.Append("    Password: ").AppendLine(Password);
+		builder.Append("    MailServer: ").AppendLine(MailServer);
+		builder.Append("    MailPort: ").AppendLine(MailPort.ToString());
+		builder.Append("    EnableSsl: ").AppendLine(EnableSsl.ToString());
+		builder.Append("    SenderMail: ").AppendLine(SenderMail);
+		builder.Append("    SenderName: ").AppendLine(SenderName);
+		return builder.ToString();
+	}
 }

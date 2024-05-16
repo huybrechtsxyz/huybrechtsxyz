@@ -110,14 +110,21 @@ try
 		throw new Exception("Invalid application environment");
 	}
 
-	Log.Information("Startup configuration.............................");
+	Log.Information("Read options from configuration");
+    GoogleLoginOptions googleLoginOptions = ApplicationSettings.GetGoogleLoginOptions(builder.Configuration);
+    SmtpServerOptions smtpServerOptions = ApplicationSettings.GetSmtpServerOptions(builder.Configuration);
+
+    Log.Information("Startup configuration.............................");
     Log.Information(builder.Configuration.GetDebugView());
     Log.Information("Startup configuration.............................");
+    Log.Debug(googleLoginOptions.ToLogString());
+    Log.Debug(smtpServerOptions.ToLogString());
+    Log.Information("Startup configuration.............................");
 
-	Log.Information("Read options from configuration");
-	builder.Services.AddOptions();
-	builder.Services.AddOptions<GoogleLoginOptions>().Configure(options => options = ApplicationSettings.GetGoogleLoginOptions(builder.Configuration));
-    builder.Services.AddOptions<SmtpServerOptions>().Configure(options => options = ApplicationSettings.GetSmtpServerOptions(builder.Configuration));
+    Log.Information("Add options from configuration");
+    builder.Services.AddOptions();
+	builder.Services.AddOptions<GoogleLoginOptions>().Configure(options => options = googleLoginOptions);
+    builder.Services.AddOptions<SmtpServerOptions>().Configure(options => options = smtpServerOptions);
 
     Log.Information("Connect to the database");
 	var connectionString = ApplicationSettings.GetApplicationContextConnectionString(builder.Configuration);
