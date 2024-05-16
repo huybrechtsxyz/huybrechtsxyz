@@ -4,6 +4,7 @@ using Huybrechts.App.Identity.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
 using System.Text.Json;
 
@@ -100,19 +101,15 @@ public sealed class ApplicationSettings
 	{
 		GoogleLoginOptions? options;
 
-		//var value = configuration.GetValue<string>(ENV_APP_AUTH_GOOGLE);
-		//if (!string.IsNullOrEmpty(value) && value.Length > 1)
-		//{
-		//	options = JsonSerializer.Deserialize<GoogleLoginOptions>(value);
-  //          if (options is not null)
-  //              return options;
-  //      }
+		var value = configuration.GetValue<string>(ENV_APP_AUTH_GOOGLE);
+		if (!string.IsNullOrEmpty(value) && value.Length > 1)
+		{
+			options = JsonSerializer.Deserialize<GoogleLoginOptions>(value);
+			if (options is not null)
+				return options;
+		}
 
-        options = configuration.GetValue<GoogleLoginOptions>(ENV_APP_AUTH_GOOGLE);
-        if (options is not null)
-            return options;
-
-        options = new();
+		options = new();
 		configuration.GetSection(nameof(GoogleLoginOptions)).Bind(options);
 		return options ?? new();
 	}
@@ -121,9 +118,13 @@ public sealed class ApplicationSettings
 	{
         SmtpServerOptions? options;
 
-        options = configuration.GetValue<SmtpServerOptions>(ENV_APP_SMTP_OPTIONS);
-        if (options is not null)
-            return options;
+        var value = configuration.GetValue<string>(ENV_APP_SMTP_OPTIONS);
+        if (!string.IsNullOrEmpty(value) && value.Length > 1)
+		{
+			options = JsonSerializer.Deserialize<SmtpServerOptions>(value);
+			if (options is not null)
+				return options;
+        }
 
         options = new();
         configuration.GetSection(nameof(SmtpServerOptions)).Bind(options);
