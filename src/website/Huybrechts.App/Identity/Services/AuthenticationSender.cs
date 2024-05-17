@@ -1,7 +1,6 @@
 ﻿using Huybrechts.App.Common.Services;
 using Huybrechts.App.Config.Options;
 using Huybrechts.App.Identity.Entities;
-using Microsoft.Extensions.Options;
 
 namespace Huybrechts.App.Identity.Services;
 
@@ -9,9 +8,9 @@ public class AuthenticationSender : Microsoft.AspNetCore.Identity.IEmailSender<A
 {
     private readonly IEmailSender emailSender;
 
-    public AuthenticationSender(IOptions<SmtpServerOptions> options, Serilog.ILogger logger)
+    public AuthenticationSender(SmtpServerOptions options, Serilog.ILogger logger)
     {
-        emailSender = new SmtpMailSender(options.Value, logger);
+        emailSender = new SmtpMailSender(options, logger);
     }
 
     public AuthenticationSender(IEmailSender sender)

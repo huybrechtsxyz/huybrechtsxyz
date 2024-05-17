@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
@@ -112,46 +113,34 @@ try
 
 	Log.Information("Startup configuration.............................");
     Log.Information(builder.Configuration.GetDebugView());
-
-    GoogleLoginOptions googleLoginOptions = ApplicationSettings.GetGoogleLoginOptions(builder.Configuration);
-    SmtpServerOptions smtpServerOptions = ApplicationSettings.GetSmtpServerOptions(builder.Configuration);
-
-    Log.Information(googleLoginOptions.ToLogString());
-    Log.Information(smtpServerOptions.ToLogString());
+    Log.Information(ApplicationSettings.GetGoogleLoginOptions(builder.Configuration).ToLogString());
+    Log.Information(ApplicationSettings.GetSmtpServerOptions(builder.Configuration).ToLogString());
     Log.Information("Startup configuration.............................");
 
     Log.Information("Add options to configuration");
+    builder.Services.AddSingleton(ApplicationSettings.GetSmtpServerOptions(builder.Configuration));
     builder.Services.AddOptions();
-	builder.Services.AddOptions<GoogleLoginOptions>().Configure(options => options = googleLoginOptions);
-    builder.Services.AddOptions<SmtpServerOptions>().Configure(options => options = smtpServerOptions);
-
+	
     Log.Information("Connect to the database");
 	var connectionString = ApplicationSettings.GetApplicationContextConnectionString(builder.Configuration);
 	var contextProviderType = ApplicationSettings.GetContextProvider(connectionString);
 	Log.Information($"Connect to the {contextProviderType} database: {connectionString}");
-	Huybrechts.App.Data.Services.IContextHealthValidationService contextHealthService;
     switch (contextProviderType)
     {
         case ContextProviderType.Sqlite:
             {
-				contextHealthService = new Huybrechts.App.Data.Services.SqliteHealthValidationService();
                 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite")));
                 break;
             }
 
         case ContextProviderType.SqlServer:
             {
-                contextHealthService = new Huybrechts.App.Data.Services.SqlServerHealthValidationService();
                 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.SqlServer")));
                 break;
             }
 		default: throw new ArgumentException($"Unsupported or invalid connection string format: {connectionString}.");
     }
-    if (HealthStatus.Unhealthy == contextHealthService.GetHealthStatus(connectionString, 5, 5))
-	{
-		Log.Fatal("Unable to connect to database");
-        throw new ApplicationException("Unable to reach database...ending program.");
-    }
+
     if (builder.Environment.IsDevelopment() || builder.Environment.IsTest())
 	{
 		builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -198,7 +187,7 @@ try
 	builder.Services
 		.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 		{
-			options.SignIn.RequireConfirmedAccount = false;
+			options.SignIn.RequireConfirmedAccount = (!builder.Environment.IsDevelopment());
 			options.Password.RequireUppercase = true;
 			options.Password.RequireLowercase = true;
 			options.Password.RequireDigit = true;

@@ -1,11 +1,15 @@
 ﻿using Huybrechts.App.Config;
 using Huybrechts.App.Identity;
 using Huybrechts.App.Identity.Entities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using System.Threading;
 
 namespace Huybrechts.App.Data.Workers;
 
@@ -38,15 +42,50 @@ public class DatabaseSeedWorker : IHostedService
 		_userManager = (ApplicationUserManager)scope.ServiceProvider.GetRequiredService(typeof(ApplicationUserManager));
 		_roleManager = (ApplicationRoleManager)scope.ServiceProvider.GetRequiredService(typeof(ApplicationRoleManager));
 
-		_logger.Information("Running database initializer...applying database migrations");
-		await _dbcontext.Database.MigrateAsync(cancellationToken);
+        _logger.Information("Running database initializer...applying database migrations");
+        if (HealthStatus.Unhealthy == await MigrateAsync(5, 5, new CancellationToken()))
+        {
+            Log.Fatal("Unable to connect to or migrate the database");
+            throw new ApplicationException("Unable to reach database...ending program.");
+        }
 
-		await InitializeForAllAsync(cancellationToken);
+		await InitializeForAllAsync(); //cancellationToken);
 	}
 
 	public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-	private async Task InitializeForAllAsync(CancellationToken cancellationToken)
+	private async Task<HealthStatus> MigrateAsync(int maxRetries, int initialDelaySeconds, CancellationToken cancellationToken)
+	{
+		HealthStatus healthCheckResult = HealthStatus.Unhealthy;
+		int retryCount = 0;
+
+		if (_dbcontext is null)
+			return healthCheckResult;
+
+		while (retryCount < maxRetries)
+		{
+			try
+			{
+				await _dbcontext.Database.MigrateAsync(cancellationToken);
+				initialDelaySeconds = 0;
+				return HealthStatus.Healthy;
+			}
+			catch (Exception ex)
+			{
+				Log.Information(ex, "Unable to migrate database, retry {AppDataRetryCount} of {AppDataMaxRetries}", retryCount, maxRetries);
+			}
+			finally
+			{
+				retryCount++;
+				int delay = (int)(initialDelaySeconds * 1000 * Math.Pow(2, retryCount));
+				await Task.Delay(delay, cancellationToken);
+			}
+		}
+
+		return healthCheckResult;
+	}
+
+    private async Task InitializeForAllAsync() //CancellationToken cancellationToken)
 	{
 		var vincent = await CreateDefaultUsers();
 		if (vincent is null)
