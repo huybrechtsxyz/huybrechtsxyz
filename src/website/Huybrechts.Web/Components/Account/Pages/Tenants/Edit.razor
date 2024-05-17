@@ -3,83 +3,69 @@
 
 @using Huybrechts.App.Identity
 @using Huybrechts.App.Identity.Entities
-
 @using System.ComponentModel.DataAnnotations
-@using Microsoft.AspNetCore.Components.Forms
 
+@inject ApplicationTenantManager TenantManager
 @inject NavigationManager NavigationManager
 @inject IdentityUserAccessor UserAccessor
-@inject ApplicationTenantManager TenantManager
+@rendermode InteractiveServer
+
+<PageTitle>Manage Tenants</PageTitle>
+
+@if (string.IsNullOrEmpty(TenantId))
+{
+    <h3>Create new tenant</h3>
+}
+else
+{
+    <h3>Edit tenant</h3>
+}
+<StatusMessage />
 
 <div class="row">
     <div class="col-md-6">
-        <PageTitle>Manage Tenants</PageTitle>
-
-        @if (string.IsNullOrEmpty(TenantId))
-        {
-            <h3>Create new tenant</h3>
-        }
-        else
-        {
-            <h3>Edit tenant</h3>
-        }
 
         <a href="/Account/Tenants" class="btn btn-light" role="button">
             <span class="oi oi-arrow-left" aria-hidden="true"></span> Cancel
         </a>
+        <p></p>
 
-        @if (Model is not null)
-        {
-            <EditForm EditContext="@editContext" OnValidSubmit="HandleSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+        <EditForm Model="Model" FormName="EditTenant" OnValidSubmit="OnValidSubmitAsync" method="post" enctype="multipart/form-data">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
 
-                <div class="form-floating mb-3">
-                    <InputText @bind-Value="@Model.Id" class="form-control" placeholder="Please choose a tenant identifier." />
-                    <label for="Model.Id" class="form-label">Tenant</label>
-                    <ValidationMessage For="@(() => Model.Id)" class="text-danger" />
-                </div>
-                <div class="form-floating mb-3">
-                    <InputText @bind-Value="@Model.Name" class="form-control" placeholder="Please choose a tenant name." />
-                    <label for="Model.Name" class="form-label">Name</label>
-                    <ValidationMessage For="@(() => Model.Name)" class="text-danger" />
-                </div>
-                <div class="form-floating mb-3">
-                    <InputText @bind-Value="@Model.Description" class="form-control" placeholder="Please choose a tenant description." />
-                    <label for="Model.Description" class="form-label">Description</label>
-                    <ValidationMessage For="@(() => Model.Description)" />
-                </div>
-                <div class="form-floating mb-3">
-                    <InputTextArea @bind-Value="@Model.Remark" class="form-control" placeholder="Please choose a tenant remark." />
-                    <label for="Model.Remark" class="form-label">Remark</label>
-                    <ValidationMessage For="@(() => Model.Remark)" class="text-danger" />
-                </div>
-                <div class="form-floating mb-3">
-                    <InputText type="text" value="Model.State" class="form-control" placeholder="Tenant state." disabled />
-                    <label for="Model.State" class="form-label">State</label>
-                </div>
-                <div>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <button class="btn btn-light" @onclick="CancelItem">Cancel</button>
-                </div>
-
-                <div>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <button class="btn btn-light" @onclick="CancelItem">Cancel</button>
-                </div>
-            </EditForm>
-        }
-        else
-        {
-            <p>Invalid page mode</p>
-        }
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Model.Id" class="form-control" placeholder="Please enter the tenant id." />
+                <label for="Id" class="form-label">Identifier</label>
+                <ValidationMessage For="() => Model.Id" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Model.Name" class="form-control" placeholder="Please enter a tenant name." />
+                <label for="Model.Name" class="form-label">Name</label>
+                <ValidationMessage For="@(() => Model.Name)" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Model.Description" class="form-control" placeholder="Please enter a tenant description." />
+                <label for="Model.Description" class="form-label">Description</label>
+                <ValidationMessage For="@(() => Model.Description)" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputTextArea @bind-Value="Model.Remark" class="form-control" placeholder="Please enter a tenant remark." />
+                <label for="Model.Remark" class="form-label">Remark</label>
+                <ValidationMessage For="@(() => Model.Remark)" class="text-danger" />
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button class="btn btn-light" @onclick="CancelItem">Cancel</button>
+            </div>
+        </EditForm>
+        
     </div>
 </div>
 
 @code {
-    private EditContext editContext = default!;
-    private ValidationMessageStore? messageStore;
     private ApplicationUser user = default!;
+    private int counter = 0;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -87,39 +73,28 @@
     [Parameter]
     public string? TenantId { get; set; }
 
-    public ApplicationTenant Model { get; set; } = new();
+    private ApplicationTenant Model { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
+        counter++;
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
 
         if (!string.IsNullOrEmpty(TenantId))
             Model = await TenantManager.GetTenantAsync(TenantId) ?? new();
         else
             Model = TenantManager.NewTenant();
-
-        editContext = new(Model);
-        editContext.OnValidationRequested += HandleValidationRequested;
-        messageStore = new(editContext);
+        Model.Id = "joske" + counter.ToString();
     }
 
-    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    private async Task OnValidSubmitAsync()
     {
-        messageStore!.Clear();
-    }
-
-    private async Task HandleSubmit()
-    {
-        if (Model is null || editContext is null || messageStore is null)
-            return;
-
         if (!string.IsNullOrEmpty(TenantId))
             await TenantManager.UpdateTenantAsync(Model);
         else
             await TenantManager.AddTenantAsync(Model);
 
-        editContext.Validate();
-        StateHasChanged();
+        NavigationManager.NavigateTo("/Account/Tenants");
     }
 
     private void CancelItem()
