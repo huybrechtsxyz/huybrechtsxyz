@@ -1,6 +1,6 @@
+using Huybrechts.App.Identity.Entities;
 using Huybrechts.Web.Components.Account.Pages;
 using Huybrechts.Web.Components.Account.Pages.Manage;
-using Huybrechts.Web.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;

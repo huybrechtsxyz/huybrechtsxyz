@@ -1,4 +1,4 @@
-using Huybrechts.Web.Data;
+using Huybrechts.App.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 

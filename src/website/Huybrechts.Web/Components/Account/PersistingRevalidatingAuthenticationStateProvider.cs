@@ -1,5 +1,5 @@
+using Huybrechts.App.Identity.Entities;
 using Huybrechts.Web.Client;
-using Huybrechts.Web.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
