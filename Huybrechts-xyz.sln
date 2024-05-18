@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.Sqlite", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.SqlServer", "src\website\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj", "{B52B182E-A2CE-454E-8D22-0B0D9861173B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Web", "src\website\Huybrechts.Web\Huybrechts.Web\Huybrechts.Web.csproj", "{F5FD67FA-EBA6-4118-9879-B5EF777AA068}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Web.Client", "src\website\Huybrechts.Web\Huybrechts.Web.Client\Huybrechts.Web.Client.csproj", "{1C461F8F-B018-4D9A-AE9E-3645F42DC54F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{B52B182E-A2CE-454E-8D22-0B0D9861173B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B52B182E-A2CE-454E-8D22-0B0D9861173B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B52B182E-A2CE-454E-8D22-0B0D9861173B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5FD67FA-EBA6-4118-9879-B5EF777AA068}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5FD67FA-EBA6-4118-9879-B5EF777AA068}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5FD67FA-EBA6-4118-9879-B5EF777AA068}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5FD67FA-EBA6-4118-9879-B5EF777AA068}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C461F8F-B018-4D9A-AE9E-3645F42DC54F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C461F8F-B018-4D9A-AE9E-3645F42DC54F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C461F8F-B018-4D9A-AE9E-3645F42DC54F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C461F8F-B018-4D9A-AE9E-3645F42DC54F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
