@@ -1,13 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>6119aa4a-18c5-4572-9de2-2d8e8984ebb8</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..\..</DockerfileContext>
     <UserSecretsId>acbede3b-f8f8-41b2-ad78-d1f3e176949f</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..\..</DockerfileContext>     
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +22,14 @@
     <ProjectReference Include="..\Huybrechts.App\Huybrechts.App.csproj" />
     <ProjectReference Include="..\Huybrechts.Infra.Sqlite\Huybrechts.Infra.Sqlite.csproj" />
     <ProjectReference Include="..\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj" />
+    <ProjectReference Include="..\Huybrechts.Web.Client\Huybrechts.Web.Client.csproj" />
   </ItemGroup>
-   
+
+  <ItemGroup>
+    <Content Update="wwwroot\css\app.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

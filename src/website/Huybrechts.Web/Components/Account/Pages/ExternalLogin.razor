@@ -5,13 +5,12 @@
 @using System.Text
 @using System.Text.Encodings.Web
 @using Huybrechts.App.Identity.Entities
-@using Huybrechts.App.Identity
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 
-@inject ApplicationUserManager UserManager
-@inject ApplicationSignInManager SignInManager
-@inject ApplicationUserStore UserStore
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject IUserStore<ApplicationUser> UserStore
 @inject IEmailSender<ApplicationUser> EmailSender
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
@@ -142,17 +141,10 @@
             {
                 Logger.LogInformation("User created an account using {Name} provider.", externalLoginInfo.LoginProvider);
 
-                result = await UserManager.AddToRoleAsync(user, ApplicationRole.SystemUser);
-                if (!result.Succeeded)
-                {
-                    Logger.LogWarning("User was created without the user role");
-                }
-
-                user = await UpdateUser(user);
-
                 var userId = await UserManager.GetUserIdAsync(user);
                 var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
                 var callbackUrl = NavigationManager.GetUriWithQueryParameters(
                     NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
                     new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code });
@@ -165,7 +157,7 @@
                 }
 
                 await SignInManager.SignInAsync(user, isPersistent: false, externalLoginInfo.LoginProvider);
-                RedirectManager.RedirectTo(ReturnUrl); 
+                RedirectManager.RedirectTo(ReturnUrl);
             }
         }
 
@@ -185,54 +177,6 @@
         }
     }
 
-    private async Task<ApplicationUser> UpdateUser(ApplicationUser user)
-    {
-        bool updated = false;
-
-        if (string.IsNullOrEmpty(user.GivenName) && externalLoginInfo.Principal.HasClaim((c => c.Type == ClaimTypes.GivenName)))
-        {
-            var claim = externalLoginInfo.Principal.FindFirst(ClaimTypes.GivenName);
-            if (claim is not null)
-            {
-                user.GivenName = claim.Value.ToString();
-                updated = true;
-            }
-        }
-
-        if (string.IsNullOrEmpty(user.Surname) && externalLoginInfo.Principal.HasClaim((c => c.Type == ClaimTypes.Surname)))
-        {
-            var claim = externalLoginInfo.Principal.FindFirst(ClaimTypes.Surname);
-            if (claim is not null)
-            {
-                user.Surname = claim.Value.ToString();
-                updated = true;
-            }
-        }
-
-        // use options.ClaimActions.MapJsonKey("image", "picture")
-        if (user.ProfilePicture == Array.Empty<byte>() && externalLoginInfo.Principal.HasClaim(c => c.Type == "picture"))
-        {
-            var claim = externalLoginInfo.Principal.FindFirst("picture");
-            if (claim is not null)
-            {
-                using (var client = new HttpClient())
-                {
-                    using (var response = await client.GetAsync(claim.Value.ToString()))
-                    {
-                        byte[] imageBytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-                        user.ProfilePicture = new byte[imageBytes.Length];
-                        user.ProfilePicture = imageBytes.ToArray();
-                        updated = true;
-                    }
-                }
-            }
-        }
-
-        if (updated)
-            await UserManager.UpdateAsync(user);
-        return user;
-    }
-        
     private IUserEmailStore<ApplicationUser> GetEmailStore()
     {
         if (!UserManager.SupportsUserEmail)

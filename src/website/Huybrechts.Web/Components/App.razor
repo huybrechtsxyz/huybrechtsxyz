@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Localization
+@using System.Globalization
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -7,15 +9,14 @@
     <base href="/" />
     <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="lib/bootstrap/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="Huybrechts.Web.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <HeadOutlet @rendermode="@InteractiveServer" />
+    <HeadOutlet @rendermode="@RenderModeForPage" />
 </head>
 
 <body>
     <Routes @rendermode="@RenderModeForPage" />
-    <script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="_framework/blazor.web.js"></script>
 </body>
 
@@ -24,6 +25,10 @@
 @code {
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
+
+    private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path.StartsWithSegments("/Account")
+        ? null
+        : InteractiveAuto;
 
     protected override void OnInitialized()
     {
@@ -34,6 +39,4 @@
                     CultureInfo.CurrentCulture,
                     CultureInfo.CurrentUICulture)));
     }
-
-    private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path.StartsWithSegments("/Account") ? null : InteractiveServer;
 }
