@@ -66,7 +66,7 @@ public class DatabaseSeedWorker : IHostedService
 		{
 			try
 			{
-				await _dbcontext.Database.MigrateAsync(cancellationToken);
+				//await _dbcontext.Database.MigrateAsync(cancellationToken);
 				initialDelaySeconds = 0;
 				return HealthStatus.Healthy;
 			}

@@ -184,12 +184,12 @@ try
     builder.Services.TryAddScoped<ApplicationUserClaimsPrincipalFactory>();
     builder.Services.AddSingleton<IEmailSender<ApplicationUser>, AuthenticationSender>();    // double with identitynoopmailsneder
     //builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>(); // double with authenticationsender
-    builder.Services.AddAuthentication(options =>
-        {
-            options.DefaultScheme = IdentityConstants.ApplicationScheme;
-            options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-        })
-        .AddIdentityCookies();
+    //builder.Services.AddAuthentication(options =>
+    //    {
+    //        options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    //        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    //    })
+    //    .AddIdentityCookies();
     builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
         {
             options.SignIn.RequireConfirmedAccount = (!builder.Environment.IsDevelopment());
