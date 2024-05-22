@@ -3,7 +3,6 @@ using Huybrechts.App.Identity.Entities;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Runtime.CompilerServices;
 
 namespace Huybrechts.App.Identity;
 
@@ -73,7 +72,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
         };
     }
 
-    public async Task AddTenantAsync(ApplicationTenant tenant)
+    public async Task<ApplicationTenant> AddTenantAsync(ApplicationTenant tenant)
     {
         var state = await _authenticationState.GetAuthenticationStateAsync();
         var user = await _userManager.GetUserAsync(state.User) ??
@@ -84,6 +83,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
         _dbcontext.ApplicationTenants.Add(tenant);
         await _userManager.AddToTenantAsync(user, tenant.Id, ApplicationRole.GetRoleName(ApplicationRoleValues.Owner));
         await _dbcontext.SaveChangesAsync();
+        return tenant;
     }
 
     public async Task UpdateTenantAsync(ApplicationTenant tenant)
