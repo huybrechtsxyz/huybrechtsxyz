@@ -17,6 +17,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\Huybrechts.App\Huybrechts.App.csproj" />
+    <ProjectReference Include="..\Huybrechts.Core\Huybrechts.Core.csproj" />
   </ItemGroup>
 
 </Project>

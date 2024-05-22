@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Huybrechts.App\Huybrechts.App.csproj" />
+    <ProjectReference Include="..\Huybrechts.Core\Huybrechts.Core.csproj" />
     <ProjectReference Include="..\Huybrechts.Infra.Sqlite\Huybrechts.Infra.Sqlite.csproj" />
     <ProjectReference Include="..\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj" />
     <ProjectReference Include="..\Huybrechts.Web.Client\Huybrechts.Web.Client.csproj" />

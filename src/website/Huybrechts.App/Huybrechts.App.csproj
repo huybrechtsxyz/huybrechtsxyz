@@ -29,4 +29,8 @@
       <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
    </ItemGroup>
 
+   <ItemGroup>
+      <ProjectReference Include="..\Huybrechts.Core\Huybrechts.Core.csproj" />
+   </ItemGroup>
+   
 </Project>
