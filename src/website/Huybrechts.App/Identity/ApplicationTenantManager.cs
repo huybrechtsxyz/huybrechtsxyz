@@ -45,7 +45,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
             return [];
         if (await _userManager.IsInRoleAsync(user, ApplicationRole.SystemAdministrator))
         {
-
+            return await _dbcontext.ApplicationTenants.ToListAsync();
         }
 
         return await _userManager.GetApplicationTenantsAsync(user);
