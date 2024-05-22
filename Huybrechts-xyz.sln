@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Web", "src\websi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Web.Client", "src\website\Huybrechts.Web.Client\Huybrechts.Web.Client.csproj", "{EB0D2DFE-ECF4-4DBC-A9AF-AD0307732984}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Core", "src\website\Huybrechts.Core\Huybrechts.Core.csproj", "{1BC5F0D1-DDE8-44CB-8504-23BB3756A971}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{EB0D2DFE-ECF4-4DBC-A9AF-AD0307732984}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB0D2DFE-ECF4-4DBC-A9AF-AD0307732984}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB0D2DFE-ECF4-4DBC-A9AF-AD0307732984}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BC5F0D1-DDE8-44CB-8504-23BB3756A971}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BC5F0D1-DDE8-44CB-8504-23BB3756A971}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BC5F0D1-DDE8-44CB-8504-23BB3756A971}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BC5F0D1-DDE8-44CB-8504-23BB3756A971}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
