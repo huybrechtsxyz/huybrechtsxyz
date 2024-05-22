@@ -1,6 +1,6 @@
 ﻿using Huybrechts.App.Data;
 using Huybrechts.App.Identity.Entities;
-using Huybrechts.Core.Identity;
+using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

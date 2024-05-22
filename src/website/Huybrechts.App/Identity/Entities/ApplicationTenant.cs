@@ -1,4 +1,4 @@
-﻿using Huybrechts.Core.Identity;
+﻿using Huybrechts.Core.Application;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Huybrechts.App.Identity.Entities;

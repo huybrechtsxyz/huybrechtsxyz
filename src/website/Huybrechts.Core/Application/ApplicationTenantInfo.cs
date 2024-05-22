@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Huybrechts.Core.Identity;
+namespace Huybrechts.Core.Application;
 
 public record ApplicationTenantInfo
 {

@@ -1,4 +1,4 @@
-﻿namespace Huybrechts.Core.Identity;
+﻿namespace Huybrechts.Core.Application;
 
 public enum ApplicationTenantState
 {
