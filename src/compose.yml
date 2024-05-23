@@ -15,6 +15,10 @@ services:
     extends:
       file: sqlite.yml
       service: sqlite
+  website:
+    extends:
+      file: website.yml
+      service: website
 
 networks:
   traefik:

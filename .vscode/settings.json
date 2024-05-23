@@ -7,5 +7,6 @@
   "editor.detectIndentation": false,
   "[csharp]": {
     "editor.tabSize": 4
-  }
+  },
+  "asciidoc.antora.enableAntoraSupport": false
 }
