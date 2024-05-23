@@ -1,0 +1,54 @@
+= Environment
+
+== Services
+
+=== Traefik
+
+Traefik is a modern, open-source reverse proxy and load balancer designed to manage and route HTTP and TCP traffic to various services. It integrates seamlessly with cloud-native environments and supports dynamic service discovery, making it ideal for microservices architectures. Traefik offers automatic SSL certificate management, advanced traffic management features, and real-time monitoring. It is highly configurable and supports a wide range of backends, including Kubernetes, Docker, and various cloud providers, enabling efficient and secure traffic management for complex applications.
+
+Traefik is behind a secure administration password.
+
+=== Whoami
+
+Traefik/whoami is a simple Docker image provided by Traefik Labs that is designed to help users test and understand how their Traefik configuration works. The whoami service acts as a minimal web server that responds to HTTP requests with information about the request itself, such as the headers, the IP address of the client, and other relevant data. This can be very useful for debugging and testing your Traefik setup to ensure that routing, load balancing, and other configurations are working correctly.
+
+Traefik/whoami is behind a secure administration password.
+
+== Environment Setup
+
+=== Application folders
+
+The application folder structure.
+
+- app
+  - cert
+  - logs
+
+=== Docker secrets
+
+|===
+| *Variable* | *Description* | *Example*
+| APP_ENVIRONMENT | Environment | test
+|=== 
+
+=== Environment variables
+
+Environment variables and secrets
+
+|===
+| *Variable* | *Type* | *Description* | *Example*
+| APP_ENVIRONMENT   | .env | Environment | test
+| APP_CERT_SERVER   | .env |Certificate server | https://acme.org
+| APP_CERT_EMAIL    | .env |Certificate e-mail | a@b.com
+| APP_HOST_EMAIL    | Secret | Server e-mail | a@b.com
+| APP_HOST_USERNAME | Secret | Server username | user1
+| APP_HOST_PASSWORD | Secret | Server password | 1234
+| APP_HOST_SERVER   | Secret | Server IP | 10.0.0.1
+| APP_HOST_PORT     | Secret | SSH Port | 22
+| APP_HOST_URL      | .env |Server URL | test.huybrechts.xyz
+| REGISTRY_USERNAME | Secret | Container registry username | user1
+| REGISTRY_PASSWORD | Secret | Container registry password | 1234
+|===
+
+The server for a non-production certificate:
+https://acme-staging-v02.api.letsencrypt.org/directory
