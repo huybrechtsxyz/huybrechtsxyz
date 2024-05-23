@@ -1,0 +1,11 @@
+{
+  "cSpell.words": [
+    "huybrechts"
+  ],
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "[csharp]": {
+    "editor.tabSize": 4
+  }
+}
