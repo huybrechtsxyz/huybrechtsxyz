@@ -3,17 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.App", "src\website\Huybrechts.App\Huybrechts.App.csproj", "{67961CA4-AFB8-44D4-A4DE-12491CA6D427}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.App", "src\website\Huybrechts.App\Huybrechts.App.csproj", "{67961CA4-AFB8-44D4-A4DE-12491CA6D427}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Shared", "src\website\Huybrechts.Shared\Huybrechts.Shared.csproj", "{AA34A47E-0982-4C3D-9260-4DA4C013B461}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Shared", "src\website\Huybrechts.Shared\Huybrechts.Shared.csproj", "{AA34A47E-0982-4C3D-9260-4DA4C013B461}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Core", "src\website\Huybrechts.Core\Huybrechts.Core.csproj", "{653F06C6-F390-4150-9A00-75C58BC715DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Core", "src\website\Huybrechts.Core\Huybrechts.Core.csproj", "{653F06C6-F390-4150-9A00-75C58BC715DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra", "src\website\Huybrechts.Infra\Huybrechts.Infra.csproj", "{C67AE8C8-9563-406C-9DE5-5C84B235ABE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra", "src\website\Huybrechts.Infra\Huybrechts.Infra.csproj", "{C67AE8C8-9563-406C-9DE5-5C84B235ABE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.Sqlite", "src\website\Huybrechts.Infra.Sqlite\Huybrechts.Infra.Sqlite.csproj", "{4E25ABA9-A04D-4122-8678-15700E0B7A1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.Sqlite", "src\website\Huybrechts.Infra.Sqlite\Huybrechts.Infra.Sqlite.csproj", "{4E25ABA9-A04D-4122-8678-15700E0B7A1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Web", "src\website\Huybrechts.Web\Huybrechts.Web.csproj", "{6D3B0E5B-9558-40F5-B076-4902764332F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Web", "src\website\Huybrechts.Web\Huybrechts.Web.csproj", "{6D3B0E5B-9558-40F5-B076-4902764332F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.SqlServer", "src\website\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj", "{BC0D517E-1563-43A7-958A-63558478BBB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{6D3B0E5B-9558-40F5-B076-4902764332F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D3B0E5B-9558-40F5-B076-4902764332F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D3B0E5B-9558-40F5-B076-4902764332F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC0D517E-1563-43A7-958A-63558478BBB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC0D517E-1563-43A7-958A-63558478BBB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC0D517E-1563-43A7-958A-63558478BBB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC0D517E-1563-43A7-958A-63558478BBB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

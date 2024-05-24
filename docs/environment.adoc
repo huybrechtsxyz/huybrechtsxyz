@@ -40,6 +40,10 @@ Environment variables and secrets
 | APP_ENVIRONMENT   | .env | Environment | test
 | APP_CERT_SERVER   | .env |Certificate server | https://acme.org
 | APP_CERT_EMAIL    | .env |Certificate e-mail | a@b.com
+| APP_DATA_URL      | Secret | Database connection | DS://{username}:{password}@{database}
+| APP_DATA_NAME     | Secret | Database name | xyz.db
+| APP_DATA_USERNAME | Secret | DB Admin | admin1
+| APP_DATA_PASSWORD | Secret | DB Password | 1234
 | APP_HOST_EMAIL    | Secret | Server e-mail | a@b.com
 | APP_HOST_USERNAME | Secret | Server username | user1
 | APP_HOST_PASSWORD | Secret | Server password | 1234
