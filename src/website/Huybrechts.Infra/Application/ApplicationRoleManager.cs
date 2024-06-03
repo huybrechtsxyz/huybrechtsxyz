@@ -22,8 +22,8 @@ public class ApplicationRoleManager : RoleManager<ApplicationRole>
     {
         if (role is not null)
         {
-            role.TenantId = ApplicationRole.GetTenantId(role.Id);
-            role.Label = ApplicationRole.GetRoleLabel(role.Id);
+            role.TenantId = ApplicationRole.GetTenantId(role.Name!);
+            role.Label = ApplicationRole.GetRoleLabel(role.Name!);
         }
         return base.CreateAsync(role!);
     }
@@ -32,8 +32,8 @@ public class ApplicationRoleManager : RoleManager<ApplicationRole>
     {
         if (role is not null)
         {
-            role.TenantId = ApplicationRole.GetTenantId(role.Id);
-            role.Label = ApplicationRole.GetRoleLabel(role.Id);
+            role.TenantId = ApplicationRole.GetTenantId(role.Name!);
+            role.Label = ApplicationRole.GetRoleLabel(role.Name!);
         }
         return base.UpdateAsync(role!);
     }
@@ -42,8 +42,8 @@ public class ApplicationRoleManager : RoleManager<ApplicationRole>
     {
         if (role is not null)
         {
-            role.TenantId = ApplicationRole.GetTenantId(role.Id);
-            role.Label = ApplicationRole.GetRoleLabel(role.Id);
+            role.TenantId = ApplicationRole.GetTenantId(role.Name!);
+            role.Label = ApplicationRole.GetRoleLabel(role.Name!);
         }
         return base.UpdateNormalizedRoleNameAsync(role!);
     }

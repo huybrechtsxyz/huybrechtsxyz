@@ -15,14 +15,19 @@ public class ApplicationRoleValidator : IRoleValidator<ApplicationRole>
 
         if (!string.IsNullOrWhiteSpace(role.Name))
         {
-            var existingRole = await manager.Roles.FirstOrDefaultAsync(x => x.TenantId == role.TenantId && x.Name == role.Name);
+            var existingRole = await manager.Roles.FirstOrDefaultAsync(x => x.Name == role.Name);
             if (existingRole is null)
             {
-                var existingTenant = await ((ApplicationRoleManager)manager).Tenants.Where(q => q.Id == role.TenantId).FirstOrDefaultAsync();
-                if (existingTenant is not null)
-                    return IdentityResult.Success;
+                if (role.IsTenantRole())
+                {
+                    var existingTenant = await ((ApplicationRoleManager)manager).Tenants.Where(q => q.Id == role.TenantId).FirstOrDefaultAsync();
+                    if (existingTenant is not null)
+                        return IdentityResult.Success;
 
-                errors.Add(string.Format("{0} has invalid tenant.", role.Name));
+                    errors.Add(string.Format("{0} has invalid tenant.", role.Name));
+                }
+                else
+                    return IdentityResult.Success;
             }
             errors.Add(string.Format("{0} is already taken.", role.Name));
         }

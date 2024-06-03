@@ -18,6 +18,8 @@ public sealed class ApplicationRole : IdentityRole
     [StringLength(512)]
     public string? Description { get; set; }
 
+    public bool IsTenantRole() => !string.IsNullOrEmpty(TenantId);
+
     //
     // EXTENDED
     //
@@ -78,7 +80,7 @@ public sealed class ApplicationRole : IdentityRole
 	/// </returns>
     public static string GetTenantId(string roleid)
     {
-        if (roleid.StartsWith(Hashtag))
+        if (!roleid.Contains(Hashtag))
             return string.Empty;
         return roleid[0..(roleid.IndexOf(Hashtag) - 1)];
     }
