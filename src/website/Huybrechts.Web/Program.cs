@@ -32,6 +32,7 @@ try
 
     Log.Information("Startup configuration.............................");
     Log.Information(builder.Configuration.GetDebugView());
+    Log.Information(EnvironmentSettings.GetGoogleLoginOptions(builder.Configuration).ToLogString());
     Log.Information(EnvironmentSettings.GetSmtpServerOptions(builder.Configuration).ToLogString());
     Log.Information("Startup configuration.............................");
 

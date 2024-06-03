@@ -19,6 +19,7 @@ public static class EnvironmentSettings
     private const string ENV_APP_DATA_PASSWORD = "APP_DATA_PASSWORD";
     private const string ENV_APP_DATA_CONTEXT = "APP_DATA_CONTEXT";
 
+    private const string ENV_APP_AUTH_GOOGLE = "APP_AUTH_GOOGLE";
     private const string ENV_APP_SMTP_OPTIONS = "APP_SMTP_OPTIONS";
 
     public static string GetApplicationHostUrl(IConfiguration configuration) => configuration.GetValue<string>(ENV_APP_HOST_URL) ?? string.Empty;
@@ -94,6 +95,23 @@ public static class EnvironmentSettings
         // Unable to determine database provider
         else
             return ContextProviderType.None;
+    }
+
+    public static GoogleLoginOptions GetGoogleLoginOptions(IConfiguration configuration)
+    {
+        GoogleLoginOptions? options;
+
+        var value = configuration.GetValue<string>(ENV_APP_AUTH_GOOGLE);
+        if (!string.IsNullOrEmpty(value) && value.Length > 1)
+        {
+            options = JsonSerializer.Deserialize<GoogleLoginOptions>(value);
+            if (options is not null)
+                return options;
+        }
+
+        options = new();
+        configuration.GetSection(nameof(GoogleLoginOptions)).Bind(options);
+        return options ?? new();
     }
 
     public static SmtpServerOptions GetSmtpServerOptions(IConfiguration configuration)

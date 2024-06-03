@@ -138,6 +138,7 @@ public static class WebHostExtensions
 
     public static WebApplicationBuilder AddXyzIdentity(this WebApplicationBuilder builder, ILogger log)
     {
+        Log.Information("Configure authentication services");
         builder.Services.TryAddScoped<ApplicationUserStore>();
         builder.Services.TryAddScoped<ApplicationUserManager>();
         builder.Services.TryAddScoped<ApplicationSignInManager>();
@@ -145,6 +146,7 @@ public static class WebHostExtensions
         builder.Services.AddSingleton<Microsoft.AspNetCore.Identity.IEmailSender<ApplicationUser>, AuthenticationSender>();
         builder.Services.AddSingleton<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, AuthenticationMailer>();
 
+        Log.Information("Configure authentication identity");
         builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
         {
             options.SignIn.RequireConfirmedAccount = (!builder.Environment.IsDevelopment());
@@ -162,6 +164,26 @@ public static class WebHostExtensions
         .AddSignInManager<ApplicationSignInManager>()
         .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
         .AddDefaultTokenProviders();
+
+        Log.Information("Configure authentication for google");
+        GoogleLoginOptions? google = EnvironmentSettings.GetGoogleLoginOptions(builder.Configuration);
+        if (!(google is null || string.IsNullOrEmpty(google.ClientId) || string.IsNullOrEmpty(google.ClientSecret)))
+        {
+            builder.Services.AddAuthentication().AddGoogle(options =>
+            {
+                options.ClientId = google.ClientId;
+                options.ClientSecret = google.ClientSecret;
+                //options.ClaimActions.MapJsonKey("image", "picture"); maps claim name to othername if needed
+                options.Scope.Add("profile");
+                options.Events.OnCreatingTicket = (context) =>
+                {
+                    var picture = context.User.GetProperty("picture").GetString();
+                    if (context.Identity is not null && picture is not null)
+                        context.Identity.AddClaim(new System.Security.Claims.Claim("picture", picture));
+                    return Task.CompletedTask;
+                };
+            });
+        }
         return builder;
     }
 }
