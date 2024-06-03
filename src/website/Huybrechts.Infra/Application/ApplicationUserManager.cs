@@ -22,7 +22,7 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         ILogger<ApplicationUserManager> logger) 
         : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
     {
-        UserStore = (ApplicationUserStore)store;
+        UserStore = store;
     }
 
     public async Task<IList<string>> GetTenantNamesAsync(ApplicationUser user)
