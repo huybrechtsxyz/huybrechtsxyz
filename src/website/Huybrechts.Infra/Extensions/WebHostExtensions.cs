@@ -142,6 +142,8 @@ public static class WebHostExtensions
         builder.Services.TryAddScoped<ApplicationUserManager>();
         builder.Services.TryAddScoped<ApplicationSignInManager>();
         builder.Services.TryAddScoped<ApplicationUserClaimsPrincipalFactory>();
+        builder.Services.AddSingleton<Microsoft.AspNetCore.Identity.IEmailSender<ApplicationUser>, AuthenticationSender>();
+        builder.Services.AddSingleton<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, AuthenticationMailer>();
 
         builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
         {

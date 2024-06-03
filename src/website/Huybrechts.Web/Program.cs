@@ -1,4 +1,5 @@
-using Huybrechts.App.Data.Workers;
+using Huybrechts.Infra.Config;
+using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Extensions;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
@@ -31,7 +32,11 @@ try
 
     Log.Information("Startup configuration.............................");
     Log.Information(builder.Configuration.GetDebugView());
+    Log.Information(EnvironmentSettings.GetSmtpServerOptions(builder.Configuration).ToLogString());
     Log.Information("Startup configuration.............................");
+
+    Log.Information("Add options to configuration");
+    builder.Services.AddSingleton(EnvironmentSettings.GetSmtpServerOptions(builder.Configuration));
 
     Log.Information("Connect to the database");
     builder.AddXyzDatabase(Log.Logger);

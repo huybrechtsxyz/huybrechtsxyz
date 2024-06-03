@@ -1,5 +1,6 @@
 ﻿using Huybrechts.Infra.Data;
 using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 namespace Huybrechts.Infra.Config;
 
@@ -17,6 +18,8 @@ public static class EnvironmentSettings
     private const string ENV_APP_DATA_USERNAME = "APP_DATA_USERNAME";
     private const string ENV_APP_DATA_PASSWORD = "APP_DATA_PASSWORD";
     private const string ENV_APP_DATA_CONTEXT = "APP_DATA_CONTEXT";
+
+    private const string ENV_APP_SMTP_OPTIONS = "APP_SMTP_OPTIONS";
 
     public static string GetApplicationHostUrl(IConfiguration configuration) => configuration.GetValue<string>(ENV_APP_HOST_URL) ?? string.Empty;
 
@@ -91,5 +94,22 @@ public static class EnvironmentSettings
         // Unable to determine database provider
         else
             return ContextProviderType.None;
+    }
+
+    public static SmtpServerOptions GetSmtpServerOptions(IConfiguration configuration)
+    {
+        SmtpServerOptions? options;
+
+        var value = configuration.GetValue<string>(ENV_APP_SMTP_OPTIONS);
+        if (!string.IsNullOrEmpty(value) && value.Length > 1)
+        {
+            options = JsonSerializer.Deserialize<SmtpServerOptions>(value);
+            if (options is not null)
+                return options;
+        }
+
+        options = new();
+        configuration.GetSection(nameof(SmtpServerOptions)).Bind(options);
+        return options ?? new();
     }
 }
