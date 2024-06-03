@@ -1,12 +1,16 @@
-﻿using Huybrechts.Infra.Config;
+﻿using Huybrechts.Core.Application;
+using Huybrechts.Infra.Application;
+using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System.IO.Compression;
@@ -129,6 +133,33 @@ public static class WebHostExtensions
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddXyzIdentity(this WebApplicationBuilder builder, ILogger log)
+    {
+        builder.Services.TryAddScoped<ApplicationUserStore>();
+        builder.Services.TryAddScoped<ApplicationUserManager>();
+        builder.Services.TryAddScoped<ApplicationSignInManager>();
+        builder.Services.TryAddScoped<ApplicationUserClaimsPrincipalFactory>();
+
+        builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = (!builder.Environment.IsDevelopment());
+            options.Password.RequireUppercase = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireDigit = true;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequiredLength = 8;
+        })
+        .AddEntityFrameworkStores<ApplicationContext>()
+        .AddRoleValidator<ApplicationRoleValidator>()
+        .AddRoleManager<ApplicationRoleManager>()
+        .AddUserStore<ApplicationUserStore>()
+        .AddUserManager<ApplicationUserManager>()
+        .AddSignInManager<ApplicationSignInManager>()
+        .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
+        .AddDefaultTokenProviders();
         return builder;
     }
 }

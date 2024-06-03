@@ -1,5 +1,5 @@
+using Huybrechts.App.Data.Workers;
 using Huybrechts.Infra.Extensions;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 
@@ -36,6 +36,9 @@ try
     Log.Information("Connect to the database");
     builder.AddXyzDatabase(Log.Logger);
 
+    Log.Information("Connect to the identity provider");
+    builder.AddXyzIdentity(Log.Logger);
+
     Log.Information("Configuring user interface");
     builder.Services.AddRazorPages();
 
@@ -45,6 +48,10 @@ try
 
     Log.Debug("Building the application with configuration");
     Log.Debug(builder.Configuration.GetDebugView());
+
+    // Database migrations
+    Log.Information("Adding database initializer as hosted service");
+    builder.Services.AddHostedService<ApplicationSeedWorker>();
 
     Log.Information("Building the application and services");
     var app = builder.Build();

@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Huybrechts.Shared\Huybrechts.Shared.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.6" />
   </ItemGroup>
 
 </Project>

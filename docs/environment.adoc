@@ -44,6 +44,7 @@ Environment variables and secrets
 | APP_DATA_NAME     | Secret | Database name | xyz.db
 | APP_DATA_USERNAME | Secret | DB Admin | admin1
 | APP_DATA_PASSWORD | Secret | DB Password | 1234
+| APP_DATA_CONTEXT  | Secret | Select specific connectionstring | SqliteContext
 | APP_HOST_EMAIL    | Secret | Server e-mail | a@b.com
 | APP_HOST_USERNAME | Secret | Server username | user1
 | APP_HOST_PASSWORD | Secret | Server password | 1234
