@@ -51,6 +51,8 @@ Environment variables and secrets
 | APP_HOST_SERVER   | Secret | Server IP | 10.0.0.1
 | APP_HOST_PORT     | Secret | SSH Port | 22
 | APP_HOST_URL      | .env |Server URL | test.huybrechts.xyz
+| APP_AUTH_GOOGLE   | Secret | Json with clientid and secret | { ClientId: abc, ClientSecret: 123}
+| APP_SMTP_OPTIONS  | Secret | Json with SmtpServerOptions | {}
 | REGISTRY_USERNAME | Secret | Container registry username | user1
 | REGISTRY_PASSWORD | Secret | Container registry password | 1234
 |===
