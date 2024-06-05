@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -79,19 +80,19 @@ public static class WebHostExtensions
         }
 
         builder.Services.AddResponseCaching();
-        builder.Services.AddResponseCompression(options => {
-            options.EnableForHttps = true;
-            options.Providers.Add<BrotliCompressionProvider>();
-            options.Providers.Add<GzipCompressionProvider>();
-        });
-        builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
-        {
-            options.Level = CompressionLevel.Fastest;
-        });
-        builder.Services.Configure<GzipCompressionProviderOptions>(options =>
-        {
-            options.Level = CompressionLevel.SmallestSize;
-        });
+        //builder.Services.AddResponseCompression(options => {
+        //    options.EnableForHttps = true;
+        //    options.Providers.Add<BrotliCompressionProvider>();
+        //    options.Providers.Add<GzipCompressionProvider>();
+        //});
+        //builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+        //{
+        //    options.Level = CompressionLevel.Fastest;
+        //});
+        //builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+        //{
+        //    options.Level = CompressionLevel.SmallestSize;
+        //});
         builder.Services.Configure<CookiePolicyOptions>(options =>
         {
             // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -185,5 +186,131 @@ public static class WebHostExtensions
             });
         }
         return builder;
+    }
+
+    public static WebApplication AddExceptionMiddleware(this WebApplication app, ILogger log)
+    {
+        if (app.Environment.IsDevelopment())
+        {
+            Log.Information("Configure the HTTP request pipeline for DEVELOPMENT");
+            app.UseMigrationsEndPoint();
+            app.UseDeveloperExceptionPage();
+        }
+        else if (app.Environment.IsTest())
+        {
+            Log.Information("Configure the HTTP request pipeline for DEVELOPMENT");
+            app.UseMigrationsEndPoint();
+            app.UseDeveloperExceptionPage();
+        }
+        else if (app.Environment.IsStaging())
+        {
+            Log.Information("Configure the HTTP request pipeline for staging");
+            app.UseExceptionHandler("/Error", createScopeForErrors: true);
+        }
+        else if (app.Environment.IsDevelopment())
+        {
+            Log.Information("Configure the HTTP request pipeline for staging");
+            app.UseExceptionHandler("/Error", createScopeForErrors: true);
+        }
+        else
+            throw new Exception("Invalid application environment");
+        return app;
+    }
+
+    public static WebApplication AddTransportSecurityMiddleware(this WebApplication app, ILogger log)
+    {
+        if ((app.Environment.IsProduction() || app.Environment.IsStaging()) && !EnvironmentSettings.IsRunningInContainer())
+        {
+            Log.Information("Configure the HTTP transport security");
+            app.UseHsts();
+        }
+        return app;
+    }
+
+    public static WebApplication AddRedirectionMiddleware(this WebApplication app, ILogger log)
+    {
+        Log.Information("Configure the response compression");
+        //app.UseResponseCompression();
+
+        if (!EnvironmentSettings.IsRunningInContainer())
+        {
+            Log.Information("Configure HTTP redirection");
+            app.UseHttpsRedirection();
+        }
+        return app;
+    }
+
+    public static WebApplication AddStaticFilesMiddleware(this WebApplication app, ILogger log)
+    {
+        if (app.Environment.IsStaging() || app.Environment.IsProduction())
+        {
+            Log.Information("Configure using static files with caching");
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "public,max-age=86400"; //+ (int)(60 * 60 * 24);
+                }
+            });
+        }
+        else
+        {
+            Log.Information("Configure using static files");
+            app.UseStaticFiles();
+        }
+
+        return app;
+    }
+
+    public static WebApplication AddRoutingMiddleware(this WebApplication app, ILogger log)
+    {
+        Log.Information("Configure request localization amd cookies");
+        app.UseRequestLocalization(new RequestLocalizationOptions
+        {
+            SupportedCultures = EnvironmentSettings.GetSupportedCultures(),
+            SupportedUICultures = EnvironmentSettings.GetSupportedCultures(),
+            DefaultRequestCulture = new RequestCulture(EnvironmentSettings.GetDefaultCulture())
+        });
+        app.UseCookiePolicy();
+
+        if (EnvironmentSettings.IsRunningInContainer())
+        {
+            Log.Information("Configure forward headers");
+            app.UseForwardedHeaders();
+        }
+
+        app.UseSerilogRequestLogging();
+        app.UseRouting();
+
+        return app;
+    }
+
+    public static WebApplication AddCorsMiddleware(this WebApplication app, ILogger log)
+    {
+        return app;
+    }
+
+    public static WebApplication AddSecurityMiddleware(this WebApplication app, ILogger log)
+    {
+        Log.Information("Using authentication and authorization");
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseAntiforgery();
+        app.UseResponseCaching();
+
+        return app;
+    }
+
+    public static WebApplication AddSessionMiddleware(this WebApplication app, ILogger log)
+    {
+        return app;
+    }
+
+    public static WebApplication AddEndpointMiddleware(this WebApplication app, ILogger log)
+    {
+        Log.Information("Mapping and routing razor components");
+        app.MapRazorPages();
+        app.MapControllers();
+        return app;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Huybrechts.Infra.Data;
 using Microsoft.Extensions.Configuration;
+using System.Globalization;
 using System.Text.Json;
 
 namespace Huybrechts.Infra.Config;
@@ -29,6 +30,10 @@ public static class EnvironmentSettings
     public static string GetApplicationHostUsername(IConfiguration configuration) => configuration.GetValue<string>(ENV_APP_HOST_USERNAME) ?? string.Empty;
 
     public static string GetApplicationHostPassword(IConfiguration configuration) => configuration.GetValue<string>(ENV_APP_HOST_PASSWORD) ?? string.Empty;
+
+    public static CultureInfo[] GetSupportedCultures() => [new("EN"), new("NL")];
+
+    public static CultureInfo GetDefaultCulture() => new("EN");
 
     public static string GetRunningInContainer() => (Environment.GetEnvironmentVariable(ENV_DOTNET_RUNNING_IN_CONTAINER) ?? string.Empty).Trim().ToLower();
 

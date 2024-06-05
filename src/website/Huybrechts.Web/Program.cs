@@ -1,6 +1,7 @@
 using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Extensions;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 
@@ -26,10 +27,6 @@ try
     builder.AddXyzSerilog();
     builder.Configuration.AddXyzDockerSecrets("/run/secrets", "__", null, Log.Logger);
 
-    Log.Information("Configuring webserver");
-    builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
-    builder.AddXyzWebconfig();
-
     Log.Information("Startup configuration.............................");
     Log.Information(builder.Configuration.GetDebugView());
     Log.Information(EnvironmentSettings.GetGoogleLoginOptions(builder.Configuration).ToLogString());
@@ -45,8 +42,15 @@ try
     Log.Information("Connect to the identity provider");
     builder.AddXyzIdentity(Log.Logger);
 
+    Log.Information("Configuring webserver");
+    builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
+    builder.AddXyzWebconfig();
+
     Log.Information("Configuring user interface");
-    builder.Services.AddRazorPages();
+    builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+    builder.Services.AddAntiforgery();
+    builder.Services.AddControllers();
+    builder.Services.AddRazorPages().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
     Log.Information("Building the application with services");
     foreach (var service in builder.Services)
@@ -62,26 +66,16 @@ try
     Log.Information("Building the application and services");
     var app = builder.Build();
 
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseMigrationsEndPoint();
-    }
-    else
-    {
-        app.UseExceptionHandler("/Error");
-        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-        app.UseHsts();
-    }
-
-    app.UseHttpsRedirection();
-    app.UseStaticFiles();
-
-    app.UseRouting();
-
-    app.UseAuthorization();
-
-    app.MapRazorPages();
+    Log.Information("Adding middleware services");
+    app.AddExceptionMiddleware(Log.Logger);
+    app.AddTransportSecurityMiddleware(Log.Logger);
+    app.AddRedirectionMiddleware(Log.Logger);
+    app.AddStaticFilesMiddleware(Log.Logger);
+    app.AddRoutingMiddleware(Log.Logger);
+    app.AddCorsMiddleware(Log.Logger);
+    app.AddSecurityMiddleware(Log.Logger);
+    app.AddSessionMiddleware(Log.Logger);
+    app.AddEndpointMiddleware(Log.Logger);
 
     Log.Information("Run configured application");
     app.Run();
