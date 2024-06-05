@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,25 +54,24 @@ public static class WebHostExtensions
 
     public static WebApplicationBuilder AddXyzWebconfig(this WebApplicationBuilder builder)
     {
-        if (builder.Environment.IsDevelopment())
-            return builder;
+		builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
 
-        string baseUri = EnvironmentSettings.GetApplicationHostUrl(builder.Configuration);
-        if (string.IsNullOrEmpty(baseUri))
-            throw new ApplicationException("Invalid Application Host URL defined");
-
-        builder.Services.AddCors(options =>
+		string baseUri = EnvironmentSettings.GetApplicationHostUrl(builder.Configuration);
+        if (!string.IsNullOrEmpty(baseUri))
         {
-            options.AddPolicy(
-                name: "App-Access-Control-Allow-Origin",
-                policy =>
-                {
-                    policy.WithOrigins(baseUri);
-                }
-            );
-        });
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    name: "App-Access-Control-Allow-Origin",
+                    policy =>
+                    {
+                        policy.WithOrigins(baseUri);
+                    }
+                );
+            });
+		}
 
-        if (EnvironmentSettings.IsRunningInContainer())
+		if (EnvironmentSettings.IsRunningInContainer())
         {
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -80,19 +80,20 @@ public static class WebHostExtensions
         }
 
         builder.Services.AddResponseCaching();
-        //builder.Services.AddResponseCompression(options => {
-        //    options.EnableForHttps = true;
-        //    options.Providers.Add<BrotliCompressionProvider>();
-        //    options.Providers.Add<GzipCompressionProvider>();
-        //});
-        //builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
-        //{
-        //    options.Level = CompressionLevel.Fastest;
-        //});
-        //builder.Services.Configure<GzipCompressionProviderOptions>(options =>
-        //{
-        //    options.Level = CompressionLevel.SmallestSize;
-        //});
+        builder.Services.AddResponseCompression(options =>
+        {
+            options.EnableForHttps = true;
+            options.Providers.Add<BrotliCompressionProvider>();
+            options.Providers.Add<GzipCompressionProvider>();
+        });
+        builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+        {
+            options.Level = CompressionLevel.Fastest;
+        });
+        builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+        {
+            options.Level = CompressionLevel.SmallestSize;
+        });
         builder.Services.Configure<CookiePolicyOptions>(options =>
         {
             // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -230,7 +231,7 @@ public static class WebHostExtensions
     public static WebApplication AddRedirectionMiddleware(this WebApplication app, ILogger log)
     {
         Log.Information("Configure the response compression");
-        //app.UseResponseCompression();
+        app.UseResponseCompression();
 
         if (!EnvironmentSettings.IsRunningInContainer())
         {

@@ -43,7 +43,6 @@ try
     builder.AddXyzIdentity(Log.Logger);
 
     Log.Information("Configuring webserver");
-    builder.Services.Configure<KestrelServerOptions>(builder.Configuration.GetSection("Kestrel"));
     builder.AddXyzWebconfig();
 
     Log.Information("Configuring user interface");
