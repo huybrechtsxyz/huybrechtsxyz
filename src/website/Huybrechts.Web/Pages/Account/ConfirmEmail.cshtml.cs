@@ -3,7 +3,6 @@
 #nullable disable
 
 using Huybrechts.Infra.Application;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
@@ -11,7 +10,7 @@ using System.Text;
 
 namespace Huybrechts.Web.Pages.Account
 {
-    public class ConfirmEmailModel : PageModel
+	public class ConfirmEmailModel : PageModel
     {
         private readonly ApplicationUserManager _userManager;
 

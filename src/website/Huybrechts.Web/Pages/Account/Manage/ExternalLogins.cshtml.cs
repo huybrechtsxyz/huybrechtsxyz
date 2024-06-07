@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using Huybrechts.Core.Application;
 using Huybrechts.Infra.Application;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Huybrechts.Web.Pages.Account.Manage
 {
-    public class ExternalLoginsModel : PageModel
+	public class ExternalLoginsModel : PageModel
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationSignInManager _signInManager;

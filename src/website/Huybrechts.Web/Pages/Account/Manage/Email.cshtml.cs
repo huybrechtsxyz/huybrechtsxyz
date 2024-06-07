@@ -4,7 +4,6 @@
 
 using Huybrechts.Core.Application;
 using Huybrechts.Infra.Application;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -15,7 +14,7 @@ using System.Text.Encodings.Web;
 
 namespace Huybrechts.Web.Pages.Account.Manage
 {
-    public class EmailModel : PageModel
+	public class EmailModel : PageModel
     {
         private readonly ApplicationUserManager _userManager;
         private readonly IEmailSender _emailSender;
