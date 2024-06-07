@@ -3,6 +3,7 @@ using Huybrechts.Infra.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Crypto;
 using System.Data;
 
 namespace Huybrechts.Infra.Application;
@@ -23,6 +24,11 @@ public class ApplicationUserStore :
         : base(context, describer)
     {
         _dbcontext = context;
+    }
+
+    public async Task<ApplicationUser?> GetUserAsync(string userid)
+    {
+        return await _dbcontext.Users.FindAsync(userid);
     }
 
     public async Task<IList<string>> GetTenantNamesAsync(ApplicationUser user, CancellationToken cancellationToken = default)

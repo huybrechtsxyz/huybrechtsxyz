@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 
 namespace Huybrechts.Infra.Application;
 
@@ -23,6 +24,21 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
     {
         UserStore = store;
+    }
+
+    public async Task<IdentityResult> UpdateGivenSurNameAsync(string userid, string given, string sur)
+    {
+        ThrowIfDisposed();
+        CancellationToken.ThrowIfCancellationRequested();
+        ArgumentNullException.ThrowIfNull(given);
+        ArgumentNullException.ThrowIfNull(sur);
+        var user = await UserStore.GetUserAsync(userid);
+        if (user is null)
+            return IdentityResult.Failed([new IdentityError() { Description = "Invalid user" }]);
+
+        user.GivenName = given;
+        user.Surname = sur;
+        return await UserStore.UpdateAsync(user);
     }
 
     public async Task<IList<string>> GetTenantNamesAsync(ApplicationUser user)
