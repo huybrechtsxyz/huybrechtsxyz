@@ -24,7 +24,7 @@ networks:
   traefik:
     external: true
 
-ecrets:
+secrets:
   APP_HOST_SERVER:
     external: true
   APP_HOST_PORT:

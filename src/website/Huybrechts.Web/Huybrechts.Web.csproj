@@ -10,46 +10,46 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Areas\Identity\Pages\Account\AccessDenied.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\ConfirmEmail.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\ConfirmEmailChange.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\ExternalLogin.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\ForgotPassword.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\ForgotPasswordConfirmation.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Lockout.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Login.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\LoginWith2fa.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\LoginWithRecoveryCode.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Logout.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\ChangePassword.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\DeletePersonalData.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\Disable2fa.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\DownloadPersonalData.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\Email.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\EnableAuthenticator.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\ExternalLogins.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\GenerateRecoveryCodes.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\Index.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\PersonalData.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\ResetAuthenticator.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\SetPassword.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\ShowRecoveryCodes.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\TwoFactorAuthentication.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\_Layout.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\_ManageNav.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\_StatusMessage.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Manage\_ViewImports.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\Register.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\RegisterConfirmation.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\ResendEmailConfirmation.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\ResetPassword.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\ResetPasswordConfirmation.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\_StatusMessage.cshtml" />
-    <None Include="Areas\Identity\Pages\Account\_ViewImports.cshtml" />
-    <None Include="Areas\Identity\Pages\Error.cshtml" />
-    <None Include="Areas\Identity\Pages\_ValidationScriptsPartial.cshtml" />
-    <None Include="Areas\Identity\Pages\_ViewImports.cshtml" />
-    <None Include="Areas\Identity\Pages\_ViewStart.cshtml" />
+    <Content Remove="Pages\Account\_ValidationScriptsPartial.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\Account\AccessDenied.cshtml" />
+    <None Include="Pages\Account\ConfirmEmail.cshtml" />
+    <None Include="Pages\Account\ConfirmEmailChange.cshtml" />
+    <None Include="Pages\Account\ExternalLogin.cshtml" />
+    <None Include="Pages\Account\ForgotPassword.cshtml" />
+    <None Include="Pages\Account\ForgotPasswordConfirmation.cshtml" />
+    <None Include="Pages\Account\Lockout.cshtml" />
+    <None Include="Pages\Account\Login.cshtml" />
+    <None Include="Pages\Account\LoginWith2fa.cshtml" />
+    <None Include="Pages\Account\LoginWithRecoveryCode.cshtml" />
+    <None Include="Pages\Account\Logout.cshtml" />
+    <None Include="Pages\Account\Manage\ChangePassword.cshtml" />
+    <None Include="Pages\Account\Manage\DeletePersonalData.cshtml" />
+    <None Include="Pages\Account\Manage\Disable2fa.cshtml" />
+    <None Include="Pages\Account\Manage\DownloadPersonalData.cshtml" />
+    <None Include="Pages\Account\Manage\Email.cshtml" />
+    <None Include="Pages\Account\Manage\EnableAuthenticator.cshtml" />
+    <None Include="Pages\Account\Manage\ExternalLogins.cshtml" />
+    <None Include="Pages\Account\Manage\GenerateRecoveryCodes.cshtml" />
+    <None Include="Pages\Account\Manage\Index.cshtml" />
+    <None Include="Pages\Account\Manage\PersonalData.cshtml" />
+    <None Include="Pages\Account\Manage\ResetAuthenticator.cshtml" />
+    <None Include="Pages\Account\Manage\SetPassword.cshtml" />
+    <None Include="Pages\Account\Manage\ShowRecoveryCodes.cshtml" />
+    <None Include="Pages\Account\Manage\TwoFactorAuthentication.cshtml" />
+    <None Include="Pages\Account\Manage\_Layout.cshtml" />
+    <None Include="Pages\Account\Manage\_ManageNav.cshtml" />
+    <None Include="Pages\Account\Manage\_StatusMessage.cshtml" />
+    <None Include="Pages\Account\Manage\_ViewImports.cshtml" />
+    <None Include="Pages\Account\Register.cshtml" />
+    <None Include="Pages\Account\RegisterConfirmation.cshtml" />
+    <None Include="Pages\Account\ResendEmailConfirmation.cshtml" />
+    <None Include="Pages\Account\ResetPassword.cshtml" />
+    <None Include="Pages\Account\ResetPasswordConfirmation.cshtml" />
+    <None Include="Pages\Account\_StatusMessage.cshtml" />
+    <None Include="Pages\_ValidationScriptsPartial.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
