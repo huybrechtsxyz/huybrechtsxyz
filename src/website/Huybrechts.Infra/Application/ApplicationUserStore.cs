@@ -128,6 +128,24 @@ public class ApplicationUserStore :
             UserRoles.RemoveRange(roles);
     }
 
+    /// <summary>
+    /// Sets the given <paramref name="userName" /> for the specified <paramref name="user"/>.
+    /// </summary>
+    /// <param name="user">The user whose name should be set.</param>
+    /// <param name="givenName">The given name to set.</param>
+    /// <param name="surname">The surname to set.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+    /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
+    public virtual Task SetGivenAndSurnameAsync(ApplicationUser user, string? givenName, string? surname, CancellationToken cancellationToken = default(CancellationToken))
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(user);
+        user.GivenName = givenName;
+        user.Surname = surname;
+        return Task.CompletedTask;
+    }
+
     public override async Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken = default)
     {
         var result = await base.UpdateAsync(user, cancellationToken);

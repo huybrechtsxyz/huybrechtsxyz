@@ -155,7 +155,7 @@ public class ApplicationSeedWorker : IHostedService
 			UserName = EnvironmentSettings.GetApplicationHostUsername(_configuration),
 			Email = EnvironmentSettings.GetApplicationHostEmail(_configuration),
             GivenName = EnvironmentSettings.GetApplicationHostUsername(_configuration),
-            Surname = "",
+            Surname = EnvironmentSettings.GetApplicationHostUsername(_configuration),
             EmailConfirmed = true
         };
 
