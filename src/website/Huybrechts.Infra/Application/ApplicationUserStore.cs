@@ -136,7 +136,7 @@ public class ApplicationUserStore :
     /// <param name="surname">The surname to set.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
     /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-    public virtual Task SetGivenAndSurnameAsync(ApplicationUser user, string? givenName, string? surname, CancellationToken cancellationToken = default(CancellationToken))
+    public Task SetGivenAndSurnameAsync(ApplicationUser user, string? givenName, string? surname, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
