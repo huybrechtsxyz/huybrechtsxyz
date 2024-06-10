@@ -44,6 +44,9 @@ namespace Huybrechts.Web.Pages.Account.Manage
         /// </summary>
         public string AuthenticatorUri { get; set; }
 
+        [TempData]
+        public string QRByte { get; set; }
+
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -91,6 +94,8 @@ namespace Huybrechts.Web.Pages.Account.Manage
             }
 
             await LoadSharedKeyAndQrCodeUriAsync(user);
+
+            GenerateQRCode();
 
             return Page();
         }
@@ -181,6 +186,17 @@ namespace Huybrechts.Web.Pages.Account.Manage
                 _urlEncoder.Encode("Microsoft.AspNetCore.Identity.UI"),
                 _urlEncoder.Encode(email),
                 unformattedKey);
+        }
+
+        public void GenerateQRCode()
+        {
+            if (!string.IsNullOrEmpty(AuthenticatorUri))
+            {
+                QRCoder.QRCodeGenerator qrGenerator = new();
+                QRCoder.QRCodeData qrCodeData = qrGenerator.CreateQrCode(AuthenticatorUri, QRCoder.QRCodeGenerator.ECCLevel.Q);
+                QRCoder.PngByteQRCode qrCode = new(qrCodeData);
+                QRByte = string.Format("data:image/png;base64,{0}", Convert.ToBase64String(qrCode.GetGraphic(20)));
+            }
         }
     }
 }
