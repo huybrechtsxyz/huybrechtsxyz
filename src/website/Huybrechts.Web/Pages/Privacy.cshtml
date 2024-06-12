@@ -1,39 +1,51 @@
 ﻿@page
+@using Microsoft.AspNetCore.Mvc.Localization
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment webHostingEnv
-@model PrivacyModel
+@inject IViewLocalizer Localizer
 @{
-	ViewData["Title"] = "Privacy Policy - Huybrechts.xyz";
-	Layout = null;
+    Layout = null;
 }
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"]</title>
-	<link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy for Huybrechts XYZ</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
-	<header class="container">
-		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-transparent box-shadow mb-3">
-			<div class="container">
-				<div class="navbar-collapse collapse d-sm-inline-flex">
-					<a class="navbar-brand" href="##" onclick="history.go(-1); return false;">Back</a>
-				</div>
-				<partial name="_IndexLoginPartial" />
-			</div>
-		</nav>
-	</header>
-	<div class="container">
-		<partial name="_CookieConsentPartial" />
-		<environment names="Development,Staging">
-			<div class="row">
-				<div class="col-md-12">
-					<h2>@webHostingEnv.EnvironmentName.ToUpper() ENVIRONMENT</h2>
-					<hr />
-				</div>
-			</div>
-		</environment>
+<body class="welcome h-100">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">Huybrechts XYZ</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <!--<ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                        </li>
+                        </ul>-->
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+        <partial name="_CookieConsentPartial" />
+    </header>
+    <main class="container">
+        <environment names="Development,Staging">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>@webHostingEnv.EnvironmentName.ToUpper() ENVIRONMENT</h2>
+                    <hr />
+                </div>
+            </div>
+        </environment>
+
 		<div class="row">
 			<div class="col-md-12">
 				<h4>From the legal perspective</h4>
@@ -292,16 +304,21 @@
 				</div>
 			</div>
 		</div>
-	</div>
-	<footer>
-		<div class="container">
-			<div class="float-left">
-				<p>&copy; @DateTime.Now.Year - Huybrechts.xyz | <a class="" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></p>
-				<p>&nbsp;</p>
-			</div>
-		</div>
-	</footer>
-	<script src="~/lib/jquery/jquery.js"></script>
-	<script src="~/lib/bootstrap/js/bootstrap.bundle.js"></script>
+
+    </main>
+    <footer>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light fixed-bottom bg-transparent mb-3">
+            <div class="container">
+                <div class="float-left">
+                    &copy; @DateTime.Now.Year - Huybrechts.xyz | <a class="" asp-area="" asp-page="Privacy">Privacy</a>
+                </div>
+                <div class="float-right">
+                    <partial name="_SelectLanguagePartial" />
+                </div>
+            </div>
+        </nav>
+    </footer>
+    <script src="~/lib/jquery/jquery.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.js"></script>
 </body>
 </html>

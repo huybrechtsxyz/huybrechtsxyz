@@ -1,70 +1,74 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment webHostingEnv
 @inject IViewLocalizer Localizer
-@model IndexModel
 @{
-	ViewData["Title"] = "Huybrechts.xyz";
-	Layout = null;
+    Layout = null;
 }
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
-	<link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" />
-    <style>
-        .masthead {
-            height: 100vh;
-            min-height: 500px;
-            background-image: url('/img/welcome.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-    </style>
+    <title>Huybrechts XYZ</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
-	<!-- Full Page Image Header with Vertically Centered Content -->
-	<header class="masthead">
-		<div class="container h-100">
-			<partial name="_CookieConsentPartial" />
-			<partial name="_IndexLoginPartial" />
-			<div class="row h-50 align-items-center">
-				<div class="col-12 text-center">
-					<h1 class="font-weight-light">Vincent Huybrechts</h1>
-					<p>IT Development Professional</p>
-					<a class="btn btn-scondary" role="button" aria-pressed="true" href="https://www.linkedin.com/in/vincent-huybrechts-23b18031/">@Localizer["About Vincent"]</a>
-					<environment names="Development">
-						<p />
-						<h2>DEVELOPMENT ENVIRONMENT</h2>
-					</environment>
-					<environment names="Test">
-						<p />
-						<h2>TEST ENVIRONMENT</h2>
-					</environment>
-					<environment names="Staging">
-						<p />
-						<h2>STAGING ENVIRONMENT</h2>
-					</environment>
-				</div>
-			</div>
-			<div class="container">
-				<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light fixed-bottom bg-transparent mb-3">
-					<div class="container">
-						<div class="float-left">
-							&copy; @DateTime.Now.Year - Huybrechts.xyz | <a class="" asp-area="" asp-page="Privacy">Privacy</a> | @webHostingEnv.EnvironmentName
-						</div>
-						<div class="float-right">
-							<partial name="_SelectLanguagePartial" />
-						</div>
-					</div>
-				</nav>
-			</div>
-		</div>
-	</header>
-	<script src="~/lib/jquery/jquery.js"></script>
-	<script src="~/lib/bootstrap/js/bootstrap.bundle.js"></script>
+<body class="welcome h-100">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">Huybrechts XYZ</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <!--<ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                        </li>
+                        </ul>-->
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+        <partial name="_CookieConsentPartial" />
+    </header>
+    <main class="container">
+        <div class="row h-65 align-items-center">
+            <div class="col-12 text-center">
+                <h1 class="font-weight-light">Vincent Huybrechts</h1>
+                <p>IT Development Professional</p>
+                <a class="btn btn-scondary" role="button" aria-pressed="true" href="https://www.linkedin.com/in/vincent-huybrechts-23b18031/">@Localizer["About Vincent"]</a>
+                <environment names="Development">
+                    <p />
+                    <h2>DEVELOPMENT ENVIRONMENT</h2>
+                </environment>
+                <environment names="Test">
+                    <p />
+                    <h2>TEST ENVIRONMENT</h2>
+                </environment>
+                <environment names="Staging">
+                    <p />
+                    <h2>STAGING ENVIRONMENT</h2>
+                </environment>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light fixed-bottom bg-transparent mb-3">
+            <div class="container">
+                <div class="float-left">
+                    &copy; @DateTime.Now.Year - Huybrechts.xyz | <a class="" asp-area="" asp-page="Privacy">Privacy</a>
+                </div>
+                <div class="float-right">
+                    <partial name="_SelectLanguagePartial" />
+                </div>
+            </div>
+        </nav>
+    </footer>
+    <script src="~/lib/jquery/jquery.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.js"></script>
 </body>
 </html>

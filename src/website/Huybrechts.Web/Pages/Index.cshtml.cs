@@ -1,18 +1,19 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Huybrechts.Web.Pages;
-
-public class IndexModel : PageModel
+namespace Huybrechts.WebRazor.Pages
 {
-    private readonly ILogger<IndexModel> _logger;
-
-    public IndexModel(ILogger<IndexModel> logger)
+    public class IndexModel : PageModel
     {
-        _logger = logger;
-    }
+        private readonly ILogger<IndexModel> _logger;
 
-    public void OnGet()
-    {
+        public IndexModel(ILogger<IndexModel> logger)
+        {
+            _logger = logger;
+        }
 
+        public void OnGet()
+        {
+
+        }
     }
 }
