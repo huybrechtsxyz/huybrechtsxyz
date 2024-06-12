@@ -8,6 +8,14 @@
 
 @{
 	var applicationUser = await UserManager.GetUserAsync(User);
+	var imageSource = "~/img/community.png";
+	if (SignInManager.IsSignedIn(User))
+	{
+		if (applicationUser is not null && applicationUser.ProfilePicture is not null)
+			imageSource = $"data:image/*;base64,{Convert.ToBase64String(applicationUser.ProfilePicture)}";
+		else
+			imageSource = "/img/unknownuser32.png";
+	}
 }
 
 <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-transparent box-shadow mb-3">
@@ -26,14 +34,7 @@
 						</a>
 					</li>
 				</ul>
-				@if (applicationUser.ProfilePicture is not null)
-				{
-					<img class="rounded-circle" style="width:32px;height:32px; object-fit:cover; border-radius:30px" src="data:image/*;base64,@(Convert.ToBase64String(applicationUser.ProfilePicture!))">
-				}
-				else
-				{
-					<img class="rounded-circle" style="width:32px;height:32px; object-fit:cover; border-radius:30px" src="/img/unknownuser32.png">
-				}
+				<img class="rounded-circle" style="width:32px;height:32px; object-fit:cover; border-radius:30px" src="@imageSource">
 			</div>
 		}
 		else
@@ -53,7 +54,7 @@
 						</a>
 					</li>
 				</ul>
-				<img src="~/img/community.png" height="32" width="32" class="iconos" alt="Logo">
+				<img src="@imageSource" height="32" width="32" class="iconos" alt="Logo">
 			</div>
 		}
 	</div>

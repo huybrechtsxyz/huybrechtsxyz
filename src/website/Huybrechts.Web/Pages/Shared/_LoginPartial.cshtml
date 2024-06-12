@@ -5,25 +5,38 @@
 @inject ApplicationSignInManager SignInManager
 @inject ApplicationUserManager UserManager
 
+@{
+    var applicationUser = await UserManager.GetUserAsync(User);
+    var imageSource = "~/img/community.png";
+    if (SignInManager.IsSignedIn(User))
+    {
+        if (applicationUser is not null && applicationUser.ProfilePicture is not null)
+            imageSource = $"data:image/*;base64,{Convert.ToBase64String(applicationUser.ProfilePicture)}";
+        else
+            imageSource = "/img/unknownuser32.png";
+    }
+}
+
+<img src="@imageSource" class="rounded-circle" style="width:32px;height:32px; object-fit:cover; border-radius:30px" alt="Logo">
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
+        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @applicationUser!.GivenName!</a>
     </li>
     <li class="nav-item">
         <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+            <button  type="submit" class="nav-link btn btn-link text-dark">@Localizer["Logout"]</button>
         </form>
     </li>
 }
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">@Localizer["Register"]</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">@Localizer["Login"]</a>
     </li>
 }
 </ul>
