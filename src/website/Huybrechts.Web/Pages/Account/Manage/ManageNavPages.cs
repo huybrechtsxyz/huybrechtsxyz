@@ -119,5 +119,9 @@ namespace  Huybrechts.Web.Pages.Account.Manage
                 ?? System.IO.Path.GetFileNameWithoutExtension(viewContext.ActionDescriptor.DisplayName);
             return string.Equals(activePage, page, StringComparison.OrdinalIgnoreCase) ? "active" : null;
         }
+
+        public static string UserRoles => "UserRoles";
+
+        public static string UserRolesNavClass(ViewContext viewContext) => PageNavClass(viewContext, UserRoles);
     }
 }

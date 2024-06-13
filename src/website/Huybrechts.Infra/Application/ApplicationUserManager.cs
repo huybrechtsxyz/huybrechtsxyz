@@ -26,19 +26,16 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         UserStore = store;
     }
 
-    public async Task<IdentityResult> UpdateGivenSurNameAsync(string userid, string given, string sur)
+    /// <summary>
+    /// Gets a list of role names the specified <paramref name="user"/> belongs to.
+    /// </summary>
+    /// <param name="user">The user whose role names to retrieve.</param>
+    /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing a list of role names.</returns>
+    public virtual async Task<IList<ApplicationRole>> GetApplicationRolesAsync(ApplicationUser user)
     {
         ThrowIfDisposed();
-        CancellationToken.ThrowIfCancellationRequested();
-        ArgumentNullException.ThrowIfNull(given);
-        ArgumentNullException.ThrowIfNull(sur);
-        var user = await UserStore.GetUserAsync(userid);
-        if (user is null)
-            return IdentityResult.Failed([new IdentityError() { Description = "Invalid user" }]);
-
-        user.GivenName = given;
-        user.Surname = sur;
-        return await UserStore.UpdateAsync(user);
+        ArgumentNullException.ThrowIfNull(user);
+        return await UserStore.GetApplicationRolesAsync(user, CancellationToken).ConfigureAwait(false);
     }
 
     public async Task<IList<string>> GetTenantNamesAsync(ApplicationUser user)
@@ -91,5 +88,20 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         await UserStore.RemoveFromTenantAsync(user,tenantId, CancellationToken); //also deletes linked tenant roles
         await UserStore.UpdateAsync(user);
         return IdentityResult.Success;
+    }
+
+    public async Task<IdentityResult> UpdateGivenSurNameAsync(string userid, string given, string sur)
+    {
+        ThrowIfDisposed();
+        CancellationToken.ThrowIfCancellationRequested();
+        ArgumentNullException.ThrowIfNull(given);
+        ArgumentNullException.ThrowIfNull(sur);
+        var user = await UserStore.GetUserAsync(userid);
+        if (user is null)
+            return IdentityResult.Failed([new IdentityError() { Description = "Invalid user" }]);
+
+        user.GivenName = given;
+        user.Surname = sur;
+        return await UserStore.UpdateAsync(user);
     }
 }

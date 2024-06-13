@@ -2,7 +2,6 @@ using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Extensions;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 
 try

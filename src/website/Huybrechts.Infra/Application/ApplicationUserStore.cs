@@ -26,6 +26,35 @@ public class ApplicationUserStore :
         _dbcontext = context;
     }
 
+    public override async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken = default)
+    {
+        var result = await base.CreateAsync(user, cancellationToken);
+        if (!result.Succeeded)
+            return result;
+
+        await base.AddToRoleAsync(user, ApplicationRole.SystemUser, cancellationToken);
+        return result;
+    }
+
+    /// <summary>
+    /// Retrieves the roles the specified <paramref name="user"/> is a member of.
+    /// </summary>
+    /// <param name="user">The user whose roles should be retrieved.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+    /// <returns>A <see cref="Task{TResult}"/> that contains the roles the user is a member of.</returns>
+    public async Task<IList<ApplicationRole>> GetApplicationRolesAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(user);
+        var userId = user.Id;
+        var query = from userRole in UserRoles
+                    join role in Roles on userRole.RoleId equals role.Id
+                    where userRole.UserId.Equals(userId)
+                    select role;
+        return await query.ToListAsync(cancellationToken);
+    }
+
     public async Task<ApplicationUser?> GetUserAsync(string userid)
     {
         return await _dbcontext.Users.FindAsync(userid);

@@ -3,6 +3,7 @@ using Huybrechts.Infra.Application;
 using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -140,7 +141,7 @@ public static class WebHostExtensions
 
     public static WebApplicationBuilder AddXyzIdentity(this WebApplicationBuilder builder, ILogger log)
     {
-        Log.Information("Configure authentication services");
+        log.Information("Configure authentication services");
         builder.Services.TryAddScoped<ApplicationUserStore>();
         builder.Services.TryAddScoped<ApplicationUserManager>();
         builder.Services.TryAddScoped<ApplicationSignInManager>();
@@ -148,7 +149,7 @@ public static class WebHostExtensions
         builder.Services.AddSingleton<Microsoft.AspNetCore.Identity.IEmailSender<ApplicationUser>, AuthenticationSender>();
         builder.Services.AddSingleton<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, AuthenticationMailer>();
 
-        Log.Information("Configure authentication identity");
+		log.Information("Configure authentication identity");
         builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
         {
             options.SignIn.RequireConfirmedAccount = (!builder.Environment.IsDevelopment());
@@ -167,7 +168,9 @@ public static class WebHostExtensions
         .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
         .AddDefaultTokenProviders();
 
-        Log.Information("Configure authentication for google");
+        //builder.Services.TryAddScoped<ApplicationTenantManager>();
+
+        log.Information("Configure authentication for google");
         GoogleLoginOptions? google = EnvironmentSettings.GetGoogleLoginOptions(builder.Configuration);
         if (!(google is null || string.IsNullOrEmpty(google.ClientId) || string.IsNullOrEmpty(google.ClientSecret)))
         {
@@ -193,24 +196,24 @@ public static class WebHostExtensions
     {
         if (app.Environment.IsDevelopment())
         {
-            Log.Information("Configure the HTTP request pipeline for DEVELOPMENT");
+            log.Information("Configure the HTTP request pipeline for DEVELOPMENT");
             app.UseMigrationsEndPoint();
             app.UseDeveloperExceptionPage();
         }
         else if (app.Environment.IsTest())
         {
-            Log.Information("Configure the HTTP request pipeline for DEVELOPMENT");
+            log.Information("Configure the HTTP request pipeline for DEVELOPMENT");
             app.UseMigrationsEndPoint();
             app.UseDeveloperExceptionPage();
         }
         else if (app.Environment.IsStaging())
         {
-            Log.Information("Configure the HTTP request pipeline for staging");
+            log.Information("Configure the HTTP request pipeline for staging");
             app.UseExceptionHandler("/Error", createScopeForErrors: true);
         }
         else if (app.Environment.IsDevelopment())
         {
-            Log.Information("Configure the HTTP request pipeline for staging");
+            log.Information("Configure the HTTP request pipeline for staging");
             app.UseExceptionHandler("/Error", createScopeForErrors: true);
         }
         else
@@ -222,7 +225,7 @@ public static class WebHostExtensions
     {
         if ((app.Environment.IsProduction() || app.Environment.IsStaging()) && !EnvironmentSettings.IsRunningInContainer())
         {
-            Log.Information("Configure the HTTP transport security");
+            log.Information("Configure the HTTP transport security");
             app.UseHsts();
         }
         return app;
@@ -230,12 +233,12 @@ public static class WebHostExtensions
 
     public static WebApplication AddRedirectionMiddleware(this WebApplication app, ILogger log)
     {
-        Log.Information("Configure the response compression");
+        log.Information("Configure the response compression");
         app.UseResponseCompression();
 
         if (!EnvironmentSettings.IsRunningInContainer())
         {
-            Log.Information("Configure HTTP redirection");
+            log.Information("Configure HTTP redirection");
             app.UseHttpsRedirection();
         }
         return app;
@@ -245,7 +248,7 @@ public static class WebHostExtensions
     {
         if (app.Environment.IsStaging() || app.Environment.IsProduction())
         {
-            Log.Information("Configure using static files with caching");
+            log.Information("Configure using static files with caching");
             app.UseStaticFiles(new StaticFileOptions()
             {
                 OnPrepareResponse = ctx =>
@@ -256,7 +259,7 @@ public static class WebHostExtensions
         }
         else
         {
-            Log.Information("Configure using static files");
+            log.Information("Configure using static files");
             app.UseStaticFiles();
         }
 
@@ -265,7 +268,7 @@ public static class WebHostExtensions
 
     public static WebApplication AddRoutingMiddleware(this WebApplication app, ILogger log)
     {
-        Log.Information("Configure request localization amd cookies");
+        log.Information("Configure request localization amd cookies");
         app.UseRequestLocalization(new RequestLocalizationOptions
         {
             SupportedCultures = EnvironmentSettings.GetSupportedCultures(),
@@ -276,7 +279,7 @@ public static class WebHostExtensions
 
         if (EnvironmentSettings.IsRunningInContainer())
         {
-            Log.Information("Configure forward headers");
+            log.Information("Configure forward headers");
             app.UseForwardedHeaders();
         }
 
@@ -288,12 +291,13 @@ public static class WebHostExtensions
 
     public static WebApplication AddCorsMiddleware(this WebApplication app, ILogger log)
     {
+        log.Information("Configure CORS middleware");
         return app;
     }
 
     public static WebApplication AddSecurityMiddleware(this WebApplication app, ILogger log)
     {
-        Log.Information("Using authentication and authorization");
+        log.Information("Configure authentication and authorization");
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseAntiforgery();
@@ -304,12 +308,13 @@ public static class WebHostExtensions
 
     public static WebApplication AddSessionMiddleware(this WebApplication app, ILogger log)
     {
+        log.Information("Configure session middleware");
         return app;
     }
 
     public static WebApplication AddEndpointMiddleware(this WebApplication app, ILogger log)
     {
-        Log.Information("Mapping and routing razor components");
+        log.Information("Mapping and routing razor components");
         app.MapRazorPages();
         app.MapControllers();
         return app;

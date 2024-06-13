@@ -6,4 +6,4 @@ Add-Migration CreateIdentitySchema -Project "Huybrechts.Infra.Sqlite" -Args APP_
 
 # SqlServer database
 
-Add-Migration CreateIdentitySchema -Project "Huybrechts.Infra.SqlServer" -Args APP_DATA_CONTEXT=SqliteServer
+Add-Migration CreateIdentitySchema -Project "Huybrechts.Infra.SqlServer" -Args APP_DATA_CONTEXT=SqlServerContext
