@@ -19,6 +19,16 @@
         <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
+                <input asp-for="Input.GivenName" class="form-control" autocomplete="givenname" aria-required="true" placeholder="John" />
+                <label for="givenname">Given name</label>
+                <ValidationMessage For="() => Input.GivenName" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Surname" class="form-control" autocomplete="surname" aria-required="true" placeholder="Doe" />
+                <label for="surname">Surname</label>
+                <ValidationMessage For="() => Input.Surname" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
                 <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email."/>
                 <label asp-for="Input.Email" class="form-label"></label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
