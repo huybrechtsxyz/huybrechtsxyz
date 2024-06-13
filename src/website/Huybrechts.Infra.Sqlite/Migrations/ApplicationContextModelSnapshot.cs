@@ -23,7 +23,6 @@ namespace Huybrechts.Infra.Sqlite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -36,11 +35,9 @@ namespace Huybrechts.Infra.Sqlite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TenantId")
@@ -49,11 +46,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
-
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("ApplicationRole", (string)null);
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Application.ApplicationRoleClaim", b =>
@@ -74,9 +67,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("ApplicationRoleClaim", (string)null);
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Application.ApplicationTenant", b =>
@@ -118,7 +109,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ApplicationTenant");
+                    b.ToTable("ApplicationTenant", (string)null);
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Application.ApplicationUser", b =>
@@ -130,11 +121,9 @@ namespace Huybrechts.Infra.Sqlite.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("EmailConfirmed")
@@ -151,11 +140,9 @@ namespace Huybrechts.Infra.Sqlite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
@@ -181,19 +168,11 @@ namespace Huybrechts.Infra.Sqlite.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
-                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
-
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("ApplicationUser", (string)null);
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Application.ApplicationUserClaim", b =>
@@ -214,9 +193,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("ApplicationUserClaim", (string)null);
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Application.ApplicationUserLogin", b =>
@@ -236,9 +213,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("ApplicationUserLogin", (string)null);
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Application.ApplicationUserRole", b =>
@@ -260,9 +235,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations
 
                     b.HasKey("UserId", "RoleId");
 
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("ApplicationUserRole", (string)null);
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Application.ApplicationUserToken", b =>
@@ -281,58 +254,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Application.ApplicationRoleClaim", b =>
-                {
-                    b.HasOne("Huybrechts.Core.Application.ApplicationRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Application.ApplicationUserClaim", b =>
-                {
-                    b.HasOne("Huybrechts.Core.Application.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Application.ApplicationUserLogin", b =>
-                {
-                    b.HasOne("Huybrechts.Core.Application.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Application.ApplicationUserRole", b =>
-                {
-                    b.HasOne("Huybrechts.Core.Application.ApplicationRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Huybrechts.Core.Application.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Application.ApplicationUserToken", b =>
-                {
-                    b.HasOne("Huybrechts.Core.Application.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.ToTable("ApplicationUserToken", (string)null);
                 });
 #pragma warning restore 612, 618
         }
