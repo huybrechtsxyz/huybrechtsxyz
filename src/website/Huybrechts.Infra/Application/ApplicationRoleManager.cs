@@ -13,10 +13,9 @@ public class ApplicationRoleManager : RoleManager<ApplicationRole>
         ILogger<RoleManager<ApplicationRole>> logger) 
         : base(store, roleValidators, keyNormalizer, errors, logger)
     {
-
     }
 
-    public IQueryable<ApplicationTenant> Tenants => ((ApplicationRoleStore)Store).Tenants;
+    public IQueryable<ApplicationTenant> Tenants => this.Tenants;
 
     public override Task<IdentityResult> CreateAsync(ApplicationRole role)
     {

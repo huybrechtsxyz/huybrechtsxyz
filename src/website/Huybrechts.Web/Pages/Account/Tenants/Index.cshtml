@@ -1,0 +1,39 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Tenants";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        <p>
+            The list of tenants you are part of:
+        </p>
+        <p>
+            <a class="primary-button" asp-page="./Create">Create</a>
+        </p>
+        @if (Model.Tenants.Count > 0)
+        {
+            <table class="table">
+                <tr>
+                    <th>Tenant</th>
+                    <th>Name</th>
+                </tr>
+                @foreach (var item in Model.Tenants)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                    </tr>
+                }
+            </table>
+        }
+        else
+        {
+            <p>You are not part of any tenant</p>
+        }
+    </div>
+</div>

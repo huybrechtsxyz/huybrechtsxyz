@@ -20,10 +20,9 @@ public class ApplicationRoleValidator : IRoleValidator<ApplicationRole>
             {
                 if (role.IsTenantRole())
                 {
-                    var existingTenant = await ((ApplicationRoleManager)manager).Tenants.Where(q => q.Id == role.TenantId).FirstOrDefaultAsync();
+                    var existingTenant = await (manager as ApplicationRoleManager)!.Tenants.Where(q => q.Id == role.TenantId).FirstOrDefaultAsync();
                     if (existingTenant is not null)
                         return IdentityResult.Success;
-
                     errors.Add(string.Format("{0} has invalid tenant.", role.Name));
                 }
                 else

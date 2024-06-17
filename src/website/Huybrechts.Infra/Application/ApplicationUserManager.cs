@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
+using System;
 
 namespace Huybrechts.Infra.Application;
 
@@ -31,7 +32,7 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
     /// </summary>
     /// <param name="user">The user whose role names to retrieve.</param>
     /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing a list of role names.</returns>
-    public virtual async Task<IList<ApplicationRole>> GetApplicationRolesAsync(ApplicationUser user)
+    public async Task<IList<ApplicationRole>> GetApplicationRolesAsync(ApplicationUser user)
     {
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(user);
@@ -52,14 +53,6 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         CancellationToken.ThrowIfCancellationRequested();
         ArgumentNullException.ThrowIfNull(user);
         return await UserStore.GetTenantsListAsync(user, CancellationToken);
-    }
-
-    public async Task<IList<ApplicationUser>> GetUsersInTenantAsync(string tenantId)
-    {
-        ThrowIfDisposed();
-        CancellationToken.ThrowIfCancellationRequested();
-        ArgumentException.ThrowIfNullOrEmpty(tenantId);
-        return await UserStore.GetUsersInTenantAsync(tenantId, CancellationToken);
     }
 
     public async Task<bool> IsInTenantAsync(ApplicationUser user, string tenantId)

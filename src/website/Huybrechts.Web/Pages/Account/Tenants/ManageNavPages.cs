@@ -5,7 +5,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace  Huybrechts.Web.Pages.Account.Tenant
+namespace  Huybrechts.Web.Pages.Account.Tenants
 {
     public static class ManageNavPages
     {

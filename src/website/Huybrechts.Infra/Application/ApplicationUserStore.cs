@@ -83,23 +83,24 @@ public class ApplicationUserStore :
                     join tenant in Tenants on userRole.TenantId equals tenant.Id
                     where userRole.UserId.Equals(userId)
                     select tenant;
-        return (IList<ApplicationTenant>)await query.GroupBy(q => q.Name).ToListAsync(cancellationToken);
+        return await query.GroupBy(q => q.Name).Select(q => q.First()).ToListAsync(cancellationToken);
     }
 
-    public async Task<IList<ApplicationUser>> GetUsersInTenantAsync(string tenantId, CancellationToken cancellationToken = default)
-    {
-        ThrowIfDisposed();
-        cancellationToken.ThrowIfCancellationRequested();
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
-        var tenant = await Tenants.FindAsync([tenantId], cancellationToken: cancellationToken);
-        if (tenant is null)
-            return new List<ApplicationUser>();
-        var query = from userRole in UserRoles
-                    join user in Users on userRole.UserId equals user.Id
-                    where userRole.TenantId == tenant.Id
-                    select user;
-        return (IList<ApplicationUser>)await query.GroupBy(q => q.NormalizedUserName).ToListAsync(cancellationToken);
-    }
+    //public async Task<IList<ApplicationUserRole>> GetUsersInTenantAsync(string tenantId, CancellationToken cancellationToken = default)
+    //{
+    //    ThrowIfDisposed();
+    //    cancellationToken.ThrowIfCancellationRequested();
+    //    ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
+    //    var tenant = await Tenants.FindAsync([tenantId], cancellationToken: cancellationToken);
+    //    if (tenant is null)
+    //        return new List<ApplicationUserRole>();
+    //    var query = from userRole in UserRoles
+    //                join user in Users on userRole.UserId equals user.Id
+    //                join role in Roles on userRole.RoleId equals role.Id
+    //                where userRole.TenantId == tenant.Id
+    //                select userRole;
+    //    return await query.ToListAsync(cancellationToken);
+    //}
 
     public async Task<bool> IsInTenantAsync(ApplicationUser user, string tenantId, CancellationToken cancellationToken = default)
     {
