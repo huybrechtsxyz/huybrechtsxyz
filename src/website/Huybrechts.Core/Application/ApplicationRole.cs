@@ -82,7 +82,7 @@ public sealed class ApplicationRole : IdentityRole
     {
         if (!roleid.Contains(Hashtag))
             return string.Empty;
-        return roleid[0..(roleid.IndexOf(Hashtag) - 1)];
+        return roleid[0..(roleid.IndexOf(Hashtag))];
     }
 
     /// <summary>
