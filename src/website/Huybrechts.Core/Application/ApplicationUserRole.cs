@@ -11,11 +11,6 @@ public sealed class ApplicationUserRole : IdentityUserRole<string>
 {
     //TenantId => ApplicationRole.GetTenantId(RoleId);
     [RegularExpression("^[a-z0-9]+$")]
-    [StringLength(24, MinimumLength = 2)]
+    [StringLength(24)]
     public string? TenantId { get; set; }
-
-    //Label => ApplicationRole.GetRoleLabel(RoleId);
-    [Required]
-    [StringLength(256)]
-    public string Label { get; set; } = string.Empty;
 }
