@@ -36,7 +36,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
         };
     }
 
-    public static string NormalizeIdentifier(string identifier) => identifier?.Trim().ToLowerInvariant();
+    public static string NormalizeIdentifier(string identifier) => (identifier ?? string.Empty).Trim().ToLowerInvariant();
 
     public async Task<ApplicationTenant> CreateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
     {
@@ -51,9 +51,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
 
         var exists = await _dbcontext.ApplicationTenants.Where(q => q.Id == tenant.Id).ToListAsync();
         if (exists.Count != 0)
-        {
-            throw new ArgumentException($"Tenant with Id {tenant.Id} already exists", "tenant");
-        }
+            throw new ArgumentException($"Tenant with Id {tenant.Id} already exists", nameof(tenant));
 
         _dbcontext.ApplicationTenants.Add(tenant);
         await _dbcontext.SaveChangesAsync();
@@ -62,7 +60,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
         foreach (var role in roles)
             await _roleManager.CreateAsync(role);
 
-        var roleId = ApplicationRole.GetTenantRole(tenant.Id, ApplicationRoleValues.Owner);
+        var roleId = ApplicationRole.GetRoleName(tenant.Id, ApplicationDefaultTenantRole.Owner);
         await _userManager.AddToRoleAsync(user, roleId);
         return tenant;
     }
@@ -72,8 +70,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
         var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
             throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to delete tenant");
 
-        var hasRole = await _userManager.IsInRoleAsync(user, ApplicationRole.GetTenantRole(tenant.Id, ApplicationRoleValues.Owner));
-        if (!hasRole)
+        if (!await _userManager.IsOwnerAsync(user, tenant.Id))
             throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant '{tenant.Id}'");
 
         item.State = ApplicationTenantState.Removing;
@@ -86,7 +83,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
         if (_userManager is null) return [];
         if (user is null) return [];
 
-        if (await _userManager.IsInRoleAsync(user, ApplicationRole.SystemAdministrator))
+        if (await _userManager.IsAdministratorAsync(user))
         {
             return await _dbcontext.ApplicationTenants.ToListAsync();
         }
@@ -107,8 +104,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
 
     public async Task UpdateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
     {
-        var hasRole = await _userManager.IsInRoleAsync(user, ApplicationRole.GetTenantRole(tenant.Id, ApplicationRoleValues.Owner));
-        if (!hasRole)
+        if (!await _userManager.IsOwnerAsync(user, tenant.Id))
             throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
 
         var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??

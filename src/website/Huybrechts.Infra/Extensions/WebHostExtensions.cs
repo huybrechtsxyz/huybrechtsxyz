@@ -3,7 +3,6 @@ using Huybrechts.Infra.Application;
 using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -144,8 +143,10 @@ public static class WebHostExtensions
         log.Information("Configure authentication services");
         builder.Services.TryAddScoped<ApplicationUserStore>();
         builder.Services.TryAddScoped<ApplicationUserManager>();
+        builder.Services.TryAddScoped<ApplicationRoleStore>();
+        builder.Services.TryAddScoped<ApplicationRoleManager>();
         builder.Services.TryAddScoped<ApplicationSignInManager>();
-        builder.Services.TryAddScoped<ApplicationUserClaimsPrincipalFactory>();
+        builder.Services.TryAddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
         builder.Services.AddSingleton<Microsoft.AspNetCore.Identity.IEmailSender<ApplicationUser>, AuthenticationSender>();
         builder.Services.AddSingleton<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, AuthenticationMailer>();
 

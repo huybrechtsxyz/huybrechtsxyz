@@ -6,34 +6,29 @@ namespace Huybrechts.Infra.Application;
 
 public class ApplicationRoleManager : RoleManager<ApplicationRole>
 {
+    private readonly ApplicationRoleStore _store;
+
     public ApplicationRoleManager(
-        IRoleStore<ApplicationRole> store, 
+        ApplicationRoleStore store, 
         IEnumerable<IRoleValidator<ApplicationRole>> roleValidators, 
         ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors, 
         ILogger<RoleManager<ApplicationRole>> logger) 
         : base(store, roleValidators, keyNormalizer, errors, logger)
     {
+        _store = store;
     }
 
-    public IQueryable<ApplicationTenant> Tenants => this.Tenants;
+    public IQueryable<ApplicationTenant> Tenants => _store.Tenants;
 
     public override Task<IdentityResult> CreateAsync(ApplicationRole role)
     {
-        if (role is not null)
-        {
-            role.TenantId = ApplicationRole.GetTenantId(role.Name!);
-            role.Label = ApplicationRole.GetRoleLabel(role.Name!);
-        }
+        role?.Set(role.Name!);
         return base.CreateAsync(role!);
     }
 
     public override Task<IdentityResult> UpdateAsync(ApplicationRole role)
     {
-        if (role is not null)
-        {
-            role.TenantId = ApplicationRole.GetTenantId(role.Name!);
-            role.Label = ApplicationRole.GetRoleLabel(role.Name!);
-        }
+        role?.Set(role.Name!);
         return base.UpdateAsync(role!);
     }
 
@@ -41,8 +36,8 @@ public class ApplicationRoleManager : RoleManager<ApplicationRole>
     {
         if (role is not null)
         {
-            role.TenantId = ApplicationRole.GetTenantId(role.Name!);
-            role.Label = ApplicationRole.GetRoleLabel(role.Name!);
+            role.TenantId = ApplicationRole.GetTenant(role.Name!);
+            role.Label = ApplicationRole.GetLabel(role.Name!);
         }
         return base.UpdateNormalizedRoleNameAsync(role!);
     }

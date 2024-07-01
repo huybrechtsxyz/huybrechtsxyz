@@ -18,6 +18,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations
                     Id = table.Column<string>(type: "TEXT", nullable: false),
                     TenantId = table.Column<string>(type: "TEXT", maxLength: 24, nullable: true),
                     Label = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    NormalizedLabel = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     Description = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     NormalizedName = table.Column<string>(type: "TEXT", nullable: true),
@@ -125,8 +126,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations
                 {
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
                     RoleId = table.Column<string>(type: "TEXT", nullable: false),
-                    TenantId = table.Column<string>(type: "TEXT", maxLength: 24, nullable: true),
-                    Label = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false)
+                    TenantId = table.Column<string>(type: "TEXT", maxLength: 24, nullable: true)
                 },
                 constraints: table =>
                 {

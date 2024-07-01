@@ -18,6 +18,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     TenantId = table.Column<string>(type: "nvarchar(24)", maxLength: 24, nullable: true),
                     Label = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    NormalizedLabel = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -125,8 +126,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenantId = table.Column<string>(type: "nvarchar(24)", maxLength: 24, nullable: true),
-                    Label = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false)
+                    TenantId = table.Column<string>(type: "nvarchar(24)", maxLength: 24, nullable: true)
                 },
                 constraints: table =>
                 {

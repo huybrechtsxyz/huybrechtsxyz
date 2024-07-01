@@ -3,7 +3,6 @@ using Huybrechts.Infra.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Crypto;
 using System.Data;
 
 namespace Huybrechts.Infra.Application;
@@ -32,7 +31,7 @@ public class ApplicationUserStore :
         if (!result.Succeeded)
             return result;
 
-        await base.AddToRoleAsync(user, ApplicationRole.SystemUser, cancellationToken);
+        await base.AddToRoleAsync(user, ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.User), cancellationToken);
         return result;
     }
 
@@ -86,22 +85,6 @@ public class ApplicationUserStore :
         return await query.GroupBy(q => q.Name).Select(q => q.First()).ToListAsync(cancellationToken);
     }
 
-    //public async Task<IList<ApplicationUserRole>> GetUsersInTenantAsync(string tenantId, CancellationToken cancellationToken = default)
-    //{
-    //    ThrowIfDisposed();
-    //    cancellationToken.ThrowIfCancellationRequested();
-    //    ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
-    //    var tenant = await Tenants.FindAsync([tenantId], cancellationToken: cancellationToken);
-    //    if (tenant is null)
-    //        return new List<ApplicationUserRole>();
-    //    var query = from userRole in UserRoles
-    //                join user in Users on userRole.UserId equals user.Id
-    //                join role in Roles on userRole.RoleId equals role.Id
-    //                where userRole.TenantId == tenant.Id
-    //                select userRole;
-    //    return await query.ToListAsync(cancellationToken);
-    //}
-
     public async Task<bool> IsInTenantAsync(ApplicationUser user, string tenantId, CancellationToken cancellationToken = default)
     {
         ThrowIfDisposed();
@@ -123,7 +106,7 @@ public class ApplicationUserStore :
         ArgumentNullException.ThrowIfNull(user);
         ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
 
-        var roleId = ApplicationRole.GetTenantRole(tenantId, ApplicationRoleValues.Owner);
+        var roleId = ApplicationRole.GetRoleName(tenantId, ApplicationDefaultTenantRole.Owner);
         var userRoles = await UserRoles.Where(q => q.UserId == user.Id && q.RoleId == roleId).ToListAsync(cancellationToken);
         if (userRoles is null || userRoles.Count == 0) return false;
         return true;
@@ -136,7 +119,7 @@ public class ApplicationUserStore :
         ArgumentNullException.ThrowIfNull(user);
         ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
 
-        var roleId = ApplicationRole.GetTenantRole(tenantId, ApplicationRoleValues.Owner);
+        var roleId = ApplicationRole.GetRoleName(tenantId, ApplicationDefaultTenantRole.Owner);
         var userRoles = await UserRoles.Where(q => q.UserId != user.Id && q.RoleId == roleId).ToListAsync(cancellationToken);
         if (userRoles is null || userRoles.Count == 0) return true;
         return false;

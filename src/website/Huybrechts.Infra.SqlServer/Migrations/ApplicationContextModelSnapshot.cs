@@ -42,6 +42,11 @@ namespace Huybrechts.Infra.SqlServer.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NormalizedLabel")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.Property<string>("NormalizedName")
                         .HasColumnType("nvarchar(max)");
 
@@ -232,11 +237,6 @@ namespace Huybrechts.Infra.SqlServer.Migrations
 
                     b.Property<string>("RoleId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("TenantId")
                         .HasMaxLength(24)

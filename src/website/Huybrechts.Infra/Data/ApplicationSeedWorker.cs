@@ -1,7 +1,6 @@
 ﻿using Huybrechts.Core.Application;
 using Huybrechts.Infra.Application;
 using Huybrechts.Infra.Config;
-using Huybrechts.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,7 +46,7 @@ public class ApplicationSeedWorker : IHostedService
             throw new ApplicationException("Unable to reach database...ending program.");
         }
 
-		await InitializeForAllAsync(); //cancellationToken);
+		await InitializeForAllAsync(cancellationToken);
 	}
 
 	public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
@@ -83,98 +82,97 @@ public class ApplicationSeedWorker : IHostedService
 		return healthCheckResult;
 	}
 
-    private async Task InitializeForAllAsync() //CancellationToken cancellationToken)
+    private async Task InitializeForAllAsync(CancellationToken cancellationToken)
 	{
-		var vincent = await CreateDefaultUsers();
-		if (vincent is null)
-			throw new NullReferenceException(nameof(vincent));
+		await CreateDefaultUsersAndRoles(cancellationToken);
 	}
 
-	private async Task<ApplicationUser?> CreateDefaultUsers()
+    private async Task CreateDefaultUsersAndRoles(CancellationToken cancellationToken)
 	{
-		_logger.Information("Running database initializer...creating default users");
+        _logger.Information("Running database initializer...building default roles and users");
+        List<ApplicationRole> defaultRoles = ApplicationRole.GetDefaultSystemRoles();
+        List<ApplicationUser> defaultUsers = [
+            new()
+            {
+                UserName = EnvironmentSettings.GetApplicationHostUsername(_configuration),
+                Email = EnvironmentSettings.GetApplicationHostEmail(_configuration),
+                GivenName = EnvironmentSettings.GetApplicationHostUsername(_configuration),
+                Surname = EnvironmentSettings.GetApplicationHostUsername(_configuration),
+                EmailConfirmed = true
+            }
+        ];
 
-		var sysadmin = await CreateRole(new ApplicationRole()
+        _logger.Information("Running database initializer...creating default roles");
+        ApplicationRole systemAdministrator = null!;
+        foreach (var item in defaultRoles)
+        {
+            var newRole = await CreateRole(item);
+            if (newRole is not null)
+            {
+                if (newRole.Name == ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.Administrator))
+                    systemAdministrator = newRole;
+            }
+            else
+                _logger.Error("Running database initializer...error creating default roles");
+        }
+        if (systemAdministrator is null)
+            _logger.Error("Running database initializer...error creating default roles");
+
+        _logger.Information("Running database initializer...creating default users");
+        foreach (var item in defaultUsers)
 		{
-			Name = ApplicationRole.SystemAdministrator,
-			Label = ApplicationRole.SystemAdministrator
-		});
-		if (sysadmin is null)
-			_logger.Information("Running database initializer...error creating roles");
+            var newUser = await CreateUser(item) ??
+                throw new InvalidOperationException("Running database initializer...unable to create administrator");
+            if (string.IsNullOrEmpty(newUser.UserName) || string.IsNullOrEmpty(newUser.Email))
+                throw new InvalidOperationException("Running database initializer...creating administrator with invalid username or email");
+            if (!await _userManager!.IsInRoleAsync(newUser, systemAdministrator!.Name!))
+            {
+                var result = await _userManager!.AddToRoleAsync(newUser, systemAdministrator!.Name!);
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                        _logger.Error("Error adding role {role} to user {user}: {errorcode} with {errortext}", newUser.UserName, newUser.Email, error.Code, error.Description);
+                }
+            }
+        }
+    }
 
-		var user = await CreateRole(new ApplicationRole()
+    private async Task<ApplicationRole?> CreateRole(ApplicationRole role)
+    {
+        ArgumentNullException.ThrowIfNull(() => role);
+        ArgumentNullException.ThrowIfNull(() => role.Name);
+        var item = await _roleManager!.FindByNameAsync(role.Name!);
+        if (item is not null)
+            return item;
+
+        var result = await _roleManager.CreateAsync(role);
+        if (result.Succeeded)
+            return await _roleManager.FindByNameAsync(role.Name!);
+
+        foreach (var error in result.Errors)
+            _logger.Error("Error creating default role {role}: {errorcode} with {errortext}", role.Name, error.Code, error.Description);
+
+        return null;
+    }
+
+    private async Task<ApplicationUser?> CreateUser(ApplicationUser user)
+    {
+        ArgumentNullException.ThrowIfNull(() => user);
+        ArgumentNullException.ThrowIfNull(() => user.UserName);
+        ArgumentNullException.ThrowIfNull(() => user.Email);
+
+        var item = await _userManager!.FindByEmailAsync(user.Email!);
+        if (item is not null)
+            return item;
+
+        var result = await _userManager.CreateAsync(user, EnvironmentSettings.GetApplicationHostPassword(_configuration));
+		if (!result.Succeeded)
 		{
-			Name = ApplicationRole.SystemUser,
-			Label = ApplicationRole.SystemUser
-		});
-		if (user is null)
-			_logger.Information("Running database initializer...error creating roles");
+            foreach (var error in result.Errors)
+                _logger.Error("Error creating default user {user}: {errorcode} with {errortext}", user.Email, error.Code, error.Description);
+			return null;
+        }
 
-        var webmaster = await CreateAdministrator();
-        if (webmaster is null)
-            _logger.Information("Running database initializer...error creating users");
-
-        if (webmaster is not null && sysadmin is not null)
-		{
-			if (await _userManager!.IsInRoleAsync(webmaster, sysadmin.Name!))
-				return webmaster;
-
-			var result = await _userManager!.AddToRoleAsync(webmaster, sysadmin.Name!);
-			if (result.Succeeded)
-				return webmaster;
-
-			foreach (var error in result.Errors)
-				_logger.Error("Error adding role {role} to user {user}: {errorcode} with {errortext}", sysadmin.Name, webmaster.Email, error.Code, error.Description);
-		}
-
-		return null;
-	}
-
-	private async Task<ApplicationRole?> CreateRole(ApplicationRole role)
-	{
-		ArgumentNullException.ThrowIfNull(() => role);
-		ArgumentNullException.ThrowIfNull(() => role.Name);
-		var item = await _roleManager!.FindByNameAsync(role.Name!);
-		if (item is not null)
-			return item;
-
-		var result = await _roleManager.CreateAsync(role);
-		if (result.Succeeded)
-			return await _roleManager.FindByNameAsync(role.Name!);
-
-		foreach (var error in result.Errors)
-			_logger.Error("Error creating default role {role}: {errorcode} with {errortext}", role.Name, error.Code, error.Description);
-
-		return null;
-	}
-
-	private async Task<ApplicationUser?> CreateAdministrator()
-	{
-		var administrator = new ApplicationUser()
-		{
-			UserName = EnvironmentSettings.GetApplicationHostUsername(_configuration),
-			Email = EnvironmentSettings.GetApplicationHostEmail(_configuration),
-            GivenName = EnvironmentSettings.GetApplicationHostUsername(_configuration),
-            Surname = EnvironmentSettings.GetApplicationHostUsername(_configuration),
-            EmailConfirmed = true
-        };
-
-		if (string.IsNullOrEmpty(administrator.Email))
-			throw new InvalidOperationException("Running database initializer...creating administrator with invalid values");
-		if (string.IsNullOrEmpty(administrator.UserName))
-			throw new InvalidOperationException("Running database initializer...creating administrator with invalid values");
-		
-		var item = await _userManager!.FindByEmailAsync(administrator.Email!);
-		if (item is not null)
-			return item;
-
-		var result = await _userManager.CreateAsync(administrator, EnvironmentSettings.GetApplicationHostPassword(_configuration));
-		if (result.Succeeded)
-			return await _userManager.FindByEmailAsync(administrator.Email!);
-
-		foreach (var error in result.Errors)
-			_logger.Error("Error creating default user {user}: {errorcode} with {errortext}", administrator.Email, error.Code, error.Description);
-
-		return null;
-	}
+        return await _userManager.FindByEmailAsync(user.Email!);
+    }
 }

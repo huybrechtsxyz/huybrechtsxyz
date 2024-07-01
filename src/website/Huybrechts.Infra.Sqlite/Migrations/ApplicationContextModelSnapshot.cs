@@ -37,6 +37,11 @@ namespace Huybrechts.Infra.Sqlite.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("NormalizedLabel")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("NormalizedName")
                         .HasColumnType("TEXT");
 
@@ -222,11 +227,6 @@ namespace Huybrechts.Infra.Sqlite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TenantId")

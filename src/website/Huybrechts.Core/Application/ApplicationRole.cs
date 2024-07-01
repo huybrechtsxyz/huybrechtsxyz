@@ -108,6 +108,7 @@ public sealed class ApplicationRole : IdentityRole
         foreach (var value in Enum.GetValues(typeof(ApplicationDefaultSystemRole)).Cast<ApplicationDefaultSystemRole>())
         {
             var item = new ApplicationRole(value);
+            list.Add(item);
         }
         return list;
     }

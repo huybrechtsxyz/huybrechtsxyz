@@ -55,6 +55,34 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         return await UserStore.GetTenantsListAsync(user, CancellationToken);
     }
 
+    /// <summary>
+    /// Returns a flag indicating whether the specified <paramref name="user"/> is a member of the administrators.
+    /// </summary>
+    /// <param name="user">The user whose role membership should be checked.</param>
+    /// <returns>
+    /// The <see cref="Task"/> that represents the asynchronous operation, containing a flag indicating whether the specified <paramref name="user"/> is
+    /// a member of the administrators.
+    /// </returns>
+    public virtual async Task<bool> IsAdministratorAsync(ApplicationUser user)
+    {
+        return await IsInRoleAsync(user, ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.Administrator));
+    }
+
+    /// <summary>
+    /// Returns a flag indicating whether the specified <paramref name="user"/> is a member of the administrators.
+    /// </summary>
+    /// <param name="user">The user whose role membership should be checked.</param>
+    /// <returns>
+    /// The <see cref="Task"/> that represents the asynchronous operation, containing a flag indicating whether the specified <paramref name="user"/> is
+    /// a member of the administrators.
+    /// </returns>
+    public virtual async Task<bool> IsOwnerAsync(ApplicationUser user, string tenant)
+    {
+        if (await IsAdministratorAsync(user))
+            return true;
+        return await IsInRoleAsync(user, ApplicationRole.GetRoleName(tenant, ApplicationDefaultTenantRole.Owner));
+    }
+
     public async Task<bool> IsInTenantAsync(ApplicationUser user, string tenantId)
     {
         ThrowIfDisposed();
