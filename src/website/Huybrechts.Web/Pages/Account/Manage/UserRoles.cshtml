@@ -36,11 +36,19 @@
         <p>
             The list of system roles you are part of:
         </p>
-        <ul>
-        @foreach(var item in Model.SystemRoles)
+        @if (Model.SystemRoles.Length > 0)
         {
-            <il>@item.Name</il>
+            <table class="table">
+                <tr>
+                    <th>Role</th>
+                </tr>
+                @foreach (var item in Model.SystemRoles)
+                {
+                    <tr>
+                        <td>@item.Label</td>
+                    </tr>
+                }
+            </table>
         }
-        </ul>
     </div>
 </div>

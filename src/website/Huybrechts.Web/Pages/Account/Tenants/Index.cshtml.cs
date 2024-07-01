@@ -34,7 +34,7 @@ public class IndexModel : PageModel
         this.logger = logger;
     }
 
-		public async Task<IActionResult> OnGetAsync()
+	public async Task<IActionResult> OnGetAsync()
     {
         var user = await userManager.GetUserAsync(User);
         if (user == null)
@@ -42,7 +42,7 @@ public class IndexModel : PageModel
             return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
         }
 
-        //Tenants = await tenantManager.GetTenantsAsync(user);
+        Tenants = await tenantManager.GetTenantsAsync(user);
 
         return Page();
     }

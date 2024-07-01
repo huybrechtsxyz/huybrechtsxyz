@@ -167,4 +167,20 @@ public class ApplicationUserStore :
         await _dbcontext.SaveChangesAsync(cancellationToken);
         return IdentityResult.Success;
     }
+
+    /// <summary>
+    /// Called to create a new instance of a <see cref="IdentityUserRole{TKey}"/>.
+    /// </summary>
+    /// <param name="user">The associated user.</param>
+    /// <param name="role">The associated role.</param>
+    /// <returns></returns>
+    protected override ApplicationUserRole CreateUserRole(ApplicationUser user, ApplicationRole role)
+    {
+        return new ApplicationUserRole()
+        {
+            UserId = user.Id,
+            RoleId = role.Id,
+            TenantId = role.TenantId
+        };
+    }
 }

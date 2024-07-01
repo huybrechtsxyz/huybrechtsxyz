@@ -47,22 +47,38 @@ public class ApplicationTenantManager : IApplicationTenantManager
         ArgumentException.ThrowIfNullOrWhiteSpace(tenant.Id);
         ArgumentException.ThrowIfNullOrWhiteSpace(tenant.Name);
 
-        tenant.Id = NormalizeIdentifier(tenant.Id);
+        ApplicationTenant newTenant = new()
+        {
+            Id = NormalizeIdentifier(tenant.Id),
+            Name = tenant.Name,
+            Description = tenant.Description,
+            Remark = tenant.Remark,
+            State = ApplicationTenantState.New,
+            ConnectionString = null,
+            DatabaseProvider = null
+        };
+        if (tenant.Picture is not null)
+        {
+            newTenant.Picture ??= new byte[tenant.Picture.Length];
+            Array.Copy(tenant.Picture, newTenant.Picture, tenant.Picture.Length);
+        }
+        else
+            newTenant.Picture = null;
 
-        var exists = await _dbcontext.ApplicationTenants.Where(q => q.Id == tenant.Id).ToListAsync();
+        var exists = await _dbcontext.ApplicationTenants.Where(q => q.Id == newTenant.Id).ToListAsync();
         if (exists.Count != 0)
-            throw new ArgumentException($"Tenant with Id {tenant.Id} already exists", nameof(tenant));
+            throw new ArgumentException($"Tenant with Id {newTenant.Id} already exists", nameof(tenant));
 
-        _dbcontext.ApplicationTenants.Add(tenant);
+        _dbcontext.ApplicationTenants.Add(newTenant);
         await _dbcontext.SaveChangesAsync();
 
-        var roles = ApplicationRole.GetDefaultTenantRoles(tenant.Id);
+        var roles = ApplicationRole.GetDefaultTenantRoles(newTenant.Id);
         foreach (var role in roles)
             await _roleManager.CreateAsync(role);
 
-        var roleId = ApplicationRole.GetRoleName(tenant.Id, ApplicationDefaultTenantRole.Owner);
+        var roleId = ApplicationRole.GetRoleName(newTenant.Id, ApplicationDefaultTenantRole.Owner);
         await _userManager.AddToRoleAsync(user, roleId);
-        return tenant;
+        return newTenant;
     }
 
     public async Task DeleteTenantAsync(ApplicationUser user, ApplicationTenant tenant)
@@ -111,7 +127,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
             throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to update tenant");
 
         item.UpdateFrom(tenant);
-        _dbcontext.ApplicationTenants.Update(tenant);
+        _dbcontext.ApplicationTenants.Update(item);
         await _dbcontext.SaveChangesAsync();
     }
 }

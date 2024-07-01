@@ -10,23 +10,43 @@
 <div class="row">
     <div class="col-md-6">
         <p>
-            The list of tenants you are part of:
+            <a class="btn btn-primary" asp-page="./Create">Create</a>
         </p>
         <p>
-            <a class="primary-button" asp-page="./Create">Create</a>
+            The list of tenants you are part of:
         </p>
         @if (Model.Tenants.Count > 0)
         {
             <table class="table">
                 <tr>
-                    <th>Tenant</th>
-                    <th>Name</th>
+                    <th></th>
+                    <th>@Html.DisplayNameFor(model => model.Tenants[0].Id)</th>
+                    <th>@Html.DisplayNameFor(model => model.Tenants[0].Name)</th>
+                    <th>@Html.DisplayNameFor(model => model.Tenants[0].State)</th>
+                    <th>@Html.DisplayNameFor(model => model.Tenants[0].Description)</th>
+                    <th></th>
                 </tr>
                 @foreach (var item in Model.Tenants)
                 {
                     <tr>
-                        <td>@item.Id</td>
-                        <td>@item.Name</td>
+                        <td>
+                            @{
+                                string source = string.Empty;
+                                if (item is not null && item.Picture is not null)
+                                    source = $"data:image/*;base64,{Convert.ToBase64String(item.Picture)}";
+                                else
+                                    source = "/img/community.png";
+                            }
+                            <img src="@source" class="rounded-circle" style="width:32px;height:32px; object-fit:cover; border-radius:30px" alt="" />
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item!.Id)</td>
+                        <td>@Html.DisplayFor(modelItem => item!.Name)</td>
+                        <td>@Html.DisplayFor(modelItem => item!.State)</td>
+                        <td>@Html.DisplayFor(modelItem => item!.Description)</td>
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@item!.Id">Edit</a> |
+                            <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
                     </tr>
                 }
             </table>

@@ -39,5 +39,10 @@ public record ApplicationTenant
         this.Name = entity.Name;
         this.Description = entity.Description;
         this.Remark = entity.Remark;
+        if (entity.Picture is not null)
+        {
+            this.Picture = new byte[entity.Picture.Length];
+            Array.Copy(entity.Picture, this.Picture, entity.Picture.Length);
+        }
     }
 }

@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Huybrechts.Web.Pages.Account.Tenants;
 
-public class CreateModel : PageModel
+public class EditModel : PageModel
 {
     private readonly ApplicationUserManager userManager;
     private readonly ApplicationTenantManager tenantManager;
-    private readonly ILogger<CreateModel> logger;
+    private readonly ILogger<EditModel> logger;
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
@@ -20,25 +20,29 @@ public class CreateModel : PageModel
     [BindProperty]
     public IFormFile? PictureFile { get; set; }
 
-    public CreateModel(
+    public EditModel(
         ApplicationUserManager userManager,
         ApplicationTenantManager tenantManager,
-        ILogger<CreateModel> logger)
+        ILogger<EditModel> logger)
     {
         this.userManager = userManager;
         this.tenantManager = tenantManager;
         this.logger = logger;
     }
 
-    public async Task<IActionResult> OnGetAsync()
+    public async Task<IActionResult> OnGetAsync(string? id)
     {
+        if (string.IsNullOrEmpty(id))
+            return NotFound();
+
         var user = await userManager.GetUserAsync(User);
         if (user == null)
-        {
             return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
-        }
 
-        Initialize();
+        var item = await tenantManager.GetTenantAsync(user, id);
+        if (item is null || string.IsNullOrEmpty(item.Id))
+            return NotFound();
+        Input = item;
 
         return Page();
     }
@@ -47,13 +51,11 @@ public class CreateModel : PageModel
     {
         var user = await userManager.GetUserAsync(User);
         if (user == null)
-        {
             return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
-        }
 
         if (!ModelState.IsValid)
         {
-            StatusMessage = "Unexpected error when trying to create tenant.";
+            StatusMessage = "Unexpected error when trying to update tenant.";
             return Page();
         }
 
@@ -66,13 +68,8 @@ public class CreateModel : PageModel
             Input.Picture = dataStream.ToArray();
         }
 
-        await tenantManager.CreateTenantAsync(user, Input);
-        StatusMessage = "The tenant has been created";
+        await tenantManager.UpdateTenantAsync(user, Input);
+        StatusMessage = "The tenant has been updated";
         return RedirectToPage("Index");
-    }
-
-    private void Initialize()
-    {
-        Input = ApplicationTenantManager.NewTenant();
     }
 }
