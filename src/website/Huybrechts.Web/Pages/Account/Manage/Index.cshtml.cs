@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Web.Pages.Account.Manage
 {
-	public class IndexModel : PageModel
+    public class IndexModel : PageModel
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationSignInManager _signInManager;
@@ -43,6 +43,8 @@ namespace Huybrechts.Web.Pages.Account.Manage
         [BindProperty]
         public InputModel Input { get; set; }
 
+        public byte[] Picture { get; set; }
+
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -68,6 +70,8 @@ namespace Huybrechts.Web.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            public IFormFile ProfileFile { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -83,6 +87,11 @@ namespace Huybrechts.Web.Pages.Account.Manage
                 GivenName = user.GivenName,
                 Surname = user.Surname
             };
+
+            if (user.ProfilePicture is not null) { 
+                Picture ??= new byte[user.ProfilePicture.Length];
+                Array.Copy(user.ProfilePicture, Picture, user.ProfilePicture.Length);
+            }
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -127,6 +136,16 @@ namespace Huybrechts.Web.Pages.Account.Manage
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();
                 }
+            }
+
+            IFormFile file = Request.Form.Files.FirstOrDefault();
+            if (file is not null)
+            {
+                using var dataStream = new MemoryStream();
+                await file.CopyToAsync(dataStream);
+                user.ProfilePicture = new byte[dataStream.Length];
+                user.ProfilePicture = dataStream.ToArray();
+                await _userManager.UpdateAsync(user);
             }
 
             await _signInManager.RefreshSignInAsync(user);
