@@ -80,7 +80,7 @@ public class ApplicationUserStore :
         var userId = user.Id;
         var query = from userRole in UserRoles
                     join tenant in Tenants on userRole.TenantId equals tenant.Id
-                    where userRole.UserId.Equals(userId)
+                    where userRole.UserId.Equals(userId) && tenant.State != ApplicationTenantState.Removed
                     select tenant;
         return await query.GroupBy(q => q.Name).Select(q => q.First()).ToListAsync(cancellationToken);
     }

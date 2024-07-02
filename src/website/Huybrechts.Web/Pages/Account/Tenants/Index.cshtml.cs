@@ -16,14 +16,6 @@ public class IndexModel : PageModel
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    [BindProperty]
-    public InputModel Input { get; set; } = new();
-
-    public class InputModel
-    {
-        public List<ApplicationTenant> ApplicationTenants { get; set; } = [];
-    }
-
     public IndexModel(
         ApplicationUserManager userManager,
 			ApplicationTenantManager tenantManager,
@@ -42,7 +34,8 @@ public class IndexModel : PageModel
             return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
         }
 
-        Tenants = await tenantManager.GetTenantsAsync(user);
+        var items = await tenantManager.GetTenantsAsync(user);
+        Tenants = items.OrderBy(x => x.Name).ToList();
 
         return Page();
     }

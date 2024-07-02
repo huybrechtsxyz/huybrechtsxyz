@@ -130,4 +130,54 @@ public class ApplicationTenantManager : IApplicationTenantManager
         _dbcontext.ApplicationTenants.Update(item);
         await _dbcontext.SaveChangesAsync();
     }
+
+    public async Task SetPendingTenantAsync(ApplicationUser user, ApplicationTenant tenant)
+    {
+        await SetTenantStateAsync(user, tenant, ApplicationTenantState.Pending);
+    }
+
+    public async Task SetActiveTenantAsync(ApplicationUser user, ApplicationTenant tenant)
+    {
+        await SetTenantStateAsync(user, tenant, ApplicationTenantState.Active);
+    }
+
+    public async Task SetInactiveTenantAsync(ApplicationUser user, ApplicationTenant tenant)
+    {
+        await SetTenantStateAsync(user, tenant, ApplicationTenantState.Inactive);
+    }
+
+    private async Task SetTenantStateAsync(ApplicationUser user, ApplicationTenant tenant, ApplicationTenantState state)
+    {
+        if (!await _userManager.IsOwnerAsync(user, tenant.Id))
+            throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
+
+        var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
+            throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to update tenant state");
+
+        switch(state)
+        {
+            case ApplicationTenantState.Pending: 
+                {
+                    if (item.State != ApplicationTenantState.New)
+                        throw new ApplicationException($"Tenant '{tenant.Id}' is not in state new");
+                    break;
+                }
+            case ApplicationTenantState.Active:
+                {
+                    if (item.State != ApplicationTenantState.Pending && item.State != ApplicationTenantState.Inactive)
+                        throw new ApplicationException($"Tenant '{tenant.Id}' is not in state pending or inactive");
+                    break;
+                }
+            case ApplicationTenantState.Inactive:
+                {
+                    if (item.State != ApplicationTenantState.Active)
+                        throw new ApplicationException($"Tenant '{tenant.Id}' is not in state Active");
+                    break;
+                }
+        }
+
+        item.State = state;
+        _dbcontext.ApplicationTenants.Update(item);
+        await _dbcontext.SaveChangesAsync();
+    }
 }
