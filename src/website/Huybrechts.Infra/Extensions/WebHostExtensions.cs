@@ -1,4 +1,6 @@
-﻿using Huybrechts.Core.Application;
+﻿using Hangfire;
+using Hangfire.SQLite;
+using Huybrechts.Core.Application;
 using Huybrechts.Infra.Application;
 using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
@@ -135,6 +137,31 @@ public static class WebHostExtensions
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
+        log.Information($"Connect hangfire to the database");
+        switch (contextProviderType)
+        {
+            case ContextProviderType.Sqlite:
+                {
+                    builder.Services.AddHangfire(x => x
+                        .UseSimpleAssemblyNameTypeSerializer()
+                        .UseRecommendedSerializerSettings()
+                        .UseSQLiteStorage(connectionString));
+                    break;
+                }
+            case ContextProviderType.SqlServer:
+                {
+                    builder.Services.AddHangfire(x => x
+                        .UseSimpleAssemblyNameTypeSerializer()
+                        .UseRecommendedSerializerSettings()
+                        .UseSqlServerStorage(connectionString));
+                    break;
+                }
+            default: throw new ArgumentException($"Unsupported or invalid connection for hangfire.");
+        }
+
+        builder.Services.AddHangfireServer(x =>
+            x.SchedulePollingInterval = TimeSpan.FromSeconds(30)
+            );
         return builder;
     }
 
@@ -192,7 +219,7 @@ public static class WebHostExtensions
         }
         return builder;
     }
-
+    
     public static WebApplication AddExceptionMiddleware(this WebApplication app, ILogger log)
     {
         if (app.Environment.IsDevelopment())

@@ -1,3 +1,4 @@
+using Hangfire;
 using Huybrechts.Infra.Config;
 using Huybrechts.Infra.Data;
 using Huybrechts.Infra.Extensions;
@@ -63,6 +64,9 @@ try
 
     Log.Information("Building the application and services");
     var app = builder.Build();
+
+    Log.Information("Adding application services");
+    app.UseHangfireDashboard();
 
     Log.Information("Adding middleware services");
     app.AddExceptionMiddleware(Log.Logger);
