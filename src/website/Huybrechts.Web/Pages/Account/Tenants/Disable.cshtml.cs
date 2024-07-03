@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Huybrechts.Web.Pages.Account.Tenants;
 
-public class ActivateModel : PageModel
+public class DisableModel : PageModel
 {
     private readonly ApplicationUserManager userManager;
     private readonly ApplicationTenantManager tenantManager;
-    private readonly ILogger<ActivateModel> logger;
+    private readonly ILogger<DisableModel> logger;
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
@@ -20,10 +20,10 @@ public class ActivateModel : PageModel
     [BindProperty]
     public IFormFile? PictureFile { get; set; }
 
-    public ActivateModel(
+    public DisableModel(
         ApplicationUserManager userManager,
         ApplicationTenantManager tenantManager,
-        ILogger<ActivateModel> logger)
+        ILogger<DisableModel> logger)
     {
         this.userManager = userManager;
         this.tenantManager = tenantManager;
@@ -62,8 +62,8 @@ public class ActivateModel : PageModel
             if (item is null || string.IsNullOrEmpty(item.Id))
                 return NotFound();
 
-            await tenantManager.ActivateTenantAsync(user, item);
-            StatusMessage = "The tenant has been marked for activation";
+            await tenantManager.DisableTenantAsync(user, item);
+            StatusMessage = "The tenant has been disabled";
         }
         catch (ApplicationException ex)
         {

@@ -1,13 +1,13 @@
 ﻿@page
-@model Huybrechts.Web.Pages.Account.Tenants.ActivateModel
+@model Huybrechts.Web.Pages.Account.Tenants.DisableModel
 @{
-    ViewData["Title"] = "Activate tenant";
+    ViewData["Title"] = "Disable tenant";
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
 <h3>@ViewData["Title"]</h3>
-<h4>Are you sure you want to activate this tenant?</h4>
-<p>This will update the system all releated tenant data from the system!</p>
+<h4>Are you sure you want to disable this tenant?</h4>
+<p>You are no longer able to update any information for this tenant!</p>
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
     <div class="col-md-6">
@@ -37,7 +37,7 @@
             <input type="hidden" asp-for="Input.Description" />
             <input type="hidden" asp-for="Input.Remark" />    
             <a class="w-30 btn btn-lg btn-secondary" asp-page="./Index">Back</a>
-            <button id="update-tenant-button" type="submit" class="w-70 btn btn-lg btn-primary">Activate</button>
+            <button id="update-tenant-button" type="submit" class="w-70 btn btn-lg btn-primary">Disable</button>
         </form>
     </div>
 </div>

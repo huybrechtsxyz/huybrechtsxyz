@@ -1,4 +1,5 @@
-﻿using Huybrechts.Core.Application;
+﻿using Hangfire;
+using Huybrechts.Core.Application;
 using Huybrechts.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -37,6 +38,30 @@ public class ApplicationTenantManager : IApplicationTenantManager
     }
 
     public static string NormalizeIdentifier(string identifier) => (identifier ?? string.Empty).Trim().ToLowerInvariant();
+
+    public async Task<IList<ApplicationTenant>> GetTenantsAsync(ApplicationUser user)
+    {
+        if (_userManager is null) return [];
+        if (user is null) return [];
+
+        if (await _userManager.IsAdministratorAsync(user))
+        {
+            return await _dbcontext.ApplicationTenants.ToListAsync();
+        }
+
+        return await _userManager.GetTenantsListAsync(user);
+    }
+
+    public async Task<ApplicationTenant?> GetTenantAsync(ApplicationUser user, string tenantId)
+    {
+        var tenants = await _userManager.GetTenantsListAsync(user);
+        if (tenants.FirstOrDefault(q => q.Id == tenantId) is null)
+        {
+            return null;
+        }
+
+        return await _dbcontext.ApplicationTenants.FindAsync(tenantId);
+    }
 
     public async Task<ApplicationTenant> CreateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
     {
@@ -81,43 +106,6 @@ public class ApplicationTenantManager : IApplicationTenantManager
         return newTenant;
     }
 
-    public async Task DeleteTenantAsync(ApplicationUser user, ApplicationTenant tenant)
-    {
-        var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
-            throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to delete tenant");
-
-        if (!await _userManager.IsOwnerAsync(user, tenant.Id))
-            throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant '{tenant.Id}'");
-
-        item.State = ApplicationTenantState.Removing;
-        _dbcontext.ApplicationTenants.Update(item);
-        await _dbcontext.SaveChangesAsync();
-    }
-
-    public async Task<IList<ApplicationTenant>> GetTenantsAsync(ApplicationUser user)
-    {
-        if (_userManager is null) return [];
-        if (user is null) return [];
-
-        if (await _userManager.IsAdministratorAsync(user))
-        {
-            return await _dbcontext.ApplicationTenants.ToListAsync();
-        }
-
-        return await _userManager.GetTenantsListAsync(user);
-    }
-
-    public async Task<ApplicationTenant?> GetTenantAsync(ApplicationUser user, string tenantId)
-    {
-        var tenants = await _userManager.GetTenantsListAsync(user);
-        if (tenants.FirstOrDefault(q => q.Id == tenantId) is null)
-        {
-            return null;
-        }
-
-        return await _dbcontext.ApplicationTenants.FindAsync(tenantId);
-    }
-
     public async Task UpdateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
     {
         if (!await _userManager.IsOwnerAsync(user, tenant.Id))
@@ -131,22 +119,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
         await _dbcontext.SaveChangesAsync();
     }
 
-    public async Task SetPendingTenantAsync(ApplicationUser user, ApplicationTenant tenant)
-    {
-        await SetTenantStateAsync(user, tenant, ApplicationTenantState.Pending);
-    }
-
-    public async Task SetActiveTenantAsync(ApplicationUser user, ApplicationTenant tenant)
-    {
-        await SetTenantStateAsync(user, tenant, ApplicationTenantState.Active);
-    }
-
-    public async Task SetInactiveTenantAsync(ApplicationUser user, ApplicationTenant tenant)
-    {
-        await SetTenantStateAsync(user, tenant, ApplicationTenantState.Inactive);
-    }
-
-    private async Task SetTenantStateAsync(ApplicationUser user, ApplicationTenant tenant, ApplicationTenantState state)
+    public async Task ActivateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
     {
         if (!await _userManager.IsOwnerAsync(user, tenant.Id))
             throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
@@ -154,30 +127,48 @@ public class ApplicationTenantManager : IApplicationTenantManager
         var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
             throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to update tenant state");
 
-        switch(state)
-        {
-            case ApplicationTenantState.Pending: 
-                {
-                    if (item.State != ApplicationTenantState.New)
-                        throw new ApplicationException($"Tenant '{tenant.Id}' is not in state new");
-                    break;
-                }
-            case ApplicationTenantState.Active:
-                {
-                    if (item.State != ApplicationTenantState.Pending && item.State != ApplicationTenantState.Inactive)
-                        throw new ApplicationException($"Tenant '{tenant.Id}' is not in state pending or inactive");
-                    break;
-                }
-            case ApplicationTenantState.Inactive:
-                {
-                    if (item.State != ApplicationTenantState.Active)
-                        throw new ApplicationException($"Tenant '{tenant.Id}' is not in state Active");
-                    break;
-                }
-        }
+        if (item.State != ApplicationTenantState.New && item.State != ApplicationTenantState.Disabled)
+            throw new ApplicationException($"Tenant '{tenant.Id}' is not in state new or inactive");
 
-        item.State = state;
+        item.State = ApplicationTenantState.Pending;
         _dbcontext.ApplicationTenants.Update(item);
         await _dbcontext.SaveChangesAsync();
+
+        BackgroundJob.Enqueue<ChangeTenantStatusJob>(x => x.ActivateAsync(item));
+    }
+
+    public async Task DisableTenantAsync(ApplicationUser user, ApplicationTenant tenant)
+    {
+        if (!await _userManager.IsOwnerAsync(user, tenant.Id))
+            throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
+
+        var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
+            throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to update tenant state");
+
+        if (item.State != ApplicationTenantState.Active)
+            throw new ApplicationException($"Tenant '{tenant.Id}' is not in state active");
+
+        //
+        // OTHER LOGIC TO DEACTIVATE TENANT
+        //
+
+        item.State = ApplicationTenantState.Disabled;
+        _dbcontext.ApplicationTenants.Update(item);
+        await _dbcontext.SaveChangesAsync();
+    }
+
+    public async Task DeleteTenantAsync(ApplicationUser user, ApplicationTenant tenant)
+    {
+        var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
+            throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to delete tenant");
+
+        if (!await _userManager.IsOwnerAsync(user, tenant.Id))
+            throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant '{tenant.Id}'");
+
+        item.State = ApplicationTenantState.Removing;
+        _dbcontext.ApplicationTenants.Update(item);
+        await _dbcontext.SaveChangesAsync();
+
+        BackgroundJob.Enqueue<ChangeTenantStatusJob>(x => x.RemoveAsync(item));
     }
 }

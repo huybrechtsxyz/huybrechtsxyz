@@ -44,9 +44,14 @@
                         <td>@Html.DisplayFor(modelItem => item!.State)</td>
                         <td>@Html.DisplayFor(modelItem => item!.Description)</td>
                         <td>
-                            @if(item.State == Core.Application.ApplicationTenantState.New)
+                            @if(item.State == Core.Application.ApplicationTenantState.New
+                            || item.State == Core.Application.ApplicationTenantState.Disabled)
                             {
                                 <a asp-page="./Activate" asp-route-id="@item!.Id">Activate</a>
+                            }
+                            @if (item.State == Core.Application.ApplicationTenantState.Active)
+                            {
+                                <a asp-page="./Disable" asp-route-id="@item!.Id">Disable</a>
                             }
                             @if(item.State != Core.Application.ApplicationTenantState.Removing
                             && item.State != Core.Application.ApplicationTenantState.Removed)
