@@ -7,12 +7,10 @@ namespace Huybrechts.Infra.Application;
 public class ChangeTenantStatusJob
 {
     private readonly ApplicationContext _dbcontext;
-    private readonly ILogger<ChangeTenantStatusJob> _logger;
 
-    public ChangeTenantStatusJob(ApplicationContext dbcontext, ILogger<ChangeTenantStatusJob> logger)
+    public ChangeTenantStatusJob(ApplicationContext dbcontext)
     {
         _dbcontext = dbcontext;
-        _logger = logger;
     }
 
     public async Task ActivateAsync(ApplicationTenant tenant)
@@ -37,11 +35,14 @@ public class ChangeTenantStatusJob
         if (item.State == ApplicationTenantState.Removed)
             return;
 
-        // REMOVAL LOGIC FOR TENANTS
-        // NONE SO FAR !
+        var roles = _dbcontext.Roles.Where(q => q.TenantId == item.Id);
+        _dbcontext.RemoveRange(roles);
+
+        var userRoles = _dbcontext.UserRoles.Where(q => q.TenantId == item.Id);
+        _dbcontext.RemoveRange(userRoles);
 
         item.State = ApplicationTenantState.Removed;
-        _dbcontext.ApplicationTenants.Update(item);
+        _dbcontext.ApplicationTenants.Remove(item);
         await _dbcontext.SaveChangesAsync();
     }
 }

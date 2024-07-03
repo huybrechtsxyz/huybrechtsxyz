@@ -1,23 +1,32 @@
 ﻿@page
-@model IndexModel
+@model TenantsModel
 @{
     ViewData["Title"] = "Your tenants";
-    ViewData["ActivePage"] = ManageNavPages.Index;
+    ViewData["ActivePage"] = ManageNavPages.UserTenants;
 }
 
 <h3>@ViewData["Title"]</h3>
+@if (Model.Tenants.Count > 0)
+{
+    <p class="text-info">
+    The list of tenants you are part of.
+    </p>
+}
+else
+{
+    <p class="text-info">
+    You are not part of any tenant. You need at least one tenant if you wish to use the application!
+    </p>
+}
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
     <div class="col-md-6">
         <p>
-            <a class="btn btn-primary" asp-page="./Create">Create</a>
-        </p>
-        <p>
-            The list of tenants you are part of:
+            
         </p>
         @if (Model.Tenants.Count > 0)
         {
-            <table class="table">
+            <table class="table w-100">
                 <tr>
                     <th></th>
                     <th>@Html.DisplayNameFor(model => model.Tenants[0].Id)</th>
@@ -47,26 +56,25 @@
                             @if(item.State == Core.Application.ApplicationTenantState.New
                             || item.State == Core.Application.ApplicationTenantState.Disabled)
                             {
-                                <a asp-page="./Activate" asp-route-id="@item!.Id">Activate</a>
+                                <a asp-page="./TenantActivate" asp-route-id="@item!.Id">Activate</a>
                             }
                             @if (item.State == Core.Application.ApplicationTenantState.Active)
                             {
-                                <a asp-page="./Disable" asp-route-id="@item!.Id">Disable</a>
+                                <a asp-page="./TenantDisable" asp-route-id="@item!.Id">Disable</a>
                             }
                             @if(item.State != Core.Application.ApplicationTenantState.Removing
                             && item.State != Core.Application.ApplicationTenantState.Removed)
                             {
-                                <a asp-page="./Edit" asp-route-id="@item!.Id">Edit</a>
-                                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                                <a asp-page="./TenantEdit" asp-route-id="@item!.Id">Edit</a>
+                                <a asp-page="./TenantDelete" asp-route-id="@item.Id">Delete</a>
                             }
                         </td>
                     </tr>
                 }
             </table>
         }
-        else
-        {
-            <p>You are not part of any tenant</p>
-        }
+        <p>
+            <a class="btn btn-primary" asp-page="./TenantCreate">Create</a>
+        </p>
     </div>
 </div>

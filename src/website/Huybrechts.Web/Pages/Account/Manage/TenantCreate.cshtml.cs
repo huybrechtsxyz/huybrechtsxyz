@@ -3,13 +3,12 @@ using Huybrechts.Infra.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Huybrechts.Web.Pages.Account.Tenants;
+namespace Huybrechts.Web.Pages.Account.Manage;
 
-public class CreateModel : PageModel
+public class TenantCreateModel : PageModel
 {
-    private readonly ApplicationUserManager userManager;
-    private readonly ApplicationTenantManager tenantManager;
-    private readonly ILogger<CreateModel> logger;
+    private readonly ApplicationUserManager _userManager;
+    private readonly ApplicationTenantManager _tenantManager;
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
@@ -20,36 +19,27 @@ public class CreateModel : PageModel
     [BindProperty]
     public IFormFile? PictureFile { get; set; }
 
-    public CreateModel(
-        ApplicationUserManager userManager,
-        ApplicationTenantManager tenantManager,
-        ILogger<CreateModel> logger)
+    public TenantCreateModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager)
     {
-        this.userManager = userManager;
-        this.tenantManager = tenantManager;
-        this.logger = logger;
+        _userManager = userManager;
+        _tenantManager = tenantManager;
     }
 
     public async Task<IActionResult> OnGetAsync()
     {
-        var user = await userManager.GetUserAsync(User);
+        var user = await _userManager.GetUserAsync(User);
         if (user == null)
-        {
-            return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
-        }
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
-        Initialize();
-
+        Input = ApplicationTenantManager.NewTenant();
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var user = await userManager.GetUserAsync(User);
+        var user = await _userManager.GetUserAsync(User);
         if (user == null)
-        {
-            return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
-        }
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
         if (!ModelState.IsValid)
         {
@@ -66,13 +56,8 @@ public class CreateModel : PageModel
             Input.Picture = dataStream.ToArray();
         }
 
-        await tenantManager.CreateTenantAsync(user, Input);
+        await _tenantManager.CreateTenantAsync(user, Input);
         StatusMessage = "The tenant has been created";
-        return RedirectToPage("Index");
-    }
-
-    private void Initialize()
-    {
-        Input = ApplicationTenantManager.NewTenant();
+        return RedirectToPage("Tenants");
     }
 }

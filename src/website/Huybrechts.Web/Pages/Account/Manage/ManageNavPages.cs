@@ -122,6 +122,10 @@ namespace  Huybrechts.Web.Pages.Account.Manage
 
         public static string UserRoles => "UserRoles";
 
+        public static string UserTenants => "UserTenants";
+
         public static string UserRolesNavClass(ViewContext viewContext) => PageNavClass(viewContext, UserRoles);
+
+        public static string UserTenantsNavClass(ViewContext viewContext) => PageNavClass(viewContext, UserTenants);
     }
 }

@@ -3,13 +3,12 @@ using Huybrechts.Infra.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Huybrechts.Web.Pages.Account.Tenants;
+namespace Huybrechts.Web.Pages.Account.Manage;
 
-public class EditModel : PageModel
+public class TenantEditModel : PageModel
 {
-    private readonly ApplicationUserManager userManager;
-    private readonly ApplicationTenantManager tenantManager;
-    private readonly ILogger<EditModel> logger;
+    private readonly ApplicationUserManager _userManager;
+    private readonly ApplicationTenantManager _tenantManager;
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
@@ -20,38 +19,34 @@ public class EditModel : PageModel
     [BindProperty]
     public IFormFile? PictureFile { get; set; }
 
-    public EditModel(
-        ApplicationUserManager userManager,
-        ApplicationTenantManager tenantManager,
-        ILogger<EditModel> logger)
+    public TenantEditModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager)
     {
-        this.userManager = userManager;
-        this.tenantManager = tenantManager;
-        this.logger = logger;
+        _userManager = userManager;
+        _tenantManager = tenantManager;
     }
 
     public async Task<IActionResult> OnGetAsync(string? id)
     {
         if (string.IsNullOrEmpty(id))
-            return NotFound();
+            return NotFound($"Unable to load tentant with ID '{id}'.");
 
-        var user = await userManager.GetUserAsync(User);
+        var user = await _userManager.GetUserAsync(User);
         if (user == null)
-            return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
-        var item = await tenantManager.GetTenantAsync(user, id);
+        var item = await _tenantManager.GetTenantAsync(user, id);
         if (item is null || string.IsNullOrEmpty(item.Id))
-            return NotFound();
-        Input = item;
-
+            return NotFound($"Unable to load tentant with ID '{id}'.");
+        else
+            Input = item;
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var user = await userManager.GetUserAsync(User);
+        var user = await _userManager.GetUserAsync(User);
         if (user == null)
-            return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
         if (!ModelState.IsValid)
         {
@@ -68,8 +63,8 @@ public class EditModel : PageModel
             Input.Picture = dataStream.ToArray();
         }
 
-        await tenantManager.UpdateTenantAsync(user, Input);
-        StatusMessage = "The tenant has been updated";
-        return RedirectToPage("Index");
+        await _tenantManager.UpdateTenantAsync(user, Input);
+        StatusMessage = "The tenant has been updated.";
+        return RedirectToPage("Tenants");
     }
 }
