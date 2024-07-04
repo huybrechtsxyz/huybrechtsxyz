@@ -1,7 +1,6 @@
 ﻿using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace Huybrechts.Infra.Data;
 
@@ -27,26 +26,30 @@ public class ApplicationContext : IdentityDbContext<
         {
             // Each User can have many UserClaims
             b.HasMany(e => e.Claims)
-                .WithOne()
+                .WithOne(u => u.User)
                 .HasForeignKey(uc => uc.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             // Each User can have many UserLogins
             b.HasMany(e => e.Logins)
-                .WithOne()
+                .WithOne(u => u.User)
                 .HasForeignKey(ul => ul.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             // Each User can have many UserTokens
             b.HasMany(e => e.Tokens)
-                .WithOne()
+                .WithOne(u => u.User)
                 .HasForeignKey(ut => ut.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             // Each User can have many entries in the UserRole join table
             b.HasMany(e => e.UserRoles)
                 .WithOne(e => e.User)
                 .HasForeignKey(ur => ur.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             b.ToTable(nameof(ApplicationUser));
@@ -58,12 +61,14 @@ public class ApplicationContext : IdentityDbContext<
             b.HasMany(e => e.UserRoles)
                 .WithOne(e => e.Role)
                 .HasForeignKey(ur => ur.RoleId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             // Each Role can have many associated RoleClaims
             b.HasMany(e => e.RoleClaims)
                 .WithOne(e => e.Role)
                 .HasForeignKey(rc => rc.RoleId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             b.ToTable(nameof(ApplicationRole));
