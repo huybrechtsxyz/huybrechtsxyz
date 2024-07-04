@@ -13,4 +13,8 @@ public sealed class ApplicationUserRole : IdentityUserRole<string>
     [RegularExpression("^[a-z0-9]+$")]
     [StringLength(24)]
     public string? TenantId { get; set; }
+
+    public ApplicationRole Role { get; set; } = new();
+
+    public ApplicationUser User { get; set; } = new();
 }

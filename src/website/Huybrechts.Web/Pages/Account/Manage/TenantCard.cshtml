@@ -1,0 +1,74 @@
+﻿@page
+@model TenantCardModel
+@{
+    ViewData["Title"] = "Tenant Details";
+    ViewData["ActivePage"] = ManageNavPages.UserTenants;
+}
+
+<h3>@ViewData["Title"]</h3>
+<p class="text-info">
+    The details of the tenant, which roles are available, and the known users.
+</p>
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="row">
+    <dl class="form-group">
+        <dt class="form-label">@Html.DisplayNameFor(x => x.Tenant.Id)</dt>
+        <dd class="form-control">@Html.DisplayFor(x => x.Tenant.Id)</dd>
+        <dt class="form-label">@Html.DisplayNameFor(x => x.Tenant.Name)</dt>
+        <dd class="form-control">@Html.DisplayFor(x => x.Tenant.Name)</dd>
+        <dt class="form-label">@Html.DisplayNameFor(x => x.Tenant.Description)</dt>
+        <dd class="form-control">@Html.DisplayFor(x => x.Tenant.Description)</dd>
+        <dt class="form-label">@Html.DisplayNameFor(x => x.Tenant.Remark)</dt>
+        <dd class="form-control">@Html.DisplayFor(x => x.Tenant.Remark)</dd>
+    </dl>
+</div>
+<div class="row">
+    <h3>Tenant Users</h3>
+    @if (Model.UserRoles.Count > 0)
+    {
+        <table class="table table-responsive">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.UserRoles[0].User.Fullname)</th>
+                <th>@Html.DisplayNameFor(model => model.UserRoles[0].Role.Label)</th>
+                <th></th>
+            </tr>
+            @foreach (var item in Model.UserRoles)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item!.User.Fullname)</td>
+                    <td>@Html.DisplayFor(modelItem => item!.Role.Label)</td>
+                    <td></td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <p>The tenant does not have any linked users ?</p>
+    }
+</div>
+<div class="row">
+    <h3>Tenant Roles</h3>
+    @if (Model.Roles.Count > 0)
+    {
+        <table class="table table-responsive">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Roles[0].Label)</th>
+                <th>@Html.DisplayNameFor(model => model.Roles[0].Description)</th>
+                <th></th>
+            </tr>
+            @foreach (var item in Model.Roles)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item!.Label)</td>
+                    <td>@Html.DisplayFor(modelItem => item!.Description)</td>
+                    <td></td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <p>The tenant does not have any linked roles ?</p>
+    }
+</div>

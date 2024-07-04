@@ -63,6 +63,19 @@ public class ApplicationTenantManager : IApplicationTenantManager
         return await _dbcontext.ApplicationTenants.FindAsync(tenantId);
     }
 
+    public async Task<List<ApplicationRole>> GetTenantRolesAsync(ApplicationUser user, string tenantId)
+    {
+        return await _dbcontext.Roles.Where(q => q.TenantId == tenantId).ToListAsync() ?? [];
+    }
+
+    public async Task<List<ApplicationUserRole>> GetTenantUserRolesAsync(ApplicationUser user, string tenantId)
+    {
+        return await _dbcontext.UserRoles
+            .Include(i => i.Role)
+            .Include(i => i.User)
+            .Where(q => q.TenantId == tenantId).ToListAsync() ?? [];
+    }
+
     public async Task<ApplicationTenant> CreateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
     {
         ArgumentNullException.ThrowIfNull(user);

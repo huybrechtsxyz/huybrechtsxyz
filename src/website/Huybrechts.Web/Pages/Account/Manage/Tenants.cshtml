@@ -20,13 +20,13 @@ else
 }
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <p>
             
         </p>
         @if (Model.Tenants.Count > 0)
         {
-            <table class="table w-100">
+            <table class="table table-responsive">
                 <tr>
                     <th></th>
                     <th>@Html.DisplayNameFor(model => model.Tenants[0].Id)</th>
@@ -53,6 +53,7 @@ else
                         <td>@Html.DisplayFor(modelItem => item!.State)</td>
                         <td>@Html.DisplayFor(modelItem => item!.Description)</td>
                         <td>
+                            <a asp-page="./TenantCard" asp-route-id="@item!.Id">Card</a>
                             @if(item.State == Core.Application.ApplicationTenantState.New
                             || item.State == Core.Application.ApplicationTenantState.Disabled)
                             {

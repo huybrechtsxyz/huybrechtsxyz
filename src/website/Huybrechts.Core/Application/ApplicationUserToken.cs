@@ -8,4 +8,5 @@ namespace Huybrechts.Core.Application;
 [PrimaryKey(nameof(UserId), nameof(LoginProvider), nameof(Name))]
 public sealed class ApplicationUserToken : IdentityUserToken<string>
 {
+    public ApplicationUser User { get; set; } = new();
 }

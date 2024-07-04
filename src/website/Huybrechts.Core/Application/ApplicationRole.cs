@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Huybrechts.Core.Common;
+using Microsoft.AspNetCore.Identity;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
@@ -23,6 +25,7 @@ public sealed class ApplicationRole : IdentityRole
 
     [Required]
     [StringLength(256)]
+    [DisplayName("Role")]
     public string Label { get; set; } = string.Empty;
 
     [Required]
@@ -35,6 +38,9 @@ public sealed class ApplicationRole : IdentityRole
     public bool IsTenantRole() => !string.IsNullOrEmpty(TenantId);
 
     public bool IsSystemRole() => string.IsNullOrEmpty(TenantId);
+
+    public ICollection<ApplicationRoleClaim> RoleClaims { get; set; } = [];
+    public ICollection<ApplicationUserRole> UserRoles { get; set; } = [];
 
     /// <summary>
     /// Initializes a new instance
@@ -68,6 +74,7 @@ public sealed class ApplicationRole : IdentityRole
     public ApplicationRole(ApplicationDefaultSystemRole value)
         : this(value.ToString())
     {
+        Description = value.GetDescription();
     }
 
     /// <summary>
@@ -78,6 +85,7 @@ public sealed class ApplicationRole : IdentityRole
     public ApplicationRole(string tenant, ApplicationDefaultTenantRole value)
         : this(tenant, value.ToString())
     {
+        Description = value.GetDescription();
     }
 
     public void Set(string roleName)
