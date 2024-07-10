@@ -46,6 +46,9 @@
     {
         <p>The tenant does not have any linked users ?</p>
     }
+    <p>
+        <a class="btn btn-primary" asp-page="./TenantInvite" asp-route-id="@Model.Tenant!.Id">Add Users</a>
+    </p>
 </div>
 <div class="row">
     <h3>Tenant Roles</h3>

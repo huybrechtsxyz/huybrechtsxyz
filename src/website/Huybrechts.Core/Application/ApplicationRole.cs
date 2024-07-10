@@ -141,5 +141,5 @@ public sealed class ApplicationRole : IdentityRole
 
     public static string GetLabel(string roleName) => roleName.StartsWith(Hashtag) ? roleName.Trim() : roleName[(roleName.IndexOf(Hashtag) + 1)..].Trim();
 
-    public static string GetTenant(string roleName) => !roleName.Contains(Hashtag) ? string.Empty : roleName[0..(roleName.IndexOf(Hashtag))].Trim();
+    public static string GetTenant(string roleName) => !roleName.Contains(Hashtag) ? string.Empty : roleName[0..(roleName.IndexOf(Hashtag))].Trim().ToLower();
 }

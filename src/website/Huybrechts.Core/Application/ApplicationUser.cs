@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 
 namespace Huybrechts.Core.Application;
 
@@ -19,7 +20,15 @@ public sealed class ApplicationUser : IdentityUser
 
     [NotMapped]
     [DisplayName("Name")]
-    public string Fullname => GivenName + (GivenName?.Length > 0 && Surname?.Length > 0 ? " " : "") + Surname;
+    public string Fullname
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(GivenName) || !string.IsNullOrEmpty(Surname))
+                return (GivenName ?? string.Empty) + (GivenName?.Length > 0 && Surname?.Length > 0 ? " " : "") + (Surname ?? string.Empty);
+            return string.Empty;
+        }
+    }
 
     public ICollection<ApplicationUserClaim> Claims { get; set; } = [];
     public ICollection<ApplicationUserLogin> Logins { get; set; } = [];
