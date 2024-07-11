@@ -40,6 +40,34 @@ public class ApplicationTenantManager : IApplicationTenantManager
         _logger = logger;
     }
 
+    public async Task<List<string>> AddUsersToTenant(ApplicationUser user, string tenantId, string roleId, string[] newUsers)
+    {
+        List<string> users = new List<string>();
+
+        if (!await _userManager.IsOwnerAsync(user, tenantId))
+            throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
+
+        var appTenant = await _dbcontext.ApplicationTenants.FindAsync(tenantId) ??
+            throw new ApplicationException($"Tenant '{tenantId}' not found while trying to update tenant state");
+
+        var appRole = await _roleManager.FindByIdAsync(roleId) ??
+            throw new ApplicationException($"Role '{roleId}' not found while trying to update tenant state");
+
+        foreach (var newUser in newUsers)
+        {
+            var appUser = await _userManager.FindByEmailAsync(newUser);
+            if (appUser is null) 
+            {
+                users.Add($"User {newUser} was not found");
+            }
+
+            await _userManager.AddToRoleAsync(appUser!, appRole.NormalizedName!);
+            users.Add($"User {newUser} added with role {appRole.Label}");
+        }
+
+        return users;
+    }
+
     public async Task ActivateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
     {
         if (!await _userManager.IsOwnerAsync(user, tenant.Id))

@@ -2,6 +2,7 @@ using Huybrechts.Core.Application;
 using Huybrechts.Infra.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel;
 
 namespace Huybrechts.Web.Pages.Account.Manage;
 
@@ -21,8 +22,10 @@ public class TenantInviteModel : PageModel
 
     public class Invitation
     {
+        [DisplayName("Tenant ID")]
         public string TenantId { get; set; } = string.Empty;
 
+        [DisplayName("Tenant Role")]
         public string RoleId { get; set; } = string.Empty;
 
         public string? Users { get; set; }
@@ -69,10 +72,9 @@ public class TenantInviteModel : PageModel
             return Page();
         }
 
-        List<string> newUsers = Input.Users?.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList() ?? [];
-
-        //await _tenantManager.AddUsersToTenantAsync(user, Input.TenantId, Input.RoleId, newUsers);
-        StatusMessage = "The tenant invate(s) has been created";
-        return RedirectToPage("TenantCard");
+        var newUsers = Input.Users?.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToArray() ?? [];
+        var messages = await _tenantManager.AddUsersToTenant(user, Input.TenantId, Input.RoleId, newUsers);
+        StatusMessage = string.Join(Environment.NewLine, messages);
+        return RedirectToPage("TenantCard", Input.TenantId);
     }
 }
