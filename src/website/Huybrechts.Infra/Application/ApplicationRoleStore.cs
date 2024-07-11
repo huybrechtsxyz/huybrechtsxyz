@@ -2,7 +2,6 @@
 using Huybrechts.Infra.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
 namespace Huybrechts.Infra.Application;
 
@@ -14,13 +13,5 @@ public class ApplicationRoleStore : RoleStore<ApplicationRole,ApplicationContext
         base(context, describer)
     {
         _context = context;
-    }
-
-    public IQueryable<ApplicationTenant> Tenants
-    {
-        get
-        {
-            return _context.ApplicationTenants.AsQueryable();
-        }
     }
 }

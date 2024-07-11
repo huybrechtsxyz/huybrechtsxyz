@@ -122,9 +122,7 @@ namespace Huybrechts.Web.Pages.Account.Manage
 
             if (Input.GivenName.CompareTo(user.GivenName) != 0 || Input.Surname.CompareTo(user.Surname) != 0)
             {
-                user.GivenName = Input.GivenName;
-                user.Surname = Input.Surname;
-                await _userManager.UpdateGivenSurNameAsync(user.Id, Input.GivenName, Input.Surname);
+                await _userManager.SetGivenSurNameAsync(user, Input.GivenName, Input.Surname);
             }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);

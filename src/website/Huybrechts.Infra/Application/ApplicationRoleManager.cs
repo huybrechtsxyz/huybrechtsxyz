@@ -17,38 +17,4 @@ public class ApplicationRoleManager : RoleManager<ApplicationRole>
     {
         _store = store;
     }
-
-    public IQueryable<ApplicationTenant> Tenants => _store.Tenants;
-
-    public override Task<IdentityResult> CreateAsync(ApplicationRole role)
-    {
-        role?.Set(role.Name!);
-        return base.CreateAsync(role!);
-    }
-
-    public override Task<IdentityResult> SetRoleNameAsync(ApplicationRole role, string? name)
-    {
-        if (role is not null)
-        {
-            role.TenantId = ApplicationRole.GetTenant(role.Name!);
-            role.Label = ApplicationRole.GetLabel(role.Name!);
-        }
-        return base.SetRoleNameAsync(role!, name);
-    }
-
-    public override Task<IdentityResult> UpdateAsync(ApplicationRole role)
-    {
-        role?.Set(role.Name!);
-        return base.UpdateAsync(role!);
-    }
-
-    public override Task UpdateNormalizedRoleNameAsync(ApplicationRole role)
-    {
-        if (role is not null)
-        {
-            role.TenantId = ApplicationRole.GetTenant(role.Name!);
-            role.Label = ApplicationRole.GetLabel(role.Name!);
-        }
-        return base.UpdateNormalizedRoleNameAsync(role!);
-    }
 }

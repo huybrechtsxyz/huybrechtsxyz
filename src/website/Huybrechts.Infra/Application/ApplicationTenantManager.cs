@@ -3,8 +3,7 @@ using Huybrechts.Core.Application;
 using Huybrechts.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
+using System.Threading;
 
 namespace Huybrechts.Infra.Application;
 
@@ -14,6 +13,16 @@ public interface IApplicationTenantManager
 
 public class ApplicationTenantManager : IApplicationTenantManager
 {
+    public static ApplicationTenant NewTenant()
+    {
+        return new ApplicationTenant()
+        {
+            State = ApplicationTenantState.New
+        };
+    }
+
+    public static string NormalizeIdentifier(string identifier) => (identifier ?? string.Empty).Trim().ToLowerInvariant();
+
     private readonly ApplicationUserManager _userManager;
     private readonly ApplicationRoleManager _roleManager;
     private readonly ApplicationContext _dbcontext;
@@ -29,109 +38,6 @@ public class ApplicationTenantManager : IApplicationTenantManager
         _roleManager = roleManager;
         _dbcontext = dbcontext;
         _logger = logger;
-    }
-
-    public static ApplicationTenant NewTenant()
-    {
-        return new ApplicationTenant()
-        {
-            State = ApplicationTenantState.New
-        };
-    }
-
-    public static string NormalizeIdentifier(string identifier) => (identifier ?? string.Empty).Trim().ToLowerInvariant();
-
-    public async Task<IList<ApplicationTenant>> GetTenantsAsync(ApplicationUser user)
-    {
-        if (_userManager is null) return [];
-        if (user is null) return [];
-
-        if (await _userManager.IsAdministratorAsync(user))
-        {
-            return await _dbcontext.ApplicationTenants.ToListAsync();
-        }
-
-        return await _userManager.GetTenantsListAsync(user);
-    }
-
-    public async Task<ApplicationTenant?> GetTenantAsync(ApplicationUser user, string tenantId)
-    {
-        var tenants = await _userManager.GetTenantsListAsync(user);
-        if (tenants.FirstOrDefault(q => q.Id == tenantId) is null)
-        {
-            return null;
-        }
-
-        return await _dbcontext.ApplicationTenants.FindAsync(tenantId);
-    }
-
-    public async Task<List<ApplicationRole>> GetTenantRolesAsync(ApplicationUser user, string tenantId)
-    {
-        return await _dbcontext.Roles.Where(q => q.TenantId == tenantId).ToListAsync() ?? [];
-    }
-
-    public async Task<List<ApplicationUserRole>> GetTenantUserRolesAsync(ApplicationUser user, string tenantId)
-    {
-        return await _dbcontext.UserRoles
-            .Include(i => i.Role)
-            .Include(i => i.User)
-            .Where(q => q.TenantId == tenantId).ToListAsync() ?? [];
-    }
-
-    public async Task<ApplicationTenant> CreateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
-    {
-        ArgumentNullException.ThrowIfNull(user);
-        ArgumentException.ThrowIfNullOrWhiteSpace(user.Id);
-        ArgumentException.ThrowIfNullOrWhiteSpace(user.UserName);
-        ArgumentNullException.ThrowIfNull(tenant);
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenant.Id);
-        ArgumentException.ThrowIfNullOrWhiteSpace(tenant.Name);
-
-        ApplicationTenant newTenant = new()
-        {
-            Id = NormalizeIdentifier(tenant.Id),
-            Name = tenant.Name,
-            Description = tenant.Description,
-            Remark = tenant.Remark,
-            State = ApplicationTenantState.New,
-            ConnectionString = null,
-            DatabaseProvider = null
-        };
-        if (tenant.Picture is not null)
-        {
-            newTenant.Picture ??= new byte[tenant.Picture.Length];
-            Array.Copy(tenant.Picture, newTenant.Picture, tenant.Picture.Length);
-        }
-        else
-            newTenant.Picture = null;
-
-        var exists = await _dbcontext.ApplicationTenants.Where(q => q.Id == newTenant.Id).ToListAsync();
-        if (exists.Count != 0)
-            throw new ArgumentException($"Tenant with Id {newTenant.Id} already exists", nameof(tenant));
-
-        _dbcontext.ApplicationTenants.Add(newTenant);
-        await _dbcontext.SaveChangesAsync();
-
-        var roles = ApplicationRole.GetDefaultTenantRoles(newTenant.Id);
-        foreach (var role in roles)
-            await _roleManager.CreateAsync(role);
-
-        var roleId = ApplicationRole.GetRoleName(newTenant.Id, ApplicationDefaultTenantRole.Owner);
-        await _userManager.AddToRoleAsync(user, roleId);
-        return newTenant;
-    }
-
-    public async Task UpdateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
-    {
-        if (!await _userManager.IsOwnerAsync(user, tenant.Id))
-            throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
-
-        var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
-            throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to update tenant");
-
-        item.UpdateFrom(tenant);
-        _dbcontext.ApplicationTenants.Update(item);
-        await _dbcontext.SaveChangesAsync();
     }
 
     public async Task ActivateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
@@ -152,24 +58,47 @@ public class ApplicationTenantManager : IApplicationTenantManager
         BackgroundJob.Enqueue<ChangeTenantStatusJob>(x => x.ActivateAsync(item));
     }
 
-    public async Task DisableTenantAsync(ApplicationUser user, ApplicationTenant tenant)
+    public async Task<ApplicationTenant> CreateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
     {
-        if (!await _userManager.IsOwnerAsync(user, tenant.Id))
-            throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentException.ThrowIfNullOrWhiteSpace(user.Id);
+        ArgumentException.ThrowIfNullOrWhiteSpace(user.UserName);
+        ArgumentNullException.ThrowIfNull(tenant);
+        ArgumentException.ThrowIfNullOrWhiteSpace(tenant.Id);
+        ArgumentException.ThrowIfNullOrWhiteSpace(tenant.Name);
 
-        var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
-            throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to update tenant state");
+        ApplicationTenant item = new()
+        {
+            Id = NormalizeIdentifier(tenant.Id),
+            Name = tenant.Name,
+            Description = tenant.Description,
+            Remark = tenant.Remark,
+            State = ApplicationTenantState.New,
+            ConnectionString = null,
+            DatabaseProvider = null
+        };
+        if (tenant.Picture is not null)
+        {
+            item.Picture ??= new byte[tenant.Picture.Length];
+            Array.Copy(tenant.Picture, item.Picture, tenant.Picture.Length);
+        }
+        else
+            item.Picture = null;
 
-        if (item.State != ApplicationTenantState.Active)
-            throw new ApplicationException($"Tenant '{tenant.Id}' is not in state active");
+        var exists = await _dbcontext.ApplicationTenants.Where(q => q.Id == item.Id).ToListAsync();
+        if (exists.Count != 0)
+            throw new ArgumentException($"Tenant with Id {tenant.Id} already exists", nameof(tenant));
 
-        //
-        // OTHER LOGIC TO DEACTIVATE TENANT
-        //
-
-        item.State = ApplicationTenantState.Disabled;
-        _dbcontext.ApplicationTenants.Update(item);
+        _dbcontext.ApplicationTenants.Add(item);
         await _dbcontext.SaveChangesAsync();
+
+        var roles = ApplicationRole.GetDefaultTenantRoles(item.Id);
+        foreach (var role in roles)
+            await _roleManager.CreateAsync(role);
+
+        var roleId = ApplicationRole.GetRoleName(item.Id, ApplicationDefaultTenantRole.Owner);
+        await _userManager.AddToRoleAsync(user, roleId);
+        return item;
     }
 
     public async Task DeleteTenantAsync(ApplicationUser user, ApplicationTenant tenant)
@@ -187,42 +116,79 @@ public class ApplicationTenantManager : IApplicationTenantManager
         BackgroundJob.Enqueue<ChangeTenantStatusJob>(x => x.RemoveAsync(item));
     }
 
-    public async Task<List<string>> AddUsersToTenantAsync(ApplicationUser user, string tenantId, string roleId, List<string> listOfUsers)
+    public async Task DisableTenantAsync(ApplicationUser user, ApplicationTenant tenant)
     {
-        List<string> messages = [];
+        if (!await _userManager.IsOwnerAsync(user, tenant.Id))
+            throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
 
-        if (!await _userManager.IsOwnerAsync(user, tenantId))
-            throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant '{tenantId}'");
+        var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
+            throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to update tenant state");
 
-        var tenant = await _dbcontext.ApplicationTenants.FindAsync(tenantId) ??
-            throw new ApplicationException($"Tenant '{tenantId}' not found while trying to delete tenant");
+        if (item.State != ApplicationTenantState.Active)
+            throw new ApplicationException($"Tenant '{tenant.Id}' is not in state active");
 
-        var newRole = await _roleManager.FindByIdAsync(roleId);
-        if (newRole is null || string.IsNullOrWhiteSpace(newRole.Name))
+        item.State = ApplicationTenantState.Disabled;
+        _dbcontext.ApplicationTenants.Update(item);
+        await _dbcontext.SaveChangesAsync();
+    }
+
+    public async Task<IList<ApplicationTenant>> GetTenantsAsync(ApplicationUser user, CancellationToken cancellationToken = default)
+    {
+        if (user is null) return [];
+        if (string.IsNullOrEmpty(user.Id)) return [];
+        
+        if (await _userManager.IsAdministratorAsync(user))
         {
-            messages.Add($"Role with {roleId} not found");
-            return messages;
+            return await _dbcontext.ApplicationTenants.ToListAsync();
         }
 
-        foreach (var forEmail in listOfUsers)
-        {
-            var newUser = await _userManager.FindByEmailAsync(forEmail);
-            if (newUser is null)
-            {
-                messages.Add($"User with e-mail {forEmail} not found");
-                continue;
-            }
+        var userId = user.Id;
+        var query = from userRole in _dbcontext.UserRoles
+                    join tenant in _dbcontext.ApplicationTenants on userRole.TenantId equals tenant.Id
+                    where userRole.UserId.Equals(userId) && tenant.State != ApplicationTenantState.Removed
+                    select tenant;
+        
+        return await query.GroupBy(q => q.Name).Select(q => q.First()).ToListAsync(cancellationToken);
+    }
 
-            var newResult = await _userManager.AddToRoleAsync(newUser, newRole.Name!);
-            if (!newResult.Succeeded)
-            {
-                messages.Add($"User {newUser.Fullname} could not be added to role {newRole.Name!}");
-                continue;
-            }
+    public async Task<ApplicationTenant?> GetTenantAsync(ApplicationUser user, string tenantId)
+    {
+        var tenant = await _dbcontext.ApplicationTenants.FirstOrDefaultAsync(q => q.Id == tenantId);
+        if (tenant == null)
+            return null;
 
-            messages.Add($"User with e-mail {newUser.Email} was added to {tenant.Id} with role {newRole.Label}");
-        }
+        if (await _userManager.IsInTenantAsync(user.Id, tenantId))
+            return tenant;
+        
+        if (await _userManager.IsAdministratorAsync(user))
+            return tenant;
 
-        return messages;
+        return null;
+    }
+
+    public async Task<List<ApplicationRole>> GetTenantRolesAsync(ApplicationUser user, string tenantId)
+    {
+        return await _dbcontext.Roles.Where(q => q.TenantId == tenantId).ToListAsync() ?? [];
+    }
+
+    public async Task<List<ApplicationUserRole>> GetTenantUserRolesAsync(ApplicationUser user, string tenantId)
+    {
+        return await _dbcontext.UserRoles
+            .Include(i => i.Role)
+            .Include(i => i.User)
+            .Where(q => q.TenantId == tenantId).ToListAsync() ?? [];
+    }
+
+    public async Task UpdateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
+    {
+        if (!await _userManager.IsOwnerAsync(user, tenant.Id))
+            throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
+
+        var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
+            throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to update tenant");
+
+        item.UpdateFrom(tenant);
+        _dbcontext.ApplicationTenants.Update(item);
+        await _dbcontext.SaveChangesAsync();
     }
 }

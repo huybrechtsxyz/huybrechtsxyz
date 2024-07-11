@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
-using System;
 
 namespace Huybrechts.Infra.Application;
 
@@ -12,7 +10,6 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
     private readonly ApplicationUserStore UserStore;
 
 	public ApplicationUserManager(
-        //IUserStore<ApplicationUser> store,
         ApplicationUserStore store,
         IOptions<IdentityOptions> optionsAccessor,
         IPasswordHasher<ApplicationUser> passwordHasher,
@@ -39,50 +36,39 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         return await UserStore.GetApplicationRolesAsync(user, CancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<IList<string>> GetTenantNamesAsync(ApplicationUser user)
-    {
-        ThrowIfDisposed();
-        CancellationToken.ThrowIfCancellationRequested();
-        ArgumentNullException.ThrowIfNull(user);
-        return await UserStore.GetTenantNamesAsync(user, CancellationToken);
-    }
-
-    public async Task<IList<ApplicationTenant>> GetTenantsListAsync(ApplicationUser user)
-    {
-        ThrowIfDisposed();
-        CancellationToken.ThrowIfCancellationRequested();
-        ArgumentNullException.ThrowIfNull(user);
-        return await UserStore.GetTenantsListAsync(user, CancellationToken);
-    }
-
     /// <summary>
-    /// Returns a flag indicating whether the specified <paramref name="user"/> is a member of the administrators.
+    /// Is the user an adminsitrator?
     /// </summary>
-    /// <param name="user">The user whose role membership should be checked.</param>
-    /// <returns>
-    /// The <see cref="Task"/> that represents the asynchronous operation, containing a flag indicating whether the specified <paramref name="user"/> is
-    /// a member of the administrators.
-    /// </returns>
+    /// <param name="user">The user for who to check adminsitrator priviledges.</param>
+    /// <returns>True if administrator</returns>
     public virtual async Task<bool> IsAdministratorAsync(ApplicationUser user)
     {
         return await IsInRoleAsync(user, ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.Administrator));
     }
 
     /// <summary>
-    /// Returns a flag indicating whether the specified <paramref name="user"/> is a member of the administrators.
+    /// Returns a flag indicating whether the specified <paramref name="user"/> is a member of the tenant owners.
     /// </summary>
     /// <param name="user">The user whose role membership should be checked.</param>
     /// <returns>
     /// The <see cref="Task"/> that represents the asynchronous operation, containing a flag indicating whether the specified <paramref name="user"/> is
     /// a member of the administrators.
     /// </returns>
-    public virtual async Task<bool> IsOwnerAsync(ApplicationUser user, string tenant)
+    public virtual async Task<bool> IsOwnerAsync(ApplicationUser user, string tenantId)
     {
         if (await IsAdministratorAsync(user))
             return true;
-        return await IsInRoleAsync(user, ApplicationRole.GetRoleName(tenant, ApplicationDefaultTenantRole.Owner));
+        return await IsInRoleAsync(user, ApplicationRole.GetRoleName(tenantId, ApplicationDefaultTenantRole.Owner));
     }
 
+    /// <summary>
+    /// Returns a flag indicating whether the specified <paramref name="user"/> is a member of the tenant managers.
+    /// </summary>
+    /// <param name="user">The user whose role membership should be checked.</param>
+    /// <returns>
+    /// The <see cref="Task"/> that represents the asynchronous operation, containing a flag indicating whether the specified <paramref name="user"/> is
+    /// a member of the administrators.
+    /// </returns>
     public virtual async Task<bool> IsManagerAsync(ApplicationUser user, string tenant)
     {
         if (await IsAdministratorAsync(user))
@@ -94,46 +80,40 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         return false;
     }
 
-    public async Task<bool> IsInTenantAsync(ApplicationUser user, string tenantId)
+    /// <summary>
+    /// Is the current user a member of the tenant?
+    /// </summary>
+    /// <param name="userId">The user for who to check if they are in a tenant</param>
+    /// <param name="tenantId">The tenant to check </param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>True is the user is a member of the tenant</returns>
+    public async Task<bool> IsInTenantAsync(string userId, string tenantId, CancellationToken cancellationToken = default)
     {
         ThrowIfDisposed();
         CancellationToken.ThrowIfCancellationRequested();
-        ArgumentNullException.ThrowIfNull(user);
+        ArgumentException.ThrowIfNullOrEmpty(userId);
         ArgumentException.ThrowIfNullOrEmpty(tenantId);
-        return await UserStore.IsInTenantAsync(user, tenantId, CancellationToken);
+        return await UserStore.IsInTenantAsync(userId, tenantId, CancellationToken);
     }
 
-    public async Task<IdentityResult> RemoveFromTenantAsync(ApplicationUser user, string tenantId)
+    /// <summary>
+    /// Sets the phone number for the specified <paramref name="user"/>.
+    /// </summary>
+    /// <param name="user">The user whose phone number to set.</param>
+    /// <param name="phoneNumber">The phone number to set.</param>
+    /// <returns>
+    /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/>
+    /// of the operation.
+    /// </returns>
+    public virtual async Task<IdentityResult> SetGivenSurNameAsync(ApplicationUser user, string? givenName, string? surname)
     {
         ThrowIfDisposed();
-        CancellationToken.ThrowIfCancellationRequested();
         ArgumentNullException.ThrowIfNull(user);
-        ArgumentException.ThrowIfNullOrEmpty(tenantId);
-
-        List<IdentityError> errors = [];
-        if (!await UserStore.IsInTenantAsync(user, tenantId, CancellationToken))
-        {
-            errors.Add(new() { Code = "UserNotInTenant", Description = $"User {user.Id} is not part of tenant {tenantId}"});
-            return IdentityResult.Failed([.. errors]);
-        }
-
-        await UserStore.RemoveFromTenantAsync(user,tenantId, CancellationToken); //also deletes linked tenant roles
-        await UserStore.UpdateAsync(user);
-        return IdentityResult.Success;
-    }
-
-    public async Task<IdentityResult> UpdateGivenSurNameAsync(string userid, string given, string sur)
-    {
-        ThrowIfDisposed();
-        CancellationToken.ThrowIfCancellationRequested();
-        ArgumentNullException.ThrowIfNull(given);
-        ArgumentNullException.ThrowIfNull(sur);
-        var user = await UserStore.GetUserAsync(userid);
-        if (user is null)
-            return IdentityResult.Failed([new IdentityError() { Description = "Invalid user" }]);
-
-        user.GivenName = given;
-        user.Surname = sur;
-        return await UserStore.UpdateAsync(user);
+        var item = await UserStore.FindByIdAsync(user.Id) ??
+            throw new ApplicationException($"User with id {user.Id} was not found!");
+        item.GivenName = givenName;
+        item.Surname = surname;
+        await base.UpdateSecurityStampAsync(item).ConfigureAwait(false);
+        return await UpdateUserAsync(user).ConfigureAwait(false);
     }
 }

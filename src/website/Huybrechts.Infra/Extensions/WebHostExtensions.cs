@@ -188,7 +188,6 @@ public static class WebHostExtensions
             options.Password.RequiredLength = 8;
         })
         .AddEntityFrameworkStores<ApplicationContext>()
-        .AddRoleValidator<ApplicationRoleValidator>()
         .AddRoleManager<ApplicationRoleManager>()
         .AddUserStore<ApplicationUserStore>()
         .AddUserManager<ApplicationUserManager>()

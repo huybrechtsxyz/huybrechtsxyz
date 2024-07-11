@@ -71,7 +71,7 @@ public class TenantInviteModel : PageModel
 
         List<string> newUsers = Input.Users?.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList() ?? [];
 
-        await _tenantManager.AddUsersToTenantAsync(user, Input.TenantId, Input.RoleId, newUsers);
+        //await _tenantManager.AddUsersToTenantAsync(user, Input.TenantId, Input.RoleId, newUsers);
         StatusMessage = "The tenant invate(s) has been created";
         return RedirectToPage("TenantCard");
     }
