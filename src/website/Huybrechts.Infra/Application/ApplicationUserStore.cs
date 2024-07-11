@@ -31,8 +31,27 @@ public class ApplicationUserStore :
         if (!result.Succeeded)
             return result;
 
-        await base.AddToRoleAsync(user, ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.User), cancellationToken);
+        user = await base.FindByEmailAsync(user.NormalizedEmail!, cancellationToken) ??
+            throw new Exception($"Unable to find user with {user.NormalizedEmail}");
+
+        await base.AddToRoleAsync(user, ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.User).Trim().ToUpper(), cancellationToken);
         return result;
+    }
+
+    /// <summary>
+    /// Called to create a new instance of a <see cref="IdentityUserRole{TKey}"/>.
+    /// </summary>
+    /// <param name="user">The associated user.</param>
+    /// <param name="role">The associated role.</param>
+    /// <returns></returns>
+    protected override ApplicationUserRole CreateUserRole(ApplicationUser user, ApplicationRole role)
+    {
+        return new ApplicationUserRole()
+        {
+            UserId = user.Id,
+            RoleId = role.Id,
+            TenantId = role.TenantId
+        };
     }
 
     /// <summary>
@@ -41,7 +60,7 @@ public class ApplicationUserStore :
     /// <param name="user">The user whose roles should be retrieved.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
     /// <returns>A <see cref="Task{TResult}"/> that contains the roles the user is a member of.</returns>
-    public async Task<IList<ApplicationRole>> GetApplicationRolesAsync(ApplicationUser user, CancellationToken cancellationToken = default(CancellationToken))
+    public async Task<IList<ApplicationRole>> GetApplicationRolesAsync(ApplicationUser user, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
@@ -52,11 +71,6 @@ public class ApplicationUserStore :
                     where userRole.UserId.Equals(userId)
                     select role;
         return await query.ToListAsync(cancellationToken);
-    }
-
-    public async Task<ApplicationUser?> GetUserAsync(string userid)
-    {
-        return await _dbcontext.Users.FindAsync(userid);
     }
 
     public async Task<IList<string>> GetTenantNamesAsync(ApplicationUser user, CancellationToken cancellationToken = default)
@@ -83,6 +97,11 @@ public class ApplicationUserStore :
                     where userRole.UserId.Equals(userId) && tenant.State != ApplicationTenantState.Removed
                     select tenant;
         return await query.GroupBy(q => q.Name).Select(q => q.First()).ToListAsync(cancellationToken);
+    }
+
+    public async Task<ApplicationUser?> GetUserAsync(string userid)
+    {
+        return await _dbcontext.Users.FindAsync(userid);
     }
 
     public async Task<bool> IsInTenantAsync(ApplicationUser user, string tenantId, CancellationToken cancellationToken = default)
@@ -166,21 +185,5 @@ public class ApplicationUserStore :
             return result;
         await _dbcontext.SaveChangesAsync(cancellationToken);
         return IdentityResult.Success;
-    }
-
-    /// <summary>
-    /// Called to create a new instance of a <see cref="IdentityUserRole{TKey}"/>.
-    /// </summary>
-    /// <param name="user">The associated user.</param>
-    /// <param name="role">The associated role.</param>
-    /// <returns></returns>
-    protected override ApplicationUserRole CreateUserRole(ApplicationUser user, ApplicationRole role)
-    {
-        return new ApplicationUserRole()
-        {
-            UserId = user.Id,
-            RoleId = role.Id,
-            TenantId = role.TenantId
-        };
     }
 }

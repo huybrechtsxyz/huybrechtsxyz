@@ -16,9 +16,9 @@ public class ApplicationSeedWorker : IHostedService
 	private readonly IConfiguration _configuration;
 	private readonly ILogger _logger = Log.Logger.ForContext<ApplicationSeedWorker>();
 
-	private ApplicationContext? _dbcontext = null;
-	private ApplicationUserManager? _userManager = null;
-	private ApplicationRoleManager? _roleManager = null;
+	private ApplicationContext _dbcontext = null!;
+	private ApplicationUserManager _userManager = null!;
+	private ApplicationRoleManager _roleManager = null!;
 
 	public ApplicationSeedWorker(IServiceProvider serviceProvider, IConfiguration configuration)
 	{
@@ -36,8 +36,10 @@ public class ApplicationSeedWorker : IHostedService
 		_dbcontext = scope.ServiceProvider.GetRequiredService<ApplicationContext>() ??
 			throw new Exception("The DatabaseContext service was not registered as a service");
 
-		_userManager = (ApplicationUserManager)scope.ServiceProvider.GetRequiredService(typeof(ApplicationUserManager));
-		_roleManager = (ApplicationRoleManager)scope.ServiceProvider.GetRequiredService(typeof(ApplicationRoleManager));
+		_userManager = (ApplicationUserManager)scope.ServiceProvider.GetRequiredService(typeof(ApplicationUserManager)) ??
+            throw new Exception("The ApplicationUserManager service was not registered as a service");
+        _roleManager = (ApplicationRoleManager)scope.ServiceProvider.GetRequiredService(typeof(ApplicationRoleManager)) ??
+            throw new Exception("The ApplicationRoleManager service was not registered as a service");
 
         _logger.Information("Running database initializer...applying database migrations");
         if (HealthStatus.Unhealthy == await MigrateAsync(5, 5, new CancellationToken()))
@@ -91,7 +93,30 @@ public class ApplicationSeedWorker : IHostedService
 	{
         _logger.Information("Running database initializer...building default roles and users");
         List<ApplicationRole> defaultRoles = ApplicationRole.GetDefaultSystemRoles();
-        List<ApplicationUser> defaultUsers = [
+        List<ApplicationUser> defaultUsers = GetDefaultUsers();
+
+        _logger.Information("Running database initializer...creating default roles");
+        foreach (var item in defaultRoles)
+        {
+            var newRole = await CreateRole(item);
+            if (newRole is null)
+                _logger.Error($"Running database initializer...error creating default role {item.Name}");
+        }
+
+        ApplicationRole systemAdministrator = await _roleManager.FindByNameAsync(ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.Administrator)) ??
+            throw new Exception("The System Administrator role was not created properly");
+
+        _logger.Information("Running database initializer...creating default users");
+        foreach (var item in defaultUsers)
+		{
+            var newUser = await CreateUser(item, systemAdministrator!) ??
+                throw new InvalidOperationException("Running database initializer...unable to create administrator");
+        }
+    }
+
+    private List<ApplicationUser> GetDefaultUsers()
+    {
+        return [
             new()
             {
                 UserName = EnvironmentSettings.GetApplicationHostUsername(_configuration),
@@ -101,47 +126,14 @@ public class ApplicationSeedWorker : IHostedService
                 EmailConfirmed = true
             }
         ];
-
-        _logger.Information("Running database initializer...creating default roles");
-        ApplicationRole systemAdministrator = null!;
-        foreach (var item in defaultRoles)
-        {
-            var newRole = await CreateRole(item);
-            if (newRole is not null)
-            {
-                if (newRole.Name == ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.Administrator))
-                    systemAdministrator = newRole;
-            }
-            else
-                _logger.Error("Running database initializer...error creating default roles");
-        }
-        if (systemAdministrator is null)
-            _logger.Error("Running database initializer...error creating default roles");
-
-        _logger.Information("Running database initializer...creating default users");
-        foreach (var item in defaultUsers)
-		{
-            var newUser = await CreateUser(item) ??
-                throw new InvalidOperationException("Running database initializer...unable to create administrator");
-            if (string.IsNullOrEmpty(newUser.UserName) || string.IsNullOrEmpty(newUser.Email))
-                throw new InvalidOperationException("Running database initializer...creating administrator with invalid username or email");
-            if (!await _userManager!.IsInRoleAsync(newUser, systemAdministrator!.Name!))
-            {
-                var result = await _userManager!.AddToRoleAsync(newUser, systemAdministrator!.Name!);
-                if (!result.Succeeded)
-                {
-                    foreach (var error in result.Errors)
-                        _logger.Error("Error adding role {role} to user {user}: {errorcode} with {errortext}", newUser.UserName, newUser.Email, error.Code, error.Description);
-                }
-            }
-        }
     }
 
     private async Task<ApplicationRole?> CreateRole(ApplicationRole role)
     {
         ArgumentNullException.ThrowIfNull(() => role);
         ArgumentNullException.ThrowIfNull(() => role.Name);
-        var item = await _roleManager!.FindByNameAsync(role.Name!);
+
+        var item = await _roleManager.FindByNameAsync(role.Name!);
         if (item is not null)
             return item;
 
@@ -155,24 +147,40 @@ public class ApplicationSeedWorker : IHostedService
         return null;
     }
 
-    private async Task<ApplicationUser?> CreateUser(ApplicationUser user)
+    private async Task<ApplicationUser?> CreateUser(ApplicationUser user, ApplicationRole role)
     {
         ArgumentNullException.ThrowIfNull(() => user);
         ArgumentNullException.ThrowIfNull(() => user.UserName);
         ArgumentNullException.ThrowIfNull(() => user.Email);
+        ArgumentNullException.ThrowIfNull(() => role);
+        ArgumentNullException.ThrowIfNull(() => role.NormalizedName);
 
-        var item = await _userManager!.FindByEmailAsync(user.Email!);
-        if (item is not null)
-            return item;
+        var item = await _userManager.FindByEmailAsync(user.Email!);
+        if (item is null)
+        {
+            var results = await _userManager.CreateAsync(user, EnvironmentSettings.GetApplicationHostPassword(_configuration));
+            if (!results.Succeeded)
+            {
+                foreach (var error in results.Errors)
+                    _logger.Error("Error creating default user {user}: {errorcode} with {errortext}", user.Email, error.Code, error.Description);
+                return null;
+            }
 
-        var result = await _userManager.CreateAsync(user, EnvironmentSettings.GetApplicationHostPassword(_configuration));
-		if (!result.Succeeded)
-		{
-            foreach (var error in result.Errors)
-                _logger.Error("Error creating default user {user}: {errorcode} with {errortext}", user.Email, error.Code, error.Description);
-			return null;
+            item = await _userManager.FindByEmailAsync(user.Email!);
+            if (item is null || string.IsNullOrEmpty(item.UserName) || string.IsNullOrEmpty(item.Email))
+                throw new InvalidOperationException($"Running database initializer...creating user with invalid username or email");
         }
 
-        return await _userManager.FindByEmailAsync(user.Email!);
+        if (await _userManager.IsInRoleAsync(item, role.NormalizedName!))
+            return item;
+
+        var result = await _userManager.AddToRoleAsync(item, role.NormalizedName!);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+                _logger.Error("Error adding role {role} to user {user}: {errorcode} with {errortext}", item.UserName, item.Email, error.Code, error.Description);
+        }
+
+        return item;
     }
 }

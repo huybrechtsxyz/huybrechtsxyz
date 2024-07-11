@@ -3,6 +3,8 @@ using Huybrechts.Core.Application;
 using Huybrechts.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace Huybrechts.Infra.Application;
 
@@ -183,5 +185,44 @@ public class ApplicationTenantManager : IApplicationTenantManager
         await _dbcontext.SaveChangesAsync();
 
         BackgroundJob.Enqueue<ChangeTenantStatusJob>(x => x.RemoveAsync(item));
+    }
+
+    public async Task<List<string>> AddUsersToTenantAsync(ApplicationUser user, string tenantId, string roleId, List<string> listOfUsers)
+    {
+        List<string> messages = [];
+
+        if (!await _userManager.IsOwnerAsync(user, tenantId))
+            throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant '{tenantId}'");
+
+        var tenant = await _dbcontext.ApplicationTenants.FindAsync(tenantId) ??
+            throw new ApplicationException($"Tenant '{tenantId}' not found while trying to delete tenant");
+
+        var newRole = await _roleManager.FindByIdAsync(roleId);
+        if (newRole is null || string.IsNullOrWhiteSpace(newRole.Name))
+        {
+            messages.Add($"Role with {roleId} not found");
+            return messages;
+        }
+
+        foreach (var forEmail in listOfUsers)
+        {
+            var newUser = await _userManager.FindByEmailAsync(forEmail);
+            if (newUser is null)
+            {
+                messages.Add($"User with e-mail {forEmail} not found");
+                continue;
+            }
+
+            var newResult = await _userManager.AddToRoleAsync(newUser, newRole.Name!);
+            if (!newResult.Succeeded)
+            {
+                messages.Add($"User {newUser.Fullname} could not be added to role {newRole.Name!}");
+                continue;
+            }
+
+            messages.Add($"User with e-mail {newUser.Email} was added to {tenant.Id} with role {newRole.Label}");
+        }
+
+        return messages;
     }
 }

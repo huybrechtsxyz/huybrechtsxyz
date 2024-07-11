@@ -26,6 +26,16 @@ public class ApplicationRoleManager : RoleManager<ApplicationRole>
         return base.CreateAsync(role!);
     }
 
+    public override Task<IdentityResult> SetRoleNameAsync(ApplicationRole role, string? name)
+    {
+        if (role is not null)
+        {
+            role.TenantId = ApplicationRole.GetTenant(role.Name!);
+            role.Label = ApplicationRole.GetLabel(role.Name!);
+        }
+        return base.SetRoleNameAsync(role!, name);
+    }
+
     public override Task<IdentityResult> UpdateAsync(ApplicationRole role)
     {
         role?.Set(role.Name!);

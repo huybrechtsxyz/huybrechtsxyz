@@ -83,6 +83,17 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         return await IsInRoleAsync(user, ApplicationRole.GetRoleName(tenant, ApplicationDefaultTenantRole.Owner));
     }
 
+    public virtual async Task<bool> IsManagerAsync(ApplicationUser user, string tenant)
+    {
+        if (await IsAdministratorAsync(user))
+            return true;
+        if (await IsInRoleAsync(user, ApplicationRole.GetRoleName(tenant, ApplicationDefaultTenantRole.Owner)))
+            return true;
+        if (await IsInRoleAsync(user, ApplicationRole.GetRoleName(tenant, ApplicationDefaultTenantRole.Manager)))
+            return true;
+        return false;
+    }
+
     public async Task<bool> IsInTenantAsync(ApplicationUser user, string tenantId)
     {
         ThrowIfDisposed();
