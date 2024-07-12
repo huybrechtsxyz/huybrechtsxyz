@@ -37,7 +37,13 @@
                 <tr>
                     <td>@Html.DisplayFor(modelItem => item!.User.Fullname)</td>
                     <td>@Html.DisplayFor(modelItem => item!.Role.Label)</td>
-                    <td></td>
+                    <td>
+                        <form method="post" asp-page-handler="RemoveUser">
+                            <input type="hidden" name="userId" value="@item.UserId" />
+                            <input type="hidden" name="roleId" value="@item.RoleId" />
+                            <input type="hidden" name="tenantId" value="@item.TenantId" />
+                            <button class="btn btn-link link-primary">Remove</button>
+                        </form></td>
                 </tr>
             }
         </table>

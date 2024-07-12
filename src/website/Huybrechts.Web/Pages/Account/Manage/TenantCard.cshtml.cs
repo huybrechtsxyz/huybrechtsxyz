@@ -49,4 +49,14 @@ public class TenantCardModel : PageModel
 
         return Page();
     }
+
+    public async Task<IActionResult> OnPostRemoveUser(string userId, string roleId, string tenantId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+        await _tenantManager.RemoveUserFromTenant(user, userId, roleId);
+        StatusMessage = "User was removed from the tenant";
+        return RedirectToPage("TenantCard", "", new { id = tenantId });
+    }
 }

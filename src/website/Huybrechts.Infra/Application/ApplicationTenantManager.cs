@@ -42,27 +42,27 @@ public class ApplicationTenantManager : IApplicationTenantManager
 
     public async Task<List<string>> AddUsersToTenant(ApplicationUser user, string tenantId, string roleId, string[] newUsers)
     {
-        List<string> users = new List<string>();
+        List<string> users = [];
 
         if (!await _userManager.IsOwnerAsync(user, tenantId))
             throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
 
         var appTenant = await _dbcontext.ApplicationTenants.FindAsync(tenantId) ??
-            throw new ApplicationException($"Tenant '{tenantId}' not found while trying to update tenant state");
+            throw new ApplicationException($"Tenant '{tenantId}' not found");
 
         var appRole = await _roleManager.FindByIdAsync(roleId) ??
-            throw new ApplicationException($"Role '{roleId}' not found while trying to update tenant state");
+            throw new ApplicationException($"Role '{roleId}' not found");
 
         foreach (var newUser in newUsers)
         {
             var appUser = await _userManager.FindByEmailAsync(newUser);
-            if (appUser is null) 
+            if (appUser is not null) 
             {
-                users.Add($"User {newUser} was not found");
+                await _userManager.AddToRoleAsync(appUser!, appRole.NormalizedName!);
+                users.Add($"User {newUser} added with role {appRole.Label}");
             }
-
-            await _userManager.AddToRoleAsync(appUser!, appRole.NormalizedName!);
-            users.Add($"User {newUser} added with role {appRole.Label}");
+            else
+                users.Add($"User {newUser} was not found");
         }
 
         return users;
@@ -74,7 +74,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
             throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
 
         var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
-            throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to update tenant state");
+            throw new ApplicationException($"Tenant '{tenant.Id}' not found");
 
         if (item.State != ApplicationTenantState.New && item.State != ApplicationTenantState.Disabled)
             throw new ApplicationException($"Tenant '{tenant.Id}' is not in state new or inactive");
@@ -150,7 +150,7 @@ public class ApplicationTenantManager : IApplicationTenantManager
             throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
 
         var item = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) ??
-            throw new ApplicationException($"Tenant '{tenant.Id}' not found while trying to update tenant state");
+            throw new ApplicationException($"Tenant '{tenant.Id}' not found");
 
         if (item.State != ApplicationTenantState.Active)
             throw new ApplicationException($"Tenant '{tenant.Id}' is not in state active");
@@ -205,6 +205,21 @@ public class ApplicationTenantManager : IApplicationTenantManager
             .Include(i => i.Role)
             .Include(i => i.User)
             .Where(q => q.TenantId == tenantId).ToListAsync() ?? [];
+    }
+
+    public async Task RemoveUserFromTenant(ApplicationUser user, string userId, string roleId)
+    {
+        var appUser = await _userManager.FindByIdAsync(userId) ??
+            throw new ApplicationException($"User '{userId}' not found");
+
+        var appRole = await _roleManager.FindByIdAsync(roleId) ??
+            throw new ApplicationException($"Role '{roleId}' not found");
+
+        if (!string.IsNullOrEmpty(appRole.TenantId))
+            if (!await _userManager.IsOwnerAsync(user, appRole.TenantId!))
+                throw new ApplicationException($"User '{user.NormalizedUserName}' is not the owner of the tenant");
+
+        await _userManager.RemoveFromRoleAsync(appUser, appRole.NormalizedName!);
     }
 
     public async Task UpdateTenantAsync(ApplicationUser user, ApplicationTenant tenant)

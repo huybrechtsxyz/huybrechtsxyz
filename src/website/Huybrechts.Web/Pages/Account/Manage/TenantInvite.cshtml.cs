@@ -3,6 +3,7 @@ using Huybrechts.Infra.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Web.Pages.Account.Manage;
 
@@ -22,12 +23,16 @@ public class TenantInviteModel : PageModel
 
     public class Invitation
     {
+        [Required]
         [DisplayName("Tenant ID")]
         public string TenantId { get; set; } = string.Empty;
 
+        [Required]
         [DisplayName("Tenant Role")]
         public string RoleId { get; set; } = string.Empty;
 
+        [Required]
+        [MinLength(3)]
         public string? Users { get; set; }
     }
 
@@ -68,13 +73,17 @@ public class TenantInviteModel : PageModel
 
         if (!ModelState.IsValid)
         {
+            var roles = await _tenantManager.GetTenantRolesAsync(user, Input.TenantId) ?? [];
+            Roles = [.. roles.OrderBy(o => o.Label)];
+            
             StatusMessage = "Unexpected error when trying to create tenant.";
             return Page();
         }
 
+        string tenantId = Input.TenantId;
         var newUsers = Input.Users?.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToArray() ?? [];
         var messages = await _tenantManager.AddUsersToTenant(user, Input.TenantId, Input.RoleId, newUsers);
         StatusMessage = string.Join(Environment.NewLine, messages);
-        return RedirectToPage("TenantCard", Input.TenantId);
+        return RedirectToPage("TenantCard", "", new { id = tenantId });
     }
 }
