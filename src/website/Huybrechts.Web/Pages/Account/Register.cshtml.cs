@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
-using Huybrechts.Infra.Application;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;

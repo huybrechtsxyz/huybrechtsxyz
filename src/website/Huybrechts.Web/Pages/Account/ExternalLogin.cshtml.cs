@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
-using Huybrechts.Infra.Application;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +16,7 @@ using System.Text.Encodings.Web;
 
 namespace Huybrechts.Web.Pages.Account
 {
-	[AllowAnonymous]
+    [AllowAnonymous]
     public class ExternalLoginModel : PageModel
     {
         private readonly ApplicationSignInManager _signInManager;

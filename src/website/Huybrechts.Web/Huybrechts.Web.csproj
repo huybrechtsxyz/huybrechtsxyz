@@ -10,6 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentResults" Version="3.16.0" />
+    <PackageReference Include="FluentResults.Extensions.AspNetCore" Version="0.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.1.21" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
@@ -17,14 +19,15 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.3" />
+    <PackageReference Include="QRCoder" Version="1.6.0" />
   </ItemGroup>
-   
+
   <ItemGroup>
     <ProjectReference Include="..\Huybrechts.App\Huybrechts.App.csproj" />
     <ProjectReference Include="..\Huybrechts.Core\Huybrechts.Core.csproj" />
-    <ProjectReference Include="..\Huybrechts.Infra\Huybrechts.Infra.csproj" />
     <ProjectReference Include="..\Huybrechts.Infra.Sqlite\Huybrechts.Infra.Sqlite.csproj" />
     <ProjectReference Include="..\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj" />
+    <ProjectReference Include="..\Huybrechts.Infra.Npgsql\Huybrechts.Infra.Npgsql.csproj" />
   </ItemGroup>
-   
+
 </Project>

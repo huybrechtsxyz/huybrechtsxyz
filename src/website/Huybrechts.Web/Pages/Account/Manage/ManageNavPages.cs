@@ -120,12 +120,12 @@ namespace  Huybrechts.Web.Pages.Account.Manage
             return string.Equals(activePage, page, StringComparison.OrdinalIgnoreCase) ? "active" : null;
         }
 
-        public static string UserRoles => "UserRoles";
+        //public static string UserRoles => "UserRoles";
 
-        public static string UserTenants => "UserTenants";
+        //public static string UserTenants => "UserTenants";
 
-        public static string UserRolesNavClass(ViewContext viewContext) => PageNavClass(viewContext, UserRoles);
+        //public static string UserRolesNavClass(ViewContext viewContext) => PageNavClass(viewContext, UserRoles);
 
-        public static string UserTenantsNavClass(ViewContext viewContext) => PageNavClass(viewContext, UserTenants);
+        //public static string UserTenantsNavClass(ViewContext viewContext) => PageNavClass(viewContext, UserTenants);
     }
 }

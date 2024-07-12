@@ -1,17 +1,17 @@
 using Hangfire;
-using Huybrechts.Infra.Config;
-using Huybrechts.Infra.Data;
-using Huybrechts.Infra.Extensions;
+using Huybrechts.App.Config;
+using Huybrechts.App.Web;
+using Huybrechts.Data.Data;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Serilog;
 
 try
 {
     Log.Logger = new LoggerConfiguration()
-        .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
-        .Enrich.FromLogContext()
-        .WriteTo.Console()
-        .CreateBootstrapLogger();
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
     Log.Information("Starting application");
 
     Log.Information("Creating application builder");
@@ -24,27 +24,21 @@ try
 	 * appsettings.json using the JSON configuration provider.
 	 */
     var builder = WebApplication.CreateBuilder(args);
-    builder.AddXyzSerilog();
-    builder.Configuration.AddXyzDockerSecrets("/run/secrets", "__", null, Log.Logger);
-
-    Log.Information("Startup configuration.............................");
-    Log.Information(builder.Configuration.GetDebugView());
-    Log.Information(EnvironmentSettings.GetGoogleLoginOptions(builder.Configuration).ToLogString());
-    Log.Information(EnvironmentSettings.GetSmtpServerOptions(builder.Configuration).ToLogString());
-    Log.Information("Startup configuration.............................");
+    builder.AddLoggingServices();
+    builder.Configuration.AddXyzDockerSecrets(builder.Configuration, Log.Logger);
+    Log.Debug("Startup configuration.............................");
+    Log.Debug(builder.Configuration.GetDebugView());
+    Log.Debug(ApplicationSettings.GetSmtpServerOptions(builder.Configuration).ToLogString());
+    Log.Debug("Startup configuration.............................");
 
     Log.Information("Add options to configuration");
-    builder.Services.AddSingleton(EnvironmentSettings.GetSmtpServerOptions(builder.Configuration));
-
+    builder.Services.AddSingleton(ApplicationSettings.GetSmtpServerOptions(builder.Configuration));
     Log.Information("Connect to the database");
-    builder.AddXyzDatabase(Log.Logger);
-
+    builder.AddDatabaseServices(Log.Logger);
     Log.Information("Connect to the identity provider");
-    builder.AddXyzIdentity(Log.Logger);
-
+    builder.AddIdentityServices(Log.Logger);
     Log.Information("Configuring webserver");
-    builder.AddXyzWebconfig();
-
+    builder.AddWebconfigServices();
     Log.Information("Configuring user interface");
     builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
     builder.Services.AddAntiforgery();
@@ -54,7 +48,6 @@ try
     Log.Information("Building the application with services");
     foreach (var service in builder.Services)
         Log.Debug(service.ToString());
-
     Log.Debug("Building the application with configuration");
     Log.Debug(builder.Configuration.GetDebugView());
 
