@@ -37,7 +37,7 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
                 return Result.Fail($"Unable to load user with ID '{user.Id}'.");
             }
 
-            BackgroundJob.Enqueue<DeletePersonalInfoWorker>(x => x.StartAsync(user.Id, CancellationToken));
+            BackgroundJob.Enqueue<DeletePersonalInfoWorker>(x => x.StartAsync(user.Id));
 
             return Result.Ok();
         }
@@ -110,7 +110,7 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
     /// <param name="tenantId">The tenant to check </param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>True is the user is a member of the tenant</returns>
-    public async Task<bool> IsInTenantAsync(string userId, string tenantId, CancellationToken cancellationToken = default)
+    public async Task<bool> IsInTenantAsync(string userId, string tenantId)
     {
         ThrowIfDisposed();
         CancellationToken.ThrowIfCancellationRequested();

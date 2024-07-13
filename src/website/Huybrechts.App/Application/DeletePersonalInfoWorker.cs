@@ -7,15 +7,15 @@ namespace Huybrechts.App.Application;
 public class DeletePersonalInfoWorker
 {
     private readonly ApplicationUserManager _userManager;
-    private readonly IEmailSender _emailSender;
+    private readonly IEmailServer _emailSender;
 
     public DeletePersonalInfoWorker(ApplicationUserManager userManager, SmtpServerOptions options, Serilog.ILogger logger)
     {
         _userManager = userManager;
-        _emailSender = new SmtpMailSender(options, logger);
+        _emailSender = EmailServerFactory.Create(options, logger);
     }
 
-    public async Task StartAsync(string? userId, CancellationToken cancellationToken = default)
+    public async Task StartAsync(string? userId)
     {
         ArgumentException.ThrowIfNullOrEmpty(userId);
         var user = await _userManager.FindByIdAsync(userId) ??

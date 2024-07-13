@@ -1,6 +1,6 @@
 ﻿namespace Huybrechts.App.Services.Mail;
 
-public interface IEmailSender
+public interface IEmailServer
 {
 	Task SendEmailAsync(string toEmail, string toName, string subject, string messageText);
 }

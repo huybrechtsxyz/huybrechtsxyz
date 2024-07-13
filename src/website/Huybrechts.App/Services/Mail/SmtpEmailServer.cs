@@ -3,12 +3,12 @@ using MimeKit;
 
 namespace Huybrechts.App.Services.Mail;
 
-public class SmtpMailSender : IEmailSender
+public class SmtpEmailServer : IEmailServer
 {
     private readonly SmtpServerOptions _mailSettings;
     private readonly Serilog.ILogger _logger;
 
-    public SmtpMailSender(SmtpServerOptions smtpServerOptions, Serilog.ILogger logger)
+    public SmtpEmailServer(SmtpServerOptions smtpServerOptions, Serilog.ILogger logger)
     {
         _mailSettings = smtpServerOptions;
         _logger = logger;

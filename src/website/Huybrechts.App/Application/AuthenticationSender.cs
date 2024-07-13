@@ -6,14 +6,14 @@ namespace Huybrechts.App.Application;
 
 public class AuthenticationMailer : Microsoft.AspNetCore.Identity.UI.Services.IEmailSender
 {
-    private readonly IEmailSender emailSender;
+    private readonly IEmailServer emailSender;
 
     public AuthenticationMailer(SmtpServerOptions options, Serilog.ILogger logger)
     {
-        emailSender = new SmtpMailSender(options, logger);
+        emailSender = EmailServerFactory.Create(options, logger);
     }
 
-    public AuthenticationMailer(IEmailSender sender)
+    public AuthenticationMailer(IEmailServer sender)
     {
         emailSender = sender;
     }
@@ -26,14 +26,14 @@ public class AuthenticationMailer : Microsoft.AspNetCore.Identity.UI.Services.IE
 
 public class AuthenticationSender : Microsoft.AspNetCore.Identity.IEmailSender<ApplicationUser>
 {
-    private readonly IEmailSender emailSender;
+    private readonly IEmailServer emailSender;
 
     public AuthenticationSender(SmtpServerOptions options, Serilog.ILogger logger)
     {
-        emailSender = new SmtpMailSender(options, logger);
+        emailSender = EmailServerFactory.Create(options, logger);
     }
 
-    public AuthenticationSender(IEmailSender sender)
+    public AuthenticationSender(IEmailServer sender)
     {
         emailSender = sender;
     }
