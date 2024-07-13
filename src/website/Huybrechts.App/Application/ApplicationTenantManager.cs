@@ -88,7 +88,7 @@ public class ApplicationTenantManager
 
         if (await _userManager.IsAdministratorAsync(user))
         {
-            return await _dbcontext.ApplicationTenants.ToListAsync();
+            return await _dbcontext.ApplicationTenants.ToListAsync(cancellationToken);
         }
 
         var userId = user.Id;
