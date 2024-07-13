@@ -185,7 +185,7 @@ jobs:
     environment: ${{ inputs.environment }}
     strategy:
       matrix:
-        component: [traefik, whoami]
+        component: [traefik, whoami, sqlite, website]
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -198,9 +198,7 @@ jobs:
           port: ${{ secrets.APP_HOST_PORT }}
           strip_components: 2
           overwrite: true
-          source: |
-            src/${{ matrix.component }}/*${{ inputs.environment }}*
-            src/${{ matrix.component }}/${{ matrix.component }}.yml
+          source: src/${{ matrix.component }}/${{ matrix.component }}.yml
           target: /app
   
   deploy-generic:
