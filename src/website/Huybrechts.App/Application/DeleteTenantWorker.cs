@@ -2,17 +2,16 @@
 using Huybrechts.App.Data;
 using Huybrechts.App.Services.Mail;
 using Huybrechts.Core.Application;
-using Microsoft.EntityFrameworkCore;
 
 namespace Huybrechts.App.Application;
 
-public class DeleteTenantInfoWorker
+public class DeleteTenantWorker
 {
     private readonly ApplicationUserManager _userManager;
     private readonly ApplicationContext _dbcontext;
     private readonly IEmailSender _emailSender;
 
-    public DeleteTenantInfoWorker(ApplicationUserManager userManager, ApplicationContext dbcontext, SmtpServerOptions options, Serilog.ILogger logger)
+    public DeleteTenantWorker(ApplicationUserManager userManager, ApplicationContext dbcontext, SmtpServerOptions options, Serilog.ILogger logger)
     {
         _userManager = userManager;
         _dbcontext = dbcontext;
@@ -31,7 +30,7 @@ public class DeleteTenantInfoWorker
         if (tenant is null)
             return;
 
-        if (tenant.State != ApplicationTenantState.Removing || tenant.State != ApplicationTenantState.Removed)
+        if (!ApplicationTenantManager.AllowRemoveTenant(tenant.State))
             return;
 
         var roles = _dbcontext.Roles.Where(q => q.TenantId == tenant.Id);

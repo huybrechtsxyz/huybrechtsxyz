@@ -1,7 +1,18 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 
 namespace Huybrechts.Core.Application;
 
+/// <summary>
+/// New -> Pending
+/// New -> Removing
+/// Pending -> Active
+/// Active -> Disabling
+/// Disabling -> Disabled
+/// Disabled  -> Pending
+/// Disabled  -> Removing
+/// Removing  -> Removed
+/// </summary>
 public enum ApplicationTenantState
 {
     [Description("New")]

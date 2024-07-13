@@ -1,0 +1,9 @@
+﻿@using Huybrechts.App.Application
+@inject ApplicationSignInManager SignInManager
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+}
+<ul class="nav nav-pills flex-column">
+    <li class="nav-item"><a class="nav-link @ManageNavPages.ProfileNavClass(ViewContext)" id="profile" asp-page="/Account/Manage/Index">Profile</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="tenants" asp-page="./Index">Tenants</a></li>
+</ul>

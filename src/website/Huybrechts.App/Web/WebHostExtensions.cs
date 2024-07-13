@@ -149,7 +149,7 @@ public static class WebHostExtensions
         .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
         .AddDefaultTokenProviders();
 
-        //builder.Services.TryAddScoped<ApplicationTenantManager>();
+        builder.Services.TryAddScoped<ApplicationTenantManager>();
 
         log.Information("Configure authentication for google");
         GoogleLoginOptions? google = ApplicationSettings.GetGoogleLoginOptions(builder.Configuration);

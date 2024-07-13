@@ -3,24 +3,24 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.App", "src\website\Huybrechts.App\Huybrechts.App.csproj", "{27F1A1FB-196E-4A40-9E4F-DEF9C1CD977B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.App", "src\website\Huybrechts.App\Huybrechts.App.csproj", "{27F1A1FB-196E-4A40-9E4F-DEF9C1CD977B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{19E62CE3-1945-4804-AA54-AAB844914E80} = {19E62CE3-1945-4804-AA54-AAB844914E80}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Core", "src\website\Huybrechts.Core\Huybrechts.Core.csproj", "{19E62CE3-1945-4804-AA54-AAB844914E80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Core", "src\website\Huybrechts.Core\Huybrechts.Core.csproj", "{19E62CE3-1945-4804-AA54-AAB844914E80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Web", "src\website\Huybrechts.Web\Huybrechts.Web.csproj", "{96B892EF-932E-4F7F-8BA9-95C989ACBB51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Web", "src\website\Huybrechts.Web\Huybrechts.Web.csproj", "{96B892EF-932E-4F7F-8BA9-95C989ACBB51}"
 	ProjectSection(ProjectDependencies) = postProject
 		{19E62CE3-1945-4804-AA54-AAB844914E80} = {19E62CE3-1945-4804-AA54-AAB844914E80}
 		{27F1A1FB-196E-4A40-9E4F-DEF9C1CD977B} = {27F1A1FB-196E-4A40-9E4F-DEF9C1CD977B}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.Sqlite", "src\website\Huybrechts.Infra.Sqlite\Huybrechts.Infra.Sqlite.csproj", "{E3007397-FD86-4701-AE19-833E2CAAFF0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.Sqlite", "src\website\Huybrechts.Infra.Sqlite\Huybrechts.Infra.Sqlite.csproj", "{E3007397-FD86-4701-AE19-833E2CAAFF0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.SqlServer", "src\website\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj", "{8CB9F4AE-E2A1-4014-AAB2-288093BF7DB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.SqlServer", "src\website\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj", "{8CB9F4AE-E2A1-4014-AAB2-288093BF7DB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.Npgsql", "src\website\Huybrechts.Infra.Npgsql\Huybrechts.Infra.Npgsql.csproj", "{BF18CDC1-0963-4BA2-A692-4D4079F17563}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.Npgsql", "src\website\Huybrechts.Infra.Npgsql\Huybrechts.Infra.Npgsql.csproj", "{BF18CDC1-0963-4BA2-A692-4D4079F17563}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
