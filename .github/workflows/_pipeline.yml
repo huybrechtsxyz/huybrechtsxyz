@@ -24,6 +24,10 @@ on:
         required: true
       APP_HOST_EMAIL:
         required: true
+      REGISTRY_USERNAME:
+        required: true
+      REGISTRY_PASSWORD:
+        required: true
 
 jobs:
   init-server:
