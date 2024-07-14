@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Huybrechts.Infra.Config;
+namespace Huybrechts.App.Config;
 
 public class GoogleLoginOptions
 {

@@ -10,10 +10,11 @@
   <ItemGroup>
      <PackageReference Include="Azure.Identity" Version="1.12.0" />
      <PackageReference Include="Hangfire.AspNetCore" Version="1.8.14" />
+     <PackageReference Include="Hangfire.InMemory" Version="0.10.3" />
      <PackageReference Include="Hangfire.PostgreSql" Version="1.20.9" />
      <PackageReference Include="Hangfire.SQLite" Version="1.4.2" />
      <PackageReference Include="Hangfire.SqlServer" Version="1.8.14" />
-     <PackageReference Include="MailKit" Version="4.7.0" />
+     <PackageReference Include="MailKit" Version="4.7.1" />
      <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.7" />
      <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.7" />
      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
@@ -24,6 +25,8 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
      </PackageReference>
+     <PackageReference Include="MimeKit" Version="4.7.1" />
+     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
      <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
   </ItemGroup>

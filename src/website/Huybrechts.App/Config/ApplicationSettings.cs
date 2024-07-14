@@ -1,5 +1,4 @@
 ﻿using Huybrechts.App.Data;
-using Huybrechts.Infra.Config;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using System.Text.Json;
@@ -108,6 +107,13 @@ public static class ApplicationSettings
     {
         DockerSecretsOptions? options = new();
         configuration.GetSection(nameof(DockerSecretsOptions)).Bind(options);
+        return options ?? new();
+    }
+
+    public static HangfireOptions GetHangfireOptions(IConfiguration configuration)
+    {
+        HangfireOptions? options = new();
+        configuration.GetSection(nameof(HangfireOptions)).Bind(options);
         return options ?? new();
     }
 

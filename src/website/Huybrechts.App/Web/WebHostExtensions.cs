@@ -6,7 +6,6 @@ using Huybrechts.App.Application;
 using Huybrechts.App.Config;
 using Huybrechts.App.Data;
 using Huybrechts.Core.Application;
-using Huybrechts.Infra.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -86,45 +85,62 @@ public static class WebHostExtensions
         }
 
         log.Information($"Connect hangfire to the database");
-        switch (contextProviderType)
+        var hangfireOptions = ApplicationSettings.GetHangfireOptions(builder.Configuration);
+        if (!hangfireOptions.InMemoryStorage)
         {
-            case ContextProviderType.Sqlite:
-                {
-                    SQLiteStorageOptions options = new()
+            switch (contextProviderType)
+            {
+                case ContextProviderType.Sqlite:
                     {
-                        PrepareSchemaIfNecessary = true
-                    };
-                    builder.Services.AddHangfire(x => x
-                        .UseSimpleAssemblyNameTypeSerializer()
-                        .UseRecommendedSerializerSettings()
-                        .UseSQLiteStorage(connectionString, options));
-                    break;
-                }
-            case ContextProviderType.SqlServer:
-                {
-                    SqlServerStorageOptions options = new()
+                        SQLiteStorageOptions options = new()
+                        {
+                            PrepareSchemaIfNecessary = true
+                        };
+                        builder.Services.AddHangfire(x => x
+                            .UseSimpleAssemblyNameTypeSerializer()
+                            .UseRecommendedSerializerSettings()
+                            .UseSQLiteStorage(connectionString, options));
+                        break;
+                    }
+                case ContextProviderType.SqlServer:
                     {
-                        PrepareSchemaIfNecessary = true
-                    };
-                    builder.Services.AddHangfire(x => x
-                        .UseSimpleAssemblyNameTypeSerializer()
-                        .UseRecommendedSerializerSettings()
-                        .UseSqlServerStorage(connectionString, options));
-                    break;
-                }
-            case ContextProviderType.Postgres:
-                {
-                    PostgreSqlStorageOptions options = new()
+                        SqlServerStorageOptions options = new()
+                        {
+                            PrepareSchemaIfNecessary = true
+                        };
+                        builder.Services.AddHangfire(x => x
+                            .UseSimpleAssemblyNameTypeSerializer()
+                            .UseRecommendedSerializerSettings()
+                            .UseSqlServerStorage(connectionString, options));
+                        break;
+                    }
+                case ContextProviderType.Postgres:
                     {
-                        PrepareSchemaIfNecessary = true
-                    };
-                    builder.Services.AddHangfire(x => x
-                        .UseSimpleAssemblyNameTypeSerializer()
-                        .UseRecommendedSerializerSettings()
-                        .UsePostgreSqlStorage(x => x.UseNpgsqlConnection(connectionString)));
-                    break;
-                }
-            default: throw new ArgumentException($"Unsupported or invalid connection for hangfire.");
+                        PostgreSqlStorageOptions options = new()
+                        {
+                            PrepareSchemaIfNecessary = true
+                        };
+                        builder.Services.AddHangfire(x => x
+                            .UseSimpleAssemblyNameTypeSerializer()
+                            .UseRecommendedSerializerSettings()
+                            .UsePostgreSqlStorage(x => x.UseNpgsqlConnection(connectionString)));
+                        break;
+                    }
+                default: throw new ArgumentException($"Unsupported or invalid connection for hangfire.");
+            }
+        }
+        else 
+        {
+            //InMemoryStorageOptions options = new()
+            //{
+
+            //};
+            builder.Services.AddHangfire(x => x
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseInMemoryStorage()
+                //.UseInMemoryStorage(options)
+            ); ; ;
         }
 
         builder.Services.AddHangfireServer(x =>
