@@ -5,7 +5,7 @@ services:
   website:
     image: huybrechts/website:${APP_ENVIRONMENT}
     environment:
-      - ASPNETCORE_ENVIRONMENT=${APP_ENVIRONMENT}
+      - ASPNETCORE_ENVIRONMENT=${WEB_ENVIRONMENT}
       - DOTNET_RUNNING_IN_CONTAINER=1
     networks:
       - traefik
