@@ -29,7 +29,7 @@ try
     builder.Configuration.AddXyzDockerSecrets(builder.Configuration, Log.Logger);
     Log.Information("Startup configuration.............................");
     Log.Information(builder.Configuration.GetDebugView());
-    Log.Information(ApplicationSettings.GetSmtpServerOptions(builder.Configuration).ToLogString());
+    //Log.Information(ApplicationSettings.GetSmtpServerOptions(builder.Configuration).ToLogString());
     Log.Information("Startup configuration.............................");
 
     Log.Information("Add options to configuration");

@@ -1,5 +1,7 @@
 ﻿using Hangfire;
+using Hangfire.PostgreSql;
 using Hangfire.SQLite;
+using Hangfire.SqlServer;
 using Huybrechts.App.Application;
 using Huybrechts.App.Config;
 using Huybrechts.App.Data;
@@ -88,26 +90,38 @@ public static class WebHostExtensions
         {
             case ContextProviderType.Sqlite:
                 {
+                    SQLiteStorageOptions options = new()
+                    {
+                        PrepareSchemaIfNecessary = true
+                    };
                     builder.Services.AddHangfire(x => x
                         .UseSimpleAssemblyNameTypeSerializer()
                         .UseRecommendedSerializerSettings()
-                        .UseSQLiteStorage(connectionString));
+                        .UseSQLiteStorage(connectionString, options));
                     break;
                 }
             case ContextProviderType.SqlServer:
                 {
+                    SqlServerStorageOptions options = new()
+                    {
+                        PrepareSchemaIfNecessary = true
+                    };
                     builder.Services.AddHangfire(x => x
                         .UseSimpleAssemblyNameTypeSerializer()
                         .UseRecommendedSerializerSettings()
-                        .UseSqlServerStorage(connectionString));
+                        .UseSqlServerStorage(connectionString, options));
                     break;
                 }
             case ContextProviderType.Postgres:
                 {
+                    PostgreSqlStorageOptions options = new()
+                    {
+                        PrepareSchemaIfNecessary = true
+                    };
                     builder.Services.AddHangfire(x => x
                         .UseSimpleAssemblyNameTypeSerializer()
                         .UseRecommendedSerializerSettings()
-                        .UseSqlServerStorage(connectionString));
+                        .UsePostgreSqlStorage(x => x.UseNpgsqlConnection(connectionString)));
                     break;
                 }
             default: throw new ArgumentException($"Unsupported or invalid connection for hangfire.");
