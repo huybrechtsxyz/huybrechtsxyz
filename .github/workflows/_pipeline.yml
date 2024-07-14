@@ -239,4 +239,7 @@ jobs:
             cd /
             cd /app
             echo DOCKER DEPLOY
+            if [ -f ${{ inputs.environment }}.env ]; then
+              mv ${{ inputs.environment }}.env .env;
+            fi
             docker stack deploy -c <(docker-compose -f compose.yml --env-file ${{ inputs.environment }}.env config) app &> /dev/null

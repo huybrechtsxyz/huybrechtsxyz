@@ -25,11 +25,12 @@ try
 	 */
     var builder = WebApplication.CreateBuilder(args);
     builder.AddLoggingServices();
+    Log.Information("Startup configuration for {environment}", builder.Environment.EnvironmentName);
     builder.Configuration.AddXyzDockerSecrets(builder.Configuration, Log.Logger);
-    Log.Debug("Startup configuration.............................");
-    Log.Debug(builder.Configuration.GetDebugView());
-    Log.Debug(ApplicationSettings.GetSmtpServerOptions(builder.Configuration).ToLogString());
-    Log.Debug("Startup configuration.............................");
+    Log.Information("Startup configuration.............................");
+    Log.Information(builder.Configuration.GetDebugView());
+    Log.Information(ApplicationSettings.GetSmtpServerOptions(builder.Configuration).ToLogString());
+    Log.Information("Startup configuration.............................");
 
     Log.Information("Add options to configuration");
     builder.Services.AddSingleton(ApplicationSettings.GetSmtpServerOptions(builder.Configuration));
