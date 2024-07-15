@@ -351,3 +351,4 @@ MigrationBackup/
 
 # Local development folder
 .app/
+docs/*.bkp
