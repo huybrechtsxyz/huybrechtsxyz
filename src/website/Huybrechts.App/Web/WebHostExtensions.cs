@@ -50,7 +50,7 @@ public static class WebHostExtensions
 
         DockerSecretsOptions options = ApplicationSettings.GetDockerSecretsOptions(configuration);
 
-        return builder.Add(new DockerSecretsConfigurationsSource(options));
+        return builder.Add(new DockerSecretsConfigurationsSource(options, log));
     }
 
     public static WebApplicationBuilder AddDatabaseServices(this WebApplicationBuilder builder, ILogger log)
