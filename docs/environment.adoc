@@ -1,5 +1,10 @@
 = Environment
 
+== First run from blank environment
+
+You will need to run the environment so the folders, files, and database is generated.
+Then apply CHMOD 777 so data is accessible.
+
 == Services
 
 === Traefik
@@ -13,6 +18,24 @@ Traefik is behind a secure administration password.
 Traefik/whoami is a simple Docker image provided by Traefik Labs that is designed to help users test and understand how their Traefik configuration works. The whoami service acts as a minimal web server that responds to HTTP requests with information about the request itself, such as the headers, the IP address of the client, and other relevant data. This can be very useful for debugging and testing your Traefik setup to ensure that routing, load balancing, and other configurations are working correctly.
 
 Traefik/whoami is behind a secure administration password.
+
+=== Sqlite
+
+The keinos/sqlite3 docker image contains the latest SQLite3 built on an Alpine Docker image.
+Here are some key details about it:
+
+* The Docker image is built from the latest SQLite3 source code.
+* You can pull the latest image using the command: docker pull keinos/sqlite3:latest.
+* It supports multiple architectures including AMD64, ARM64, ARMv6, and ARMv7.
+* You can run SQLite3 commands inside the container interactively.
+* You can also execute SQL queries to the mounted database.
+* The container includes a simple test script.
+
+**WARNING** Once created the database must be CHMOD 777 before it is not readonly!
+
+=== Website
+
+The Huybrechts XYZ website.
 
 == Environment Setup
 
