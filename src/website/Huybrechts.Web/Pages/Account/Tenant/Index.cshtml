@@ -52,7 +52,7 @@ else
                         <td>@Html.DisplayFor(modelItem => item!.State)</td>
                         <td>@Html.DisplayFor(modelItem => item!.Description)</td>
                         <td>
-                            @if (Model.AllowUpdatingTenant(item.State))
+                            @if (Model.AllowUpdatingTenant(item!.State))
                             {
                                 <a asp-page="./Edit" asp-route-id="@item!.Id"><i class="bi bi-pencil-square"></i></a>
                             }

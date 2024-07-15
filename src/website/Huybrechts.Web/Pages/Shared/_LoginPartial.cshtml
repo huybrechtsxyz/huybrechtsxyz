@@ -25,12 +25,19 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-page="/Account/Manage/Index" title="Manage">Hello @applicationUser!.GivenName!</a>
-    </li>
-    <li class="nav-item">
-        <form class="form-inline" asp-area="" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link text-dark">@Localizer["Logout"]</button>
-        </form>
+        <div class="dropdown show">
+            <a class="btn btn-light dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Hello @applicationUser!.GivenName!
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" asp-area="" asp-page="/Account/Tenant/Index" title="Manage">Tenants</a>
+                <a class="dropdown-item" asp-area="" asp-page="/Account/Manage/Index" title="Manage">Account</a>
+                <hr />
+                <form class="" asp-area="" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })">
+                    <button type="submit" class="dropdown-item">@Localizer["Logout"]</button>
+                </form>
+            </div>
+        </div>
     </li>
 }
 else
