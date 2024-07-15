@@ -25,6 +25,16 @@ networks:
     external: true
 
 secrets:
+  APP_AUTH_GOOGLE:
+    external: true
+  APP_DATA_URL:
+    external: true
+  APP_DATA_NAME:
+    external: true
+  APP_DATA_USERNAME:
+    external: true
+  APP_DATA_PASSWORD:
+    external: true
   APP_HOST_SERVER:
     external: true
   APP_HOST_PORT:
@@ -34,6 +44,8 @@ secrets:
   APP_HOST_USERNAME:
     external: true
   APP_HOST_PASSWORD:
+    external: true
+  APP_SMTP_OPTIONS:
     external: true
   REGISTRY_USERNAME:
     external: true

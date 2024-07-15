@@ -4,7 +4,7 @@ version: '3.9'
 services:
   website:
     image: huybrechts/website:${APP_ENVIRONMENT}
-     secrets:
+    secrets:
       - APP_HOST_USERNAME
       - APP_HOST_PASSWORD
       - APP_HOST_EMAIL
