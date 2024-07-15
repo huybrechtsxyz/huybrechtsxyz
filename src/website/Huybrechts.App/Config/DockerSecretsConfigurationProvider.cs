@@ -1,4 +1,6 @@
+using Hangfire.Logging;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 
 namespace Huybrechts.App.Config;
 
@@ -7,24 +9,31 @@ public sealed class DockerSecretsConfigurationProvider : ConfigurationProvider
     private readonly string _secretsDirectoryPath;
     private readonly string _colonPlaceholder;
     private readonly ICollection<string>? _allowedPrefixes;
+    private readonly ILogger _logger;
 
-	public DockerSecretsConfigurationProvider(
+    public DockerSecretsConfigurationProvider(
         string secretsDirectoryPath,
         string colonPlaceholder,
-        ICollection<string>? allowedPrefixes)
+        ICollection<string>? allowedPrefixes,
+        ILogger logger)
     {
         _secretsDirectoryPath = secretsDirectoryPath ?? throw new ArgumentNullException(nameof(secretsDirectoryPath));
         _colonPlaceholder = colonPlaceholder ?? throw new ArgumentNullException(nameof(colonPlaceholder));
         _allowedPrefixes = allowedPrefixes;
+        _logger = logger;
     }
 
 	public override void Load()
     {
         if (!Directory.Exists(_secretsDirectoryPath))
+        {
+            _logger.Warning($"Unable to read docker secret path {_secretsDirectoryPath}");
             return;
+        }   
 
         foreach (string secretFilePath in Directory.EnumerateFiles(_secretsDirectoryPath))
         {
+            _logger.Debug($"Reading configuration for docker secrets from {secretFilePath}");
             ProcessFile(secretFilePath);
         }
     }
@@ -33,6 +42,7 @@ public sealed class DockerSecretsConfigurationProvider : ConfigurationProvider
     {
         if (string.IsNullOrWhiteSpace(secretFilePath) || !File.Exists(secretFilePath))
         {
+            _logger.Warning($"Unable to readi configuration for docker secrets from {secretFilePath}");
             return;
         }
 
@@ -59,7 +69,8 @@ public sealed class DockerSecretsConfigurationProvider : ConfigurationProvider
 			secretValue = secretValue[..^1];
 		}
 
-		string secretKey = secretFileName.Replace(_colonPlaceholder, ":");
+        string secretKey = secretFileName.Replace(_colonPlaceholder, ":");
 		Data.Add(secretKey, secretValue);
-	}
+        _logger.Debug($"Addding configuration {secretKey} with {secretValue}");
+    }
 }
