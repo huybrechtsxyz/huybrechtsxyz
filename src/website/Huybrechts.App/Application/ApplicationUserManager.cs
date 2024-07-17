@@ -88,7 +88,7 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
 	/// <returns>True if administrator</returns>
 	public virtual async Task<bool> IsAdministratorAsync(ApplicationUser user)
     {
-        return await IsInRoleAsync(user, ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.Administrator));
+        return await IsInRoleAsync(user, ApplicationRole.GetRoleName(ApplicationSystemRole.Administrator));
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
     {
         if (await IsAdministratorAsync(user))
             return true;
-        return await IsInRoleAsync(user, ApplicationRole.GetRoleName(tenantId, ApplicationDefaultTenantRole.Owner));
+        return await IsInRoleAsync(user, ApplicationRole.GetRoleName(tenantId, ApplicationTenantRole.Owner));
     }
 
     /// <summary>
@@ -118,9 +118,9 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
     {
         if (await IsAdministratorAsync(user))
             return true;
-        if (await IsInRoleAsync(user, ApplicationRole.GetRoleName(tenant, ApplicationDefaultTenantRole.Owner)))
+        if (await IsInRoleAsync(user, ApplicationRole.GetRoleName(tenant, ApplicationTenantRole.Owner)))
             return true;
-        if (await IsInRoleAsync(user, ApplicationRole.GetRoleName(tenant, ApplicationDefaultTenantRole.Manager)))
+        if (await IsInRoleAsync(user, ApplicationRole.GetRoleName(tenant, ApplicationTenantRole.Manager)))
             return true;
         return false;
     }

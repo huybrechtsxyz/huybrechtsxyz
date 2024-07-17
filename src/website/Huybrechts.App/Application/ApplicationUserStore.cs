@@ -63,7 +63,7 @@ public class ApplicationUserStore :
 		if (await IsInTenantAsync(user.Id, tenantId))
 			return tenant;
 
-		if (await IsInRoleAsync(user, ApplicationRole.GetNormalizedRoleName(ApplicationDefaultSystemRole.Administrator)))
+		if (await IsInRoleAsync(user, ApplicationRole.GetNormalizedRoleName(ApplicationSystemRole.Administrator)))
 			return tenant;
 
 		return null;

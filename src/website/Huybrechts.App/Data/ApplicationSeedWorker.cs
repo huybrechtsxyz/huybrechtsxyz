@@ -104,7 +104,7 @@ public class ApplicationSeedWorker : IHostedService
 				_logger.Error($"Running database initializer...error creating default role {item.Name}");
 		}
 
-		ApplicationRole systemAdministrator = await _roleManager.FindByNameAsync(ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.Administrator)) ??
+		ApplicationRole systemAdministrator = await _roleManager.FindByNameAsync(ApplicationRole.GetRoleName(ApplicationSystemRole.Administrator)) ??
 			throw new Exception("The System Administrator role was not created properly");
 
 		_logger.Information("Running database initializer...creating default users");

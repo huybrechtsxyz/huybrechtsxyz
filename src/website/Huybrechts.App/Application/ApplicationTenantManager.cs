@@ -197,7 +197,7 @@ public class ApplicationTenantManager
         foreach (var role in roles)
             await _roleManager.CreateAsync(role);
 
-        var roleId = ApplicationRole.GetRoleName(appTenant.Id, ApplicationDefaultTenantRole.Owner);
+        var roleId = ApplicationRole.GetRoleName(appTenant.Id, ApplicationTenantRole.Owner);
         await _userManager.AddToRoleAsync(user, roleId);
         return Result.Ok<ApplicationTenant>(appTenant);
     }

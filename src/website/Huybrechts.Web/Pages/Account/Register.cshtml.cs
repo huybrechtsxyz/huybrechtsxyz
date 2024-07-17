@@ -129,7 +129,7 @@ namespace Huybrechts.Web.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    await _userManager.AddToRoleAsync(user, ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.User));
+                    await _userManager.AddToRoleAsync(user, ApplicationRole.GetRoleName(ApplicationSystemRole.User));
 
                     _logger.LogInformation("User was assigned the default role.");
                     var userId = await _userManager.GetUserIdAsync(user);

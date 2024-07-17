@@ -2,7 +2,7 @@
 
 namespace Huybrechts.Core.Application;
 
-public enum ApplicationDefaultSystemRole
+public enum ApplicationSystemRole
 {
     [Description("The system administrator role")]
     Administrator,
@@ -11,7 +11,7 @@ public enum ApplicationDefaultSystemRole
     User
 }
 
-public enum ApplicationDefaultTenantRole
+public enum ApplicationTenantRole
 {
     [Description("A role that does not provide any access")]
     None,

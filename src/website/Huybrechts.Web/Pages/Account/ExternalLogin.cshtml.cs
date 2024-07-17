@@ -174,7 +174,7 @@ namespace Huybrechts.Web.Pages.Account
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-                        await _userManager.AddToRoleAsync(user, ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.User));
+                        await _userManager.AddToRoleAsync(user, ApplicationRole.GetRoleName(ApplicationSystemRole.User));
 
                         _logger.LogInformation("User was assigned the default role.");
                         var userId = await _userManager.GetUserIdAsync(user);

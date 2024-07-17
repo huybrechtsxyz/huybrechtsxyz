@@ -71,7 +71,7 @@ public sealed class ApplicationRole : IdentityRole
     /// </summary>
     /// <param name="tenant">Name of the tenant</param>
     /// <param name="value">The default system role</param>
-    public ApplicationRole(ApplicationDefaultSystemRole value)
+    public ApplicationRole(ApplicationSystemRole value)
         : this(value.ToString())
     {
         Description = value.GetDescription();
@@ -82,7 +82,7 @@ public sealed class ApplicationRole : IdentityRole
     /// </summary>
     /// <param name="tenant">Name of the tenant</param>
     /// <param name="value">The default tenant role</param>
-    public ApplicationRole(string tenant, ApplicationDefaultTenantRole value)
+    public ApplicationRole(string tenant, ApplicationTenantRole value)
         : this(tenant, value.ToString())
     {
         Description = value.GetDescription();
@@ -113,7 +113,7 @@ public sealed class ApplicationRole : IdentityRole
     public static List<ApplicationRole> GetDefaultSystemRoles()
     {
         List<ApplicationRole> list = [];
-        foreach (var value in Enum.GetValues(typeof(ApplicationDefaultSystemRole)).Cast<ApplicationDefaultSystemRole>())
+        foreach (var value in Enum.GetValues(typeof(ApplicationSystemRole)).Cast<ApplicationSystemRole>())
         {
             var item = new ApplicationRole(value);
             list.Add(item);
@@ -124,20 +124,20 @@ public sealed class ApplicationRole : IdentityRole
     public static List<ApplicationRole> GetDefaultTenantRoles(string tenant)
     {
         List<ApplicationRole> list = [];
-        foreach (var value in Enum.GetValues(typeof(ApplicationDefaultTenantRole)).Cast<ApplicationDefaultTenantRole>())
+        foreach (var value in Enum.GetValues(typeof(ApplicationTenantRole)).Cast<ApplicationTenantRole>())
         {
             var item = new ApplicationRole(tenant, value);
-            if (value != ApplicationDefaultTenantRole.None)
+            if (value != ApplicationTenantRole.None)
                 list.Add(item);
         }
         return list;
     }
 
-    public static string GetRoleName(ApplicationDefaultSystemRole role) => role.ToString();
+    public static string GetRoleName(ApplicationSystemRole role) => role.ToString();
 
-	public static string GetNormalizedRoleName(ApplicationDefaultSystemRole role) => role.ToString().Trim().ToUpper();
+	public static string GetNormalizedRoleName(ApplicationSystemRole role) => role.ToString().Trim().ToUpper();
 
-	public static string GetRoleName(string tenant, ApplicationDefaultTenantRole role) => GetRoleName(tenant, role.ToString());
+	public static string GetRoleName(string tenant, ApplicationTenantRole role) => GetRoleName(tenant, role.ToString());
 
     public static string GetRoleName(string tenant, string label) => $"{tenant.Trim().ToLower()}{Hashtag}{label.Trim()}";
 
