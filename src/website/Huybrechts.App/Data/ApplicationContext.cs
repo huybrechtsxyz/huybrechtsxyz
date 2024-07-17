@@ -1,4 +1,5 @@
 ﻿using Huybrechts.Core.Application;
+using Huybrechts.Core.Platform;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -83,4 +84,10 @@ public class ApplicationContext : IdentityDbContext<
         builder.Entity<ApplicationUserRole>().ToTable(nameof(ApplicationUserRole));
         builder.Entity<ApplicationUserToken>().ToTable(nameof(ApplicationUserToken));
     }
+
+    //
+    // PLATFORM
+    //
+
+    public DbSet<PlatformInfo> Platforms { get; set; }
 }

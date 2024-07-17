@@ -6,15 +6,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Huybrechts.Core.Platform;
 
 /// <summary>
-/// The platform (Azure, On-Premise)
+/// The platform that can be used in project
 /// </summary>
 [Table("Platform")]
 [DisplayName("Platform")]
-public record Platform
+public record PlatformInfo
 {
     [Key]
     [Required]
-    [DisplayName("Platform ID")]
+    [DisplayName("ID")]
     [Comment("Primary Key")]
     public int Id { get; set;} = 0;
 

@@ -39,5 +39,12 @@
 }
 @if (@Model.Data.IsDetail())
 {
-    <p>data about your tenant @Model.Data.ActiveTenant!.Id</p>
+    <div class="card" style="width: 18rem;">
+        <img class="card-img-top" width="120" height="240" src="/img/platform-icon.png" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">Platform</h5>
+            <p class="card-text">Manage the platforms of your tenant.</p>
+            <a asp-page="./Platform/Index" asp-route-tenantId="@Model.Data.ActiveTenant!.Id" class="btn btn-primary">Platforms</a>
+        </div>
+    </div>
 }

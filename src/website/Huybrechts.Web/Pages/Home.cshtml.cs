@@ -1,6 +1,7 @@
 
 using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
+using Huybrechts.Core.Platform;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
