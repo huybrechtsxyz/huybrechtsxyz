@@ -2,7 +2,6 @@
 using Hangfire;
 using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -59,12 +58,35 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         return await UserStore.GetApplicationRolesAsync(user, CancellationToken).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Is the user an adminsitrator?
-    /// </summary>
-    /// <param name="user">The user for who to check adminsitrator priviledges.</param>
-    /// <returns>True if administrator</returns>
-    public virtual async Task<bool> IsAdministratorAsync(ApplicationUser user)
+	/// <summary>
+	/// Retrieves the roles the specified <paramref name="user"/> is a member of.
+	/// </summary>
+	/// <param name="user">The user whose roles should be retrieved.</param
+	/// <param name="tenantId">The tenant Id for filtering the roles</param>
+	/// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+	/// <returns>A <see cref="Task{TResult}"/> that contains the roles the user is a member of.</returns>
+	public Task<IList<string>> GetRolesAsync(ApplicationUser user, string tenantId, CancellationToken cancellationToken = default)
+	{
+        return UserStore.GetRolesAsync(user, tenantId, cancellationToken);
+	}
+
+	/// <summary>
+	/// Get the single tenant from the database
+	/// </summary>
+	/// <param name="user">The user whose roles should be retrieved.</param>
+	/// <param name="tenantId">The tenant Id for filtering the roles</param>
+	/// <returns>Returns the tenant if the user has access to it or is an administrator</returns>
+	public async Task<ApplicationTenant?> GetTenantAsync(ApplicationUser user, string tenantId)
+	{
+        return await UserStore.GetTenantAsync(user, tenantId);
+	}
+
+	/// <summary>
+	/// Is the user an adminsitrator?
+	/// </summary>
+	/// <param name="user">The user for who to check adminsitrator priviledges.</param>
+	/// <returns>True if administrator</returns>
+	public virtual async Task<bool> IsAdministratorAsync(ApplicationUser user)
     {
         return await IsInRoleAsync(user, ApplicationRole.GetRoleName(ApplicationDefaultSystemRole.Administrator));
     }

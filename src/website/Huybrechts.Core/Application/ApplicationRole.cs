@@ -135,7 +135,9 @@ public sealed class ApplicationRole : IdentityRole
 
     public static string GetRoleName(ApplicationDefaultSystemRole role) => role.ToString();
 
-    public static string GetRoleName(string tenant, ApplicationDefaultTenantRole role) => GetRoleName(tenant, role.ToString());
+	public static string GetNormalizedRoleName(ApplicationDefaultSystemRole role) => role.ToString().Trim().ToUpper();
+
+	public static string GetRoleName(string tenant, ApplicationDefaultTenantRole role) => GetRoleName(tenant, role.ToString());
 
     public static string GetRoleName(string tenant, string label) => $"{tenant.Trim().ToLower()}{Hashtag}{label.Trim()}";
 

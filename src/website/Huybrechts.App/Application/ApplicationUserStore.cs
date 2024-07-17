@@ -48,14 +48,56 @@ public class ApplicationUserStore :
         return await query.ToListAsync(cancellationToken);
     }
 
-    /// <summary>
-    /// Check if the user is a member of a tenant
-    /// </summary>
-    /// <param name="userId">User ID of the member</param>
-    /// <param name="tenantId">Tenant ID of the tenant</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>True if the user is a member of the tenant</returns>
-    public async Task<bool> IsInTenantAsync(string userId, string tenantId, CancellationToken cancellationToken = default)
+	/// <summary>
+	/// Get the single tenant from the database
+	/// </summary>
+	/// <param name="user">The user whose roles should be retrieved.</param>
+	/// <param name="tenantId">The tenant Id for filtering the roles</param>
+	/// <returns>Returns the tenant if the user has access to it or is an administrator</returns>
+	public async Task<ApplicationTenant?> GetTenantAsync(ApplicationUser user, string tenantId)
+	{
+		var tenant = await Context.ApplicationTenants.FirstOrDefaultAsync(q => q.Id == tenantId);
+		if (tenant == null)
+			return null;
+
+		if (await IsInTenantAsync(user.Id, tenantId))
+			return tenant;
+
+		if (await IsInRoleAsync(user, ApplicationRole.GetNormalizedRoleName(ApplicationDefaultSystemRole.Administrator)))
+			return tenant;
+
+		return null;
+	}
+
+	/// <summary>
+	/// Retrieves the roles the specified <paramref name="user"/> is a member of.
+	/// </summary>
+	/// <param name="user">The user whose roles should be retrieved.</param
+	/// <param name="tenantId">The tenant Id for filtering the roles</param>
+	/// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+	/// <returns>A <see cref="Task{TResult}"/> that contains the roles the user is a member of.</returns>
+	public async Task<IList<string>> GetRolesAsync(ApplicationUser user, string tenantId, CancellationToken cancellationToken = default)
+	{
+		cancellationToken.ThrowIfCancellationRequested();
+		ThrowIfDisposed();
+		ArgumentNullException.ThrowIfNull(user);
+		var userId = user.Id;
+		var query = from userRole in UserRoles
+					join role in Roles on userRole.RoleId equals role.Id
+					where userRole.UserId.Equals(userId)
+                    && (userRole.TenantId == null || userRole.TenantId.Equals(string.Empty) || userRole.TenantId.Equals(tenantId) )
+					select role.Name;
+		return await query.ToListAsync(cancellationToken);
+	}
+
+	/// <summary>
+	/// Check if the user is a member of a tenant
+	/// </summary>
+	/// <param name="userId">User ID of the member</param>
+	/// <param name="tenantId">Tenant ID of the tenant</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>True if the user is a member of the tenant</returns>
+	public async Task<bool> IsInTenantAsync(string userId, string tenantId, CancellationToken cancellationToken = default)
     {
         ThrowIfDisposed();
         cancellationToken.ThrowIfCancellationRequested();

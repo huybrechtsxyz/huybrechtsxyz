@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using Hangfire;
+using Hangfire.States;
 using Huybrechts.App.Data;
 using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -94,13 +95,40 @@ public class ApplicationTenantManager
         var userId = user.Id;
         var query = from userRole in _dbcontext.UserRoles
                     join tenant in _dbcontext.ApplicationTenants on userRole.TenantId equals tenant.Id
-                    where userRole.UserId.Equals(userId) && tenant.State != ApplicationTenantState.Removed
+                    where userRole.UserId.Equals(userId)
+                    && tenant.State != ApplicationTenantState.Removed
                     select tenant;
 
         return await query.GroupBy(q => q.Name).Select(q => q.First()).ToListAsync(cancellationToken);
     }
 
-    public async Task<ApplicationTenant?> GetTenantAsync(ApplicationUser user, string tenantId)
+	public async Task<ICollection<ApplicationTenant>> GetTenantsAsync(ApplicationUser user, ApplicationTenantState state, CancellationToken cancellationToken = default)
+    {
+        ApplicationTenantState[] states = [state];
+        return await GetTenantsAsync(user, states, cancellationToken);
+    }
+
+	public async Task<ICollection<ApplicationTenant>> GetTenantsAsync(ApplicationUser user, IEnumerable<ApplicationTenantState> states, CancellationToken cancellationToken = default)
+	{
+		if (user is null) return [];
+		if (string.IsNullOrEmpty(user.Id)) return [];
+
+		if (await _userManager.IsAdministratorAsync(user))
+		{
+			return await _dbcontext.ApplicationTenants.ToListAsync(cancellationToken);
+		}
+
+        var userId = user.Id;
+		var query = from userRole in _dbcontext.UserRoles
+					join tenant in _dbcontext.ApplicationTenants on userRole.TenantId equals tenant.Id
+					where userRole.UserId.Equals(userId) 
+                    && (states == null || states.Contains(tenant.State))
+					select tenant;
+
+		return await query.GroupBy(q => q.Name).Select(q => q.First()).ToListAsync(cancellationToken);
+	}
+
+	public async Task<ApplicationTenant?> GetTenantAsync(ApplicationUser user, string tenantId)
     {
         var tenant = await _dbcontext.ApplicationTenants.FirstOrDefaultAsync(q => q.Id == tenantId);
         if (tenant == null)
