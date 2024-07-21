@@ -90,14 +90,34 @@ public class ApplicationUserStore :
 		return await query.ToListAsync(cancellationToken);
 	}
 
-	/// <summary>
-	/// Check if the user is a member of a tenant
-	/// </summary>
-	/// <param name="userId">User ID of the member</param>
-	/// <param name="tenantId">Tenant ID of the tenant</param>
-	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>True if the user is a member of the tenant</returns>
-	public async Task<bool> IsInTenantAsync(string userId, string tenantId, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Does the tenant have other users that are owner for this tenant
+    /// </summary>
+    /// <param name="user">The user to check against</param>
+    /// <param name="tenantId">The tenant to check against</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>If other owners are registered to this tenant</returns>
+    public async Task<bool> HasOtherOwnersAsync(ApplicationUser user, string tenantId, CancellationToken cancellationToken = default)
+    {
+        ThrowIfDisposed();
+        cancellationToken.ThrowIfCancellationRequested();
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentException.ThrowIfNullOrWhiteSpace(tenantId);
+
+        var roleId = ApplicationRole.GetRoleName(tenantId, ApplicationTenantRole.Owner);
+        var userRoles = await UserRoles.Where(q => q.UserId != user.Id && q.RoleId == roleId).ToListAsync(cancellationToken);
+        if (userRoles is null || userRoles.Count == 0) return true;
+        return false;
+    }
+
+    /// <summary>
+    /// Check if the user is a member of a tenant
+    /// </summary>
+    /// <param name="userId">User ID of the member</param>
+    /// <param name="tenantId">Tenant ID of the tenant</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>True if the user is a member of the tenant</returns>
+    public async Task<bool> IsInTenantAsync(string userId, string tenantId, CancellationToken cancellationToken = default)
     {
         ThrowIfDisposed();
         cancellationToken.ThrowIfCancellationRequested();

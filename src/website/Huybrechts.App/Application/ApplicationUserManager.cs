@@ -81,12 +81,24 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         return await UserStore.GetTenantAsync(user, tenantId);
 	}
 
-	/// <summary>
-	/// Is the user an adminsitrator?
-	/// </summary>
-	/// <param name="user">The user for who to check adminsitrator priviledges.</param>
-	/// <returns>True if administrator</returns>
-	public virtual async Task<bool> IsAdministratorAsync(ApplicationUser user)
+    /// <summary>
+    /// Does the tenant have other users that are owner for this tenant
+    /// </summary>
+    /// <param name="user">The user to check against</param>
+    /// <param name="tenantId">The tenant to check against</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>If other owners are registered to this tenant</returns>
+    public async Task<bool> HasOtherOwnersAsync(ApplicationUser user, string tenantId, CancellationToken cancellationToken = default)
+    {
+        return await UserStore.HasOtherOwnersAsync(user, tenantId, cancellationToken);
+    }
+
+    /// <summary>
+    /// Is the user an adminsitrator?
+    /// </summary>
+    /// <param name="user">The user for who to check adminsitrator priviledges.</param>
+    /// <returns>True if administrator</returns>
+    public virtual async Task<bool> IsAdministratorAsync(ApplicationUser user)
     {
         return await IsInRoleAsync(user, ApplicationRole.GetRoleName(ApplicationSystemRole.Administrator));
     }

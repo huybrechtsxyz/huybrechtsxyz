@@ -1,13 +1,10 @@
 ﻿using FluentResults;
 using Hangfire;
-using Hangfire.States;
 using Huybrechts.App.Data;
 using Huybrechts.Core.Application;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Huybrechts.App.Application;
 
@@ -148,8 +145,16 @@ public class ApplicationTenantManager
         return await _dbcontext.Roles.Where(q => q.TenantId == tenantId).ToListAsync() ?? [];
     }
 
-    public async Task<ICollection<ApplicationUserRole>> GetTenantUserRolesAsync(ApplicationUser user, string tenantId)
+    public async Task<ICollection<ApplicationUserRole>> GetTenantUserRolesAsync(ApplicationUser user, string tenantId, bool userOnly = false)
     {
+        if (userOnly)
+        {
+            return await _dbcontext.UserRoles
+                .Include(i => i.Role)
+                .Include(i => i.User)
+                .Where(q => q.UserId == user.Id && q.TenantId == tenantId).ToListAsync() ?? [];
+        }
+
         return await _dbcontext.UserRoles
             .Include(i => i.Role)
             .Include(i => i.User)
@@ -305,28 +310,53 @@ public class ApplicationTenantManager
         if (appRole is null)
             return ThrowRoleNotFound(roleId);
 
+        var ownerRole = await _roleManager.FindByNameAsync(ApplicationRole.GetRoleName(appTenant.Id, ApplicationTenantRole.Owner));
+        if (ownerRole is null)
+            return ThrowRoleNotFound(ApplicationRole.GetRoleName(appTenant.Id, ApplicationTenantRole.Owner));
+
         Result result = new();
         foreach (var item in usersToAdd)
         {
             var appUser = await _userManager.FindByEmailAsync(item);
-            if (appUser is not null)
+            if (appUser is null)
             {
-                var idResult = await _userManager.AddToRoleAsync(appUser!, appRole.NormalizedName!);
-                if (idResult.Succeeded)
+                result.WithError($"Unable to find user with E-mail '{item}'.");
+                continue;
+            }
+
+            var userRoles = (await GetTenantUserRolesAsync(appUser, appTenant.Id, true)).ToList();
+            var deleteRoles = userRoles.Where(q => q.RoleId != appRole.Id && q.RoleId != ownerRole.Id).ToList();
+            var hasOwnerRole = userRoles.Any(q => q.RoleId == ownerRole.Id);
+
+            if (hasOwnerRole && appRole.Id != ownerRole.Id && !await _userManager.HasOtherOwnersAsync(appUser, appTenant.Id))
+            {
+                result.WithError($"Unable to change role as user {appUser.Email} is the only owner.");
+                continue;
+            }
+
+            var idResult = await _userManager.AddToRoleAsync(appUser!, appRole.NormalizedName!);
+            if (idResult.Succeeded)
+            {
+                result.WithSuccess($"User {appUser.Email} added to role {appRole.Label}");
+            }
+            else
+            {
+                foreach (var idError in idResult.Errors)
                 {
-                    result.WithSuccess($"User {appUser.Email} added to role {appRole.Label}");
+                    result.WithError(idError.Description);
                 }
-                else
+            }
+
+            if (deleteRoles is not null && deleteRoles.Count > 0)
+            {
+                idResult = await _userManager.RemoveFromRolesAsync(appUser, deleteRoles.Select(s => s.Role.Name).ToArray()!);
+                if (!idResult.Succeeded)
                 {
-                    foreach(var idError in idResult.Errors)
+                    foreach (var idError in idResult.Errors)
                     {
                         result.WithError(idError.Description);
                     }
                 }
-            }
-            else
-            {
-                result.WithError($"User {item} was not found");
             }
         }
 
@@ -349,6 +379,12 @@ public class ApplicationTenantManager
         var appRole = await _roleManager.FindByIdAsync(roleId);
         if (appRole is null)
             return ThrowRoleNotFound(roleId);
+
+        if ((await _userManager.IsOwnerAsync(appUser, tenantId))
+            && (!await _userManager.HasOtherOwnersAsync(appUser, tenantId)))
+        {
+            return Result.Fail($"Unable to remove user {appUser.Email} as they are the only owner.");
+        }
 
         var idResult = await _userManager.RemoveFromRoleAsync(appUser, appRole.NormalizedName!);
         if (idResult.Succeeded)
