@@ -84,10 +84,4 @@ public class ApplicationContext : IdentityDbContext<
         builder.Entity<ApplicationUserRole>().ToTable(nameof(ApplicationUserRole));
         builder.Entity<ApplicationUserToken>().ToTable(nameof(ApplicationUserToken));
     }
-
-    //
-    // PLATFORM
-    //
-
-    public DbSet<PlatformInfo> Platforms { get; set; }
 }
