@@ -1,4 +1,5 @@
 
+using Finbuckle.MultiTenant;
 using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
 using Huybrechts.Core.Platform;
@@ -19,13 +20,13 @@ public class HomeModel : PageModel
 
     public class HomeModelView
     {
+        public bool HasTenantInfo => TenantInfo is not null;
+
+        public bool HasTenantList => Tenants is not null && Tenants.Count > 0;
+
+        public TenantInfo? TenantInfo { get; set; }
+
         public ICollection<ApplicationTenant>? Tenants { get; set; }
-
-        public ApplicationTenant? ActiveTenant => Tenants is not null && Tenants.Count == 1 ? Tenants.First() : null;
-
-		public bool IsList() => Tenants is not null && Tenants.Count > 1;
-
-        public bool IsDetail() => Tenants is not null && Tenants.Count == 1;
     }
 
 	public HomeModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager)
@@ -34,25 +35,23 @@ public class HomeModel : PageModel
 		_tenantManager = tenantManager;
 	}
 
-	public async Task<IActionResult> OnGetAsync(string? tenantId = "")
+	public async Task<IActionResult> OnGetAsync()
     {
-		Data.Tenants = null;
+        var tenantInfo = HttpContext.GetMultiTenantContext<TenantInfo>().TenantInfo;
 
-		var user = await _userManager.GetUserAsync(User);
+        var user = await _userManager.GetUserAsync(User);
         if (user == null)
             return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-
-		if (string.IsNullOrEmpty(tenantId))
+        
+        if (tenantInfo is null)
         {
-			Data.Tenants = await _tenantManager.GetTenantsAsync(user, ApplicationTenantState.Active);
-			return Page();
-		}
+            Data.TenantInfo = null;
+            Data.Tenants = await _tenantManager.GetTenantsAsync(user, ApplicationTenantState.Active);
+            return Page();
+        }
 
-        var tenant = await _tenantManager.GetTenantAsync(user, tenantId);
-        if (tenant == null)
-			return NotFound($"Unable to load tenant with ID '{tenantId}'.");
-
-		Data.Tenants = [ tenant ];
+        Data.TenantInfo = tenantInfo;
+        Data.Tenants = null;
 
 		return Page();
     }

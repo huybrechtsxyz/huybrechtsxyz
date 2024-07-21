@@ -79,6 +79,11 @@ public class ApplicationTenantManager
         _logger = logger;
     }
 
+    public async Task<IList<ApplicationTenant>> GetAllActiveTenantsAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbcontext.ApplicationTenants.Where(q => q.State == ApplicationTenantState.Active).ToListAsync(cancellationToken);
+    }
+
     public async Task<ICollection<ApplicationTenant>> GetTenantsAsync(ApplicationUser user, CancellationToken cancellationToken = default)
     {
         if (user is null) return [];
@@ -396,5 +401,58 @@ public class ApplicationTenantManager
             result.WithError(idError.Description);
         }
         return result;
+    }
+
+    public async Task<Result> TryCreateTenantAsync(ApplicationTenant tenant)
+    {
+        try
+        {
+            _dbcontext.ApplicationTenants.Add(tenant);
+            await _dbcontext.SaveChangesAsync();
+            return Result.Ok();
+        }
+        catch(Exception ex)
+        {
+            return Result.Fail(ex.Message);
+        }
+    }
+
+    public async Task<Result<ApplicationTenant>> TryGetTenantAsync(string tenantId)
+    {
+        var tenant = await _dbcontext.ApplicationTenants.FirstOrDefaultAsync(q => q.Id == tenantId);
+        if (tenant == null)
+            return ThrowTenantNotFound(tenantId);
+
+        return Result.Ok(tenant);
+    }
+
+    public async Task<Result> TryRemoveAsync(string tenantId)
+    {
+        var appTenant = await _dbcontext.ApplicationTenants.FindAsync(tenantId);
+        if (appTenant is null)
+            return ThrowTenantNotFound(tenantId);
+
+        if (!AllowDisablingTenant(appTenant.State))
+            return Result.Fail("Invalid state");
+
+        appTenant.State = ApplicationTenantState.Disabling;
+        _dbcontext.ApplicationTenants.Update(appTenant);
+        await _dbcontext.SaveChangesAsync();
+
+        BackgroundJob.Enqueue<DisableTenantWorker>(x => x.StartAsync(string.Empty, appTenant.Id, default));
+
+        return Result.Ok();
+    }
+
+    public async Task<Result> TryUpdateTenantAsync(ApplicationTenant tenant)
+    {
+        var appTenant = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id);
+        if (appTenant is null)
+            return ThrowTenantNotFound(tenant.Id);
+
+        appTenant.UpdateFrom(tenant);
+        _dbcontext.ApplicationTenants.Update(appTenant);
+        await _dbcontext.SaveChangesAsync();
+        return Result.Ok();
     }
 }

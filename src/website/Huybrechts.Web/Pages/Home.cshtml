@@ -2,16 +2,14 @@
 @page
 @model Huybrechts.Web.Pages.HomeModel
 @{
-
+    ViewData["Title"] = "Home";
 }
-@if (Model.Data.IsList())
+@if (Model.Data.HasTenantList)
 {
     <table class="table table-responsive">
         <tr>
             <th></th>
-            <th>@Html.DisplayNameFor(model => model.Data.Tenants!.First().Id)</th>
             <th>@Html.DisplayNameFor(model => model.Data.Tenants!.First().Name)</th>
-            <th>@Html.DisplayNameFor(model => model.Data.Tenants!.First().State)</th>
             <th>@Html.DisplayNameFor(model => model.Data.Tenants!.First().Description)</th>
             <th></th>
         </tr>
@@ -28,23 +26,29 @@
                     }
                     <img src="@source" class="rounded-circle" style="width:32px;height:32px; object-fit:cover; border-radius:30px" alt="" />
                 </td>
-                <td>@Html.DisplayFor(modelItem => item!.Id)</td>
                 <td>@Html.DisplayFor(modelItem => item!.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item!.State)</td>
                 <td>@Html.DisplayFor(modelItem => item!.Description)</td>
-                <td><a asp-page="./Home" asp-route-tenantId="@item!.Id"><i class="bi bi-check2-circle"></i></a></td>
+                <td><a href="/@item!.Id/Home" )><i class="bi bi-check2-circle"></i></a></td>
             </tr>
         }
     </table>
 }
-@if (@Model.Data.IsDetail())
+@if (@Model.Data.HasTenantInfo)
 {
     <div class="card" style="width: 18rem;">
         <img class="card-img-top" width="120" height="240" src="/img/platform-icon.png" alt="Card image cap">
         <div class="card-body">
             <h5 class="card-title">Platform</h5>
             <p class="card-text">Manage the platforms of your tenant.</p>
-            <a asp-page="./Platform/Index" asp-route-tenantId="@Model.Data.ActiveTenant!.Id" class="btn btn-primary">Platforms</a>
+            <a asp-page="./Details" class="btn btn-primary">Platforms</a>
+        </div>
+    </div>
+    <div class="card" style="width: 18rem;">
+        <img class="card-img-top" width="120" height="240" src="/img/community.png" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">Tenants</h5>
+            <p class="card-text">Select another tenant.</p>
+            <a class="btn btn-lg btn-secondary" href="/Home"><i class="bi bi-arrow-left-circle-fill"></i></a>
         </div>
     </div>
 }

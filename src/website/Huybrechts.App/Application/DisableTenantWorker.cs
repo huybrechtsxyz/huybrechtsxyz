@@ -1,6 +1,4 @@
-﻿using Huybrechts.App.Config;
-using Huybrechts.App.Data;
-using Huybrechts.App.Services.Mail;
+﻿using Huybrechts.App.Data;
 using Huybrechts.Core.Application;
 
 namespace Huybrechts.App.Application;
@@ -18,11 +16,11 @@ public class DisableTenantWorker
 
     public async Task StartAsync(string userId, string tenantId, CancellationToken cancellationToken = default)
     {
-        ArgumentException.ThrowIfNullOrEmpty(userId);
         ArgumentException.ThrowIfNullOrEmpty(tenantId);
 
-        _ = await _userManager.FindByIdAsync(userId) ??
-            throw new InvalidOperationException($"Unable to find user {userId}.");
+        if (string.IsNullOrEmpty(userId))
+            _ = await _userManager.FindByIdAsync(userId) ??
+                throw new InvalidOperationException($"Unable to find user {userId}.");
 
         var tenant = await _dbcontext.ApplicationTenants.FindAsync([tenantId], cancellationToken: cancellationToken);
         if (tenant is null)

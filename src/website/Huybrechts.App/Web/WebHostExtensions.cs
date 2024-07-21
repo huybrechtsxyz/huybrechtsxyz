@@ -1,4 +1,5 @@
-﻿using Hangfire;
+﻿using Finbuckle.MultiTenant;
+using Hangfire;
 using Hangfire.PostgreSql;
 using Hangfire.SQLite;
 using Hangfire.SqlServer;
@@ -146,6 +147,14 @@ public static class WebHostExtensions
         builder.Services.AddHangfireServer(x =>
             x.SchedulePollingInterval = TimeSpan.FromSeconds(30)
             );
+
+        builder.Services.AddMultiTenant<TenantInfo>()
+            .WithStore<MultiTenantStore>(ServiceLifetime.Transient)
+            .WithBasePathStrategy(options => 
+            { 
+                options.RebaseAspNetCorePathBase = true;
+            });
+
         return builder;
     }
 
@@ -309,6 +318,8 @@ public static class WebHostExtensions
 
     public static WebApplication AddStaticFilesMiddleware(this WebApplication app, ILogger log)
     {
+        app.UseMultiTenant();
+
         if (app.Environment.IsStaging() || app.Environment.IsProduction())
         {
             log.Information("Configure using static files with caching");
