@@ -7,6 +7,7 @@ using Huybrechts.App.Application;
 using Huybrechts.App.Config;
 using Huybrechts.App.Data;
 using Huybrechts.Core.Application;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -187,6 +188,17 @@ public static class WebHostExtensions
         .AddSignInManager<ApplicationSignInManager>()
         .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
         .AddDefaultTokenProviders();
+
+        builder.Services.AddSingleton<IAuthorizationHandler, MultiTenantRoleAuthorizationHandler>();
+
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy(TenantPolicies.IsOwner, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Owner)));
+            options.AddPolicy(TenantPolicies.IsManager, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Manager)));
+            options.AddPolicy(TenantPolicies.IsContributer, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Contributer)));
+            options.AddPolicy(TenantPolicies.IsMember, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Member)));
+            options.AddPolicy(TenantPolicies.IsGuest, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Guest)));
+        });
 
         builder.Services.TryAddScoped<ApplicationTenantManager>();
 
