@@ -1,3 +1,4 @@
+using Finbuckle.MultiTenant;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -9,14 +10,15 @@ namespace Huybrechts.Core.Platform;
 /// The services available on the platform (type of resource)
 /// Azure -> API Management
 /// </summary>
+[MultiTenant]
 [Table("PlatformService")]
 [DisplayName("Service")]
 public record PlatformService
 {
     [Key]
     [Required]
-    [DisplayName("Service ID")]
-    [Comment("Primary Key")]
+    [DisplayName("ID")]
+    [Comment("PlatformService PK")]
     public int Id { get; set;} = 0;
 
     [Required]

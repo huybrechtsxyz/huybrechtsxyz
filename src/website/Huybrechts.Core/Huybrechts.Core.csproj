@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="7.0.1" />
     <PackageReference Include="FluentResults" Version="3.16.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.7" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.7" />

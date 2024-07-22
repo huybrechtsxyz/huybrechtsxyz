@@ -1,5 +1,6 @@
 using Hangfire;
 using Huybrechts.App.Config;
+using Huybrechts.App.Data;
 using Huybrechts.App.Web;
 using Huybrechts.Data.Data;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -55,6 +56,7 @@ try
     // Database migrations
     Log.Information("Adding database initializer as hosted service");
     builder.Services.AddHostedService<ApplicationSeedWorker>();
+    builder.Services.AddHostedService<PlatformSeedWorker>();
 
     Log.Information("Building the application and services");
     var app = builder.Build();

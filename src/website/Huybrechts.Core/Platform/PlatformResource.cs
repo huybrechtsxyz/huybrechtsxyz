@@ -1,3 +1,4 @@
+using Finbuckle.MultiTenant;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -10,14 +11,15 @@ namespace Huybrechts.Core.Platform;
 /// Azure -> APIm - Standard
 /// One Platform has multiple Locations
 /// </summary>
+[MultiTenant]
 [Table("PlatformResource")]
 [DisplayName("Resource")]
 public record PlatformResource
 {
     [Key]
     [Required]
-    [DisplayName("Resource ID")]
-    [Comment("Primary Key")]
+    [DisplayName("ID")]
+    [Comment("PlatformResource PK")]
     public int Id { get; set;} = 0;
 
     [Required]
@@ -89,9 +91,4 @@ public record PlatformResource
     /// Navigate to Rates
     /// </summary>
     public ICollection<PlatformRate> Rates { get; set; } = [];
-
-    [NotMapped]
-    [DisplayName("Select")]
-    [Comment("Is resource selected in list?")]
-    public bool IsSelected { get; set; } = false;
 }

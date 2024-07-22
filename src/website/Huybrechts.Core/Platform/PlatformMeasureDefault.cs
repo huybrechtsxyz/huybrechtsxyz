@@ -1,3 +1,4 @@
+using Finbuckle.MultiTenant;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,14 +9,15 @@ namespace Huybrechts.Core.Platform;
 /// <summary>
 /// The platform (Azure, On-Premise)
 /// </summary>
+[MultiTenant]
 [Table("PlatformMeasureDefault")]
 [DisplayName("Platform Measure Default")]
 public record PlatformMeasureDefault
 {
     [Key]
     [Required]
-    [DisplayName("Default ID")]
-    [Comment("Primary Key")]
+    [DisplayName("ID")]
+    [Comment("PlatformMeasureDefault PK")]
     public int Id { get; set;} = 0;
 
     [Required]

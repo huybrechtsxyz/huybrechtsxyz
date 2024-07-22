@@ -1,3 +1,4 @@
+using Finbuckle.MultiTenant;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,14 +9,15 @@ namespace Huybrechts.Core.Platform;
 /// <summary>
 /// The rate of a resource on a platform
 /// </summary>
+[MultiTenant]
 [Table("PlatformRateUnit")]
 [DisplayName("Rate unit")]
 public record PlatformRateUnit
 {
     [Key]
     [Required]
-    [DisplayName("Rate Unit ID")]
-    [Comment("Primary Key")]
+    [DisplayName("ID")]
+    [Comment("PlatformRateUnit PK")]
     public int Id { get; set;} = 0;
 
     [Required]

@@ -1,3 +1,4 @@
+using Finbuckle.MultiTenant;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -10,14 +11,15 @@ namespace Huybrechts.Core.Platform;
 /// Azure -> WEU1 - West Europe
 /// One Platform has multiple Locations
 /// </summary>
+[MultiTenant]
 [Table("PlatformLocation")]
 [DisplayName("Location")]
 public record PlatformLocation
 {
     [Key]
     [Required]
-    [DisplayName("Location ID")]
-    [Comment("Primary Key")]
+    [DisplayName("ID")]
+    [Comment("PlatformLocation PK")]
     public int Id { get; set;} = 0;
 
     [Required]

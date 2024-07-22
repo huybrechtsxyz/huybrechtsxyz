@@ -1,3 +1,4 @@
+using Finbuckle.MultiTenant;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -11,14 +12,15 @@ namespace Huybrechts.Core.Platform;
 /// Azure -> API Standard is 100 EUR / Month
 /// On platform can have multiple search rates
 /// </summary>
+[MultiTenant]
 [Table("PlatformSearchRate")]
 [DisplayName("Search Rate")]
 public record PlatformSearchRate
 {
     [Key]
     [Required]
-    [DisplayName("Search Rate ID")]
-    [Comment("Primary Key")]
+    [DisplayName("ID")]
+    [Comment("PlatformSearchRate PK")]
     public int Id { get; set;} = 0;
 
     [Required]

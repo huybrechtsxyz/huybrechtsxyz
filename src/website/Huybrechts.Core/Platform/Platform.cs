@@ -1,3 +1,4 @@
+using Finbuckle.MultiTenant;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,6 +9,7 @@ namespace Huybrechts.Core.Platform;
 /// <summary>
 /// The platform that can be used in project
 /// </summary>
+[MultiTenant]
 [Table("Platform")]
 [DisplayName("Platform")]
 public record PlatformInfo
@@ -15,14 +17,8 @@ public record PlatformInfo
     [Key]
     [Required]
     [DisplayName("ID")]
-    [Comment("Primary Key")]
+    [Comment("Platform PK")]
     public int Id { get; set;} = 0;
-
-    [Required]
-    [StringLength(24)]
-    [DisplayName("Tenant ID")]
-    [Comment("Tenant FK")]
-    public string? ApplicationTenantId { get; set; }
 
     [Required]
     [MaxLength(128)]

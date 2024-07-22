@@ -1,3 +1,4 @@
+using Finbuckle.MultiTenant;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,14 +9,15 @@ namespace Huybrechts.Core.Platform;
 /// <summary>
 /// The platform measure unit. Hours, Workspaces, ...
 /// </summary>
+[MultiTenant]
 [Table("PlatformMeasure")]
 [DisplayName("Platform Measure")]
 public record PlatformMeasureUnit
 {
     [Key]
     [Required]
-    [DisplayName("Measure ID")]
-    [Comment("Primary Key")]
+    [DisplayName("ID")]
+    [Comment("PlatformMeasure PK")]
     public int Id { get; set;} = 0;
 
     [Required]
