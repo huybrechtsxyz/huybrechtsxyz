@@ -35,4 +35,8 @@
     <ProjectReference Include="..\Huybrechts.Infra.Npgsql\Huybrechts.Infra.Npgsql.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\bootstrap-table\" />
+  </ItemGroup>
+
 </Project>
