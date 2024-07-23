@@ -18,7 +18,7 @@ public record PlatformMeasureUnit
     [Required]
     [DisplayName("ID")]
     [Comment("PlatformMeasure PK")]
-    public int Id { get; set;} = 0;
+    public Ulid Id { get; set;} = Ulid.Empty;
 
     [Required]
     [MaxLength(128)]

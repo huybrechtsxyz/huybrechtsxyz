@@ -18,17 +18,17 @@ public record PlatformMeasureDefault
     [Required]
     [DisplayName("ID")]
     [Comment("PlatformMeasureDefault PK")]
-    public int Id { get; set;} = 0;
+    public Ulid Id { get; set; } = Ulid.Empty;
 
     [Required]
     [DisplayName("Provider ID")]
     [Comment("PlatformProvider FK")]
-    public int PlatformProviderId { get; set;} = 0;
+    public Ulid PlatformProviderId { get; set;} = Ulid.Empty;
 
     [Required]
     [DisplayName("Measure ID")]
     [Comment("PlatformMeasureUnit FK")]
-    public int PlatformMeasureUnitId { get; set;} = 0;
+    public Ulid PlatformMeasureUnitId { get; set;} = Ulid.Empty;
 
     [Required]
     [MaxLength(32)]

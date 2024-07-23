@@ -24,12 +24,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformInfo", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Platform PK");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
@@ -60,12 +57,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformLocation", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformLocation PK");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
@@ -102,12 +96,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformMeasureDefault", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformMeasureDefault PK");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("DefaultValue")
                         .HasPrecision(12, 4)
@@ -120,12 +111,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                         .HasColumnType("nvarchar(200)")
                         .HasComment("Measuring unit description");
 
-                    b.Property<int>("PlatformMeasureUnitId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformMeasureUnitId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformMeasureUnit FK");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformProvider FK");
 
                     b.Property<string>("TenantId")
@@ -153,12 +146,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformMeasureUnit", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformMeasure PK");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -180,12 +170,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformRate PK");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CurrencyCode")
                         .IsRequired()
@@ -218,20 +205,24 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                         .HasColumnType("nvarchar(128)")
                         .HasComment("Name");
 
-                    b.Property<int>("PlatformLocationId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformLocationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformLocation FK");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformProvider FK");
 
-                    b.Property<int>("PlatformResourceId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformResourceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformResource FK");
 
-                    b.Property<int>("PlatformServiceId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformServiceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformService FK");
 
                     b.Property<string>("Product")
@@ -293,12 +284,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRateUnit", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformRateUnit PK");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("DefaultValue")
                         .HasPrecision(12, 4)
@@ -311,24 +299,29 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                         .HasColumnType("nvarchar(200)")
                         .HasComment("Measuring unit description");
 
-                    b.Property<int>("PlatformMeasureUnitId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformMeasureUnitId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformMeasureUnit FK");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformProvider FK");
 
-                    b.Property<int>("PlatformRateId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformRateId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformRate FK");
 
-                    b.Property<int>("PlatformResourceId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformResourceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformResource FK");
 
-                    b.Property<int>("PlatformServiceId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformServiceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformService FK");
 
                     b.Property<string>("TenantId")
@@ -358,12 +351,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformResource", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformResource PK");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AboutURL")
                         .HasMaxLength(512)
@@ -396,12 +386,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                         .HasColumnType("nvarchar(128)")
                         .HasComment("Name");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformProvider FK");
 
-                    b.Property<int>("PlatformServiceId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformServiceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformService FK");
 
                     b.Property<string>("PricingURL")
@@ -444,12 +436,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformSearchRate", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformSearchRate PK");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Category")
                         .HasMaxLength(100)
@@ -492,8 +481,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                         .HasComment("Tier miminum units")
                         .HasAnnotation("Relational:JsonPropertyName", "tierMinimumUnits");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformProvider FK");
 
                     b.Property<string>("Product")
@@ -581,12 +571,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformService PK");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("Allowed")
                         .HasColumnType("bit")
@@ -608,14 +595,15 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                         .HasColumnType("nvarchar(128)")
                         .HasComment("Name");
 
-                    b.Property<int?>("PlatformInfoId")
-                        .HasColumnType("int");
+                    b.Property<string>("PlatformInfoId")
+                        .HasColumnType("nvarchar(26)");
 
-                    b.Property<int?>("PlatformMeasureDefaultId")
-                        .HasColumnType("int");
+                    b.Property<string>("PlatformMeasureDefaultId")
+                        .HasColumnType("nvarchar(26)");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("int")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformProvider FK");
 
                     b.Property<string>("Remark")

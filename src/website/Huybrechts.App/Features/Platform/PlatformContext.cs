@@ -2,6 +2,7 @@
 using Huybrechts.App.Data;
 using Huybrechts.Core.Platform;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Huybrechts.App.Features.Platform;
 
@@ -19,6 +20,13 @@ public class PlatformContext : FeatureContext
 
         // call the base library implementation AFTER the above
         base.OnModelCreating(modelBuilder);
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder
+            .Properties<Ulid>()
+            .HaveConversion<UlidToStringConverter>();
     }
 
     public DbSet<PlatformInfo> Platforms { get; set; }

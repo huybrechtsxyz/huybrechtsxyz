@@ -20,7 +20,7 @@ public record PlatformLocation
     [Required]
     [DisplayName("ID")]
     [Comment("PlatformLocation PK")]
-    public int Id { get; set;} = 0;
+    public Ulid Id { get; set; } = Ulid.Empty;
 
     [Required]
     [MaxLength(128)]

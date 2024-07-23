@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 {
     [DbContext(typeof(PlatformContext))]
-    [Migration("20240722100133_CreatePlatformSchema")]
+    [Migration("20240723122004_CreatePlatformSchema")]
     partial class CreatePlatformSchema
     {
         /// <inheritdoc />
@@ -22,9 +22,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformInfo", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
                         .HasComment("Platform PK");
 
                     b.Property<string>("Description")
@@ -56,9 +55,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformLocation", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformLocation PK");
 
                     b.Property<string>("Description")
@@ -96,9 +94,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformMeasureDefault", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformMeasureDefault PK");
 
                     b.Property<decimal>("DefaultValue")
@@ -112,12 +109,14 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                         .HasColumnType("TEXT")
                         .HasComment("Measuring unit description");
 
-                    b.Property<int>("PlatformMeasureUnitId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformMeasureUnitId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformMeasureUnit FK");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformProvider FK");
 
                     b.Property<string>("TenantId")
@@ -145,9 +144,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformMeasureUnit", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformMeasure PK");
 
                     b.Property<string>("Name")
@@ -170,9 +168,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformRate PK");
 
                     b.Property<string>("CurrencyCode")
@@ -206,20 +203,24 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                         .HasColumnType("TEXT")
                         .HasComment("Name");
 
-                    b.Property<int>("PlatformLocationId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformLocationId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformLocation FK");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformProvider FK");
 
-                    b.Property<int>("PlatformResourceId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformResourceId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformResource FK");
 
-                    b.Property<int>("PlatformServiceId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformServiceId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformService FK");
 
                     b.Property<string>("Product")
@@ -281,9 +282,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRateUnit", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformRateUnit PK");
 
                     b.Property<decimal>("DefaultValue")
@@ -297,24 +297,29 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                         .HasColumnType("TEXT")
                         .HasComment("Measuring unit description");
 
-                    b.Property<int>("PlatformMeasureUnitId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformMeasureUnitId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformMeasureUnit FK");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformProvider FK");
 
-                    b.Property<int>("PlatformRateId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformRateId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformRate FK");
 
-                    b.Property<int>("PlatformResourceId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformResourceId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformResource FK");
 
-                    b.Property<int>("PlatformServiceId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformServiceId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformService FK");
 
                     b.Property<string>("TenantId")
@@ -344,9 +349,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformResource", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformResource PK");
 
                     b.Property<string>("AboutURL")
@@ -380,12 +384,14 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                         .HasColumnType("TEXT")
                         .HasComment("Name");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformProvider FK");
 
-                    b.Property<int>("PlatformServiceId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformServiceId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformService FK");
 
                     b.Property<string>("PricingURL")
@@ -428,9 +434,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformSearchRate", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformSearchRate PK");
 
                     b.Property<string>("Category")
@@ -474,8 +479,9 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                         .HasComment("Tier miminum units")
                         .HasAnnotation("Relational:JsonPropertyName", "tierMinimumUnits");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformProvider FK");
 
                     b.Property<string>("Product")
@@ -563,9 +569,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformService PK");
 
                     b.Property<bool>("Allowed")
@@ -588,14 +593,15 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                         .HasColumnType("TEXT")
                         .HasComment("Name");
 
-                    b.Property<int?>("PlatformInfoId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("PlatformInfoId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("PlatformMeasureDefaultId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("PlatformMeasureDefaultId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("INTEGER")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasComment("PlatformProvider FK");
 
                     b.Property<string>("Remark")

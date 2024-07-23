@@ -18,27 +18,27 @@ public record PlatformRate
     [Required]
     [DisplayName("ID")]
     [Comment("PlatformRate PK")]
-    public int Id { get; set;} = 0;
+    public Ulid Id { get; set;} = Ulid.Empty;
 
     [Required]
     [DisplayName("Provider ID")]
     [Comment("PlatformProvider FK")]
-    public int PlatformProviderId { get; set;} = 0;
+    public Ulid PlatformProviderId { get; set;} = Ulid.Empty;
 
     [Required]
     [DisplayName("Service ID")]
     [Comment("PlatformService FK")]
-    public int PlatformServiceId { get; set;} = 0;
+    public Ulid PlatformServiceId { get; set;} = Ulid.Empty;
 
     [Required]
     [DisplayName("Resource ID")]
     [Comment("PlatformResource FK")]
-    public int PlatformResourceId { get; set;} = 0;
+    public Ulid PlatformResourceId { get; set;} = Ulid.Empty;
 
     [Required]
     [DisplayName("Location ID")]
     [Comment("PlatformLocation FK")]
-    public int PlatformLocationId { get; set;} = 0;
+    public Ulid PlatformLocationId { get; set;} = Ulid.Empty;
 
     [Required]
     [MaxLength(10)]

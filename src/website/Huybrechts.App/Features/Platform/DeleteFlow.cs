@@ -10,12 +10,12 @@ public class DeleteFlow
 {
     public record Query : IRequest<Model>
     {
-        public int Id { get; init; }
+        public Ulid Id { get; init; }
     }
 
     public record Model
     {
-        public int Id { get; init; }
+        public Ulid Id { get; init; }
 
         public string Name { get; init; } = string.Empty;
 

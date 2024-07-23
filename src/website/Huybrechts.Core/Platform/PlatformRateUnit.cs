@@ -18,33 +18,33 @@ public record PlatformRateUnit
     [Required]
     [DisplayName("ID")]
     [Comment("PlatformRateUnit PK")]
-    public int Id { get; set;} = 0;
+    public Ulid Id { get; set; } = Ulid.Empty;
 
     [Required]
     [DisplayName("Provider ID")]
     [Comment("PlatformProvider FK")]
-    public int PlatformProviderId { get; set;} = 0;
+    public Ulid PlatformProviderId { get; set;} = Ulid.Empty;
 
     [Required]
     [DisplayName("Service ID")]
     [Comment("PlatformService FK")]
-    public int PlatformServiceId { get; set;} = 0;
+    public Ulid PlatformServiceId { get; set;} = Ulid.Empty;
 
     [Required]
     [DisplayName("Resource ID")]
     [Comment("PlatformResource FK")]
-    public int PlatformResourceId { get; set;} = 0;
+    public Ulid PlatformResourceId { get; set;} = Ulid.Empty;
 
     [Required]
     [DisplayName("Rate ID")]
     [Comment("PlatformRate FK")]
-    public int PlatformRateId { get; set; } = 0;
+    public Ulid PlatformRateId { get; set; } = Ulid.Empty;
 
     [Required]
     [DisplayName("Measure Unit ID")]
     [Comment("PlatformMeasureUnit FK")]
-    public int PlatformMeasureUnitId { get; set; } = 0;
-    
+    public Ulid PlatformMeasureUnitId { get; set; } = Ulid.Empty;
+
     [Required]
     [MaxLength(30)]
     [DisplayName("Unit of Measure")]

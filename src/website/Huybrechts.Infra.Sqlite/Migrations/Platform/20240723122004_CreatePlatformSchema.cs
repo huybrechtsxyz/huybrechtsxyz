@@ -15,8 +15,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                 name: "Platform",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false, comment: "Platform PK")
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(type: "TEXT", nullable: false, comment: "Platform PK"),
                     Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false, comment: "Name"),
                     Description = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true, comment: "Description"),
                     Remark = table.Column<string>(type: "TEXT", nullable: true, comment: "Remark"),
@@ -31,8 +30,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                 name: "PlatformLocation",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformLocation PK")
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformLocation PK"),
                     Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false, comment: "Name"),
                     Label = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false, comment: "Label"),
                     Description = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true, comment: "Description"),
@@ -48,8 +46,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                 name: "PlatformMeasure",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformMeasure PK")
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformMeasure PK"),
                     Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false, comment: "Name"),
                     TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false)
                 },
@@ -62,10 +59,9 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                 name: "PlatformMeasureDefault",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformMeasureDefault PK")
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PlatformProviderId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformProvider FK"),
-                    PlatformMeasureUnitId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformMeasureUnit FK"),
+                    Id = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformMeasureDefault PK"),
+                    PlatformProviderId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformProvider FK"),
+                    PlatformMeasureUnitId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformMeasureUnit FK"),
                     UnitOfMeasure = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false, comment: "Unit of measure"),
                     UnitFactor = table.Column<decimal>(type: "TEXT", precision: 12, scale: 6, nullable: false, comment: "Conversion factor"),
                     DefaultValue = table.Column<decimal>(type: "TEXT", precision: 12, scale: 4, nullable: false, comment: "Default unit rate"),
@@ -81,9 +77,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                 name: "PlatformSearchRate",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformSearchRate PK")
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PlatformProviderId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformProvider FK"),
+                    Id = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformSearchRate PK"),
+                    PlatformProviderId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformProvider FK"),
                     ValidFrom = table.Column<DateTime>(type: "TEXT", nullable: false, comment: "Rate is valid from"),
                     ServiceId = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true, comment: "Service id"),
                     Service = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true, comment: "Service name"),
@@ -114,16 +109,15 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                 name: "PlatformService",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformService PK")
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PlatformProviderId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformProvider FK"),
+                    Id = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformService PK"),
+                    PlatformProviderId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformProvider FK"),
                     Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false, comment: "Name"),
                     Description = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true, comment: "Description"),
                     Remark = table.Column<string>(type: "TEXT", nullable: true, comment: "Remark"),
                     Category = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true, comment: "Service Category"),
                     Allowed = table.Column<bool>(type: "INTEGER", nullable: false, comment: "Is the service allowed?"),
-                    PlatformInfoId = table.Column<int>(type: "INTEGER", nullable: true),
-                    PlatformMeasureDefaultId = table.Column<int>(type: "INTEGER", nullable: true),
+                    PlatformInfoId = table.Column<string>(type: "TEXT", nullable: true),
+                    PlatformMeasureDefaultId = table.Column<string>(type: "TEXT", nullable: true),
                     TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false)
                 },
                 constraints: table =>
@@ -145,10 +139,9 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                 name: "PlatformResource",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformResource PK")
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PlatformProviderId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformProvider FK"),
-                    PlatformServiceId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformService FK"),
+                    Id = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformResource PK"),
+                    PlatformProviderId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformProvider FK"),
+                    PlatformServiceId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformService FK"),
                     Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false, comment: "Name"),
                     Description = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true, comment: "Description"),
                     CostDriver = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true, comment: "Cost driver"),
@@ -177,12 +170,11 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                 name: "PlatformRate",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformRate PK")
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PlatformProviderId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformProvider FK"),
-                    PlatformServiceId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformService FK"),
-                    PlatformResourceId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformResource FK"),
-                    PlatformLocationId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformLocation FK"),
+                    Id = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformRate PK"),
+                    PlatformProviderId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformProvider FK"),
+                    PlatformServiceId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformService FK"),
+                    PlatformResourceId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformResource FK"),
+                    PlatformLocationId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformLocation FK"),
                     CurrencyCode = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false, comment: "Currency code"),
                     Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false, comment: "Name"),
                     ValidFrom = table.Column<DateTime>(type: "TEXT", nullable: false, comment: "Rate is valid from"),
@@ -215,13 +207,12 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                 name: "PlatformRateUnit",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformRateUnit PK")
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PlatformProviderId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformProvider FK"),
-                    PlatformServiceId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformService FK"),
-                    PlatformResourceId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformResource FK"),
-                    PlatformRateId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformRate FK"),
-                    PlatformMeasureUnitId = table.Column<int>(type: "INTEGER", nullable: false, comment: "PlatformMeasureUnit FK"),
+                    Id = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformRateUnit PK"),
+                    PlatformProviderId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformProvider FK"),
+                    PlatformServiceId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformService FK"),
+                    PlatformResourceId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformResource FK"),
+                    PlatformRateId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformRate FK"),
+                    PlatformMeasureUnitId = table.Column<string>(type: "TEXT", nullable: false, comment: "PlatformMeasureUnit FK"),
                     UnitOfMeasure = table.Column<string>(type: "TEXT", maxLength: 30, nullable: false, comment: "Unit of measure"),
                     UnitFactor = table.Column<decimal>(type: "TEXT", precision: 12, scale: 6, nullable: false, comment: "Conversion factor"),
                     DefaultValue = table.Column<decimal>(type: "TEXT", precision: 12, scale: 4, nullable: false, comment: "Default unit rate"),

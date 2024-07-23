@@ -7,7 +7,7 @@ namespace Huybrechts.App.Features.Platform;
 
 public class CreateFlow
 {
-    public sealed record Command : IRequest<int>
+    public sealed record Command : IRequest<Ulid>
     {
         [DisplayName("Name")]
         public string Name { get; set; } = string.Empty;
@@ -28,7 +28,7 @@ public class CreateFlow
         }
     }
 
-    public sealed class Handler : IRequestHandler<Command, int>
+    public sealed class Handler : IRequestHandler<Command, Ulid>
     {
         private readonly PlatformContext _dbcontext;
 
@@ -37,7 +37,7 @@ public class CreateFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<int> Handle(Command message, CancellationToken token)
+        public async Task<Ulid> Handle(Command message, CancellationToken token)
         {
             var record = new PlatformInfo
             {

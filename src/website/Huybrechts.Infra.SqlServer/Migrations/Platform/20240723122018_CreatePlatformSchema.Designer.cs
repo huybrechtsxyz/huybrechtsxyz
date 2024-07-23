@@ -3,16 +3,16 @@ using System;
 using Huybrechts.App.Features.Platform;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Huybrechts.Infra.Npgsql.Migrations.Platform
+namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 {
     [DbContext(typeof(PlatformContext))]
-    [Migration("20240722100153_CreatePlatformSchema")]
+    [Migration("20240723122018_CreatePlatformSchema")]
     partial class CreatePlatformSchema
     {
         /// <inheritdoc />
@@ -21,38 +21,35 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformInfo", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Platform PK");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasComment("Description");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Name");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasComment("Remark");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
@@ -63,38 +60,35 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformLocation", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformLocation PK");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasComment("Description");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Label");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Name");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasComment("Remark");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
@@ -105,46 +99,45 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformMeasureDefault", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformMeasureDefault PK");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("DefaultValue")
                         .HasPrecision(12, 4)
-                        .HasColumnType("numeric(12,4)")
+                        .HasColumnType("decimal(12,4)")
                         .HasComment("Default unit rate");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasColumnType("nvarchar(200)")
                         .HasComment("Measuring unit description");
 
-                    b.Property<int>("PlatformMeasureUnitId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformMeasureUnitId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformMeasureUnit FK");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformProvider FK");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<decimal>("UnitFactor")
                         .HasPrecision(12, 6)
-                        .HasColumnType("numeric(12,6)")
+                        .HasColumnType("decimal(12,6)")
                         .HasComment("Conversion factor");
 
                     b.Property<string>("UnitOfMeasure")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasComment("Unit of measure");
 
                     b.HasKey("Id");
@@ -156,23 +149,20 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformMeasureUnit", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformMeasure PK");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Name");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
@@ -183,106 +173,107 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformRate PK");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CurrencyCode")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
+                        .HasColumnType("nvarchar(10)")
                         .HasComment("Currency code");
 
                     b.Property<bool?>("IsPrimaryRegion")
-                        .HasColumnType("boolean")
+                        .HasColumnType("bit")
                         .HasComment("Is primary meter region");
 
                     b.Property<string>("MeterId")
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasComment("Meter id");
 
                     b.Property<string>("MeterName")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Meter name");
 
                     b.Property<decimal>("MininumUnits")
                         .HasPrecision(12, 4)
-                        .HasColumnType("numeric(12,4)")
+                        .HasColumnType("decimal(12,4)")
                         .HasComment("Tier mininum units");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Name");
 
-                    b.Property<int>("PlatformLocationId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformLocationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformLocation FK");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformProvider FK");
 
-                    b.Property<int>("PlatformResourceId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformResourceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformResource FK");
 
-                    b.Property<int>("PlatformServiceId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformServiceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformService FK");
 
                     b.Property<string>("Product")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Product");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasComment("Remark");
 
                     b.Property<decimal>("RetailPrice")
                         .HasPrecision(12, 4)
-                        .HasColumnType("numeric(12,4)")
+                        .HasColumnType("decimal(12,4)")
                         .HasComment("Retail price");
 
                     b.Property<string>("Sku")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Sku name");
 
                     b.Property<string>("SkuId")
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasComment("Sku id");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("Type")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Rate type");
 
                     b.Property<string>("UnitOfMeasure")
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("nvarchar(32)")
                         .HasComment("Azure rate unit of measure");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(12, 4)
-                        .HasColumnType("numeric(12,4)")
+                        .HasColumnType("decimal(12,4)")
                         .HasComment("Unit price");
 
                     b.Property<DateTime>("ValidFrom")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("datetime2")
                         .HasComment("Rate is valid from");
 
                     b.HasKey("Id");
@@ -296,58 +287,60 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRateUnit", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformRateUnit PK");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("DefaultValue")
                         .HasPrecision(12, 4)
-                        .HasColumnType("numeric(12,4)")
+                        .HasColumnType("decimal(12,4)")
                         .HasComment("Default unit rate");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasColumnType("nvarchar(200)")
                         .HasComment("Measuring unit description");
 
-                    b.Property<int>("PlatformMeasureUnitId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformMeasureUnitId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformMeasureUnit FK");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformProvider FK");
 
-                    b.Property<int>("PlatformRateId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformRateId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformRate FK");
 
-                    b.Property<int>("PlatformResourceId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformResourceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformResource FK");
 
-                    b.Property<int>("PlatformServiceId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformServiceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformService FK");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<decimal>("UnitFactor")
                         .HasPrecision(12, 6)
-                        .HasColumnType("numeric(12,6)")
+                        .HasColumnType("decimal(12,6)")
                         .HasComment("Conversion factor");
 
                     b.Property<string>("UnitOfMeasure")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)")
+                        .HasColumnType("nvarchar(30)")
                         .HasComment("Unit of measure");
 
                     b.HasKey("Id");
@@ -361,80 +354,79 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformResource", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformResource PK");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AboutURL")
                         .HasMaxLength(512)
-                        .HasColumnType("character varying(512)")
+                        .HasColumnType("nvarchar(512)")
                         .HasComment("Resource url");
 
                     b.Property<string>("CostBasedOn")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Cost based on");
 
                     b.Property<string>("CostDriver")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasComment("Cost driver");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasComment("Description");
 
                     b.Property<string>("Limitations")
                         .HasMaxLength(512)
-                        .HasColumnType("character varying(512)")
+                        .HasColumnType("nvarchar(512)")
                         .HasComment("Resource limitations");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Name");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformProvider FK");
 
-                    b.Property<int>("PlatformServiceId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformServiceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformService FK");
 
                     b.Property<string>("PricingURL")
                         .HasMaxLength(512)
-                        .HasColumnType("character varying(512)")
+                        .HasColumnType("nvarchar(512)")
                         .HasComment("Pricing url");
 
                     b.Property<string>("Product")
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasComment("Product");
 
                     b.Property<string>("ProductId")
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
+                        .HasColumnType("nvarchar(64)")
                         .HasComment("Product id");
 
                     b.Property<string>("Remarks")
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasComment("Remarks");
 
                     b.Property<string>("Size")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Resource size");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
@@ -447,131 +439,129 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformSearchRate", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformSearchRate PK");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Category")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasComment("Service category")
                         .HasAnnotation("Relational:JsonPropertyName", "serviceFamily");
 
                     b.Property<string>("CurrencyCode")
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
+                        .HasColumnType("nvarchar(10)")
                         .HasComment("Currency code")
                         .HasAnnotation("Relational:JsonPropertyName", "currencyCode");
 
                     b.Property<bool?>("IsPrimaryRegion")
-                        .HasColumnType("boolean")
+                        .HasColumnType("bit")
                         .HasComment("Is primary meter region")
                         .HasAnnotation("Relational:JsonPropertyName", "isPrimaryMeterRegion");
 
                     b.Property<string>("Location")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasComment("Location name")
                         .HasAnnotation("Relational:JsonPropertyName", "location");
 
                     b.Property<string>("MeterId")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasComment("Meter id")
                         .HasAnnotation("Relational:JsonPropertyName", "meterId");
 
                     b.Property<string>("MeterName")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasComment("Meter name")
                         .HasAnnotation("Relational:JsonPropertyName", "meterName");
 
                     b.Property<decimal>("MiminumUnits")
                         .HasPrecision(12, 4)
-                        .HasColumnType("numeric(12,4)")
+                        .HasColumnType("decimal(12,4)")
                         .HasComment("Tier miminum units")
                         .HasAnnotation("Relational:JsonPropertyName", "tierMinimumUnits");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformProvider FK");
 
                     b.Property<string>("Product")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasComment("Product")
                         .HasAnnotation("Relational:JsonPropertyName", "productName");
 
                     b.Property<string>("ProductId")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasComment("Product id")
                         .HasAnnotation("Relational:JsonPropertyName", "productId");
 
                     b.Property<string>("Region")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasComment("Region")
                         .HasAnnotation("Relational:JsonPropertyName", "armRegionName");
 
                     b.Property<decimal>("RetailPrice")
                         .HasPrecision(12, 4)
-                        .HasColumnType("numeric(12,4)")
+                        .HasColumnType("decimal(12,4)")
                         .HasComment("Retail price")
                         .HasAnnotation("Relational:JsonPropertyName", "retailPrice");
 
                     b.Property<string>("Service")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasComment("Service name")
                         .HasAnnotation("Relational:JsonPropertyName", "serviceName");
 
                     b.Property<string>("ServiceId")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasComment("Service id")
                         .HasAnnotation("Relational:JsonPropertyName", "serviceId");
 
                     b.Property<string>("Sku")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasComment("Sku name")
                         .HasAnnotation("Relational:JsonPropertyName", "skuName");
 
                     b.Property<string>("SkuId")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("nvarchar(50)")
                         .HasComment("Sku id")
                         .HasAnnotation("Relational:JsonPropertyName", "skuId");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("Type")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasComment("Rate type")
                         .HasAnnotation("Relational:JsonPropertyName", "type");
 
                     b.Property<string>("UnitOfMeasure")
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)")
+                        .HasColumnType("nvarchar(30)")
                         .HasComment("Azure rate unit of measure")
                         .HasAnnotation("Relational:JsonPropertyName", "unitOfMeasure");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(12, 4)
-                        .HasColumnType("numeric(12,4)")
+                        .HasColumnType("decimal(12,4)")
                         .HasComment("Unit price")
                         .HasAnnotation("Relational:JsonPropertyName", "unitPrice");
 
                     b.Property<DateTime>("ValidFrom")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("datetime2")
                         .HasComment("Rate is valid from")
                         .HasAnnotation("Relational:JsonPropertyName", "effectiveStartDate");
 
@@ -584,51 +574,49 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformService PK");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<bool>("Allowed")
-                        .HasColumnType("boolean")
+                        .HasColumnType("bit")
                         .HasComment("Is the service allowed?");
 
                     b.Property<string>("Category")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("nvarchar(100)")
                         .HasComment("Service Category");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasColumnType("nvarchar(256)")
                         .HasComment("Description");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Name");
 
-                    b.Property<int?>("PlatformInfoId")
-                        .HasColumnType("integer");
+                    b.Property<string>("PlatformInfoId")
+                        .HasColumnType("nvarchar(26)");
 
-                    b.Property<int?>("PlatformMeasureDefaultId")
-                        .HasColumnType("integer");
+                    b.Property<string>("PlatformMeasureDefaultId")
+                        .HasColumnType("nvarchar(26)");
 
-                    b.Property<int>("PlatformProviderId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PlatformProviderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("PlatformProvider FK");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasComment("Remark");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 

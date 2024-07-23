@@ -21,12 +21,12 @@ public record PlatformSearchRate
     [Required]
     [DisplayName("ID")]
     [Comment("PlatformSearchRate PK")]
-    public int Id { get; set;} = 0;
+    public Ulid Id { get; set;} = Ulid.Empty;
 
     [Required]
     [DisplayName("Provider ID")]
     [Comment("PlatformProvider FK")]
-    public int PlatformProviderId { get; set;} = 0;
+    public Ulid PlatformProviderId { get; set; } = Ulid.Empty;
 
     [DisplayName("Valid From")]
     [Comment("Rate is valid from")]

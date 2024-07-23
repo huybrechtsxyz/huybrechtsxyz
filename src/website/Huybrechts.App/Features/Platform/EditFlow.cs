@@ -11,7 +11,7 @@ public class EditFlow
 {
     public record Query : IRequest<Command>
     {
-        public int? Id { get; init; }
+        public Ulid? Id { get; init; }
     }
 
     public class QueryValidator : AbstractValidator<Query>
@@ -24,7 +24,7 @@ public class EditFlow
 
     public record Command : IRequest
     {
-        public int Id { get; init; }
+        public Ulid Id { get; init; }
 
         public string Name { get; init; } = string.Empty;
 
