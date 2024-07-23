@@ -1,4 +1,6 @@
 ﻿using Finbuckle.MultiTenant;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Hangfire.SQLite;
@@ -60,6 +62,8 @@ public static class WebHostExtensions
     {
         var connectionString = ApplicationSettings.GetContextConnectionString(builder.Configuration);
         var contextProviderType = ApplicationSettings.GetContextProvider(connectionString);
+
+        builder.Services.AddMiniProfiler().AddEntityFramework();
 
         log.Information($"Connect to the {contextProviderType} database: {connectionString}");
         switch (contextProviderType)
@@ -280,6 +284,23 @@ public static class WebHostExtensions
         return builder;
     }
 
+    public static WebApplicationBuilder AddConfigurationServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddAutoMapper(typeof(ApplicationContext));
+
+        builder.Services.AddMediatR(config =>
+        {
+            config.RegisterServicesFromAssemblyContaining(typeof(ApplicationContext));
+            config.AutoRegisterRequestProcessors = true;
+        });
+
+        builder.Services.AddFluentValidationAutoValidation();
+        builder.Services.AddFluentValidationClientsideAdapters();
+        builder.Services.AddValidatorsFromAssemblyContaining<ApplicationContext>();
+
+        return builder;
+    }
+
     public static WebApplication AddExceptionMiddleware(this WebApplication app, ILogger log)
     {
         if (app.Environment.IsDevelopment())
@@ -375,7 +396,7 @@ public static class WebHostExtensions
 
         app.UseSerilogRequestLogging();
         app.UseRouting();
-
+        
         return app;
     }
 
@@ -404,6 +425,7 @@ public static class WebHostExtensions
     public static WebApplication AddEndpointMiddleware(this WebApplication app, ILogger log)
     {
         log.Information("Mapping and routing razor components");
+        app.UseMiniProfiler();
         app.MapRazorPages();
         app.MapControllers();
         return app;

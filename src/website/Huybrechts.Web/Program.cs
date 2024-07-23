@@ -41,12 +41,14 @@ try
     builder.AddIdentityServices(Log.Logger);
     Log.Information("Configuring webserver");
     builder.AddWebconfigServices();
+    Log.Information("Configuring other services");
+    builder.AddConfigurationServices();
     Log.Information("Configuring user interface");
     builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
     builder.Services.AddAntiforgery();
     builder.Services.AddControllers();
     builder.Services.AddRazorPages().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
-
+    
     Log.Information("Building the application with services");
     foreach (var service in builder.Services)
         Log.Debug(service.ToString());

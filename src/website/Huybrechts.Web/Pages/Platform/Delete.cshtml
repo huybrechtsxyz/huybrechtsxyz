@@ -1,0 +1,37 @@
+﻿@page
+@model Huybrechts.Web.Pages.Platform.DeleteModel
+@{
+    ViewData["Title"] = "Delete Platform";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+<p class="text-info">
+    Delete platform and related information.
+</p>
+<div class="row">
+    <div class="col-md-6">
+        <form id="profile-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input type="hidden" asp-for="Data.Id" />
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Name" class="form-control" placeholder="Please choose the platform name." disabled />
+                <label asp-for="Data.Name" class="form-label"></label>
+                <span asp-validation-for="Data.Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Description" class="form-control" placeholder="Please choose the platform description." disabled />
+                <label asp-for="Data.Description" class="form-label"></label>
+                <span asp-validation-for="Data.Description" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Remark" class="form-control" placeholder="Remarks about the platform." disabled />
+                <label asp-for="Data.Remark" class="form-label"></label>
+                <span asp-validation-for="Data.Remark" class="text-danger"></span>
+            </div>
+            <p></p>
+            <a class="w-30 btn btn-lg btn-secondary" asp-page="Index"><i class="bi bi-arrow-left-circle-fill"></i></a>
+            <button id="update-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-trash2-fill"></i></button>
+        </form>
+    </div>
+</div>

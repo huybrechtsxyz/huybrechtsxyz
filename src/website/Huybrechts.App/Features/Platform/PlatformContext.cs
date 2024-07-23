@@ -1,30 +1,14 @@
 ﻿using Finbuckle.MultiTenant.Abstractions;
-using Finbuckle.MultiTenant.EntityFrameworkCore;
+using Huybrechts.App.Data;
 using Huybrechts.Core.Platform;
 using Microsoft.EntityFrameworkCore;
 
-// Add a blog for a tenant.
-//Blog myBlog = new Blog { Title = "My Blog" }; ;
-//var db = new BloggingDbContext(myTenantInfo, null);
-//db.Blogs.Add(myBlog));
-//db.SaveChanges();
-
 namespace Huybrechts.App.Features.Platform;
 
-public class PlatformContext : MultiTenantDbContext, IMultiTenantDbContext
+public class PlatformContext : FeatureContext
 {
-    //public PlatformContext(ITenantInfo? tenantInfo) : base(tenantInfo)
-    //{
-    //}
-    //public PlatformContext(IMultiTenantContextAccessor multiTenantContextAccessor) : base(multiTenantContextAccessor)
-    //{
-    //}
-    //public PlatformContext(ITenantInfo? tenantInfo, DbContextOptions options) 
-    //    : base(tenantInfo, options)
-    //{
-    //}
-
-    public PlatformContext(IMultiTenantContextAccessor multiTenantContextAccessor, DbContextOptions options) : base(multiTenantContextAccessor, options)
+    public PlatformContext(IMultiTenantContextAccessor multiTenantContextAccessor, DbContextOptions options) 
+        : base(multiTenantContextAccessor, options)
     {
     }
 

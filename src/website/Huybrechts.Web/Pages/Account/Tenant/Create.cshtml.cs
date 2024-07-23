@@ -43,7 +43,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 return Page();
             }
 
-            IFormFile? file = Request.Form.Files.FirstOrDefault();
+            IFormFile ? file = Request.Form.Files[0] ?? null;
             if (file is not null)
             {
                 using var dataStream = new MemoryStream();
