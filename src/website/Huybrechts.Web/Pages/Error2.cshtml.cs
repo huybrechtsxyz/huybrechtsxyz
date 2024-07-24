@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Huybrechts.Web.Pages
 {
-    public class PrivacyModel : PageModel
+    public class Error2Model : PageModel
     {
         public void OnGet()
         {

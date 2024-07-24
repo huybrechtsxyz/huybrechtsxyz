@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="COOKIE" xml:space="preserve">
+    <value>About cookies</value>
+  </data>
+  <data name="COOKIE_1" xml:space="preserve">
+    <value>In order to tie your account to your content when you browse the web, we use cookies. A cookie is a small text file that a Website writes to your hard drive. Cookies work as your identification tag and may be used to identify you between visits / clicks; cookies let the web page server know that you have returned to this site. Cookies also can determine other information, such as the daily visitors to our website and the pages of the site most frequently visited. They cannot be executed as code or deliver viruses. Cookies are unique and can only be read by the server that assigns them.</value>
+  </data>
+  <data name="COOKIE_2" xml:space="preserve">
+    <value>You can change the settings in your browser to prevent cookies if you do not want to have a cookie set when you visit our website. However, by doing so, you won't be able to use our services.</value>
+  </data>
+  <data name="DISCLAIMER" xml:space="preserve">
+    <value>Content Liability and Disclaimer</value>
+  </data>
+  <data name="DISCLAIMER_1" xml:space="preserve">
+    <value>We shall have no responsibility or liability for any content appearing on your Web site. You agree to indemnify and defend us against all claims arising out of or based upon your Website. No link(s) may appear on any page on your Web site or within any context containing content or materials that may be interpreted as libelous, obscene or criminal, or which infringes, otherwise violates, or advocates the infringement or other violation of, any third party rights.</value>
+  </data>
+  <data name="DISCLAIMER_2" xml:space="preserve">
+    <value>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</value>
+  </data>
+  <data name="FUTURE" xml:space="preserve">
+    <value>Future Amendments</value>
+  </data>
+  <data name="FUTURE_1" xml:space="preserve">
+    <value>We reserve the right to augment this Privacy Policy as the service evolves, particularly if/when added services require the collection of additional user information.</value>
+  </data>
+  <data name="FUTURE_2" xml:space="preserve">
+    <value>Should you have further questions or concerns about these privacy policies, please send us a message via webmaster.</value>
+  </data>
+  <data name="GDPR" xml:space="preserve">
+    <value>About the GDPR</value>
+  </data>
+  <data name="GDPR_1" xml:space="preserve">
+    <value>If you are a citizen or business in EU (like we are) then the GDPR applies to you.</value>
+  </data>
+  <data name="GDPR_2" xml:space="preserve">
+    <value>We are in full compliance with GDPR (as with any laws in all jurisdictions that we operate in) and you can send any requests about this to webmaster of huybrechts.xyz</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="INFO" xml:space="preserve">
+    <value>Information collected</value>
+  </data>
+  <data name="INFO_1" xml:space="preserve">
+    <value>We keep the information that we collect to an absolute minimum, because we value your privacy.</value>
+  </data>
+  <data name="INFO_2" xml:space="preserve">
+    <value>If you're just visiting our site and you don't have an account with us, then we do not collect any personal information. The only thing we may see in our logs is your IP address, the pages of our Service that you visit, the time and date of your visit. Those logs are cleared out on a regular basis.                                            If you sign up for an account, then we request a name and email address. It's up to you what you fill in of course, but we will send you the account information and confirmation at that email address. You can change your data in our members area anytime and you can unsubscribe by deleting your account. None of the above information is shared with any third parties.</value>
+  </data>
+  <data name="INFO_3" xml:space="preserve">
+    <value>If you have used our service in the past and would like to have any of your data removed then please make sure you delete the data before deleting your account!</value>
+  </data>
+  <data name="INFO_4" xml:space="preserve">
+    <value>The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security.</value>
+  </data>
+  <data name="PI" xml:space="preserve">
+    <value>Personal Information</value>
+  </data>
+  <data name="PI_1" xml:space="preserve">
+    <value>Huybrechts XYZ respects the privacy of users of our service ('SERVICE'). Huybrechts XYZ will not monitor, edit, or disclose any personal information about you or the data you submit without your prior permission, unless we deem such action is necessary to:</value>
+  </data>
+  <data name="PI_2" xml:space="preserve">
+    <value>&lt;li&gt;comply with due legal process;&lt;/li&gt;&lt;li&gt;otherwise protect the legal rights of Huybrechts XYZ;&lt;/li&gt;&lt;li&gt;enforce the terms of our service;&lt;/li&gt;&lt;li&gt;protect the interests of users for the SERVICE or others.&lt;/li&gt;</value>
+  </data>
+  <data name="PI_3" xml:space="preserve">
+    <value>Vincent Huybrechts is the sole owner of information collected on Huybrechts XYZ.com and does not sell, share, or rent this information to others in ways different from what is disclosed in this statement.</value>
+  </data>
+  <data name="Subtitle" xml:space="preserve">
+    <value>But first I must explain to you how our privacy policy works</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+</root>

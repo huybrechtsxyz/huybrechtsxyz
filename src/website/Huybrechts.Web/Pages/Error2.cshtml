@@ -1,6 +1,6 @@
 ﻿@page
 @inject IViewLocalizer Localizer
-@model Huybrechts.Web.Pages.PrivacyModel
+@model Huybrechts.Web.Pages.Error2Model
 @{
     Layout = null;
 }
@@ -37,8 +37,8 @@
                         </ol>
                     </nav>
                     <!-- Page title and information -->
-                    <h1 class="page-title text-center mb-2 mt-4">@Localizer["Title"]</h1>
-                    <p class="lead text-center">@Localizer["Subtitle"]</p>
+                    <h1 class="page-title text-center mb-2 mt-4">@Localizer["Privacy Policy"]</h1>
+                    <p class="lead text-center">But first I must explain to you how our privacy policy works</p>
                     <div class="d-flex flex-wrap gap-2 justify-content-center mt-4 mb-4">
                         <p></p>
                     </div>
@@ -53,84 +53,87 @@
 
                                     <h4 class="hstack gap-2">
                                         <i class="bi bi-person-heart fs-1 text-warning text-opacity-50"></i>
-                                        @Localizer["PI"]
+                                        Personal Information
                                     </h4>
                                     <div class="bg-body-tertiary bg-opacity-50 p-3 rounded">
-                                        @Localizer["PI_1"]
+                                        Huybrechts XYZ respects the privacy of users of our service ('SERVICE'). Huybrechts XYZ will not monitor, edit, or disclose any personal information about you or the data you submit without your prior permission, unless we deem such action is necessary to:
                                         <ul>
-                                            @Localizer["PI_2"]
+                                            <li>comply with due legal process;</li>
+                                            <li>otherwise protect the legal rights of Huybrechts XYZ;</li>
+                                            <li>enforce the terms of our service;</li>
+                                            <li>protect the interests of users for the SERVICE or others.</li>
                                         </ul>
-                                        @Localizer["PI_3"]
+                                        Vincent Huybrechts is the sole owner of information collected on Huybrechts XYZ.com and does not sell, share, or rent this information to others in ways different from what is disclosed in this statement.
                                     </div>
 
                                     <h4 class="hstack gap-2 mt-5">
                                         <i class="bi bi-info-square fs-1 text-info text-opacity-50"></i>
-                                        @Localizer["INFO"]
+                                        Information collected
                                     </h4>
                                     <div class="bg-body-tertiary bg-opacity-50 p-3 rounded">
                                         <p>
-                                            @Localizer["INFO_1"]
+                                            We keep the information that we collect to an absolute minimum, because we value your privacy.
                                         </p>
                                         <p>
-                                            @Localizer["INFO_2"]
+                                            If you're just visiting our site and you don't have an account with us, then we do not collect any personal information. The only thing we may see in our logs is your IP address, the pages of our Service that you visit, the time and date of your visit. Those logs are cleared out on a regular basis.                                            If you sign up for an account, then we request a name and email address. It's up to you what you fill in of course, but we will send you the account information and confirmation at that email address. You can change your data in our members area anytime and you can unsubscribe by deleting your account. None of the above information is shared with any third parties.
                                         </p>
                                         <p>
-                                            @Localizer["INFO_3"]
+                                            If you have used our service in the past and would like to have any of your data removed then please make sure you delete the data before deleting your account!
                                         </p>
                                         <p>
-                                            @Localizer["INFO_4"]
+                                            The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security.
                                         </p>
                                     </div>
 
                                     <h4 class="hstack gap-2 mt-5">
                                         <i class="bi bi-cookie fs-1 text-success text-opacity-50"></i>
-                                        @Localizer["COOKIE"]
+                                        About cookies
                                     </h4>
                                     <div class="bg-body-tertiary bg-opacity-50 p-3 rounded">
                                         <p>
-                                            @Localizer["COOKIE_1"]
+                                            In order to tie your account to your content when you browse the web, we use cookies. A cookie is a small text file that a Website writes to your hard drive. Cookies work as your identification tag and may be used to identify you between visits / clicks; cookies let the web page server know that you have returned to this site. Cookies also can determine other information, such as the daily visitors to our website and the pages of the site most frequently visited. They cannot be executed as code or deliver viruses. Cookies are unique and can only be read by the server that assigns them.
                                         </p>
                                         <p>
-                                            @Localizer["COOKIE_2"]
+                                            You can change the settings in your browser to prevent cookies if you do not want to have a cookie set when you visit our website. However, by doing so, you won't be able to use our services.
                                         </p>
                                     </div>
 
                                     <h4 class="hstack gap-2 mt-5">
                                         <i class="bi bi-person-badge fs-1 text-danger text-opacity-50"></i>
-                                        @Localizer["GDPR"]
+                                        About the GDPR
                                     </h4>
                                     <div class="bg-body-tertiary bg-opacity-50 p-3 rounded">
                                         <p>
-                                            @Localizer["GDPR_1"]
+                                            If you are a citizen or business in EU (like we are) then the GDPR applies to you.
                                         </p>
                                         <p>
-                                            @Localizer["GDPR_2"]
+                                            We are in full compliance with GDPR (as with any laws in all jurisdictions that we operate in) and you can send any requests about this to webmaster@Huybrechts.xyz
                                         </p>
                                     </div>
 
                                     <h4 class="hstack gap-2 mt-5">
                                         <i class="bi bi-paragraph fs-1 text-danger text-opacity-50"></i>
-                                        @Localizer["DISCLAIMER"]
+                                        Content Liability and Disclaimer
                                     </h4>
                                     <div class="bg-body-tertiary bg-opacity-50 p-3 rounded">
                                         <p>
-                                            @Localizer["DISCLAIMER_1"]
+                                            We shall have no responsibility or liability for any content appearing on your Web site. You agree to indemnify and defend us against all claims arising out of or based upon your Website. No link(s) may appear on any page on your Web site or within any context containing content or materials that may be interpreted as libelous, obscene or criminal, or which infringes, otherwise violates, or advocates the infringement or other violation of, any third party rights.
                                         </p>
                                         <p>
-                                            @Localizer["DISCLAIMER_2"]
+                                            THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                                         </p>
                                     </div>
 
                                     <h4 class="hstack gap-2 mt-5">
                                         <i class="bi bi-pencil-square fs-1 text-secondary text-opacity-50"></i>
-                                        @Localizer["FUTURE"]
+                                        Future Amendments
                                     </h4>
                                     <div class="bg-body-tertiary bg-opacity-50 p-3 rounded">
                                         <p>
-                                            @Localizer["FUTURE_1"]
+                                            We reserve the right to augment this Privacy Policy as the service evolves, particularly if/when added services require the collection of additional user information.
                                         </p>
                                         <p>
-                                            @Localizer["FUTURE_2"]
+                                            Should you have further questions or concerns about these privacy policies, please send us a message via webmaster@Huybrechts.xyz.
                                         </p>
                                     </div>
                                 </div>
