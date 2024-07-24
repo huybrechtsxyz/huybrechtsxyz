@@ -308,25 +308,30 @@ public static class WebHostExtensions
             log.Information("Configure the HTTP request pipeline for DEVELOPMENT");
             app.UseMigrationsEndPoint();
             app.UseDeveloperExceptionPage();
+            app.UseStatusCodePagesWithRedirects("/Error?status={0}");
         }
         else if (app.Environment.IsTest())
         {
             log.Information("Configure the HTTP request pipeline for DEVELOPMENT");
             app.UseMigrationsEndPoint();
             app.UseDeveloperExceptionPage();
+            app.UseStatusCodePagesWithRedirects("/Error?status={0}");
         }
         else if (app.Environment.IsStaging())
         {
             log.Information("Configure the HTTP request pipeline for staging");
-            app.UseExceptionHandler("/Error", createScopeForErrors: true);
+            app.UseExceptionHandler("/Error?status={0}", createScopeForErrors: true);
+            app.UseStatusCodePagesWithRedirects("/Error?status={0}");
         }
         else if (app.Environment.IsDevelopment())
         {
             log.Information("Configure the HTTP request pipeline for staging");
-            app.UseExceptionHandler("/Error", createScopeForErrors: true);
+            app.UseExceptionHandler("/Error?status={0}", createScopeForErrors: true);
+            app.UseStatusCodePagesWithRedirects("/Error?status={0}");
         }
         else
             throw new Exception("Invalid application environment");
+
         return app;
     }
 
