@@ -6,13 +6,8 @@ namespace Huybrechts.Web.Pages
     [AllowAnonymous]
     public class IndexModel : PageModel
     {
-        public IndexModel()
-        {
-        }
-
         public void OnGet()
         {
-            
         }
     }
 }
