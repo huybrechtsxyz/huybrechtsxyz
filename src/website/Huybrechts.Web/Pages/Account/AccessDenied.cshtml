@@ -1,10 +1,21 @@
 ﻿@page
+@inject IViewLocalizer Localizer
 @model AccessDeniedModel
 @{
-    ViewData["Title"] = "Access denied";
+    ViewData["Title"] = Localizer["Access denied"];
 }
 
-<header>
-    <h1 class="text-danger">@ViewData["Title"]</h1>
-    <p class="text-danger">You do not have access to this resource.</p>
-</header>
+<div class="card shadow-lg">
+    <div class="card-body p-4">
+
+        <div class="text-center">
+            <h1 class="h3 text-danger">@ViewData["Title"]</h1>
+            <p class="text-danger">@Localizer["You do not have access to this resource."]</p>
+        </div>
+
+    </div>
+</div>
+
+<div class="d-flex align-items-center justify-content-center gap-3 mt-4">
+    <button class="btn btn-light" onclick="window.history.back()">@Localizer["Back"]</button>
+</div>
