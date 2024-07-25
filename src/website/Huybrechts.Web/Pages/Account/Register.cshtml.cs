@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Localization;
@@ -18,7 +17,7 @@ using System.Text.Encodings.Web;
 
 namespace Huybrechts.Web.Pages.Account
 {
-	public class RegisterModel : PageModel
+    public class RegisterModel : PageModel
     {
         private readonly ApplicationSignInManager _signInManager;
         private readonly IStringLocalizer<RegisterModel> _stringLocalizer;

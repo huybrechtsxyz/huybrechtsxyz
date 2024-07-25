@@ -6,6 +6,7 @@ using Huybrechts.App.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Localization;
 using System.Text;
 
 namespace Huybrechts.Web.Pages.Account
@@ -14,11 +15,16 @@ namespace Huybrechts.Web.Pages.Account
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationSignInManager _signInManager;
+        private readonly IStringLocalizer<ConfirmEmailChangeModel> _localizer;
 
-        public ConfirmEmailChangeModel(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        public ConfirmEmailChangeModel(
+            ApplicationUserManager userManager,
+            ApplicationSignInManager signInManager,
+            IStringLocalizer<ConfirmEmailChangeModel> localizer)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -45,7 +51,7 @@ namespace Huybrechts.Web.Pages.Account
             var result = await _userManager.ChangeEmailAsync(user, email, code);
             if (!result.Succeeded)
             {
-                StatusMessage = "Error changing email.";
+                StatusMessage = _localizer["Error changing email."];
                 return Page();
             }
 
@@ -54,12 +60,12 @@ namespace Huybrechts.Web.Pages.Account
             var setUserNameResult = await _userManager.SetUserNameAsync(user, email);
             if (!setUserNameResult.Succeeded)
             {
-                StatusMessage = "Error changing user name.";
+                StatusMessage = _localizer["Error changing user name."];
                 return Page();
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Thank you for confirming your email change.";
+            StatusMessage = _localizer["Thank you for confirming your email change."];
             return Page();
         }
     }

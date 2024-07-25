@@ -6,6 +6,7 @@ using Huybrechts.App.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Localization;
 using System.Text;
 
 namespace Huybrechts.Web.Pages.Account
@@ -13,10 +14,12 @@ namespace Huybrechts.Web.Pages.Account
 	public class ConfirmEmailModel : PageModel
     {
         private readonly ApplicationUserManager _userManager;
+        private readonly IStringLocalizer<ConfirmEmailModel> _localizer;
 
-        public ConfirmEmailModel(ApplicationUserManager userManager)
+        public ConfirmEmailModel(ApplicationUserManager userManager, IStringLocalizer<ConfirmEmailModel> stringLocalizer)
         {
             _userManager = userManager;
+            _localizer = stringLocalizer;
         }
 
         /// <summary>
@@ -40,7 +43,7 @@ namespace Huybrechts.Web.Pages.Account
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, code);
-            StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+            StatusMessage = result.Succeeded ? _localizer["Thank you for confirming your email."] : _localizer["Error confirming your email."];
             return Page();
         }
     }
