@@ -322,7 +322,7 @@ img {
 .banner-area{
     background-image: url(../img/landing.jpg);
     background-position: center;
-    background-size:cover;
+    background-size: cover;
     position: relative;
     height: 100%;
 }
@@ -381,8 +381,6 @@ canvas{
     font-weight: 800;
     margin-bottom: 10px;
 }
-
-
 
 .intro h1 {
     color: #fafafa;
