@@ -124,7 +124,7 @@
     <value>Ik ben Vincent</value>
   </data>
   <data name="Login" xml:space="preserve">
-    <value>Inloggern</value>
+    <value>Inloggen</value>
   </data>
   <data name="Logout" xml:space="preserve">
     <value>Uitloggen</value>

@@ -117,13 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AgreeToTerms" xml:space="preserve">
+    <value>Ik ga akkoord met de voorwaarden</value>
+  </data>
+  <data name="Confirm password" xml:space="preserve">
+    <value>Bevestig wachtwoord</value>
+  </data>
   <data name="Email" xml:space="preserve">
     <value>E-mail</value>
+  </data>
+  <data name="Given name" xml:space="preserve">
+    <value>Voornaam</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>Wachtwoord</value>
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>Onthoud mij ?</value>
+  </data>
+  <data name="Surname" xml:space="preserve">
+    <value>Achternaam</value>
   </data>
 </root>

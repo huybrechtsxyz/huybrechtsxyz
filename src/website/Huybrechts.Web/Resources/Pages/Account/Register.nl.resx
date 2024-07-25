@@ -117,25 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AgreeToTerms" xml:space="preserve">
-    <value>I agree with the Terms and Conditions</value>
+  <data name="Already have an account ?" xml:space="preserve">
+    <value>Heeft u reeds een account ?</value>
   </data>
-  <data name="Confirm password" xml:space="preserve">
-    <value>Confirm password</value>
+  <data name="Back" xml:space="preserve">
+    <value>Vorige</value>
   </data>
-  <data name="Email" xml:space="preserve">
-    <value>E-mail</value>
+  <data name="Come join the XYZ community! Let's set up your account." xml:space="preserve">
+    <value>Sluit u aan bij de XYZ-gemeenschap! Laten we uw account instellen.</value>
   </data>
-  <data name="Given name" xml:space="preserve">
-    <value>Given name</value>
+  <data name="Create a New Account" xml:space="preserve">
+    <value>Maak een nieuw account aan</value>
   </data>
-  <data name="Password" xml:space="preserve">
-    <value>Password</value>
+  <data name="I agree with the Terms and Conditions" xml:space="preserve">
+    <value>Ik ga akkoord met de voorwaarden</value>
   </data>
-  <data name="RememberMe" xml:space="preserve">
-    <value>Remember me ?</value>
+  <data name="Please agree to the terms and conditions" xml:space="preserve">
+    <value>Gelieve akkoord te gaan met de voorwaarden</value>
   </data>
-  <data name="Surname" xml:space="preserve">
-    <value>Surname</value>
+  <data name="Register" xml:space="preserve">
+    <value>Registreer</value>
+  </data>
+  <data name="Sign In" xml:space="preserve">
+    <value>Inloggen</value>
+  </data>
+  <data name="Sign Up with" xml:space="preserve">
+    <value>Registreer met</value>
   </data>
 </root>

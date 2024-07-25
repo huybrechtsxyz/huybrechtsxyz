@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -19,6 +21,7 @@ namespace Huybrechts.Web.Pages.Account
 	public class RegisterModel : PageModel
     {
         private readonly ApplicationSignInManager _signInManager;
+        private readonly IStringLocalizer<RegisterModel> _stringLocalizer;
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationUserStore _userStore;
         //private readonly IUserEmailStore<ApplicationUser> _emailStore;
@@ -29,6 +32,7 @@ namespace Huybrechts.Web.Pages.Account
             ApplicationUserManager userManager,
             ApplicationUserStore userStore,
             ApplicationSignInManager signInManager,
+            IStringLocalizer<RegisterModel> stringLocalizer,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
@@ -36,6 +40,7 @@ namespace Huybrechts.Web.Pages.Account
             _userStore = userStore;
             //_emailStore = GetEmailStore();
             _signInManager = signInManager;
+            _stringLocalizer = stringLocalizer;
             _logger = logger;
             _emailSender = emailSender;
         }
@@ -104,6 +109,9 @@ namespace Huybrechts.Web.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Display(Name = "AgreeToTerms")]
+            public bool AgreeToTerms { get; set; }
         }
 
 
@@ -117,6 +125,12 @@ namespace Huybrechts.Web.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            if (!Input.AgreeToTerms)
+            {
+                ModelState.AddModelError("Input.AgreeToTerms", _stringLocalizer["Please agree to the terms and conditions"]);
+            }
+
             if (ModelState.IsValid)
             {
                 var user = CreateUser();

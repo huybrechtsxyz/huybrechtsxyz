@@ -61,11 +61,38 @@ namespace Huybrechts.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to I agree with the Terms and Conditions.
+        /// </summary>
+        public static string AgreeToTerms {
+            get {
+                return ResourceManager.GetString("AgreeToTerms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm password.
+        /// </summary>
+        public static string Confirm_password {
+            get {
+                return ResourceManager.GetString("Confirm password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to E-mail.
         /// </summary>
         public static string Email {
             get {
                 return ResourceManager.GetString("Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Given name.
+        /// </summary>
+        public static string Given_name {
+            get {
+                return ResourceManager.GetString("Given name", resourceCulture);
             }
         }
         
@@ -84,6 +111,15 @@ namespace Huybrechts.Web.Resources {
         public static string RememberMe {
             get {
                 return ResourceManager.GetString("RememberMe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Surname.
+        /// </summary>
+        public static string Surname {
+            get {
+                return ResourceManager.GetString("Surname", resourceCulture);
             }
         }
     }
