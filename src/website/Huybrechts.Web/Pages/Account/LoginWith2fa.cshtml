@@ -19,6 +19,7 @@
 
             <div class="mb-3">
                 <input asp-for="Input.TwoFactorCode" class="form-control" autocomplete="off" aria-required="true" placeholder="@Html.DisplayNameFor(model => model.Input.TwoFactorCode)" autofocus />
+                <span asp-validation-for="Input.TwoFactorCode" class="text-danger"></span>
             </div>
 
             <div class="mb-3">

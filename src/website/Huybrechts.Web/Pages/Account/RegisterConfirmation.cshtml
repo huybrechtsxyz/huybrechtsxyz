@@ -13,7 +13,7 @@
                 if (@Model.DisplayConfirmAccountLink)
                 {
                     <p>
-                        @Localizer["Click here to confirm your account."];
+                        <a id="confirm-link" href="@Model.EmailConfirmationUrl">@Localizer["Click here to confirm your account."]</a>
                     </p>
                 }
                 else
