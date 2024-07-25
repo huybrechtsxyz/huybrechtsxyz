@@ -120,6 +120,9 @@
   <data name="AgreeToTerms" xml:space="preserve">
     <value>Ik ga akkoord met de voorwaarden</value>
   </data>
+  <data name="Authenticator code" xml:space="preserve">
+    <value>Authenticatiecode</value>
+  </data>
   <data name="Confirm password" xml:space="preserve">
     <value>Bevestig wachtwoord</value>
   </data>
@@ -131,6 +134,9 @@
   </data>
   <data name="Password" xml:space="preserve">
     <value>Wachtwoord</value>
+  </data>
+  <data name="Remember this machine" xml:space="preserve">
+    <value>Onthoud deze machine</value>
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>Onthoud mij ?</value>

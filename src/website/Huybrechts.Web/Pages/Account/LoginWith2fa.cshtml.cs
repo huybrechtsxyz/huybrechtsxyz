@@ -5,6 +5,7 @@
 using Huybrechts.App.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Web.Pages.Account
@@ -13,15 +14,18 @@ namespace Huybrechts.Web.Pages.Account
     {
         private readonly ApplicationSignInManager _signInManager;
         private readonly ApplicationUserManager _userManager;
+        private readonly IStringLocalizer<LoginWith2faModel> _localizer;
         private readonly ILogger<LoginWith2faModel> _logger;
 
         public LoginWith2faModel(
             ApplicationSignInManager signInManager,
             ApplicationUserManager userManager,
+            IStringLocalizer<LoginWith2faModel> localizer,
             ILogger<LoginWith2faModel> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _localizer = localizer; 
             _logger = logger;
         }
 
@@ -118,7 +122,7 @@ namespace Huybrechts.Web.Pages.Account
             else
             {
                 _logger.LogWarning("Invalid authenticator code entered for user with ID '{UserId}'.", user.Id);
-                ModelState.AddModelError(string.Empty, "Invalid authenticator code.");
+                ModelState.AddModelError(string.Empty, _localizer["Invalid authenticator code."]);
                 return Page();
             }
         }

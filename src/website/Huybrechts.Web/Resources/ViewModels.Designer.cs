@@ -70,6 +70,15 @@ namespace Huybrechts.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Authenticator code.
+        /// </summary>
+        public static string Authenticator_code {
+            get {
+                return ResourceManager.GetString("Authenticator code", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirm password.
         /// </summary>
         public static string Confirm_password {
@@ -102,6 +111,15 @@ namespace Huybrechts.Web.Resources {
         public static string Password {
             get {
                 return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remember this machine.
+        /// </summary>
+        public static string Remember_this_machine {
+            get {
+                return ResourceManager.GetString("Remember this machine", resourceCulture);
             }
         }
         

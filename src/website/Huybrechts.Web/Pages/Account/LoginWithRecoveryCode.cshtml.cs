@@ -5,6 +5,7 @@
 using Huybrechts.App.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Web.Pages.Account
@@ -13,15 +14,18 @@ namespace Huybrechts.Web.Pages.Account
     {
         private readonly ApplicationSignInManager _signInManager;
         private readonly ApplicationUserManager _userManager;
+        private readonly IStringLocalizer<LoginWithRecoveryCodeModel> _localizer;
         private readonly ILogger<LoginWithRecoveryCodeModel> _logger;
 
         public LoginWithRecoveryCodeModel(
             ApplicationSignInManager signInManager,
             ApplicationUserManager userManager,
+            IStringLocalizer<LoginWithRecoveryCodeModel> localizer
             ILogger<LoginWithRecoveryCodeModel> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _localizer = localizer;
             _logger = logger;
         }
 
@@ -101,7 +105,7 @@ namespace Huybrechts.Web.Pages.Account
             else
             {
                 _logger.LogWarning("Invalid recovery code entered for user with ID '{UserId}' ", user.Id);
-                ModelState.AddModelError(string.Empty, "Invalid recovery code entered.");
+                ModelState.AddModelError(string.Empty, _localizer["Invalid recovery code entered."]);
                 return Page();
             }
         }
