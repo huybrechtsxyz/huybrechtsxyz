@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Text;
@@ -22,6 +23,7 @@ namespace Huybrechts.Web.Pages.Account
         private readonly ApplicationSignInManager _signInManager;
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationUserStore _userStore;
+        private readonly IStringLocalizer<ExternalLoginModel> _Localizer;
         //private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
@@ -30,12 +32,15 @@ namespace Huybrechts.Web.Pages.Account
             ApplicationSignInManager signInManager,
             ApplicationUserManager userManager,
             ApplicationUserStore userStore,
+            IStringLocalizer<ExternalLoginModel> localizer,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender
+            )
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _userStore = userStore;
+            _Localizer = localizer;
             //_emailStore = GetEmailStore();
             _logger = logger;
             _emailSender = emailSender;
@@ -91,6 +96,8 @@ namespace Huybrechts.Web.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
+            [DataType(DataType.EmailAddress)]
+            [Display(Name = "Email")]
             public string Email { get; set; }
         }
         
@@ -186,9 +193,12 @@ namespace Huybrechts.Web.Pages.Account
                             values: new { area = "Identity", userId, code },
                             protocol: Request.Scheme);
 
-                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
+                        //$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>." ;
+                        var emailSubject = _Localizer["Confirm your email"];
+                        var emailBody = _Localizer["Please confirm your account by <a href='{0}'>clicking here</a>."];
+                        var emailText = emailBody.Value.Replace("{0}", HtmlEncoder.Default.Encode(callbackUrl));
+                        await _emailSender.SendEmailAsync(Input.Email, emailSubject, emailText);
+                        
                         // If account confirmation is required, we need to show the link if we don't have a real email sender
                         if (_userManager.Options.SignIn.RequireConfirmedAccount)
                         {

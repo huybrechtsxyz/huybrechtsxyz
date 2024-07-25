@@ -1,39 +1,47 @@
 ﻿@page
+@inject IViewLocalizer Localizer
 @model ExternalLoginModel
 @{
-    ViewData["Title"] = "Register";
+    string message = "You've successfully authenticated with <strong>{0}</strong>. "
+                   + "Please enter an email address for this site below and click the Register button to finish "
+                   + "logging in.";
+    string localized = Localizer["Message"].Value.ToString();
+    if (string.IsNullOrEmpty(localized) || localized == "Message")
+        localized = message;
+    ViewData["Title"] = Localizer["Register"];
+    ViewData["Message"] = localized.Replace("{0}", Model.ProviderDisplayName);
 }
+<div class="card shadow-lg">
+    <div class="card-body">
 
-<h1>@ViewData["Title"]</h1>
-<h2 id="external-login-title">Associate your @Model.ProviderDisplayName account.</h2>
-<hr />
+        <div class="text-center">
+            <h1 class="h3">@ViewData["Title"]</h1>
+            <p>@Localizer["Associate your"] @Model.ProviderDisplayName @Localizer["account."]</p>
+            <p id="external-login-description" class="text-info">@ViewData["Message"]</p>
+        </div>
 
-<p id="external-login-description" class="text-info">
-    You've successfully authenticated with <strong>@Model.ProviderDisplayName</strong>.
-    Please enter an email address for this site below and click the Register button to finish
-    logging in.
-</p>
+        <form id="externalLoginForm" asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" class="mt-5" method="post">
+            <div class="w-md-400px d-inline-flex row g-3 mb-4">
+                <div class="col-sm-6">
+                    <input asp-for="Input.GivenName" class="form-control" autocomplete="givenname" placeholder="@Html.DisplayNameFor(model => model.Input.GivenName)" aria-required="true" aria-label="First name" autofocus>
+                    <span asp-validation-for="Input.GivenName" class="text-danger"></span>
+                </div>
+                <div class="col-sm-6">
+                    <input asp-for="Input.Surname" class="form-control" autocomplete="surname" placeholder="@Html.DisplayNameFor(model => model.Input.Surname)" aria-label="Last name" aria-required="true" />
+                    <span asp-validation-for="Input.Surname" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="@Html.DisplayNameFor(model => model.Input.Email)" aria-label="Email" aria-required="true" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.GivenName" class="form-control" autocomplete="givenname" aria-required="true" placeholder="John" />
-                <label for="givenname">Given name</label>
-                <ValidationMessage For="() => Input.GivenName" class="text-danger" />
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                <div class="d-grid mt-5">
+                    <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg">@Localizer["Register"]</button>
+                </div>
+
             </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Surname" class="form-control" autocomplete="surname" aria-required="true" placeholder="Doe" />
-                <label for="surname">Surname</label>
-                <ValidationMessage For="() => Input.Surname" class="text-danger" />
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email."/>
-                <label asp-for="Input.Email" class="form-label"></label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>
     </div>
 </div>
