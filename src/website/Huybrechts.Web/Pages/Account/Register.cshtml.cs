@@ -87,6 +87,7 @@ namespace Huybrechts.Web.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
+            [DataType(DataType.EmailAddress)]
             [Display(Name = "Email")]
             public string Email { get; set; }
 

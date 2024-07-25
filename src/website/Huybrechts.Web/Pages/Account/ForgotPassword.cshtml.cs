@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -16,11 +17,13 @@ namespace Huybrechts.Web.Pages.Account
     public class ForgotPasswordModel : PageModel
     {
         private readonly ApplicationUserManager _userManager;
+        private readonly IStringLocalizer<ForgotPasswordModel> _localizer;
         private readonly IEmailSender _emailSender;
 
-        public ForgotPasswordModel(ApplicationUserManager userManager, IEmailSender emailSender)
+        public ForgotPasswordModel(ApplicationUserManager userManager, IStringLocalizer<ForgotPasswordModel> localizer, IEmailSender emailSender)
         {
             _userManager = userManager;
+            _localizer = localizer; 
             _emailSender = emailSender;
         }
 
@@ -43,6 +46,8 @@ namespace Huybrechts.Web.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
+            [DataType(DataType.EmailAddress)]
+            [Display(Name = "Email")]
             public string Email { get; set; }
         }
 
@@ -67,10 +72,13 @@ namespace Huybrechts.Web.Pages.Account
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
 
+                //$"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>."
+                var mailText = _localizer["Please reset your password by <a href='{0}'>clicking here</a>."];
+                var mailBody = mailText.Value.ToString().Replace("{0}", HtmlEncoder.Default.Encode(callbackUrl));
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    _localizer["Reset Password"],
+                    mailBody);
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

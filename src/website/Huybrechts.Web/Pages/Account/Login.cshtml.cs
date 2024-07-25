@@ -60,7 +60,7 @@ namespace Huybrechts.Web.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
-            //[Display(ResourceType = typeof(Resources.Pages.Account.Models), Name = nameof(Resources.Pages.Account.Models.Email))]
+            [DataType(DataType.EmailAddress)]
             [Display(Name = nameof(Email))]
             public string Email { get; set; }
 
@@ -70,7 +70,6 @@ namespace Huybrechts.Web.Pages.Account
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
-            //[Display(ResourceType = typeof(Resources.Pages.Account.Models), Name = nameof(Resources.Pages.Account.Models.Password))]
             [Display(Name = nameof(Password))]
             public string Password { get; set; }
 
