@@ -20,7 +20,7 @@ namespace Huybrechts.Web.Pages.Account
         public LoginWithRecoveryCodeModel(
             ApplicationSignInManager signInManager,
             ApplicationUserManager userManager,
-            IStringLocalizer<LoginWithRecoveryCodeModel> localizer
+            IStringLocalizer<LoginWithRecoveryCodeModel> localizer,
             ILogger<LoginWithRecoveryCodeModel> logger)
         {
             _signInManager = signInManager;
