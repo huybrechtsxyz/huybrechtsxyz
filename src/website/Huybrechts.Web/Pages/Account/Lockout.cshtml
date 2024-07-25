@@ -1,10 +1,16 @@
 ﻿@page
+@inject IViewLocalizer Localizer
 @model LockoutModel
 @{
-    ViewData["Title"] = "Locked out";
+    ViewData["Title"] = Localizer["Locked out"];
 }
+<div class="card shadow-lg">
+    <div class="card-body p-4">
 
-<header>
-    <h1 class="text-danger">@ViewData["Title"]</h1>
-    <p class="text-danger">This account has been locked out, please try again later.</p>
-</header>
+        <div class="text-center">
+            <h1 class="h3 text-danger">@ViewData["Title"]</h1>
+            <p class="text-danger">@Localizer["This account has been locked out, please try again later."]</p>
+        </div>
+
+    </div>
+</div>
