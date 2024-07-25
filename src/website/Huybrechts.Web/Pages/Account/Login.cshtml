@@ -40,7 +40,7 @@
 
         <div class="d-flex justify-content-between gap-md-5 mt-4">
             <a asp-page="./ForgotPassword" id="forgot-password" class="btn-link text-decoration-none">@Localizer["Forgot password ?"]</a>
-            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn-link text-decoration-none">Create a new account</a>
+            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn-link text-decoration-none">@Localizer["Create a new account"]</a>
         </div>
 
         @{
@@ -79,7 +79,7 @@
         <span class="vr"></span>
         @Localizer["Resend email confirmation"]
     </a>
-    <button class="btn btn-light" onclick="window.history.back()">Back</button>
+    <button class="btn btn-light" onclick="window.history.back()">@Localizer["Back"]</button>
 </div>
 
 @section Scripts {

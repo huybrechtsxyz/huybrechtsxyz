@@ -9,7 +9,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace Huybrechts.Data.Data;
+namespace Huybrechts.App.Data;
 
 public class ApplicationSeedWorker : IHostedService
 {

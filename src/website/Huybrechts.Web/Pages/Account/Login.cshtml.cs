@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Web.Pages.Account
 {
-	public class LoginModel : PageModel
+    public class LoginModel : PageModel
     {
         private readonly ApplicationSignInManager _signInManager;
         private readonly ILogger<LoginModel> _logger;
@@ -60,6 +60,8 @@ namespace Huybrechts.Web.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
+            //[Display(ResourceType = typeof(Resources.Pages.Account.Models), Name = nameof(Resources.Pages.Account.Models.Email))]
+            [Display(Name = nameof(Email))]
             public string Email { get; set; }
 
             /// <summary>
@@ -68,13 +70,16 @@ namespace Huybrechts.Web.Pages.Account
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
+            //[Display(ResourceType = typeof(Resources.Pages.Account.Models), Name = nameof(Resources.Pages.Account.Models.Password))]
+            [Display(Name = nameof(Password))]
             public string Password { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Display(Name = "Remember me?")]
+            //[Display(ResourceType = typeof(Resources.Pages.Account.Models), Name = nameof(Resources.Pages.Account.Models.RememberMe))]
+            [Display(Name = nameof(RememberMe))] 
             public bool RememberMe { get; set; }
         }
 

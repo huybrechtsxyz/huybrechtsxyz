@@ -35,4 +35,19 @@
     <ProjectReference Include="..\Huybrechts.Infra.Npgsql\Huybrechts.Infra.Npgsql.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Resources\ViewModels.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ViewModels.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\ViewModels.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ViewModels.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>
