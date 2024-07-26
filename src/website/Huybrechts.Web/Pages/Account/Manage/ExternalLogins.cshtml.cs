@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 
 namespace Huybrechts.Web.Pages.Account.Manage
 {
@@ -15,15 +16,18 @@ namespace Huybrechts.Web.Pages.Account.Manage
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationSignInManager _signInManager;
         private readonly ApplicationUserStore _userStore;
+        private readonly IStringLocalizer<ExternalLoginsModel> _localizer;
 
         public ExternalLoginsModel(
             ApplicationUserManager userManager,
             ApplicationSignInManager signInManager,
-            ApplicationUserStore userStore)
+            ApplicationUserStore userStore,
+            IStringLocalizer<ExternalLoginsModel> localizer)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _userStore = userStore;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -85,12 +89,12 @@ namespace Huybrechts.Web.Pages.Account.Manage
             var result = await _userManager.RemoveLoginAsync(user, loginProvider, providerKey);
             if (!result.Succeeded)
             {
-                StatusMessage = "The external login was not removed.";
+                StatusMessage = _localizer["The external login was not removed."];
                 return RedirectToPage();
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "The external login was removed.";
+            StatusMessage = _localizer["The external login was removed."];
             return RedirectToPage();
         }
 
@@ -119,14 +123,14 @@ namespace Huybrechts.Web.Pages.Account.Manage
             var result = await _userManager.AddLoginAsync(user, info);
             if (!result.Succeeded)
             {
-                StatusMessage = "The external login was not added. External logins can only be associated with one account.";
+                StatusMessage = _localizer["The external login was not added. External logins can only be associated with one account."];
                 return RedirectToPage();
             }
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            StatusMessage = "The external login was added.";
+            StatusMessage = _localizer["The external login was added."];
             return RedirectToPage();
         }
     }
