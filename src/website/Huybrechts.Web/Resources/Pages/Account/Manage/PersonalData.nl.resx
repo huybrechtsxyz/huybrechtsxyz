@@ -117,40 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AgreeToTerms" xml:space="preserve">
-    <value>Ik ga akkoord met de voorwaarden</value>
+  <data name="Data created in a team will only be deleted when the team is deleted. Even if you created that data." xml:space="preserve">
+    <value>Gegevens die binnen een team zijn aangemaakt, worden pas verwijderd als het hele team wordt verwijderd, ongeacht of u degene bent die deze heeft aangemaakt.</value>
   </data>
-  <data name="Authenticator code" xml:space="preserve">
-    <value>Authenticatiecode</value>
+  <data name="Delete" xml:space="preserve">
+    <value>Verwijderen</value>
   </data>
-  <data name="Confirm new password" xml:space="preserve">
-    <value>Bevestig nieuw wachtwoord</value>
+  <data name="Deleting this data will permanently remove your account, and this cannot be recovered." xml:space="preserve">
+    <value>Als u deze gegevens verwijdert, wordt uw account definitief verwijderd. Dit kan niet worden hersteld.</value>
   </data>
-  <data name="Confirm password" xml:space="preserve">
-    <value>Bevestig wachtwoord</value>
+  <data name="Download" xml:space="preserve">
+    <value>Downloaden</value>
   </data>
-  <data name="Email" xml:space="preserve">
-    <value>E-mail</value>
+  <data name="Personal Data" xml:space="preserve">
+    <value>Persoonlijke gegevens</value>
   </data>
-  <data name="Given name" xml:space="preserve">
-    <value>Voornaam</value>
-  </data>
-  <data name="New password" xml:space="preserve">
-    <value>Nieuw paswoord</value>
-  </data>
-  <data name="Password" xml:space="preserve">
-    <value>Wachtwoord</value>
-  </data>
-  <data name="Phone number" xml:space="preserve">
-    <value>Telefoonnummer</value>
-  </data>
-  <data name="Remember this machine" xml:space="preserve">
-    <value>Onthoud deze machine</value>
-  </data>
-  <data name="RememberMe" xml:space="preserve">
-    <value>Onthoud mij ?</value>
-  </data>
-  <data name="Surname" xml:space="preserve">
-    <value>Achternaam</value>
+  <data name="Your account contains personal data that you have given us. This page allows you to download or delete that data." xml:space="preserve">
+    <value>In uw account staan ​​persoonsgegevens die u aan ons heeft verstrekt. Op deze pagina kunt u die gegevens downloaden of verwijderen.</value>
   </data>
 </root>

@@ -117,40 +117,58 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AgreeToTerms" xml:space="preserve">
-    <value>Ik ga akkoord met de voorwaarden</value>
+  <data name="Add authenticator app" xml:space="preserve">
+    <value>Authenticator-app toevoegen</value>
   </data>
-  <data name="Authenticator code" xml:space="preserve">
-    <value>Authenticatiecode</value>
+  <data name="before you can log in with a recovery code." xml:space="preserve">
+    <value>voordat u kunt inloggen met een herstelcode.</value>
   </data>
-  <data name="Confirm new password" xml:space="preserve">
-    <value>Bevestig nieuw wachtwoord</value>
+  <data name="Disable 2FA" xml:space="preserve">
+    <value>Schakel 2FA uit</value>
   </data>
-  <data name="Confirm password" xml:space="preserve">
-    <value>Bevestig wachtwoord</value>
+  <data name="Forget this browser" xml:space="preserve">
+    <value>Vergeet deze browser</value>
   </data>
-  <data name="Email" xml:space="preserve">
-    <value>E-mail</value>
+  <data name="Privacy and cookie policy have not been accepted." xml:space="preserve">
+    <value>Privacy- en cookiebeleid zijn niet geaccepteerd.</value>
   </data>
-  <data name="Given name" xml:space="preserve">
-    <value>Voornaam</value>
+  <data name="recovery codes" xml:space="preserve">
+    <value>herstelcodes</value>
   </data>
-  <data name="New password" xml:space="preserve">
-    <value>Nieuw paswoord</value>
+  <data name="Reset authenticator app" xml:space="preserve">
+    <value>Authenticator-app opnieuw instellen</value>
   </data>
-  <data name="Password" xml:space="preserve">
-    <value>Wachtwoord</value>
+  <data name="Reset recovery codes" xml:space="preserve">
+    <value>Herstelcodes opnieuw instellen</value>
   </data>
-  <data name="Phone number" xml:space="preserve">
-    <value>Telefoonnummer</value>
+  <data name="Set up authenticator app" xml:space="preserve">
+    <value>Authenticator-app instellen</value>
   </data>
-  <data name="Remember this machine" xml:space="preserve">
-    <value>Onthoud deze machine</value>
+  <data name="The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code." xml:space="preserve">
+    <value>De huidige browser is vergeten. Wanneer u vanuit deze browser opnieuw inlogt, wordt u om uw 2fa-code gevraagd.</value>
   </data>
-  <data name="RememberMe" xml:space="preserve">
-    <value>Onthoud mij ?</value>
+  <data name="Two-factor authentication (2FA)" xml:space="preserve">
+    <value>Tweefactorauthenticatie (2FA)</value>
   </data>
-  <data name="Surname" xml:space="preserve">
-    <value>Achternaam</value>
+  <data name="You can generate a new set of" xml:space="preserve">
+    <value>U kunt een nieuwe set genereren</value>
+  </data>
+  <data name="You have 1 recovery code left." xml:space="preserve">
+    <value>Je hebt nog 1 herstelcode over.</value>
+  </data>
+  <data name="You have no recovery codes left." xml:space="preserve">
+    <value>U heeft geen herstelcodes meer.</value>
+  </data>
+  <data name="You have {0} recovery codes left." xml:space="preserve">
+    <value>U heeft nog {0} herstelcodes over.</value>
+  </data>
+  <data name="You must accept the policy before you can enable two factor authentication." xml:space="preserve">
+    <value>U moet het beleid accepteren voordat u tweefactorauthenticatie kunt inschakelen.</value>
+  </data>
+  <data name="You must generate a new set of" xml:space="preserve">
+    <value>U moet een nieuwe set genereren</value>
+  </data>
+  <data name="You should generate a new set of" xml:space="preserve">
+    <value>U zou een nieuwe set moeten genereren</value>
   </data>
 </root>

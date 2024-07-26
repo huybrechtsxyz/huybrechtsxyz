@@ -79,6 +79,15 @@ namespace Huybrechts.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Confirm new password.
+        /// </summary>
+        public static string Confirm_new_password {
+            get {
+                return ResourceManager.GetString("Confirm new password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirm password.
         /// </summary>
         public static string Confirm_password {
@@ -106,11 +115,29 @@ namespace Huybrechts.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New password.
+        /// </summary>
+        public static string New_password {
+            get {
+                return ResourceManager.GetString("New password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password.
         /// </summary>
         public static string Password {
             get {
                 return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone number.
+        /// </summary>
+        public static string Phone_number {
+            get {
+                return ResourceManager.GetString("Phone number", resourceCulture);
             }
         }
         
