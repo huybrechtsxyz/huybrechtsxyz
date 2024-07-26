@@ -117,10 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Please choose your username." xml:space="preserve">
+    <value>Kies uw gebruikersnaam.</value>
+  </data>
+  <data name="Please enter your given name." xml:space="preserve">
+    <value>Voer uw voornaam in.</value>
+  </data>
+  <data name="Please enter your phone number." xml:space="preserve">
+    <value>Voer uw telefoonnummer in.</value>
+  </data>
+  <data name="Please enter your sur name." xml:space="preserve">
+    <value>Voer uw achternaam in.</value>
+  </data>
   <data name="Unexpected error when trying to set phone number." xml:space="preserve">
     <value>Onverwachte fout bij het instellen van een telefoonnummer.</value>
   </data>
   <data name="Your profile has been updated" xml:space="preserve">
     <value>Uw profiel is bijgewerkt</value>
+  </data>
+  <data name="Your user profile" xml:space="preserve">
+    <value>Uw profiel</value>
   </data>
 </root>

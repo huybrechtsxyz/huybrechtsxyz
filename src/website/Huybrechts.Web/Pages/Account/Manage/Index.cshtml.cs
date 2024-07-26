@@ -6,6 +6,7 @@ using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Web.Pages.Account.Manage
@@ -14,13 +15,16 @@ namespace Huybrechts.Web.Pages.Account.Manage
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationSignInManager _signInManager;
+        private readonly IStringLocalizer<IndexModel> _localizer;
 
         public IndexModel(
             ApplicationUserManager userManager,
-            ApplicationSignInManager signInManager)
+            ApplicationSignInManager signInManager,
+            IStringLocalizer<IndexModel> localizer)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -131,7 +135,7 @@ namespace Huybrechts.Web.Pages.Account.Manage
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    StatusMessage = _localizer["Unexpected error when trying to set phone number."];
                     return RedirectToPage();
                 }
             }
@@ -147,7 +151,7 @@ namespace Huybrechts.Web.Pages.Account.Manage
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = _localizer["Your profile has been updated"];
             return RedirectToPage();
         }
     }
