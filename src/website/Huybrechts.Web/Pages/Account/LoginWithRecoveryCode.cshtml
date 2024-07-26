@@ -2,14 +2,14 @@
 @inject IViewLocalizer Localizer
 @model LoginWithRecoveryCodeModel
 @{
-    ViewData["Title"] = Localizer["Recovery code verification"];
+    ViewData["MetaTitle"] = Localizer["Recovery code verification"];
     ViewData["Info"] = Localizer["You have requested to log in with a recovery code. This login will not be remembered until you provide an authenticator app code at log in or disable 2FA and log in again."];
 }
 <div class="card shadow-lg">
     <div class="card-body p-4">
 
         <div class="text-center">
-            <h1 class="h3">@ViewData["Title"]</h1>
+            <h1 class="h3">@ViewData["MetaTitle"]</h1>
             <p class="text-info">@ViewData["Info"]</p>
         </div>
 

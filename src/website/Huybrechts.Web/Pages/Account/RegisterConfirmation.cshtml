@@ -2,13 +2,13 @@
 @inject IViewLocalizer Localizer
 @model RegisterConfirmationModel
 @{
-    ViewData["Title"] = Localizer["Register confirmation"];
+    ViewData["MetaTitle"] = Localizer["Register confirmation"];
 }
 <div class="card shadow-lg">
     <div class="card-body p-4">
 
         <div class="text-center">
-            <h1 class="h3 text-danger">@ViewData["Title"]</h1>
+            <h1 class="h3 text-danger">@ViewData["MetaTitle"]</h1>
             @{
                 if (@Model.DisplayConfirmAccountLink)
                 {

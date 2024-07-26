@@ -8,14 +8,14 @@
     string localized = Localizer["Message"].Value.ToString();
     if (string.IsNullOrEmpty(localized) || localized == "Message")
         localized = message;
-    ViewData["Title"] = Localizer["Register"];
+    ViewData["MetaTitle"] = Localizer["Register"];
     ViewData["Message"] = localized.Replace("{0}", Model.ProviderDisplayName);
 }
 <div class="card shadow-lg">
     <div class="card-body">
 
         <div class="text-center">
-            <h1 class="h3">@ViewData["Title"]</h1>
+            <h1 class="h3">@ViewData["MetaTitle"]</h1>
             <p>@Localizer["Associate your"] @Model.ProviderDisplayName @Localizer["account."]</p>
             <p id="external-login-description" class="text-info">@ViewData["Message"]</p>
         </div>

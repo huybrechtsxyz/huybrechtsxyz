@@ -2,7 +2,7 @@
 @inject IViewLocalizer Localizer
 @model LoginWith2faModel
 @{
-    ViewData["Title"] = Localizer["Two-factor authentication"];
+    ViewData["MetaTitle"] = Localizer["Two-factor authentication"];
     ViewData["Message"] = Localizer["Don't have access to your authenticator device? You can log in with a"];
     ViewData["Link"] = Localizer["recovery code"];
 }
@@ -10,7 +10,7 @@
     <div class="card-body p-4">
 
         <div class="text-center">
-            <h1 class="h3">@ViewData["Title"]</h1>
+            <h1 class="h3">@ViewData["MetaTitle"]</h1>
             <p class="text-info">@Localizer["Your login is protected with an authenticator app. Enter your authenticator code below."]</p>
         </div>
 

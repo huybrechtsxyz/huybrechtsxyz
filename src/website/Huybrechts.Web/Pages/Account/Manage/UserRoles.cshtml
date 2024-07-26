@@ -1,54 +1,48 @@
 ﻿@page
+@inject IViewLocalizer Localizer
 @model UserRolesModel
 @{
-    ViewData["Title"] = "User Roles";
+    ViewData["CardTitle"] = Localizer["Your assigned user roles"];
     ViewData["ActivePage"] = ManageNavPages.UserRoles;
 }
 
 <div class="row">
     <div class="col-md-6">
-        <h3>Tenant Roles</h3>
-        <p>
-            The list of tenant roles you are part of:
-        </p>
         @if(Model.TenantRoles.Length > 0)
         {
-            <table class="table">
-                <tr>
-                    <th>Tenant</th>
-                    <th>Role</th>
-                </tr>
-                @foreach (var item in Model.TenantRoles)
-                {
+            <div class="table-responsive">
+                <table class="table table-striped" title="@Localizer["Team Roles"]">
                     <tr>
-                        <td>@item.TenantId</td>
-                        <td>@item.Label</td>
+                        <th>@Localizer["Team"]</th>
+                        <th>@Localizer["Role"]</th>
                     </tr>
-                }
-            </table>
+                    @foreach (var item in Model.TenantRoles)
+                    {
+                        <tr>
+                            <td>@item.TenantId</td>
+                            <td>@item.Label</td>
+                        </tr>
+                    }
+                </table>
+            </div>
         }
-        else
-        {
-            <p>You are not part of any tenant</p>
-        }
-
-        <h3>System Roles</h3>
         <p>
-            The list of system roles you are part of:
         </p>
         @if (Model.SystemRoles.Length > 0)
         {
-            <table class="table">
-                <tr>
-                    <th>Role</th>
-                </tr>
-                @foreach (var item in Model.SystemRoles)
-                {
+            <div class="table-responsive">
+                <table class="table table-striped" title="@Localizer["Application Roles"]">
                     <tr>
-                        <td>@item.Label</td>
+                        <th>@Localizer["Role"]</th>
                     </tr>
-                }
-            </table>
+                    @foreach (var item in Model.SystemRoles)
+                    {
+                        <tr>
+                            <td>@item.Label</td>
+                        </tr>
+                    }
+                </table>
+            </div>
         }
     </div>
 </div>

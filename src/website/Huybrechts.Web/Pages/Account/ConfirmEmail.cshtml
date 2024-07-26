@@ -2,13 +2,13 @@
 @inject IViewLocalizer Localizer
 @model ConfirmEmailModel
 @{
-    ViewData["Title"] = Localizer["Confirm email"];
+    ViewData["MetaTitle"] = Localizer["Confirm email"];
 }
 <div class="card shadow-lg">
     <div class="card-body p-4">
 
         <div class="text-center">
-            <h1 class="h3">@ViewData["Title"]</h1>
+            <h1 class="h3">@ViewData["MetaTitle"]</h1>
             <partial name="_StatusMessage" model="Model.StatusMessage" />
         </div>
 

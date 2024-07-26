@@ -4,7 +4,9 @@
 
 using Huybrechts.App.Application;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 
 namespace Huybrechts.Web.Pages.Account.Manage
 {
@@ -12,14 +14,16 @@ namespace Huybrechts.Web.Pages.Account.Manage
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationSignInManager _signInManager;
-        private readonly ILogger<TwoFactorAuthenticationModel> _logger;
+        private readonly IStringLocalizer<TwoFactorAuthenticationModel> _localizer;
 
         public TwoFactorAuthenticationModel(
-            ApplicationUserManager userManager, ApplicationSignInManager signInManager, ILogger<TwoFactorAuthenticationModel> logger)
+            ApplicationUserManager userManager, 
+            ApplicationSignInManager signInManager,
+            IStringLocalizer<TwoFactorAuthenticationModel> localizer)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _logger = logger;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -79,7 +83,7 @@ namespace Huybrechts.Web.Pages.Account.Manage
             }
 
             await _signInManager.ForgetTwoFactorClientAsync();
-            StatusMessage = "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.";
+            StatusMessage = _localizer["The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code."];
             return RedirectToPage();
         }
     }

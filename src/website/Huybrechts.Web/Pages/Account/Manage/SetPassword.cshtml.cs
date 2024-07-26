@@ -5,6 +5,7 @@
 using Huybrechts.App.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Web.Pages.Account.Manage
@@ -13,13 +14,16 @@ namespace Huybrechts.Web.Pages.Account.Manage
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationSignInManager _signInManager;
+        private readonly IStringLocalizer<SetPasswordModel> _localizer;
 
         public SetPasswordModel(
             ApplicationUserManager userManager,
-            ApplicationSignInManager signInManager)
+            ApplicationSignInManager signInManager,
+            IStringLocalizer<SetPasswordModel> localizer)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -104,7 +108,7 @@ namespace Huybrechts.Web.Pages.Account.Manage
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your password has been set.";
+            StatusMessage = _localizer["Your password has been set."];
 
             return RedirectToPage();
         }
