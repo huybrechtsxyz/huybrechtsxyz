@@ -46,7 +46,7 @@
             <a asp-page="./GenerateRecoveryCodes" class="btn btn-primary">@Localizer["Reset recovery codes"]</a>
         }
 
-        <h4>Authenticator app</h4>
+        <h5>Authenticator app</h5>
         @if (!Model.HasAuthenticator)
         {
             <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">@Localizer["Add authenticator app"]</a>
