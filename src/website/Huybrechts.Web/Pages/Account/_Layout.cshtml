@@ -1,21 +1,21 @@
 ﻿<!doctype html>
-<html lang="en" data-bs-theme="light" data-scheme="navy">
+<html lang="en" data-bs-theme="auto" data-scheme="navy" style="font-size: 18px;">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta name="description" content="The login page allows a user to gain access to an application by entering their username and password or by authenticating using a social media login.">
+    <meta name="description" content="The account pages allows a user to gain access to an application by entering their username and password or by authenticating using a social media login.">
     <meta name="keywords" content="developer, resume, cv, personal, portfolio, personal resume">
     <meta name="author" content="Vincent Huybrechts">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
-    <title>@ViewData["Title"] - Huybrechts XYZ</title>
+    <title>@ViewData["PageTitle"] - Huybrechts XYZ</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="~/lib/bootstrap/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="~/lib/nifty/css/nifty.min.css">
+    <link rel="stylesheet" href="~/lib/nifty/bootstrap.css">
+    <link rel="stylesheet" href="~/lib/nifty/nifty.css">
+    <link rel="stylesheet" href="~/lib/bootstrap5/font/bootstrap-icons.min.css">
     <link rel="manifest" href="./site.webmanifest">
     @await RenderSectionAsync("Links", required: false)
 </head>
@@ -30,7 +30,7 @@
         </section>
     </div>
     <script src="~/lib/popperjs/popper.min.js"></script>
-    <script src="~/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/lib/nifty/bootstrap.min.js"></script>
     <script src="~/lib/nifty/js/nifty.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
