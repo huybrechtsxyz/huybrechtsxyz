@@ -5,6 +5,7 @@
 using Huybrechts.App.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 
 namespace Huybrechts.Web.Pages.Account.Manage
 {
@@ -12,13 +13,16 @@ namespace Huybrechts.Web.Pages.Account.Manage
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ILogger<Disable2faModel> _logger;
+        private readonly IStringLocalizer<Disable2faModel> _localizer;
 
         public Disable2faModel(
             ApplicationUserManager userManager,
-            ILogger<Disable2faModel> logger)
+            ILogger<Disable2faModel> logger,
+            IStringLocalizer<Disable2faModel> localizer)
         {
             _userManager = userManager;
             _logger = logger;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -59,7 +63,7 @@ namespace Huybrechts.Web.Pages.Account.Manage
             }
 
             _logger.LogInformation("User with ID '{UserId}' has disabled 2fa.", _userManager.GetUserId(User));
-            StatusMessage = "2fa has been disabled. You can reenable 2fa when you setup an authenticator app";
+            StatusMessage = _localizer["2fa has been disabled. You can reenable 2fa when you setup an authenticator app"];
             return RedirectToPage("./TwoFactorAuthentication");
         }
     }
