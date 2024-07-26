@@ -49,15 +49,15 @@
 
                 <!-- User menu link -->
                 <div class="list-group list-group-borderless h-100 py-3">
-                    <a asp-page="/Account/Manage" class="list-group-item list-group-item-action">
+                    <a asp-page="/Account/Manage/Index" class="list-group-item list-group-item-action">
                         <i class="pli-male fs-5 me-2"></i> @Localizer["Profile"]
+                    </a>
+                    <a asp-page="/Account/Logout" asp-route-returnUrl="/Index" class="list-group-item list-group-item-action">
+                        <i class="pli-unlock fs-5 me-2"></i> @Localizer["Logout"]
                     </a>
                     <div class="list-group-item list-group-item-action">
                         <partial name="_SelectLanguagePartial" />
                     </div>
-                    <a asp-page="/Account/Logout" asp-route-returnUrl="/Index" class="list-group-item list-group-item-action">
-                        <i class="pli-unlock fs-5 me-2"></i> @Localizer["Logout"]
-                    </a>
                 </div>
 
             </div>

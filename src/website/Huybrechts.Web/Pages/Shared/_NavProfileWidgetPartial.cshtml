@@ -22,10 +22,8 @@
         imageSource = "/img/unknownuser32.png";
 }
 
-<!-- Profile Widget -->
 <div class="mainnav__widget my-3 hv-outline-parent">
 
-    <!-- Profile picture  -->
     <div class="mininav-toggle text-center py-2">
         <img class="mainnav__avatar img-md rounded-circle hv-oc" src="@imageSource" alt="Profile Picture">
     </div>
@@ -44,7 +42,7 @@
 
             <!-- Collapsed user menu -->
             <div id="usernav" class="nav flex-column collapse">
-                <a asp-page="/Account/Manage" class="nav-link">
+                <a asp-page="/Account/Manage/Index" class="nav-link">
                     <i class="pli-male fs-5 me-2"></i><span class="ms-1">Profile</span>
                 </a>
                 <a asp-page="/Account/Logout" asp-route-returnUrl="/Index" class="nav-link">
