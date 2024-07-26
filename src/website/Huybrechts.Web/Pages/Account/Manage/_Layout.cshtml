@@ -1,4 +1,6 @@
-﻿@{
+﻿@inject IViewLocalizer Localizer
+
+@{
     // if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout !=  null)
     // {
     //     Layout = parentLayout.ToString();
@@ -11,8 +13,8 @@
 
     ViewData["MetaTitle"] = "Profile";
     ViewData["MetaInfo"] = "The account management pages allows a user to manage their personal information.";
-    ViewData["PageTitle"] = "Manage your account";
-    ViewData["PageInfo"] = "Change your account settings";
+    ViewData["PageTitle"] = Localizer["Manage your account"];
+    ViewData["PageInfo"] = Localizer["Change your account settings"];
 }
 
 <div class="content__boxed">
