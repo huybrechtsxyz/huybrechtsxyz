@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -18,13 +19,16 @@ namespace Huybrechts.Web.Pages.Account.Manage
     {
         private readonly ApplicationUserManager _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IStringLocalizer<EmailModel> _localizer;
 
         public EmailModel(
             ApplicationUserManager userManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IStringLocalizer<EmailModel> localizer)
         {
             _userManager = userManager;
             _emailSender = emailSender;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -119,16 +123,17 @@ namespace Huybrechts.Web.Pages.Account.Manage
                     pageHandler: null,
                     values: new { area = "Identity", userId, email = Input.NewEmail, code },
                     protocol: Request.Scheme);
+                var body = _localizer["Please confirm your account by <a href='{0}'>clicking here</a>."].ToString();
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    _localizer["Confirm your email"],
+                    body.Replace("{0}", HtmlEncoder.Default.Encode(callbackUrl)));
 
-                StatusMessage = "Confirmation link to change email sent. Please check your email.";
+                StatusMessage = _localizer["Confirmation link to change email sent. Please check your email."];
                 return RedirectToPage();
             }
 
-            StatusMessage = "Your email is unchanged.";
+            StatusMessage = _localizer["Your email is unchanged."];
             return RedirectToPage();
         }
 
