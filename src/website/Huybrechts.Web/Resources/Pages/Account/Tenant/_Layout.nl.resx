@@ -120,7 +120,7 @@
   <data name="Change your team settings" xml:space="preserve">
     <value>Wijzig uw teaminstellingen</value>
   </data>
-  <data name="Manage your team" xml:space="preserve">
-    <value>Beheer uw team</value>
+  <data name="Manage your teams" xml:space="preserve">
+    <value>Beheer uw teams</value>
   </data>
 </root>

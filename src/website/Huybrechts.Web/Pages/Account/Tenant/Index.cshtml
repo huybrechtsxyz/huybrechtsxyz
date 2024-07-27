@@ -1,10 +1,12 @@
 ﻿@page
 @model Huybrechts.Web.Pages.Account.Tenant.IndexModel
 @{
-    ViewData["Title"] = "Your tenants";
+    ViewData["CardTitle"] = "Your tenants";
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
-<h3>@ViewData["Title"]</h3>
+
+<partial name="_StatusMessage" for="StatusMessage" />
+
 @if (Model.Tenants.Count > 0)
 {
     <p class="text-info">
@@ -17,7 +19,12 @@ else
         You are not part of any tenant. You need at least one tenant if you wish to use the application!
     </p>
 }
-<partial name="_StatusMessage" for="StatusMessage" />
+
+
+
+
+
+
 <div class="row">
     <div class="col-md-12">
         <p>

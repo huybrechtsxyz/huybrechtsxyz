@@ -14,7 +14,7 @@
     if (applicationUser is not null && applicationUser.ProfilePicture is not null)
         imageSource = $"data:image/*;base64,{Convert.ToBase64String(applicationUser.ProfilePicture)}";
     else
-        imageSource = "/img/unknownuser32.png";
+        imageSource = "/lib/bootstrap-icons/person-badge.svg";
 }
 
 <!-- User dropdown -->
@@ -22,7 +22,7 @@
 
     <!-- Toggler -->
     <button class="header__btn btn btn-icon btn-sm" type="button" data-bs-toggle="dropdown" aria-label="User dropdown" aria-expanded="false">
-        <i class="psi-male"></i>
+        <i class="bi bi-person-circle"></i>
     </button>
 
     <!-- User dropdown menu -->
@@ -31,7 +31,7 @@
         <!-- User dropdown header -->
         <div class="d-flex align-items-center border-bottom px-3 py-2">
             <div class="flex-shrink-0">
-                <img class="img-sm rounded-circle" src="@imageSource" alt="Profile Picture" loading="lazy">
+                <img class="img-sm rounded-circle" src="@imageSource" alt="Profile Picture" role="img" loading="lazy">
             </div>
             <div class="flex-grow-1 ms-3">
                 <h5 class="mb-0">@applicationUser?.Fullname</h5>
@@ -50,13 +50,13 @@
                 <!-- User menu link -->
                 <div class="list-group list-group-borderless h-100 py-3">
                     <a asp-page="/Account/Manage/Index" class="list-group-item list-group-item-action">
-                        <i class="pli-male fs-5 me-2"></i> @Localizer["Profile"]
+                        <i class="bi bi-person-badge fs-5 me-2"></i> @Localizer["Profile"]
                     </a>
                     <a asp-page="/Account/Tenant/Index" class="list-group-item list-group-item-action">
-                        <i class="bi bi-collection-fill"></i> @Localizer["Teams"]
+                        <i class="bi bi-collection-fill fs-5 me-2"></i> @Localizer["Teams"]
                     </a>
                     <a asp-page="/Account/Logout" asp-route-returnUrl="/Index" class="list-group-item list-group-item-action">
-                        <i class="pli-unlock fs-5 me-2"></i> @Localizer["Logout"]
+                        <i class="bi bi-lock fs-5 me-2"></i> @Localizer["Logout"]
                     </a>
                     <div class="list-group-item list-group-item-action">
                         <partial name="_SelectLanguagePartial" />
