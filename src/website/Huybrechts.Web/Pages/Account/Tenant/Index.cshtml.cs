@@ -2,6 +2,7 @@ using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Web.Pages.Account.Tenant
 {
@@ -18,6 +19,28 @@ namespace Huybrechts.Web.Pages.Account.Tenant
 
         [TempData]
         public string StatusMessage { get; set; } = string.Empty;
+
+        public class TeamView
+        {
+            [Key]
+            [Required]
+            [RegularExpression("^[a-z0-9]+$")]
+            [StringLength(24, MinimumLength = 2)]
+            [Display(Name = nameof(TeamView) + "." + nameof(Id))]
+            public string Id { get; set; } = string.Empty;
+
+            public ApplicationTenantState State { get; set; }
+
+            [Required]
+            [StringLength(256, MinimumLength = 2)]
+            public string Name { get; set; } = string.Empty;
+
+            [StringLength(512)]
+            public string? Description { get; set; }
+
+            public string? Remark { get; set; }
+
+        }
 
         public IndexModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager)
         {

@@ -1,7 +1,9 @@
+using FluentResults;
 using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,6 +13,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationTenantManager _tenantManager;
+        private readonly IStringLocalizer<EditModel> _localizer;
 
         public bool AllowEnablingTenant() => ApplicationTenantManager.AllowEnablingTenant(Input.State);
 
@@ -44,10 +47,11 @@ namespace Huybrechts.Web.Pages.Account.Tenant
             public string? Users { get; set; }
         }
 
-        public EditModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager)
+        public EditModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager, IStringLocalizer<EditModel> localizer)
         {
             _userManager = userManager;
             _tenantManager = tenantManager;
+            _localizer = localizer;
             Roles = [];
             UserRoles = [];
         }
@@ -87,20 +91,26 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 return Page();
             }
 
-            IFormFile? file = Request.Form.Files.FirstOrDefault();
-            if (file is not null)
+            if (Request.Form.Files is not null && Request.Form.Files.Count > 0)
             {
-                using var dataStream = new MemoryStream();
-                await file.CopyToAsync(dataStream);
-                Input.Picture = new byte[dataStream.Length];
-                Input.Picture = dataStream.ToArray();
+                IFormFile? file = Request.Form.Files[0];
+                if (file is not null)
+                {
+                    using var dataStream = new MemoryStream();
+                    await file.CopyToAsync(dataStream);
+                    Input.Picture = new byte[dataStream.Length];
+                    Input.Picture = dataStream.ToArray();
+                }
             }
 
             var result = await _tenantManager.UpdateTenantAsync(user, Input);
-            if (result.IsFailed)
-                StatusMessage = result.Errors?.FirstOrDefault()?.Message ?? string.Empty;
+            if (!result.IsFailed)
+            {
+                var message = _localizer["The team {0} has been updated"];
+                StatusMessage = message.Value.Replace("{0}", Input.Id);
+            }
             else
-                StatusMessage = $"The tenant {result.Value.Id} has been updated";
+                StatusMessage = result.Errors?.FirstOrDefault()?.Message ?? string.Empty;
 
             return Page();
         }
@@ -112,10 +122,13 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
             var result = await _tenantManager.EnableTenantAsync(user, Input);
-            if (result.IsFailed)
-                StatusMessage = result.Errors?.FirstOrDefault()?.Message ?? string.Empty;
+            if (!result.IsFailed)
+            {
+                var message = _localizer["The team {0} has been set activation"];
+                StatusMessage = message.Value.Replace("{0}", Input.Id);
+            }
             else
-                StatusMessage = $"The tenant {Input.Id} has been set activation";
+                StatusMessage = result.Errors?.FirstOrDefault()?.Message ?? string.Empty;
 
             return RedirectToPage("Index");
         }
@@ -127,10 +140,13 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
             var result = await _tenantManager.DisableTenantAsync(user, Input);
-            if (result.IsFailed)
-                StatusMessage = result.Errors?.FirstOrDefault()?.Message ?? string.Empty;
+            if (!result.IsFailed)
+            {
+                var message = _localizer["The team {0} has been disabled"];
+                StatusMessage = message.Value.Replace("{0}", Input.Id);
+            }
             else
-                StatusMessage = $"The tenant {Input.Id} has been disabled";
+                StatusMessage = result.Errors?.FirstOrDefault()?.Message ?? string.Empty; 
 
             return RedirectToPage("Index");
         }

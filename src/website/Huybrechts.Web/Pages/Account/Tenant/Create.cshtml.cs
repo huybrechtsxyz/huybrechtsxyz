@@ -2,6 +2,7 @@ using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 
 namespace Huybrechts.Web.Pages.Account.Tenant
 {
@@ -9,6 +10,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationTenantManager _tenantManager;
+        private readonly IStringLocalizer<CreateModel> _localizer;
 
         [BindProperty]
         public ApplicationTenant Input { get; set; } = new();
@@ -19,10 +21,11 @@ namespace Huybrechts.Web.Pages.Account.Tenant
         [TempData]
         public string StatusMessage { get; set; } = string.Empty;
 
-        public CreateModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager)
+        public CreateModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager, IStringLocalizer<CreateModel> localizer)
         {
             _userManager = userManager;
             _tenantManager = tenantManager;
+            _localizer = localizer;
         }
 
         public IActionResult OnGet()
@@ -43,20 +46,26 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 return Page();
             }
 
-            IFormFile ? file = Request.Form.Files[0] ?? null;
-            if (file is not null)
-            {
-                using var dataStream = new MemoryStream();
-                await file.CopyToAsync(dataStream);
-                Input.Picture = new byte[dataStream.Length];
-                Input.Picture = dataStream.ToArray();
+            if(Request.Form.Files is not null && Request.Form.Files.Count > 0)
+            { 
+                IFormFile ? file = Request.Form.Files[0] ?? null;
+                if (file is not null)
+                {
+                    using var dataStream = new MemoryStream();
+                    await file.CopyToAsync(dataStream);
+                    Input.Picture = new byte[dataStream.Length];
+                    Input.Picture = dataStream.ToArray();
+                }
             }
 
             var result = await _tenantManager.CreateTenantAsync(user, Input);
-            if (result.IsFailed)
-                StatusMessage = result.Errors?.FirstOrDefault()?.Message ?? string.Empty;
+            if (!result.IsFailed)
+            {
+                var message = _localizer["The team {0} has been created"];
+                StatusMessage = message.Value.Replace("{0}", result.Value.Id);
+            }
             else
-                StatusMessage = $"The tenant {result.Value.Id} has been created";
+                StatusMessage = result.Errors?.FirstOrDefault()?.Message ?? string.Empty;
 
             return RedirectToPage("Index");
         }

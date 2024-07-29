@@ -1,30 +1,14 @@
 ﻿@page
+@inject IViewLocalizer Localizer
 @model Huybrechts.Web.Pages.Account.Tenant.IndexModel
 @{
-    ViewData["CardTitle"] = "Your tenants";
+    ViewData["CardTitle"] =  Localizer["Your teams"];
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
-
 <partial name="_StatusMessage" for="StatusMessage" />
-
-@if (Model.Tenants.Count > 0)
-{
-    <p class="text-info">
-        The list of tenants you are part of.
-    </p>
-}
-else
-{
-    <p class="text-info">
-        You are not part of any tenant. You need at least one tenant if you wish to use the application!
-    </p>
-}
-
-
-
-
-
-
+<p class="text-info">
+    @Localizer["The list of teams you are part of."]
+</p>
 <div class="row">
     <div class="col-md-12">
         <p>
@@ -50,9 +34,9 @@ else
                                 if (item is not null && item.Picture is not null)
                                     source = $"data:image/*;base64,{Convert.ToBase64String(item.Picture)}";
                                 else
-                                    source = "/img/community.png";
+                                    source = "/lib/bootstrap-icons/collection-fill.svg";
                             }
-                            <img src="@source" class="rounded-circle" style="width:32px;height:32px; object-fit:cover; border-radius:30px" alt="" />
+                            <img src="@source" class="rounded-circle" role="img" style="width:32px;height:32px; object-fit:cover; border-radius:30px" alt="" />
                         </td>
                         <td>@Html.DisplayFor(modelItem => item!.Id)</td>
                         <td>@Html.DisplayFor(modelItem => item!.Name)</td>

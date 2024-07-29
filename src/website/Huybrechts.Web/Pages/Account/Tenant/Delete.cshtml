@@ -1,33 +1,33 @@
 ﻿@page
+@inject IViewLocalizer Localizer
 @model Huybrechts.Web.Pages.Account.Tenant.DeleteModel
 @{
-    ViewData["Title"] = "Delete tenant";
+    ViewData["CardTitle"] = Localizer["Delete Team"];
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
-<h3>@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
     <div class="col-md-6">
         <form id="profile-form" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Id" class="form-control" placeholder="Please choose your tenant id." disabled />
+                <input asp-for="Input.Id" class="form-control" placeholder="@Localizer["Please choose your team id."]" disabled />
                 <label asp-for="Input.Id" class="form-label"></label>
                 <input type="hidden" asp-for="Input.Id" />
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Name" class="form-control" placeholder="Please enter the tenant name." disabled />
+                <input asp-for="Input.Name" class="form-control" placeholder="@Localizer["Please enter the team name."]" disabled />
                 <label asp-for="Input.Name" class="form-label"></label>
                 <span asp-validation-for="Input.Name" class="text-danger"></span>
                 <input type="hidden" asp-for="Input.Name" />
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Description" class="form-control" placeholder="Please enter enter the tenant description." disabled />
+                <input asp-for="Input.Description" class="form-control" placeholder="@Localizer["Please enter enter the team description."]" disabled />
                 <label asp-for="Input.Description" class="form-label"></label>
                 <span asp-validation-for="Input.Description" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Remark" class="form-control" placeholder="Remarks about the tenant." disabled />
+                <input asp-for="Input.Remark" class="form-control" placeholder="@Localizer["Remarks about the team."]" disabled />
                 <label asp-for="Input.Remark" class="form-label"></label>
                 <span asp-validation-for="Input.Remark" class="text-danger"></span>
             </div>

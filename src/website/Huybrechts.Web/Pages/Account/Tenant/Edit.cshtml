@@ -1,10 +1,10 @@
 ﻿@page
+@inject IViewLocalizer Localizer
 @model Huybrechts.Web.Pages.Account.Tenant.EditModel
 @{
-    ViewData["Title"] = "Edit tenant";
+    ViewData["CardTitle"] = Localizer["Edit Team"];
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
-<h3>@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
     <div class="col-md-6">
@@ -14,22 +14,22 @@
         <form id="edit-form" asp-page-handler="Update" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Id" class="form-control" placeholder="Please choose your tenant id." disabled />
+                <input asp-for="Input.Id" class="form-control" placeholder="@Localizer["Please choose your team id."]" disabled />
                 <label asp-for="Input.Id" class="form-label"></label>
                 <input type="hidden" asp-for="Input.Id" />
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Name" class="form-control" placeholder="Please enter the tenant name." />
+                <input asp-for="Input.Name" class="form-control" placeholder="@Localizer["Please enter the team name."]" />
                 <label asp-for="Input.Name" class="form-label"></label>
                 <span asp-validation-for="Input.Name" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Description" class="form-control" placeholder="Please enter enter the tenant description." />
+                <input asp-for="Input.Description" class="form-control" placeholder="@Localizer["Please enter enter the team description."]" />
                 <label asp-for="Input.Description" class="form-label"></label>
                 <span asp-validation-for="Input.Description" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Remark" class="form-control" placeholder="Remarks about the tenant." />
+                <input asp-for="Input.Remark" class="form-control" placeholder="@Localizer["Remarks about the team."]" />
                 <label asp-for="Input.Remark" class="form-label"></label>
                 <span asp-validation-for="Input.Remark" class="text-danger"></span>
             </div>
@@ -51,26 +51,26 @@
 </div>
 <div class="row">
     <div class="col-md-6">
-        <h3>Tenant Actions</h3>
+        <h3>@Localizer["Team Actions"]</h3>
         @if (Model.AllowEnablingTenant())
         {
             <form asp-page-handler="Enable" method="post">
                 <input type="hidden" asp-for="Input.Id" />
-                <button id="enable-tenant-button" type="submit" class="w-70 btn btn-lg btn-secondary">Activate</button>
+                <button id="enable-tenant-button" type="submit" class="w-70 btn btn-lg btn-secondary">@Localizer["Activate"]</button>
             </form>
         }
         @if (Model.AllowDisablingTenant())
         {
             <form asp-page-handler="Disable" method="post">
                 <input type="hidden" asp-for="Input.Id" />
-                <button id="disable-tenant-button" type="submit" class="w-70 btn btn-lg btn-secondary">Disable</button>
+                <button id="disable-tenant-button" type="submit" class="w-70 btn btn-lg btn-secondary">@Localizer["Disable"]</button>
             </form>
         }
         <p></p>
     </div>
 </div>
 <div class="row">
-    <h3>Tenant Roles</h3>
+    <h5>@Localizer["Team Roles"]</h5>
     @if (Model.Roles.Count > 0)
     {
         <table class="table table-responsive">
@@ -91,12 +91,12 @@
     }
     else
     {
-        <p>The tenant does not have any linked roles ?</p>
+        <p>@Localizer["The team does not have any linked roles"]</p>
     }
     <p></p>
 </div>
 <div class="row">
-    <h3>Tenant Users</h3>
+    <h5>@Localizer["Team Users"]</h5>
     <p>
         <a class="btn btn-primary" asp-page="./AddUsers" asp-route-id="@Model.Input.Id"><i class="bi bi-plus-circle"></i></a>
     </p>
@@ -127,7 +127,7 @@
     }
     else
     {
-        <p>The tenant does not have any linked users ?</p>
+        <p>@Localizer["The team does not have any linked users"]</p>
     }
 </div>
 
