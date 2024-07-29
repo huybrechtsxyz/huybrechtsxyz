@@ -45,6 +45,7 @@ namespace Huybrechts.Web.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
+            [Display(Name = nameof(Email), Prompt = nameof(Email), ResourceType = typeof(AccountViewModels))]
             public string Email { get; set; }
         }
 

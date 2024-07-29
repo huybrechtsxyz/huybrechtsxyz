@@ -15,23 +15,23 @@
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" class="mt-5" method="post">
             <div class="w-md-400px d-inline-flex row g-3 mb-4">
                 <div class="col-sm-6">
-                    <input asp-for="Input.GivenName" class="form-control" autocomplete="givenname" placeholder="@Html.DisplayNameFor(model => model.Input.GivenName)" aria-required="true" aria-label="First name" autofocus>
+                    <input asp-for="Input.GivenName" class="form-control" autocomplete="givenname" aria-required="true" aria-label="First name" autofocus>
                     <span asp-validation-for="Input.GivenName" class="text-danger"></span>
                 </div>
                 <div class="col-sm-6">
-                    <input asp-for="Input.Surname" class="form-control" autocomplete="surname" placeholder="@Html.DisplayNameFor(model => model.Input.Surname)" aria-label="Last name" aria-required="true" />
+                    <input asp-for="Input.Surname" class="form-control" autocomplete="surname" aria-label="Last name" aria-required="true" />
                     <span asp-validation-for="Input.Surname" class="text-danger"></span>
                 </div>
                 <div class="col-12">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="@Html.DisplayNameFor(model => model.Input.Email)" aria-label="Email" aria-required="true" />
+                    <input asp-for="Input.Email" class="form-control" autocomplete="email" aria-label="Email" aria-required="true" />
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <div class="col-sm-6">
-                    <input asp-for="Input.Password" type="password" class="form-control" autocomplete="new-password" placeholder="@Html.DisplayNameFor(model => model.Input.Password)" aria-label="Password" aria-required="true" />
+                    <input asp-for="Input.Password" type="password" class="form-control" autocomplete="new-password" aria-label="Password" aria-required="true" />
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div class="col-sm-6">
-                    <input asp-for="Input.ConfirmPassword" type="password" class="form-control" autocomplete="new-password" placeholder="@Html.DisplayNameFor(model => model.Input.ConfirmPassword)" aria-label="Confirm Password" aria-required="true" />
+                    <input asp-for="Input.ConfirmPassword" type="password" class="form-control" autocomplete="new-password" aria-label="Confirm Password" aria-required="true" />
                     <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                 </div>
             </div>

@@ -39,6 +39,7 @@ namespace Huybrechts.Web.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
+            [Display(Name = nameof(Email), Prompt = nameof(Email), ResourceType = typeof(AccountViewModels))]
             public string Email { get; set; }
 
             /// <summary>
@@ -48,6 +49,7 @@ namespace Huybrechts.Web.Pages.Account
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
+            [Display(Name = nameof(Password), Prompt = nameof(Password), ResourceType = typeof(AccountViewModels))]
             public string Password { get; set; }
 
             /// <summary>
@@ -55,8 +57,8 @@ namespace Huybrechts.Web.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = nameof(ConfirmPassword), Prompt = nameof(ConfirmPassword), ResourceType = typeof(AccountViewModels))]
             public string ConfirmPassword { get; set; }
 
             /// <summary>
@@ -64,6 +66,7 @@ namespace Huybrechts.Web.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
+            [Display(Name = "ResetPasswordCode", Prompt = "ResetPasswordCode", ResourceType = typeof(AccountViewModels))]
             public string Code { get; set; }
 
         }

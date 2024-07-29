@@ -69,7 +69,7 @@ namespace Huybrechts.Web.Pages.Account.Manage
             /// </summary>
             [Required]
             [EmailAddress]
-            [Display(Name = "New email")]
+            [Display(Name = nameof(NewEmail), Prompt = nameof(NewEmail)+ "_p", ResourceType = typeof(AccountViewModels))]
             public string NewEmail { get; set; }
         }
 

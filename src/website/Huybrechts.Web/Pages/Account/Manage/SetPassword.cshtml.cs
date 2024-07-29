@@ -6,6 +6,7 @@ using Huybrechts.App.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Localization;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Web.Pages.Account.Manage
@@ -53,7 +54,7 @@ namespace Huybrechts.Web.Pages.Account.Manage
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "New password")]
+            [Display(Name = nameof(NewPassword), Prompt = nameof(NewPassword), ResourceType = typeof(AccountViewModels))]
             public string NewPassword { get; set; }
 
             /// <summary>
@@ -61,7 +62,7 @@ namespace Huybrechts.Web.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm new password")]
+            [Display(Name = "ConfirmNewPassword", Prompt = "ConfirmNewPassword", ResourceType = typeof(AccountViewModels))]
             [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
         }

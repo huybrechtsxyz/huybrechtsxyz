@@ -52,11 +52,11 @@ try
         .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
         .AddDataAnnotationsLocalization(opts =>
         {
-            opts.DataAnnotationLocalizerProvider = (type, factory) =>
-            {
-                var assemblyName = new AssemblyName(typeof(Huybrechts.Web.Resources.ViewModels).GetTypeInfo().Assembly.FullName!);
-                return factory.Create(nameof(Huybrechts.Web.Resources.ViewModels), assemblyName.Name!);
-            };
+            //opts.DataAnnotationLocalizerProvider = (type, factory) =>
+            //{
+            //    var assemblyName = new AssemblyName(typeof(Huybrechts.Web.Resources.ViewModels).GetTypeInfo().Assembly.FullName!);
+            //    return factory.Create(nameof(Huybrechts.Web.Resources.ViewModels), assemblyName.Name!);
+            //};
         });
 
     Log.Information("Building the application with services");

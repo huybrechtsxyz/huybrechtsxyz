@@ -44,6 +44,7 @@ namespace Huybrechts.Web.Pages.Account.Manage
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
+            [Display(Name = nameof(Password), Prompt = nameof(Password) + "_p")]
             public string Password { get; set; }
         }
 

@@ -55,7 +55,7 @@ namespace Huybrechts.Web.Pages.Account
             [BindProperty]
             [Required]
             [DataType(DataType.Text)]
-            [Display(Name = "Recovery Code")]
+            [Display(Name = nameof(RecoveryCode), Prompt = nameof(RecoveryCode), ResourceType = typeof(AccountViewModels))]
             public string RecoveryCode { get; set; }
         }
 

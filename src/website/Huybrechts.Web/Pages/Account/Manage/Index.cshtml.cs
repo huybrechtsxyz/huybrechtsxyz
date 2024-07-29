@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
+using System.Numerics;
 
 namespace Huybrechts.Web.Pages.Account.Manage
 {
@@ -58,13 +59,13 @@ namespace Huybrechts.Web.Pages.Account.Manage
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             [DataType(DataType.Text)]
-            [Display(Name = "Given name")]
+            [Display(Name = nameof(GivenName), Prompt = nameof(GivenName) + "_p", ResourceType = typeof(AccountViewModels))]
             public string GivenName { get; set; } = "";
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             [DataType(DataType.Text)]
-            [Display(Name = "Surname")]
+            [Display(Name = nameof(Surname), Prompt = nameof(Surname) + "_p", ResourceType = typeof(AccountViewModels))]
             public string Surname { get; set; } = "";
 
             /// <summary>
@@ -72,7 +73,7 @@ namespace Huybrechts.Web.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = nameof(PhoneNumber), Prompt = nameof(PhoneNumber) + "_p", ResourceType = typeof(AccountViewModels))]
             public string PhoneNumber { get; set; }
 
             public IFormFile ProfileFile { get; set; }

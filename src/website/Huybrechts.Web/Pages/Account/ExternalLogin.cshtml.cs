@@ -81,13 +81,13 @@ namespace Huybrechts.Web.Pages.Account
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             [DataType(DataType.Text)]
-            [Display(Name = "Given name")]
+            [Display(Name = nameof(GivenName), Prompt = nameof(GivenName), ResourceType = typeof(AccountViewModels))]
             public string GivenName { get; set; } = "";
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             [DataType(DataType.Text)]
-            [Display(Name = "Surname")]
+            [Display(Name = nameof(Surname), Prompt = nameof(Surname), ResourceType = typeof(AccountViewModels))]
             public string Surname { get; set; } = "";
 
             /// <summary>
@@ -97,7 +97,7 @@ namespace Huybrechts.Web.Pages.Account
             [Required]
             [EmailAddress]
             [DataType(DataType.EmailAddress)]
-            [Display(Name = "Email")]
+            [Display(Name = nameof(Email), Prompt = nameof(Email), ResourceType = typeof(AccountViewModels))]
             public string Email { get; set; }
         }
         

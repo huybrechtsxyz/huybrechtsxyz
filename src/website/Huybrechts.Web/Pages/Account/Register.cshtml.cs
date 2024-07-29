@@ -72,13 +72,13 @@ namespace Huybrechts.Web.Pages.Account
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             [DataType(DataType.Text)]
-            [Display(Name = "Given name")]
+            [Display(Name = nameof(GivenName), Prompt = nameof(GivenName), ResourceType = typeof(AccountViewModels))]
             public string GivenName { get; set; } = "";
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             [DataType(DataType.Text)]
-            [Display(Name = "Surname")]
+            [Display(Name = nameof(Surname), Prompt = nameof(Surname), ResourceType = typeof(AccountViewModels))]
             public string Surname { get; set; } = "";
 
             /// <summary>
@@ -88,7 +88,7 @@ namespace Huybrechts.Web.Pages.Account
             [Required]
             [EmailAddress]
             [DataType(DataType.EmailAddress)]
-            [Display(Name = "Email")]
+            [Display(Name = nameof(Email), Prompt = nameof(Email), ResourceType = typeof(AccountViewModels))]
             public string Email { get; set; }
 
             /// <summary>
@@ -98,7 +98,7 @@ namespace Huybrechts.Web.Pages.Account
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = nameof(Password), Prompt = nameof(Password), ResourceType = typeof(AccountViewModels))]
             public string Password { get; set; }
 
             /// <summary>
@@ -106,14 +106,13 @@ namespace Huybrechts.Web.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = nameof(ConfirmPassword), Prompt = nameof(ConfirmPassword), ResourceType = typeof(AccountViewModels))]
             public string ConfirmPassword { get; set; }
 
-            [Display(Name = "AgreeToTerms")]
+            [Display(Name = nameof(AgreeToTerms), Prompt = nameof(AgreeToTerms), ResourceType = typeof(AccountViewModels))]
             public bool AgreeToTerms { get; set; }
         }
-
 
         public async Task OnGetAsync(string returnUrl = null)
         {

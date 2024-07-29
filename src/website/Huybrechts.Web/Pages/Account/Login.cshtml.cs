@@ -61,7 +61,7 @@ namespace Huybrechts.Web.Pages.Account
             [Required]
             [EmailAddress]
             [DataType(DataType.EmailAddress)]
-            [Display(Name = nameof(Email))]
+            [Display(Name = nameof(Email), Prompt = nameof(Email), ResourceType = typeof(AccountViewModels))]
             public string Email { get; set; }
 
             /// <summary>
@@ -70,7 +70,7 @@ namespace Huybrechts.Web.Pages.Account
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
-            [Display(Name = nameof(Password))]
+            [Display(Name = nameof(Password), Prompt = nameof(Password), ResourceType = typeof(AccountViewModels))]
             public string Password { get; set; }
 
             /// <summary>
@@ -78,7 +78,7 @@ namespace Huybrechts.Web.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             //[Display(ResourceType = typeof(Resources.Pages.Account.Models), Name = nameof(Resources.Pages.Account.Models.RememberMe))]
-            [Display(Name = nameof(RememberMe))] 
+            [Display(Name = nameof(RememberMe), Prompt = nameof(RememberMe), ResourceType = typeof(AccountViewModels))]
             public bool RememberMe { get; set; }
         }
 

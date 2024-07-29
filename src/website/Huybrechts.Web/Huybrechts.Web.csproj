@@ -36,17 +36,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Resources\ViewModels.Designer.cs">
+    <Compile Update="Pages\Account\AccountViewModels.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>ViewModels.resx</DependentUpon>
+      <DependentUpon>AccountViewModels.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Resources\ViewModels.resx">
+    <EmbeddedResource Update="Pages\Account\AccountViewModels.nl.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ViewModels.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\Account\AccountViewModels.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AccountViewModels.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

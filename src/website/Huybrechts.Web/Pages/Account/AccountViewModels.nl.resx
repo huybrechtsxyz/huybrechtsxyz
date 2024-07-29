@@ -120,37 +120,82 @@
   <data name="AgreeToTerms" xml:space="preserve">
     <value>Ik ga akkoord met de voorwaarden</value>
   </data>
-  <data name="Authenticator code" xml:space="preserve">
-    <value>Authenticatiecode</value>
-  </data>
-  <data name="Confirm new password" xml:space="preserve">
+  <data name="ConfirmNewPassword" xml:space="preserve">
     <value>Bevestig nieuw wachtwoord</value>
   </data>
-  <data name="Confirm password" xml:space="preserve">
+  <data name="ConfirmNewPassword_p" xml:space="preserve">
+    <value>Bevestig uw nieuwe wachtwoord.</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
     <value>Bevestig wachtwoord</value>
   </data>
   <data name="Email" xml:space="preserve">
-    <value>E-mail</value>
+    <value>E-post Adres</value>
   </data>
-  <data name="Given name" xml:space="preserve">
+  <data name="GivenName" xml:space="preserve">
     <value>Voornaam</value>
   </data>
-  <data name="New password" xml:space="preserve">
-    <value>Nieuw paswoord</value>
+  <data name="GivenName_p" xml:space="preserve">
+    <value>Voer uw voornaam in.</value>
+  </data>
+  <data name="NewEmail" xml:space="preserve">
+    <value>Nieuwe e-mail</value>
+  </data>
+  <data name="NewEmail_p" xml:space="preserve">
+    <value>Vul alstublieft uw e-mailadres in.</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>Nieuw wachtwoord</value>
+  </data>
+  <data name="NewPassword_p" xml:space="preserve">
+    <value>Voer uw nieuwe wachtwoord in.</value>
+  </data>
+  <data name="OldPassword" xml:space="preserve">
+    <value>Oude wachtwoord</value>
+  </data>
+  <data name="OldPassword_p" xml:space="preserve">
+    <value>Voer uw oude wachtwoord in.</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>Wachtwoord</value>
   </data>
-  <data name="Phone number" xml:space="preserve">
+  <data name="Password_p" xml:space="preserve">
+    <value>Voer uw wachtwoord in.</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
     <value>Telefoonnummer</value>
   </data>
-  <data name="Remember this machine" xml:space="preserve">
+  <data name="PhoneNumber_p" xml:space="preserve">
+    <value>Voer uw telefoonnummer in.</value>
+  </data>
+  <data name="RecoveryCode" xml:space="preserve">
+    <value>Herstelcode</value>
+  </data>
+  <data name="RememberMachine" xml:space="preserve">
     <value>Onthoud deze machine</value>
   </data>
   <data name="RememberMe" xml:space="preserve">
     <value>Onthoud mij ?</value>
   </data>
+  <data name="ResetPasswordCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
   <data name="Surname" xml:space="preserve">
     <value>Achternaam</value>
+  </data>
+  <data name="Surname_p" xml:space="preserve">
+    <value>Voer uw achternaam in.</value>
+  </data>
+  <data name="TwoFactorCode" xml:space="preserve">
+    <value>Authenticatiecode</value>
+  </data>
+  <data name="Unexpected error when trying to set phone number." xml:space="preserve">
+    <value>Onverwachte fout bij het instellen van een telefoonnummer.</value>
+  </data>
+  <data name="VerificationCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="VerificationCode_p" xml:space="preserve">
+    <value>Voer de code in.</value>
   </data>
 </root>
