@@ -41,6 +41,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AccountViewModels.resx</DependentUpon>
     </Compile>
+    <Compile Update="Pages\Account\Tenant\TenantViewModels.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TenantViewModels.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -50,6 +55,13 @@
     <EmbeddedResource Update="Pages\Account\AccountViewModels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>AccountViewModels.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\Account\Tenant\TenantViewModels.nl.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\Account\Tenant\TenantViewModels.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>TenantViewModels.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

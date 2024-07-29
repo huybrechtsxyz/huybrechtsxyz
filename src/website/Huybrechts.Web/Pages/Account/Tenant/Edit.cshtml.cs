@@ -20,7 +20,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
         public bool AllowDisablingTenant() => ApplicationTenantManager.AllowDisablingTenant(Input.State);
 
         [BindProperty]
-        public ApplicationTenant Input { get; set; } = new();
+        public TenantModel Input { get; set; } = new();
 
         [BindProperty]
         public IFormFile? PictureFile { get; set; }
@@ -31,21 +31,6 @@ namespace Huybrechts.Web.Pages.Account.Tenant
         public ICollection<ApplicationRole> Roles { get; set; }
 
         public ICollection<ApplicationUserRole> UserRoles { get; set; }
-
-        public class InvitationModel
-        {
-            [Required]
-            [DisplayName("Tenant ID")]
-            public string TenantId { get; set; } = string.Empty;
-
-            [Required]
-            [DisplayName("Tenant Role")]
-            public string RoleId { get; set; } = string.Empty;
-
-            [Required]
-            [MinLength(3)]
-            public string? Users { get; set; }
-        }
 
         public EditModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager, IStringLocalizer<EditModel> localizer)
         {
@@ -68,8 +53,21 @@ namespace Huybrechts.Web.Pages.Account.Tenant
             var item = await _tenantManager.GetTenantAsync(user, id);
             if (item is null || string.IsNullOrEmpty(item.Id))
                 return NotFound($"Unable to load tentant with ID '{id}'.");
-            
-            Input = item;
+
+            Input = new TenantModel()
+            {
+                Id = item.Id,
+                Name = item.Name,
+                State = item.State,
+                Description = item.Description,
+                Remark = item.Remark
+            };
+            if (item.Picture is not null && item.Picture.Length > 0)
+            {
+                Input.Picture = new byte[item.Picture.Length];
+                Input.Picture = item.Picture.ToArray();
+            }
+
             Roles = await _tenantManager.GetTenantRolesAsync(user, item.Id);
             UserRoles = await _tenantManager.GetTenantUserRolesAsync(user, item.Id);
 
@@ -91,6 +89,14 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 return Page();
             }
 
+            var item = await _tenantManager.GetTenantAsync(user, Input.Id);
+            if (user is null)
+                return NotFound($"Unable to load tenant with ID '{Input.Id}'.");
+
+            item.Name = Input.Name;
+            item.Description = Input.Description;
+            item.Remark = Input.Remark;
+
             if (Request.Form.Files is not null && Request.Form.Files.Count > 0)
             {
                 IFormFile? file = Request.Form.Files[0];
@@ -98,12 +104,12 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 {
                     using var dataStream = new MemoryStream();
                     await file.CopyToAsync(dataStream);
-                    Input.Picture = new byte[dataStream.Length];
-                    Input.Picture = dataStream.ToArray();
+                    item.Picture = new byte[dataStream.Length];
+                    item.Picture = dataStream.ToArray();
                 }
             }
 
-            var result = await _tenantManager.UpdateTenantAsync(user, Input);
+            var result = await _tenantManager.UpdateTenantAsync(user, item);
             if (!result.IsFailed)
             {
                 var message = _localizer["The team {0} has been updated"];
@@ -121,7 +127,11 @@ namespace Huybrechts.Web.Pages.Account.Tenant
             if (user == null)
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
-            var result = await _tenantManager.EnableTenantAsync(user, Input);
+            var item = await _tenantManager.GetTenantAsync(user, Input.Id);
+            if (user is null)
+                return NotFound($"Unable to load tenant with ID '{Input.Id}'.");
+
+            var result = await _tenantManager.EnableTenantAsync(user, item);
             if (!result.IsFailed)
             {
                 var message = _localizer["The team {0} has been set activation"];
@@ -139,7 +149,11 @@ namespace Huybrechts.Web.Pages.Account.Tenant
             if (user == null)
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
-            var result = await _tenantManager.DisableTenantAsync(user, Input);
+            var item = await _tenantManager.GetTenantAsync(user, Input.Id);
+            if (user is null)
+                return NotFound($"Unable to load tenant with ID '{Input.Id}'.");
+
+            var result = await _tenantManager.DisableTenantAsync(user, item);
             if (!result.IsFailed)
             {
                 var message = _localizer["The team {0} has been disabled"];
@@ -157,12 +171,16 @@ namespace Huybrechts.Web.Pages.Account.Tenant
             if (user == null)
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
+            var item = await _tenantManager.GetTenantAsync(user, tenantId);
+            if (user is null)
+                return NotFound($"Unable to load tenant with ID '{tenantId}'.");
+
             var result = await _tenantManager.RemoveUserFromTenantAsync(user, userId, roleId, tenantId);
             StatusMessage = string.Empty;
-            foreach (var item in result.Reasons)
+            foreach (var reason in result.Reasons)
             {
                 StatusMessage += !string.IsNullOrEmpty(StatusMessage) ? Environment.NewLine : string.Empty;
-                StatusMessage += item.Message;
+                StatusMessage += reason.Message;
             }
 
             return RedirectToPage("Edit", "", new { id = tenantId });

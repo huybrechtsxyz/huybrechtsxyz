@@ -15,32 +15,10 @@ namespace Huybrechts.Web.Pages.Account.Tenant
 
         public bool AllowDeletingTenant(ApplicationTenantState state) => ApplicationTenantManager.AllowRemovingTenant(state);
 
-        public IList<ApplicationTenant> Tenants { get; set; } = [];
+        public IList<TenantModel> Tenants { get; set; } = [];
 
         [TempData]
         public string StatusMessage { get; set; } = string.Empty;
-
-        public class TeamView
-        {
-            [Key]
-            [Required]
-            [RegularExpression("^[a-z0-9]+$")]
-            [StringLength(24, MinimumLength = 2)]
-            [Display(Name = nameof(TeamView) + "." + nameof(Id))]
-            public string Id { get; set; } = string.Empty;
-
-            public ApplicationTenantState State { get; set; }
-
-            [Required]
-            [StringLength(256, MinimumLength = 2)]
-            public string Name { get; set; } = string.Empty;
-
-            [StringLength(512)]
-            public string? Description { get; set; }
-
-            public string? Remark { get; set; }
-
-        }
 
         public IndexModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager)
         {
@@ -55,7 +33,17 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
             var items = await _tenantManager.GetTenantsAsync(user);
-            Tenants = items.OrderBy(x => x.Name).ToList();
+            items = items.OrderBy(x => x.Name).ToList();
+
+            Tenants = items.Select(model => new TenantModel
+            {
+                Id = model.Id,
+                Name = model.Name,
+                State = model.State,
+                Description = model.Description,
+                Remark = model.Remark
+            }).ToList();
+
             return Page();
         }
     }

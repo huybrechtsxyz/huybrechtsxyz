@@ -13,7 +13,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
         private readonly IStringLocalizer<CreateModel> _localizer;
 
         [BindProperty]
-        public ApplicationTenant Input { get; set; } = new();
+        public TenantModel Input { get; set; } = new();
 
         [BindProperty]
         public IFormFile? PictureFile { get; set; }
@@ -30,7 +30,15 @@ namespace Huybrechts.Web.Pages.Account.Tenant
 
         public IActionResult OnGet()
         {
-            Input = ApplicationTenantManager.NewTenant();
+            var item =  ApplicationTenantManager.NewTenant();
+            Input = new()
+            {
+                Id = item.Id,
+                Name = item.Name,
+                State = item.State,
+                Description = item.Description,
+                Remark = item.Remark
+            };
             return Page();
         }
 
@@ -46,19 +54,28 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 return Page();
             }
 
-            if(Request.Form.Files is not null && Request.Form.Files.Count > 0)
+            var item = await _tenantManager.GetTenantAsync(user, Input.Id);
+            if (user is null)
+                return NotFound($"Unable to load tenant with ID '{Input.Id}'.");
+
+            item.Id = Input.Id;
+            item.Name = Input.Name;
+            item.Description = Input.Description;
+            item.Remark = Input.Remark;
+
+            if (Request.Form.Files is not null && Request.Form.Files.Count > 0)
             { 
                 IFormFile ? file = Request.Form.Files[0] ?? null;
                 if (file is not null)
                 {
                     using var dataStream = new MemoryStream();
                     await file.CopyToAsync(dataStream);
-                    Input.Picture = new byte[dataStream.Length];
-                    Input.Picture = dataStream.ToArray();
+                    item.Picture = new byte[dataStream.Length];
+                    item.Picture = dataStream.ToArray();
                 }
             }
 
-            var result = await _tenantManager.CreateTenantAsync(user, Input);
+            var result = await _tenantManager.CreateTenantAsync(user, item);
             if (!result.IsFailed)
             {
                 var message = _localizer["The team {0} has been created"];
