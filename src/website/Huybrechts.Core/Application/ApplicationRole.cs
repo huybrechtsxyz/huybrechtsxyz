@@ -25,7 +25,6 @@ public sealed class ApplicationRole : IdentityRole
 
     [Required]
     [StringLength(256)]
-    [DisplayName("Role")]
     public string Label { get; set; } = string.Empty;
 
     [Required]

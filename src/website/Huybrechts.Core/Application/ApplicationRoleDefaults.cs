@@ -1,33 +1,33 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Core.Application;
 
 public enum ApplicationSystemRole
 {
-    [Description("The system administrator role")]
+    [Display(Name = nameof(Administrator), Description = nameof(Administrator) + "_d", ResourceType = typeof(ApplicationLocalization))]
     Administrator,
 
-    [Description("The standard user role")]
+    [Display(Name = nameof(User), Description = nameof(User) + "_d", ResourceType = typeof(ApplicationLocalization))]
     User
 }
 
 public enum ApplicationTenantRole
 {
-    [Description("A role that does not provide any access")]
+    [Display(Name = nameof(None), Description = nameof(None) + "_d", ResourceType = typeof(ApplicationLocalization))]
     None,
 
-    [Description("The owner has administrator access to the tenant")]
+    [Display(Name = nameof(Owner), Description = nameof(Owner) + "_d", ResourceType = typeof(ApplicationLocalization))]
     Owner,
 
-    [Description("The manager can maintain privileged of the tenant")]
+    [Display(Name = nameof(Manager), Description = nameof(Manager) + "_d", ResourceType = typeof(ApplicationLocalization))]
     Manager,
 
-    [Description("The contributer has read/write access to the data of the tenant")]
-    Contributer,
+    [Display(Name = nameof(Contributor), Description = nameof(Contributor) + "_d", ResourceType = typeof(ApplicationLocalization))]
+    Contributor,
 
-    [Description("The contributer can comment on the data of the tenant")]
+    [Display(Name = nameof(Member), Description = nameof(Member) + "_d", ResourceType = typeof(ApplicationLocalization))]
     Member,
 
-    [Description("The guest can read the data of the tenant")]
+    [Display(Name = nameof(Guest), Description = nameof(Guest) + "_d", ResourceType = typeof(ApplicationLocalization))]
     Guest
 }

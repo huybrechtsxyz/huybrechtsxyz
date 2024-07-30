@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Core.Application;
 
@@ -14,24 +14,24 @@ namespace Huybrechts.Core.Application;
 /// </summary>
 public enum ApplicationTenantState
 {
-    [Description("New")]
+    [Display(Name = "State.New", Description = "State.New", ResourceType = typeof(ApplicationLocalization))]
     New = 1,        // A new tenant is created
 
-    [Description("Pending")]
+    [Display(Name = "State.Pending", Description = "State.Pending", ResourceType = typeof(ApplicationLocalization))]
     Pending = 2,    // In progress to deploy resources
 
-    [Description("Active")]
+    [Display(Name = "State.Active", Description = "State.Active", ResourceType = typeof(ApplicationLocalization))]
     Active = 3,     // Resources deployed tenant usable
 
-    [Description("Disabling")]
+    [Display(Name = "State.Disabling", Description = "State.Disabling", ResourceType = typeof(ApplicationLocalization))]
     Disabling = 4,   // Set inactive by user
 
-    [Description("Disabled")]
+    [Display(Name = "State.Disabled", Description = "State.Disabled", ResourceType = typeof(ApplicationLocalization))]
     Disabled = 5,   // Set inactive by user
 
-    [Description("Removing")]
+    [Display(Name = "State.Removing", Description = "State.Removing", ResourceType = typeof(ApplicationLocalization))]
     Removing = 6,   // Set to delete by user
 
-    [Description("Removed")]
+    [Display(Name = "State.Removed", Description = "State.Removed", ResourceType = typeof(ApplicationLocalization))]
     Removed = 7     // Deleted by the system
 }

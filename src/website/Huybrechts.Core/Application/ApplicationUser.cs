@@ -9,7 +9,6 @@ namespace Huybrechts.Core.Application;
 public sealed class ApplicationUser : IdentityUser
 {
     [StringLength(128)]
-    [DisplayName("Given name")]
     public string? GivenName { get; set; }
 
     [StringLength(128)]
@@ -18,7 +17,6 @@ public sealed class ApplicationUser : IdentityUser
     public byte[]? ProfilePicture { get; set; }
 
     [NotMapped]
-    [DisplayName("Name")]
     public string Fullname
     {
         get
