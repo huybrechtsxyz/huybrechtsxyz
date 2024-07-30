@@ -85,12 +85,12 @@ public class ApplicationSeedWorker : IHostedService
 		return healthCheckResult;
 	}
 
-	private async Task InitializeForAllAsync(CancellationToken cancellationToken)
+	private async Task InitializeForAllAsync(CancellationToken cancellationToken = default)
 	{
-		await CreateDefaultUsersAndRoles(cancellationToken);
+		await CreateDefaultUsersAndRoles();
 	}
 
-	private async Task CreateDefaultUsersAndRoles(CancellationToken cancellationToken)
+	private async Task CreateDefaultUsersAndRoles()
 	{
 		_logger.Information("Running database initializer...building default roles and users");
 		List<ApplicationRole> defaultRoles = ApplicationRole.GetDefaultSystemRoles();
@@ -110,8 +110,8 @@ public class ApplicationSeedWorker : IHostedService
 		_logger.Information("Running database initializer...creating default users");
 		foreach (var item in defaultUsers)
 		{
-			var newUser = await CreateUser(item, systemAdministrator!) ??
-			throw new InvalidOperationException("Running database initializer...unable to create administrator");
+			var _ = await CreateUser(item, systemAdministrator!) ??
+				throw new InvalidOperationException("Running database initializer...unable to create administrator");
 		}
 	}
 

@@ -54,7 +54,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
             }
 
             var item = await _tenantManager.GetTenantAsync(user, Input.Id);
-            if (user is null)
+            if (item is null)
                 return NotFound($"Unable to load tenant with ID '{Input.Id}'.");
 
             item.Id = Input.Id;

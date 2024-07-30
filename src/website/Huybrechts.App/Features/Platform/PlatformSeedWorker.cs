@@ -13,15 +13,15 @@ namespace Huybrechts.App.Features.Platform;
 public class PlatformSeedWorker : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IConfiguration _configuration;
+    //private readonly IConfiguration _configuration;
     private readonly ILogger _logger = Log.Logger.ForContext<PlatformSeedWorker>();
 
     private PlatformContext _dbcontext = null!;
 
-    public PlatformSeedWorker(IServiceProvider serviceProvider, IConfiguration configuration)
+    public PlatformSeedWorker(IServiceProvider serviceProvider) //, IConfiguration configuration)
     {
         _serviceProvider = serviceProvider;
-        _configuration = configuration;
+        //_configuration = configuration;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
