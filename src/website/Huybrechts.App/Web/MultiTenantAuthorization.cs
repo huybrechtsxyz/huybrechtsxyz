@@ -26,7 +26,7 @@ public static class TenantPolicies
 {
     public const string IsOwner = "IsOwner";
     public const string IsManager = "IsManager";
-    public const string IsContributer = "IsContributer";
+    public const string IsContributor = "IsContributor";
     public const string IsMember = "IsMember";
     public const string IsGuest = "IsGuest";
 }
@@ -82,20 +82,20 @@ public class MultiTenantRoleAuthorizationHandler : AuthorizationHandler<HasTenan
             [
                 ApplicationTenantRole.Guest,
                 ApplicationTenantRole.Member,
-                ApplicationTenantRole.Contributer,
+                ApplicationTenantRole.Contributor,
                 ApplicationTenantRole.Manager,
                 ApplicationTenantRole.Owner
             ],
             ApplicationTenantRole.Member =>
             [
                 ApplicationTenantRole.Member,
-                ApplicationTenantRole.Contributer,
+                ApplicationTenantRole.Contributor,
                 ApplicationTenantRole.Manager,
                 ApplicationTenantRole.Owner
             ],
-            ApplicationTenantRole.Contributer =>
+            ApplicationTenantRole.Contributor =>
             [
-                ApplicationTenantRole.Contributer,
+                ApplicationTenantRole.Contributor,
                 ApplicationTenantRole.Manager,
                 ApplicationTenantRole.Owner
             ],

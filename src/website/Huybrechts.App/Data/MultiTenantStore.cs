@@ -1,7 +1,7 @@
 ﻿using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
 using FluentResults;
-using Huybrechts.App.Application.z_replace;
+using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
 
 namespace Huybrechts.App.Data;

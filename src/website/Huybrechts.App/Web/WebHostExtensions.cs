@@ -203,7 +203,7 @@ public static class WebHostExtensions
         {
             options.AddPolicy(TenantPolicies.IsOwner, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Owner)));
             options.AddPolicy(TenantPolicies.IsManager, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Manager)));
-            options.AddPolicy(TenantPolicies.IsContributer, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Contributer)));
+            options.AddPolicy(TenantPolicies.IsContributor, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Contributor)));
             options.AddPolicy(TenantPolicies.IsMember, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Member)));
             options.AddPolicy(TenantPolicies.IsGuest, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Guest)));
         });

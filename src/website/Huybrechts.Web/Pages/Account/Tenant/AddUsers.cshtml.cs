@@ -2,7 +2,6 @@ using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
