@@ -38,6 +38,11 @@
     </div>
 </div>
 
+@section Breadcrumb {
+    <li class="breadcrumb-item">@Localizer["Account"]</li>
+    <li class="breadcrumb-item">@Localizer["Teams"]</li>
+}
+
 @section Scripts {
     @RenderSection("Scripts", required: false)
 }

@@ -117,10 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
   <data name="Change your team settings" xml:space="preserve">
     <value>Wijzig uw teaminstellingen</value>
   </data>
   <data name="Manage your teams" xml:space="preserve">
     <value>Beheer uw teams</value>
+  </data>
+  <data name="Teams" xml:space="preserve">
+    <value>Teams</value>
   </data>
 </root>
