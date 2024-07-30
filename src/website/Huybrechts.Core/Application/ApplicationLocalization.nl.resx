@@ -153,6 +153,48 @@
   <data name="Owner_d" xml:space="preserve">
     <value>De eigenaar heeft beheerderstoegang</value>
   </data>
+  <data name="State_Active" xml:space="preserve">
+    <value>Actief</value>
+  </data>
+  <data name="State_Active_d" xml:space="preserve">
+    <value>Actief</value>
+  </data>
+  <data name="State_Disabled" xml:space="preserve">
+    <value>Onbeschikbaar</value>
+  </data>
+  <data name="State_Disabled_d" xml:space="preserve">
+    <value>Onbeschikbaar</value>
+  </data>
+  <data name="State_Disabling" xml:space="preserve">
+    <value>Af te zetten</value>
+  </data>
+  <data name="State_Disabling_d" xml:space="preserve">
+    <value>Af te zetten</value>
+  </data>
+  <data name="State_New" xml:space="preserve">
+    <value>Nieuw</value>
+  </data>
+  <data name="State_New_d" xml:space="preserve">
+    <value>Nieuw</value>
+  </data>
+  <data name="State_Pending" xml:space="preserve">
+    <value>Wachtende</value>
+  </data>
+  <data name="State_Pending_d" xml:space="preserve">
+    <value>Wachtende</value>
+  </data>
+  <data name="State_Removed" xml:space="preserve">
+    <value>Verwijderd</value>
+  </data>
+  <data name="State_Removed_d" xml:space="preserve">
+    <value>Verwijderd</value>
+  </data>
+  <data name="State_Removing" xml:space="preserve">
+    <value>Te verwijderen</value>
+  </data>
+  <data name="State_Removing_d" xml:space="preserve">
+    <value>Te verwijderen</value>
+  </data>
   <data name="User" xml:space="preserve">
     <value>Gebruiker</value>
   </data>

@@ -191,7 +191,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_Active {
             get {
-                return ResourceManager.GetString("State.Active", resourceCulture);
+                return ResourceManager.GetString("State_Active", resourceCulture);
             }
         }
         
@@ -200,7 +200,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_Active_d {
             get {
-                return ResourceManager.GetString("State.Active_d", resourceCulture);
+                return ResourceManager.GetString("State_Active_d", resourceCulture);
             }
         }
         
@@ -209,7 +209,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_Disabled {
             get {
-                return ResourceManager.GetString("State.Disabled", resourceCulture);
+                return ResourceManager.GetString("State_Disabled", resourceCulture);
             }
         }
         
@@ -218,7 +218,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_Disabled_d {
             get {
-                return ResourceManager.GetString("State.Disabled_d", resourceCulture);
+                return ResourceManager.GetString("State_Disabled_d", resourceCulture);
             }
         }
         
@@ -227,7 +227,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_Disabling {
             get {
-                return ResourceManager.GetString("State.Disabling", resourceCulture);
+                return ResourceManager.GetString("State_Disabling", resourceCulture);
             }
         }
         
@@ -236,7 +236,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_Disabling_d {
             get {
-                return ResourceManager.GetString("State.Disabling_d", resourceCulture);
+                return ResourceManager.GetString("State_Disabling_d", resourceCulture);
             }
         }
         
@@ -245,7 +245,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_New {
             get {
-                return ResourceManager.GetString("State.New", resourceCulture);
+                return ResourceManager.GetString("State_New", resourceCulture);
             }
         }
         
@@ -254,7 +254,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_New_d {
             get {
-                return ResourceManager.GetString("State.New_d", resourceCulture);
+                return ResourceManager.GetString("State_New_d", resourceCulture);
             }
         }
         
@@ -263,7 +263,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_Pending {
             get {
-                return ResourceManager.GetString("State.Pending", resourceCulture);
+                return ResourceManager.GetString("State_Pending", resourceCulture);
             }
         }
         
@@ -272,7 +272,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_Pending_d {
             get {
-                return ResourceManager.GetString("State.Pending_d", resourceCulture);
+                return ResourceManager.GetString("State_Pending_d", resourceCulture);
             }
         }
         
@@ -281,7 +281,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_Removed {
             get {
-                return ResourceManager.GetString("State.Removed", resourceCulture);
+                return ResourceManager.GetString("State_Removed", resourceCulture);
             }
         }
         
@@ -290,7 +290,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_Removed_d {
             get {
-                return ResourceManager.GetString("State.Removed_d", resourceCulture);
+                return ResourceManager.GetString("State_Removed_d", resourceCulture);
             }
         }
         
@@ -299,7 +299,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_Removing {
             get {
-                return ResourceManager.GetString("State.Removing", resourceCulture);
+                return ResourceManager.GetString("State_Removing", resourceCulture);
             }
         }
         
@@ -308,7 +308,7 @@ namespace Huybrechts.Core.Application {
         /// </summary>
         public static string State_Removing_d {
             get {
-                return ResourceManager.GetString("State.Removing_d", resourceCulture);
+                return ResourceManager.GetString("State_Removing_d", resourceCulture);
             }
         }
         

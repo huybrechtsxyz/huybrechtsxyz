@@ -159,46 +159,46 @@
   <data name="Owner_d" xml:space="preserve">
     <value>The owner has administrator access</value>
   </data>
-  <data name="State.Active" xml:space="preserve">
+  <data name="State_Active" xml:space="preserve">
     <value>Active</value>
   </data>
-  <data name="State.Active_d" xml:space="preserve">
+  <data name="State_Active_d" xml:space="preserve">
     <value>Active</value>
   </data>
-  <data name="State.Disabled" xml:space="preserve">
+  <data name="State_Disabled" xml:space="preserve">
     <value>Disabled</value>
   </data>
-  <data name="State.Disabled_d" xml:space="preserve">
+  <data name="State_Disabled_d" xml:space="preserve">
     <value>Disabled</value>
   </data>
-  <data name="State.Disabling" xml:space="preserve">
+  <data name="State_Disabling" xml:space="preserve">
     <value>Disabling</value>
   </data>
-  <data name="State.Disabling_d" xml:space="preserve">
+  <data name="State_Disabling_d" xml:space="preserve">
     <value>Disabling</value>
   </data>
-  <data name="State.New" xml:space="preserve">
+  <data name="State_New" xml:space="preserve">
     <value>New</value>
   </data>
-  <data name="State.New_d" xml:space="preserve">
+  <data name="State_New_d" xml:space="preserve">
     <value>New</value>
   </data>
-  <data name="State.Pending" xml:space="preserve">
+  <data name="State_Pending" xml:space="preserve">
     <value>Pending</value>
   </data>
-  <data name="State.Pending_d" xml:space="preserve">
+  <data name="State_Pending_d" xml:space="preserve">
     <value>Pending</value>
   </data>
-  <data name="State.Removed" xml:space="preserve">
+  <data name="State_Removed" xml:space="preserve">
     <value>Removed</value>
   </data>
-  <data name="State.Removed_d" xml:space="preserve">
+  <data name="State_Removed_d" xml:space="preserve">
     <value>Removed</value>
   </data>
-  <data name="State.Removing" xml:space="preserve">
+  <data name="State_Removing" xml:space="preserve">
     <value>Removing</value>
   </data>
-  <data name="State.Removing_d" xml:space="preserve">
+  <data name="State_Removing_d" xml:space="preserve">
     <value>Removing</value>
   </data>
   <data name="User" xml:space="preserve">
