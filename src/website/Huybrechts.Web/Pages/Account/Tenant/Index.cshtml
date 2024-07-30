@@ -53,6 +53,16 @@
                             }
                         </td>
                     </tr>
+                    if(item.State == Core.Application.ApplicationTenantState.New)
+                    {
+                        <tr>
+                            <td></td>
+                            <td colspan="4">
+                                <span class="text-info">@Localizer["Do not forget to activate the team above!"]</span>
+                            </td>
+                            <td></td>
+                        </tr>
+                    }
                 }
             </table>
         }

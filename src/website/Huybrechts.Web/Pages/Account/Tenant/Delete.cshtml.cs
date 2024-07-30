@@ -28,7 +28,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
         public async Task<IActionResult> OnGetAsync(string? id)
         {
             if (string.IsNullOrEmpty(id))
-                return NotFound($"Unable to load tentant with ID '{id}'.");
+                return NotFound($"Unable to load team with ID '{id}'.");
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -36,7 +36,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
 
             var item = await _tenantManager.GetTenantAsync(user, id);
             if (item is null || string.IsNullOrEmpty(item.Id))
-                return NotFound($"Unable to load tentant with ID '{id}'.");
+                return NotFound($"Unable to load team with ID '{id}'.");
             else
                 Input = item;
             return Page();

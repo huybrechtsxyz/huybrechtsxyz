@@ -2,6 +2,7 @@ using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,6 +12,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
     {
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationTenantManager _tenantManager;
+        private readonly IStringLocalizer<AddUsersModel> _localization;
 
         [BindProperty]
         public Invitation Input { get; set; } = new();
@@ -35,16 +37,17 @@ namespace Huybrechts.Web.Pages.Account.Tenant
             public string? Users { get; set; }
         }
 
-        public AddUsersModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager)
+        public AddUsersModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager, IStringLocalizer<AddUsersModel> localization)
         {
             _userManager = userManager;
             _tenantManager = tenantManager;
+            _localization = localization;
         }
 
         public async Task<IActionResult> OnGetAsync(string? id)
         {
             if (string.IsNullOrEmpty(id))
-                return NotFound($"Unable to load tentant with ID '{id}'.");
+                return NotFound($"Unable to load team with ID '{id}'.");
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -52,7 +55,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
 
             var tenant = await _tenantManager.GetTenantAsync(user, id);
             if (tenant is null)
-                return NotFound($"Unable to load tentant with ID '{id}'.");
+                return NotFound($"Unable to load team with ID '{id}'.");
 
             Roles = await _tenantManager.GetTenantRolesAsync(user, id) ?? [];
             Input = new()
@@ -76,7 +79,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 var roles = await _tenantManager.GetTenantRolesAsync(user, Input.TenantId) ?? [];
                 Roles = [.. roles.OrderBy(o => o.Label)];
 
-                StatusMessage = "Unexpected error when trying to add users to tenant.";
+                StatusMessage = _localization["Unexpected error when trying to add users to team."];
                 return Page();
             }
 

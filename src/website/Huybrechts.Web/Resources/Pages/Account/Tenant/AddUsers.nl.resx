@@ -129,4 +129,7 @@
   <data name="Please select one" xml:space="preserve">
     <value>Selecteer er een</value>
   </data>
+  <data name="Unexpected error when trying to add users to team." xml:space="preserve">
+    <value>Onverwachte fout bij het toevoegen van gebruikers aan het team.</value>
+  </data>
 </root>

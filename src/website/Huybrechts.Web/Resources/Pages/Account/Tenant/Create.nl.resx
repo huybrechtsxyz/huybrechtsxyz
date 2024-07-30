@@ -135,4 +135,7 @@
   <data name="The team {0} has been created" xml:space="preserve">
     <value>Het team {0} is gemaakt</value>
   </data>
+  <data name="Unexpected error when trying to create team." xml:space="preserve">
+    <value>Onverwachte fout bij het maken van een team.</value>
+  </data>
 </root>

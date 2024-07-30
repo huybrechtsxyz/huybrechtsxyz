@@ -49,13 +49,13 @@ namespace Huybrechts.Web.Pages.Account.Tenant
 
             if (!ModelState.IsValid)
             {
-                StatusMessage = "Unexpected error when trying to create tenant.";
+                StatusMessage = _localizer["Unexpected error when trying to create team."];
                 return Page();
             }
 
             var item = await _tenantManager.GetTenantAsync(user, Input.Id);
             if (item is null)
-                return NotFound($"Unable to load tenant with ID '{Input.Id}'.");
+                return NotFound($"Unable to load team with ID '{Input.Id}'.");
 
             item.Id = Input.Id;
             item.Name = Input.Name;

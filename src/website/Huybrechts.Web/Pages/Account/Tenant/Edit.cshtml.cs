@@ -41,7 +41,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
         public async Task<IActionResult> OnGetAsync(string? id)
         {
             if (string.IsNullOrEmpty(id))
-                return NotFound($"Unable to load tentant with ID '{id}'.");
+                return NotFound($"Unable to load team with ID '{id}'.");
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -49,7 +49,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
 
             var item = await _tenantManager.GetTenantAsync(user, id);
             if (item is null || string.IsNullOrEmpty(item.Id))
-                return NotFound($"Unable to load tentant with ID '{id}'.");
+                return NotFound($"Unable to load team with ID '{id}'.");
 
             Input = new TenantModel()
             {
@@ -82,13 +82,13 @@ namespace Huybrechts.Web.Pages.Account.Tenant
 
             if (!ModelState.IsValid)
             {
-                StatusMessage = "Unexpected error when trying to update tenant.";
+                StatusMessage = _localizer["Unexpected error when trying to update team."];
                 return Page();
             }
 
             var item = await _tenantManager.GetTenantAsync(user, Input.Id);
-            if (user is null)
-                return NotFound($"Unable to load tenant with ID '{Input.Id}'.");
+            if (item is null)
+                return NotFound($"Unable to load team with ID '{Input.Id}'.");
 
             item.Name = Input.Name;
             item.Description = Input.Description;
@@ -126,12 +126,12 @@ namespace Huybrechts.Web.Pages.Account.Tenant
 
             var item = await _tenantManager.GetTenantAsync(user, Input.Id);
             if (user is null)
-                return NotFound($"Unable to load tenant with ID '{Input.Id}'.");
+                return NotFound($"Unable to load team with ID '{Input.Id}'.");
 
             var result = await _tenantManager.EnableTenantAsync(user, item);
             if (!result.IsFailed)
             {
-                var message = _localizer["The team {0} has been set activation"];
+                var message = _localizer["The team {0} is pending activation"];
                 StatusMessage = message.Value.Replace("{0}", Input.Id);
             }
             else
@@ -148,7 +148,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
 
             var item = await _tenantManager.GetTenantAsync(user, Input.Id);
             if (user is null)
-                return NotFound($"Unable to load tenant with ID '{Input.Id}'.");
+                return NotFound($"Unable to load team with ID '{Input.Id}'.");
 
             var result = await _tenantManager.DisableTenantAsync(user, item);
             if (!result.IsFailed)
@@ -170,7 +170,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
 
             var item = await _tenantManager.GetTenantAsync(user, tenantId);
             if (user is null)
-                return NotFound($"Unable to load tenant with ID '{tenantId}'.");
+                return NotFound($"Unable to load team with ID '{tenantId}'.");
 
             var result = await _tenantManager.RemoveUserFromTenantAsync(user, userId, roleId, tenantId);
             StatusMessage = string.Empty;

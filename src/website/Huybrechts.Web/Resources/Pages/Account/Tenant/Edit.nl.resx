@@ -156,10 +156,13 @@
   <data name="The team {0} has been disabled" xml:space="preserve">
     <value>Het team {0} is uitgeschakeld</value>
   </data>
-  <data name="The team {0} has been set activation" xml:space="preserve">
-    <value>Het team {0} is geactiveerd</value>
-  </data>
   <data name="The team {0} has been updated" xml:space="preserve">
     <value>Het team {0} is bijgewerkt</value>
+  </data>
+  <data name="The team {0} is pending activation" xml:space="preserve">
+    <value>Het team {0} is geactiveerd</value>
+  </data>
+  <data name="Unexpected error when trying to update team." xml:space="preserve">
+    <value>Onverwachte fout bij het updaten van het team.</value>
   </data>
 </root>
