@@ -59,6 +59,11 @@ try
             //    return factory.Create(nameof(Huybrechts.Web.Resources.ViewModels), assemblyName.Name!);
             //};
         });
+    builder.Services.AddDistributedMemoryCache();
+    builder.Services.AddSession(opts =>
+    {
+        opts.IdleTimeout = TimeSpan.FromMinutes(5);
+    });
 
     Log.Information("Building the application with services");
     foreach (var service in builder.Services)

@@ -18,4 +18,9 @@ public class CultureController : Controller
 
         return LocalRedirect(returnUrl);
     }
+
+    public void SetTheme(string theme)
+    {
+        HttpContext.Session.SetString("data-bs-theme", (theme == "on" ? "dark" : "light"));
+    }
 }

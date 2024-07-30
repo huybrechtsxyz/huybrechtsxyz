@@ -424,6 +424,7 @@ public static class WebHostExtensions
     public static WebApplication AddSessionMiddleware(this WebApplication app, ILogger log)
     {
         log.Information("Configure session middleware");
+        app.UseSession();
         return app;
     }
 

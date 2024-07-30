@@ -1,5 +1,8 @@
-﻿<!doctype html>
-<html lang="en" data-bs-theme="light" data-scheme="navy" style="font-size: 18px;">
+﻿@{
+    var databstheme = (Context.Session.GetString("data-bs-theme") ?? string.Empty) == "dark" ? "dark" : "light";
+}
+<!doctype html>
+<html lang="en" data-bs-theme="@databstheme" data-scheme="navy" style="font-size: 18px;">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="description" content="@ViewData["MetaInfo"]">
@@ -101,10 +104,14 @@
                         <div class="vr mx-1 d-none d-md-block"></div>
 
                         <div class="form-check form-check-alt form-switch mx-md-2">
-                            <input id="headerThemeToggler" class="form-check-input mode-switcher" type="checkbox" role="switch">
+                            <input id="headerThemeToggler" class="form-check-input mode-switcher" type="checkbox" role="switch" >
                             <label class="form-check-label ps-1 fw-bold d-none d-md-flex align-items-center " for="headerThemeToggler">
-                                <i class="mode-switcher-icon icon-light bi bi-sun-fill fs-5"></i>
-                                <i class="mode-switcher-icon icon-dark d-none bi bi-moon-fill"></i>
+                                <i class="mode-switcher-icon icon-light bi bi-sun-fill fs-5">
+                                    
+                                </i>
+                                <i class="mode-switcher-icon icon-dark d-none bi bi-moon-fill">
+
+                                </i>
                             </label>
                         </div>
 
@@ -150,6 +157,8 @@
     <script src="~/lib/popperjs/popper.min.js"></script>
     <script src="~/lib/nifty/bootstrap.min.js"></script>
     <script src="~/lib/nifty/nifty.min.js"></script>
+    <script src="~/lib/jquery/jquery.js"></script>
+    <script src="~/js/layout.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
