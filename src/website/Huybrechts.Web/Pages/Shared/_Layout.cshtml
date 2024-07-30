@@ -32,7 +32,7 @@
                     <!-- Breadcrumb -->
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a asp-page="Home">Home</a></li>
+                            <li class="breadcrumb-item"><a asp-page="/Home">Home</a></li>
                             @await RenderSectionAsync("Breadcrumb", required: false)
                         </ol>
                     </nav>
@@ -70,7 +70,7 @@
                 <div class="header__brand">
                     <div class="brand-wrap">
                         <a asp-page="/Home" class="brand-img stretched-link">
-                            <img src="./img/logo.png" alt="Nifty Logo" class="Nifty logo" width="16" height="16">
+                            <img src="~/img/logo.png" alt="XYZ Logo" class="Nifty logo" width="16" height="16">
                         </a>
                         <div class="brand-title">XYZ</div>
                     </div>
