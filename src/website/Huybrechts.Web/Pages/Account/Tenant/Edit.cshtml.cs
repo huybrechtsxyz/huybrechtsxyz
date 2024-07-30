@@ -62,7 +62,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
             if (item.Picture is not null && item.Picture.Length > 0)
             {
                 Input.Picture = new byte[item.Picture.Length];
-                Input.Picture = item.Picture.ToArray();
+                Input.Picture = [.. item.Picture];
             }
 
             Roles = await _tenantManager.GetTenantRolesAsync(user, item.Id);
@@ -125,7 +125,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
             var item = await _tenantManager.GetTenantAsync(user, Input.Id);
-            if (user is null)
+            if (item is null)
                 return NotFound($"Unable to load team with ID '{Input.Id}'.");
 
             var result = await _tenantManager.EnableTenantAsync(user, item);
@@ -147,7 +147,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
             var item = await _tenantManager.GetTenantAsync(user, Input.Id);
-            if (user is null)
+            if (item is null)
                 return NotFound($"Unable to load team with ID '{Input.Id}'.");
 
             var result = await _tenantManager.DisableTenantAsync(user, item);
@@ -169,7 +169,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
             var item = await _tenantManager.GetTenantAsync(user, tenantId);
-            if (user is null)
+            if (item is null)
                 return NotFound($"Unable to load team with ID '{tenantId}'.");
 
             var result = await _tenantManager.RemoveUserFromTenantAsync(user, userId, roleId, tenantId);

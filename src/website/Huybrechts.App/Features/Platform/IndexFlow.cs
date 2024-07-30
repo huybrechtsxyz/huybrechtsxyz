@@ -63,7 +63,7 @@ public class IndexFlow
         }
     }
 
-    public sealed class Handler : IRequestHandler<Query, Result>
+    internal sealed class Handler : IRequestHandler<Query, Result>
     {
         private readonly PlatformContext _dbcontext;
         private readonly IConfigurationProvider _configuration;
