@@ -42,5 +42,23 @@
   <ItemGroup>
     <ProjectReference Include="..\Huybrechts.Core\Huybrechts.Core.csproj" />
   </ItemGroup>
+   
+  <ItemGroup>
+    <Compile Update="Application\ApplicationLocalization.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ApplicationLocalization.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+   
+  <ItemGroup>
+    <EmbeddedResource Update="Application\ApplicationLocalization.nl.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Application\ApplicationLocalization.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ApplicationLocalization.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 
 </Project>

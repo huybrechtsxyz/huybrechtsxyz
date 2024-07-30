@@ -40,16 +40,16 @@ public class AuthenticationSender : Microsoft.AspNetCore.Identity.IEmailSender<A
 
     public async Task SendConfirmationLinkAsync(ApplicationUser user, string email, string confirmationLink)
     {
-        await emailSender.SendEmailAsync(user.Email!, user.Fullname, "Confirm your account", "Please confirm your account at: " + confirmationLink);
+        await emailSender.SendEmailAsync(user.Email!, user.Fullname, ApplicationLocalization.ConfirmAccount_Subject, ApplicationLocalization.ConfirmAccount_Body.Replace("{0}", confirmationLink));
     }
 
     public async Task SendPasswordResetCodeAsync(ApplicationUser user, string email, string resetCode)
     {
-        await emailSender.SendEmailAsync(user.Email!, user.Fullname, "Reset your account", "Please reset your password with code: " + resetCode);
+        await emailSender.SendEmailAsync(user.Email!, user.Fullname, ApplicationLocalization.ResetAccount_Subject, ApplicationLocalization.ResetAccount_Body.Replace("{0}", resetCode));
     }
 
     public async Task SendPasswordResetLinkAsync(ApplicationUser user, string email, string resetLink)
     {
-        await emailSender.SendEmailAsync(user.Email!, user.Fullname, "Reset your account", "Please reset your password at: " + resetLink);
+        await emailSender.SendEmailAsync(user.Email!, user.Fullname, ApplicationLocalization.ResetPassword_Subject, ApplicationLocalization.ResetPassword_Subject.Replace("{0}", resetLink));
     }
 }

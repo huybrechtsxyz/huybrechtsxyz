@@ -59,5 +59,176 @@ namespace Huybrechts.App.Application {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please confirm your account at: {0}.
+        /// </summary>
+        public static string ConfirmAccount_Body {
+            get {
+                return ResourceManager.GetString("ConfirmAccount_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm your account.
+        /// </summary>
+        public static string ConfirmAccount_Subject {
+            get {
+                return ResourceManager.GetString("ConfirmAccount_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirmation your account for {0} was deleted.
+        /// </summary>
+        public static string DeletedAccount_Body {
+            get {
+                return ResourceManager.GetString("DeletedAccount_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleted your account.
+        /// </summary>
+        public static string DeletedAccount_Subject {
+            get {
+                return ResourceManager.GetString("DeletedAccount_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please reset your password with code: {0}.
+        /// </summary>
+        public static string ResetAccount_Body {
+            get {
+                return ResourceManager.GetString("ResetAccount_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset your account.
+        /// </summary>
+        public static string ResetAccount_Subject {
+            get {
+                return ResourceManager.GetString("ResetAccount_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please reset your password at: {0}.
+        /// </summary>
+        public static string ResetPassword_Body {
+            get {
+                return ResourceManager.GetString("ResetPassword_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset your account.
+        /// </summary>
+        public static string ResetPassword_Subject {
+            get {
+                return ResourceManager.GetString("ResetPassword_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find role with ID &apos;{0}&apos;..
+        /// </summary>
+        public static string RoleNotFound {
+            get {
+                return ResourceManager.GetString("RoleNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Team with ID {0} already exists..
+        /// </summary>
+        public static string TenantAlreadyExists {
+            get {
+                return ResourceManager.GetString("TenantAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find team with ID &apos;{0}&apos;..
+        /// </summary>
+        public static string TenantNotFound {
+            get {
+                return ResourceManager.GetString("TenantNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to enable team with state {0}.
+        /// </summary>
+        public static string TenantStateActive {
+            get {
+                return ResourceManager.GetString("TenantStateActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to delete team with state {0}.
+        /// </summary>
+        public static string TenantStateDelete {
+            get {
+                return ResourceManager.GetString("TenantStateDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to disable team with state {0}.
+        /// </summary>
+        public static string TenantStateDisable {
+            get {
+                return ResourceManager.GetString("TenantStateDisable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User {0} has been added to role {1}.
+        /// </summary>
+        public static string UserAddedToRole {
+            get {
+                return ResourceManager.GetString("UserAddedToRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find user with ID &apos;{0}&apos;..
+        /// </summary>
+        public static string UserNotFound {
+            get {
+                return ResourceManager.GetString("UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find user with E-mail &apos;{0}&apos;..
+        /// </summary>
+        public static string UserNotFoundMail {
+            get {
+                return ResourceManager.GetString("UserNotFoundMail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User {0} is not the team owner of {1}.
+        /// </summary>
+        public static string UserNotOwner {
+            get {
+                return ResourceManager.GetString("UserNotOwner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to change role as user {0} is the only owner..
+        /// </summary>
+        public static string UserOnlyOwner {
+            get {
+                return ResourceManager.GetString("UserOnlyOwner", resourceCulture);
+            }
+        }
     }
 }

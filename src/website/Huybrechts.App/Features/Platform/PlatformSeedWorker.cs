@@ -1,6 +1,5 @@
 ﻿using Huybrechts.App.Application;
 using Huybrechts.App.Config;
-using Huybrechts.App.Features.Platform;
 using Huybrechts.Core.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +8,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace Huybrechts.App.Data;
+namespace Huybrechts.App.Features.Platform;
 
 public class PlatformSeedWorker : IHostedService
 {
@@ -80,6 +79,6 @@ public class PlatformSeedWorker : IHostedService
 
     //private async Task InitializeForAllAsync(CancellationToken cancellationToken)
     //{
-        
+
     //}
 }

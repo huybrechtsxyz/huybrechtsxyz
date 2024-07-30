@@ -11,6 +11,8 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
 {
     private readonly ApplicationUserStore UserStore;
 
+    private static Result ReturnUserNotFound(string userid) => Result.Fail(ApplicationLocalization.UserNotFound.Replace("{0}", userid));
+
 	public ApplicationUserManager(
         ApplicationUserStore store,
         IOptions<IdentityOptions> optionsAccessor,
@@ -33,7 +35,7 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
             var appUser = await FindByIdAsync(user.Id);
             if (appUser == null)
             {
-                return Result.Fail($"Unable to load user with ID '{user.Id}'.");
+                return ReturnUserNotFound(user.Id);
             }
 
             BackgroundJob.Enqueue<DeletePersonalInfoWorker>(x => x.StartAsync(user.Id));
@@ -167,7 +169,7 @@ public class ApplicationUserManager : UserManager<ApplicationUser>
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(user);
         var item = await UserStore.FindByIdAsync(user.Id) ??
-            throw new ApplicationException($"User with id {user.Id} was not found!");
+            throw new ApplicationException(ApplicationLocalization.UserNotFound.Replace("{0}", user.Id));
         item.GivenName = givenName;
         item.Surname = surname;
         await base.UpdateSecurityStampAsync(item).ConfigureAwait(false);

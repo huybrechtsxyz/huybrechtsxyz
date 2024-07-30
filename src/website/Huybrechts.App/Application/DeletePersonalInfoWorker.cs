@@ -32,6 +32,10 @@ public class DeletePersonalInfoWorker
 
     private async Task SendAccountDeletedAsync(ApplicationUser user)
     {
-        await _emailSender.SendEmailAsync(user.Email!, user.Fullname, "Deleted your account", $"Confirmation your account for {user.Email} was deleted");
+        await _emailSender.SendEmailAsync(
+            user.Email!, 
+            user.Fullname, 
+            ApplicationLocalization.DeletedAccount_Subject, 
+            ApplicationLocalization.DeletedAccount_Body.Replace("{0}", user.Email));
     }
 }

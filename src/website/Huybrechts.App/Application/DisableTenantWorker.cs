@@ -20,7 +20,7 @@ public class DisableTenantWorker
 
         if (string.IsNullOrEmpty(userId))
             _ = await _userManager.FindByIdAsync(userId) ??
-                throw new InvalidOperationException($"Unable to find user {userId}.");
+                throw new InvalidOperationException($"Unable to find user with ID {userId}.");
 
         var tenant = await _dbcontext.ApplicationTenants.FindAsync([tenantId], cancellationToken: cancellationToken);
         if (tenant is null)

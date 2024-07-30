@@ -2,6 +2,7 @@
 using Hangfire;
 using Huybrechts.App.Data;
 using Huybrechts.Core.Application;
+using Huybrechts.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
@@ -59,13 +60,13 @@ public class ApplicationTenantManager
     private readonly ApplicationContext _dbcontext;
     private readonly ILogger<ApplicationTenantManager> _logger;
 
-    private static Result ThrowRoleNotFound(string roleid) => Result.Fail($"Unable to load role with ID '{roleid}'.");
+    private static Result ThrowRoleNotFound(string roleid) => Result.Fail(ApplicationLocalization.RoleNotFound.Replace("{0}", roleid));
 
-    private static Result ThrowTenantNotFound(string tenantid) => Result.Fail($"Unable to load tenant with ID '{tenantid}'.");
+    private static Result ThrowTenantNotFound(string tenantid) => Result.Fail(ApplicationLocalization.TenantNotFound.Replace("{0}", tenantid));
 
-    private static Result ThrowUserNotFound(string userid) => Result.Fail($"Unable to load user with ID '{userid}'.");
+    private static Result ThrowUserNotFound(string userid) => Result.Fail(ApplicationLocalization.UserNotFound.Replace("{0}", userid));
 
-    private static Result ThrowUserNotOwner(string user, string tenantId) => Result.Fail($"User '{user}' is not the owner of the tenant '{tenantId}'");
+    private static Result ThrowUserNotOwner(string user, string tenantId) => Result.Fail(ApplicationLocalization.UserNotFound.Replace("{0}", user).Replace("{1}", tenantId));
 
     public ApplicationTenantManager(
         ApplicationUserManager userManager,
@@ -178,7 +179,7 @@ public class ApplicationTenantManager
 
         if (await _dbcontext.ApplicationTenants.FindAsync(tenant.Id) is not null)
         {
-            return Result.Fail($"Tenant with Id {tenant.Id} already exists");
+            return Result.Fail(ApplicationLocalization.TenantAlreadyExists.Replace("{0}", tenant.Id));
         }
 
         ApplicationTenant appTenant = new()
@@ -237,7 +238,7 @@ public class ApplicationTenantManager
             return ThrowTenantNotFound(tenant.Id);
 
         if (!AllowRemovingTenant(appTenant.State))
-            return Result.Fail("Invalid state");
+            return Result.Fail(ApplicationLocalization.TenantStateDelete.Replace("{0}", appTenant.State.GetName()));
 
         appTenant.State = ApplicationTenantState.Removing;
         _dbcontext.ApplicationTenants.Update(appTenant);
@@ -262,7 +263,7 @@ public class ApplicationTenantManager
             return ThrowTenantNotFound(tenant.Id);
 
         if (!AllowEnablingTenant(appTenant.State))
-            return Result.Fail("Invalid state");
+            return Result.Fail(ApplicationLocalization.TenantStateActive.Replace("{0}", appTenant.State.GetName()));
 
         appTenant.State = ApplicationTenantState.Pending;
         _dbcontext.ApplicationTenants.Update(appTenant);
@@ -287,7 +288,7 @@ public class ApplicationTenantManager
             return ThrowTenantNotFound(tenant.Id);
 
         if (!AllowDisablingTenant(appTenant.State))
-            return Result.Fail("Invalid state");
+            return Result.Fail(ApplicationLocalization.TenantStateDisable.Replace("{0}", appTenant.State.GetName()));
 
         appTenant.State = ApplicationTenantState.Disabling;
         _dbcontext.ApplicationTenants.Update(appTenant);
@@ -325,7 +326,7 @@ public class ApplicationTenantManager
             var appUser = await _userManager.FindByEmailAsync(item);
             if (appUser is null)
             {
-                result.WithError($"Unable to find user with E-mail '{item}'.");
+                result.WithError(ApplicationLocalization.UserNotFoundMail.Replace("{0}", item));
                 continue;
             }
 
@@ -335,14 +336,18 @@ public class ApplicationTenantManager
 
             if (hasOwnerRole && appRole.Id != ownerRole.Id && !await _userManager.HasOtherOwnersAsync(appUser, appTenant.Id))
             {
-                result.WithError($"Unable to change role as user {appUser.Email} is the only owner.");
+                result.WithError(ApplicationLocalization.UserOnlyOwner.Replace("{0}", appUser.Email));
+
                 continue;
             }
 
             var idResult = await _userManager.AddToRoleAsync(appUser!, appRole.NormalizedName!);
             if (idResult.Succeeded)
             {
-                result.WithSuccess($"User {appUser.Email} added to role {appRole.Label}");
+                result.WithSuccess(ApplicationLocalization.UserAddedToRole
+                    .Replace("{0}", appUser.Email)
+                    .Replace("{1}", appRole.Label)
+                    .Replace("{2}", appTenant.Name));
             }
             else
             {
@@ -388,7 +393,7 @@ public class ApplicationTenantManager
         if ((await _userManager.IsOwnerAsync(appUser, tenantId))
             && (!await _userManager.HasOtherOwnersAsync(appUser, tenantId)))
         {
-            return Result.Fail($"Unable to remove user {appUser.Email} as they are the only owner.");
+            return Result.Fail(ApplicationLocalization.UserOnlyOwner.Replace("{0}", appUser.Email));
         }
 
         var idResult = await _userManager.RemoveFromRoleAsync(appUser, appRole.NormalizedName!);
@@ -433,7 +438,7 @@ public class ApplicationTenantManager
             return ThrowTenantNotFound(tenantId);
 
         if (!AllowDisablingTenant(appTenant.State))
-            return Result.Fail("Invalid state");
+            return Result.Fail(ApplicationLocalization.TenantStateDisable.Replace("{0}", appTenant.State.GetName()));
 
         appTenant.State = ApplicationTenantState.Disabling;
         _dbcontext.ApplicationTenants.Update(appTenant);
