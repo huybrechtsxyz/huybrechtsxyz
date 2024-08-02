@@ -4,7 +4,7 @@ using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Huybrechts.App.Features.Platform;
+namespace Huybrechts.App.Features.Platform.Info;
 
 public class DeleteFlow
 {
@@ -43,10 +43,13 @@ public class DeleteFlow
             _configuration = configuration;
         }
 
-        public Task<Model> Handle(Query message, CancellationToken token) => _dbcontext
-            .Platforms
-            .Where(s => s.Id == message.Id)
-            .ProjectTo<Model>(_configuration)
-            .SingleOrDefaultAsync(token);
+        public async Task<Model> Handle(Query message, CancellationToken token)
+        {
+            return await _dbcontext.Platforms
+                .Where(s => s.Id == message.Id)
+                .ProjectTo<Model>(_configuration)
+                .SingleOrDefaultAsync(token) ??
+                new Model();
+        }
     }
 }

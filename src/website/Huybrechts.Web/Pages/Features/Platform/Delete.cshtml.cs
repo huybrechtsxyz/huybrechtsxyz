@@ -1,10 +1,13 @@
-using Huybrechts.App.Features.Platform;
+using Huybrechts.App.Features.Platform.Info;
+using Huybrechts.App.Web;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Huybrechts.Web.Pages.Platform;
+namespace Huybrechts.Web.Pages.Features.Platform;
 
+[Authorize(Policy = TenantPolicies.IsManager)]
 public class DeleteModel : PageModel
 {
     private readonly IMediator _mediator;
@@ -23,6 +26,6 @@ public class DeleteModel : PageModel
     {
         await _mediator.Send(Data);
 
-        return this.RedirectToPage(nameof(Index));
+        return RedirectToPage(nameof(Index));
     }
 }

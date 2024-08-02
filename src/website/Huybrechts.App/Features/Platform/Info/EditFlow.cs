@@ -4,8 +4,9 @@ using FluentValidation;
 using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
-namespace Huybrechts.App.Features.Platform;
+namespace Huybrechts.App.Features.Platform.Info;
 
 public class EditFlow
 {
@@ -26,11 +27,14 @@ public class EditFlow
     {
         public Ulid Id { get; init; }
 
-        public string Name { get; init; } = string.Empty;
+        [Display(Name = nameof(Name), ResourceType = typeof(PlatformLocalization))]
+        public string Name { get; set; } = string.Empty;
 
-        public string? Description { get; init; }
+        [Display(Name = nameof(Description), ResourceType = typeof(PlatformLocalization))]
+        public string? Description { get; set; }
 
-        public string? Remark { get; init; }
+        [Display(Name = nameof(Remark), ResourceType = typeof(PlatformLocalization))]
+        public string? Remark { get; set; }
     }
 
     public class CommandValidator : AbstractValidator<Command>
@@ -63,7 +67,8 @@ public class EditFlow
             return await _dbcontext.Platforms
                 .Where(s => s.Id == message.Id)
                 .ProjectTo<Command>(_configuration)
-                .SingleOrDefaultAsync(token);
+                .SingleOrDefaultAsync(token) ??
+                new Command();
         }
     }
 
@@ -78,11 +83,15 @@ public class EditFlow
 
         public async Task Handle(Command message, CancellationToken token)
         {
-            var record = await _dbcontext.Platforms.FindAsync(message.Id);
+            var record = await _dbcontext.Platforms.FindAsync(message.Id, token) ??
+                throw new InvalidOperationException($"Unable to find platform with ID {message.Id}");
 
             record.Name = message.Name;
             record.Description = message.Description;
             record.Remark = message.Remark;
+
+            _dbcontext.Platforms.Update(record);
+            await _dbcontext.SaveChangesAsync(token);
         }
     }
 }

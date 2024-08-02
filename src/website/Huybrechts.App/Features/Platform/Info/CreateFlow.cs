@@ -1,21 +1,23 @@
 ﻿using FluentValidation;
 using Huybrechts.Core.Platform;
 using MediatR;
-using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
-namespace Huybrechts.App.Features.Platform;
+namespace Huybrechts.App.Features.Platform.Info;
 
 public class CreateFlow
 {
     public sealed record Command : IRequest<Ulid>
     {
-        [DisplayName("Name")]
+        public Ulid Id { get; init; }
+
+        [Display(Name = nameof(Name), ResourceType = typeof(PlatformLocalization))]
         public string Name { get; set; } = string.Empty;
 
-        [DisplayName("Description")]
+        [Display(Name = nameof(Description), ResourceType = typeof(PlatformLocalization))]
         public string? Description { get; set; }
 
-        [DisplayName("Remark")]
+        [Display(Name = nameof(Remark), ResourceType = typeof(PlatformLocalization))]
         public string? Remark { get; set; }
     }
 
@@ -28,7 +30,7 @@ public class CreateFlow
         }
     }
 
-    public sealed class Handler : IRequestHandler<Command, Ulid>
+    internal sealed class Handler : IRequestHandler<Command, Ulid>
     {
         private readonly PlatformContext _dbcontext;
 

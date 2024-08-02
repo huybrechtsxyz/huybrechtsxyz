@@ -1,0 +1,94 @@
+﻿@page
+@inject IViewLocalizer Localizer
+@model Huybrechts.Web.Pages.Features.Platform.IndexModel
+@{
+    ViewData["CardTitle"] =  Localizer["Your platforms"];
+    ViewData["ActivePage"] = ManageNavPages.Info;
+    var prevDisabled = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Data.Results.HasNextPage ? "disabled" : "";
+}
+<partial name="_StatusMessage" for="StatusMessage" />
+<p class="text-info">
+    @Localizer["The list of platforms."]
+</p>
+<div class="row">
+    <div class="col-md-12">
+        
+        <div class="row">
+            <form class="row row-cols-md-auto g-3 align-items-center">
+                <div class="col-md-3 d-flex gap-1 align-items-center mb-3">
+                    <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Create">
+                        <i class="bi bi-plus-circle fs-5"></i>
+                        <span class="vr"></span>
+                        @Localizer["Add New"]
+                    </a>
+                </div>
+                <div class="col-md-9 d-flex gap-1 align-items-center justify-content-md-end mb-3">
+                    <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="Search..." class="form-control" autocomplete="off" />
+                    <input type="submit" value="Search" class="btn btn-primary" /> | 
+                    <a asp-page="Index" class="btn btn-secondary text-nowrap" type="button" role="button">@Localizer["Clear Filter"]</a>
+                </div>
+            </form>
+            @if (Model.Data.Results.Count > 0)
+            {
+                <div class="table-responsove">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].Name)</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].Description)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var record in Model.Data.Results)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => record!.Name)</td>
+                                    <td>@Html.DisplayFor(modelItem => record!.Description)</td>
+                                    <td>
+                                        <a asp-page="Edit" asp-route-id="@record!.Id"><i class="bi bi-pencil-square"></i></a>
+                                        <a asp-page="Delete" asp-route-id="@record!.Id"><i class="bi bi-trash2-fill"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <nav class="text-align-center mt-5" aria-label="Table navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" @prevDisabled>
+                            <a asp-page="Index"
+                            asp-route-pageindex="@(Model.Data.Results.PageIndex - 1)"
+                            asp-route-currentFilter="@Model.Data.CurrentFilter"
+                            class="page-link" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">@Localizer["Previous"]</span>
+                            </a>
+                        </li>
+                        @for (int i = 0; i < Model.Data.Results.TotalPages; i++)
+                        {
+                            <li class="page-item @(Model.Data.Results.PageIndex == i ? "active" : string.Empty)" aria-current="page">
+                                <a asp-page="Index"
+                                asp-route-pageindex="@i"
+                                asp-route-currentFilter="@Model.Data.CurrentFilter"
+                                class="page-link">
+                                    @(i + 1)
+                                </a>
+                            </li>
+                        }
+                        <li class="page-item" @nextDisabled>
+                            <a asp-page="Index"
+                            asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
+                            asp-route-currentFilter="@Model.Data.CurrentFilter"
+                            class="page-link" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">@Localizer["Next"]</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>

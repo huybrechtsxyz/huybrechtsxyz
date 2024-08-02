@@ -49,6 +49,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ApplicationLocalization.resx</DependentUpon>
     </Compile>
+    <Compile Update="Features\Platform\PlatformLocalization.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PlatformLocalization.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
    
   <ItemGroup>
@@ -58,6 +63,13 @@
     <EmbeddedResource Update="Application\ApplicationLocalization.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ApplicationLocalization.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Features\Platform\PlatformLocalization.nl.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Features\Platform\PlatformLocalization.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>PlatformLocalization.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
