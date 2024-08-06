@@ -47,9 +47,8 @@
                                     <td>@Html.DisplayFor(modelItem => record!.Name)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Description)</td>
                                     <td>
-                                        <a asp-page="Edit" asp-route-id="@record!.Id"><i class="bi bi-pencil-square"></i></a>
-                                        <span class="vr"></span>
-                                        <a asp-page="Delete" asp-route-id="@record!.Id"><i class="bi bi-trash2-fill"></i></a>
+                                        <a asp-page="Edit" asp-route-id="@record!.Id" class="btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i></a>
+                                        <a asp-page="Delete" asp-route-id="@record!.Id" class="btn btn-icon btn-secondary"><i class="bi bi-trash2-fill"></i></a>
                                     </td>
                                 </tr>
                             }
