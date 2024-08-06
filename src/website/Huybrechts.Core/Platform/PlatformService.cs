@@ -13,18 +13,12 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformService")]
 [DisplayName("Service")]
-public record PlatformService
+public record PlatformService : Entity, IEntity
 {
-    [Key]
     [Required]
-    [DisplayName("ID")]
-    [Comment("PlatformService PK")]
-    public Ulid Id { get; set;} = Ulid.Empty;
-
-    [Required]
-    [DisplayName("Provider ID")]
-    [Comment("PlatformProvider FK")]
-    public Ulid PlatformProviderId { get; set;} = Ulid.Empty;
+    [DisplayName("Platform Info ID")]
+    [Comment("PlatformInfo FK")]
+    public Ulid PlatformInfoId { get; set;} = Ulid.Empty;
 
     [Required]
     [MaxLength(128)]

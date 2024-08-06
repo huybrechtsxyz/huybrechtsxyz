@@ -14,14 +14,8 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformLocation")]
 [DisplayName("Location")]
-public record PlatformLocation
+public record PlatformLocation : Entity, IEntity
 {
-    [Key]
-    [Required]
-    [DisplayName("ID")]
-    [Comment("PlatformLocation PK")]
-    public Ulid Id { get; set; } = Ulid.Empty;
-
     [Required]
     [MaxLength(128)]
     [DisplayName("Name")]

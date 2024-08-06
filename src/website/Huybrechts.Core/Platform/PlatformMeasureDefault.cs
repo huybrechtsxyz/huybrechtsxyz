@@ -12,19 +12,8 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformMeasureDefault")]
 [DisplayName("Platform Measure Default")]
-public record PlatformMeasureDefault
+public record PlatformMeasureDefault : Entity, IEntity
 {
-    [Key]
-    [Required]
-    [DisplayName("ID")]
-    [Comment("PlatformMeasureDefault PK")]
-    public Ulid Id { get; set; } = Ulid.Empty;
-
-    [Required]
-    [DisplayName("Provider ID")]
-    [Comment("PlatformProvider FK")]
-    public Ulid PlatformProviderId { get; set;} = Ulid.Empty;
-
     [Required]
     [DisplayName("Measure ID")]
     [Comment("PlatformMeasureUnit FK")]
@@ -52,9 +41,4 @@ public record PlatformMeasureDefault
     [DisplayName("Description")]
     [Comment("Measuring unit description")]
     public string Description { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Navigate to Services
-    /// </summary>
-    public virtual ICollection<PlatformService>? Services{ get; set; } = [];
 }

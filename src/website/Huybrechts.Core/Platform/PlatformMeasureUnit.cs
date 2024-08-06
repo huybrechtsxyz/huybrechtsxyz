@@ -12,14 +12,8 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformMeasure")]
 [DisplayName("Platform Measure")]
-public record PlatformMeasureUnit
+public record PlatformMeasureUnit : Entity, IEntity
 {
-    [Key]
-    [Required]
-    [DisplayName("ID")]
-    [Comment("PlatformMeasure PK")]
-    public Ulid Id { get; set;} = Ulid.Empty;
-
     [Required]
     [MaxLength(128)]
     [DisplayName("Name")]

@@ -12,18 +12,12 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformRateUnit")]
 [DisplayName("Rate unit")]
-public record PlatformRateUnit
+public record PlatformRateUnit : Entity, IEntity
 {
-    [Key]
     [Required]
-    [DisplayName("ID")]
-    [Comment("PlatformRateUnit PK")]
-    public Ulid Id { get; set; } = Ulid.Empty;
-
-    [Required]
-    [DisplayName("Provider ID")]
-    [Comment("PlatformProvider FK")]
-    public Ulid PlatformProviderId { get; set;} = Ulid.Empty;
+    [DisplayName("Platform Info ID")]
+    [Comment("PlatformInfo FK")]
+    public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
 
     [Required]
     [DisplayName("Service ID")]

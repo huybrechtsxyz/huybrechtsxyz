@@ -14,18 +14,12 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformResource")]
 [DisplayName("Resource")]
-public record PlatformResource
+public record PlatformResource : Entity, IEntity
 {
-    [Key]
     [Required]
-    [DisplayName("ID")]
-    [Comment("PlatformResource PK")]
-    public Ulid Id { get; set;} = Ulid.Empty;
-
-    [Required]
-    [DisplayName("Provider ID")]
-    [Comment("PlatformProvider FK")]
-    public Ulid PlatformProviderId { get; set;} = Ulid.Empty;
+    [DisplayName("Platform Info ID")]
+    [Comment("PlatformInfo FK")]
+    public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
 
     [Required]
     [DisplayName("Service ID")]
