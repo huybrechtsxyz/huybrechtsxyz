@@ -10,8 +10,13 @@ public interface IEntity
     Ulid Id { get; set; }
 }
 
+public interface ICopyableEntity
+{
+    void CopyFrom(IEntity entity);
+}
+
 [MultiTenant]
-public record Entity : IEntity
+public record Entity : IEntity, ICopyableEntity
 {
     [Key]
     [Required]
@@ -29,4 +34,15 @@ public record Entity : IEntity
 
     [Timestamp]
     public required Byte[] TimeStamp { get; set; }
+
+    public void Initialize()
+    {
+        Id = new Ulid();
+        CreatedDT = DateTime.UtcNow;
+    }
+
+    public virtual void CopyFrom(IEntity entity)
+    {
+        throw new NotImplementedException();
+    }
 }
