@@ -112,10 +112,10 @@ public static class PlatformInfoFlow
 
     public static CreateCommand CreateNew() => new()
     {
-        Id = new Ulid()
+        Id = Ulid.NewUlid()
     };
 
-    public sealed record CreateCommand : Model, IRequest<Ulid>
+    public sealed record CreateCommand : Model, IRequest<Result<Ulid>>
     {
     }
 
@@ -126,7 +126,7 @@ public static class PlatformInfoFlow
         }
     }
 
-    internal sealed class CreateHandler : IRequestHandler<CreateCommand, Ulid>
+    internal sealed class CreateHandler : IRequestHandler<CreateCommand, Result<Ulid>>
     {
         private readonly PlatformContext _dbcontext;
 
@@ -135,17 +135,19 @@ public static class PlatformInfoFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Ulid> Handle(CreateCommand message, CancellationToken token)
+        public async Task<Result<Ulid>> Handle(CreateCommand request, CancellationToken token)
         {
             var record = new PlatformInfo
             {
-                Name = message.Name,
-                Description = message.Description,
-                Remark = message.Remark
+                Id = request.Id,
+                Name = request.Name,
+                Description = request.Description,
+                Remark = request.Remark,
+                CreatedDT = DateTime.UtcNow
             };
             await _dbcontext.Set<PlatformInfo>().AddAsync(record, token);
             await _dbcontext.SaveChangesAsync(token);
-            return record.Id;
+            return Result.Ok(record.Id);
         }
     }
 
@@ -217,6 +219,7 @@ public static class PlatformInfoFlow
             record.Name = command.Name;
             record.Description = command.Description;
             record.Remark = command.Remark;
+            record.ModifiedDT = DateTime.UtcNow;
 
             _dbcontext.Platforms.Update(record);
             await _dbcontext.SaveChangesAsync(token);

@@ -13,7 +13,8 @@ public class DeleteModel : PageModel
 {
     private readonly IMediator _mediator;
 
-    public Flow.DeleteCommand Data { get; private set; } = new();
+    [BindProperty]
+    public Flow.DeleteCommand Data { get; set; } = new();
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
@@ -21,12 +22,17 @@ public class DeleteModel : PageModel
     public DeleteModel(IMediator mediator) => _mediator = mediator;
 
     public async Task OnGetAsync(Flow.DeleteQuery query)
-        => Data = await _mediator.Send(query);
+    {
+        Data = await _mediator.Send(query);
+    }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        await _mediator.Send(Data);
-
+        var result = await _mediator.Send(Data);
+        if (result.IsFailed)
+        {
+            StatusMessage = result.Errors[0].Message;
+        }
         return RedirectToPage(nameof(Index));
     }
 }

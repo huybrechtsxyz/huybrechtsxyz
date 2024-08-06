@@ -13,13 +13,13 @@ public class EditModel : PageModel
 {
     private readonly IMediator _mediator;
 
-    public EditModel(IMediator mediator) => _mediator = mediator;
-
     [BindProperty]
     public Flow.UpdateCommand Data { get; set; } = new();
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
+
+    public EditModel(IMediator mediator) => _mediator = mediator;
 
     public async Task OnGetAsync(Flow.UpdateQuery query)
     {
@@ -28,8 +28,11 @@ public class EditModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        await _mediator.Send(Data);
-
+        var result = await _mediator.Send(Data);
+        if (result.IsFailed)
+        {
+            StatusMessage = result.Errors[0].Message;
+        }
         return this.RedirectToPage(nameof(Index));
     }
 }

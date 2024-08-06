@@ -4,8 +4,8 @@
 @{
     ViewData["CardTitle"] =  Localizer["Your platforms"];
     ViewData["ActivePage"] = ManageNavPages.Info;
-    var prevDisabled = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.Data.Results.HasNextPage ? "disabled" : "";
+    var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
+    var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
@@ -48,6 +48,7 @@
                                     <td>@Html.DisplayFor(modelItem => record!.Description)</td>
                                     <td>
                                         <a asp-page="Edit" asp-route-id="@record!.Id"><i class="bi bi-pencil-square"></i></a>
+                                        <span class="vr"></span>
                                         <a asp-page="Delete" asp-route-id="@record!.Id"><i class="bi bi-trash2-fill"></i></a>
                                     </td>
                                 </tr>
@@ -57,7 +58,7 @@
                 </div>
                 <nav class="text-align-center mt-5" aria-label="Table navigation">
                     <ul class="pagination justify-content-center">
-                        <li class="page-item" @prevDisabled>
+                        <li class="page-item @prev">
                             <a asp-page="Index"
                             asp-route-pageindex="@(Model.Data.Results.PageIndex - 1)"
                             asp-route-currentFilter="@Model.Data.CurrentFilter"
@@ -77,7 +78,7 @@
                                 </a>
                             </li>
                         }
-                        <li class="page-item" @nextDisabled>
+                        <li class="page-item @next">
                             <a asp-page="Index"
                             asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
                             asp-route-currentFilter="@Model.Data.CurrentFilter"

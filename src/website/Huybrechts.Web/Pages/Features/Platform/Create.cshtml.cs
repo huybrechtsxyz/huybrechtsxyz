@@ -22,18 +22,21 @@ public class CreateModel : PageModel
     public CreateModel(IMediator mediator)
     {
         _mediator = mediator;
-        Data = Flow.CreateNew();
+        Data = new();
     }
 
     public void OnGet()
     {
-        Data = new Flow.CreateCommand();
+        Data = Flow.CreateNew();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        await _mediator.Send(Data);
-
+        var result = await _mediator.Send(Data);
+        if (result.IsFailed)
+        {
+            StatusMessage = result.Errors[0].Message;
+        }
         return this.RedirectToPage(nameof(Index));
     }
 }

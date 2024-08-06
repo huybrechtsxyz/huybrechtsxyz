@@ -5,6 +5,7 @@
     ViewData["CardTitle"] = Localizer["New Platform"];
     ViewData["ActivePage"] = ManageNavPages.Info;
 }
+
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
     @Localizer["Enter the platform details."]
@@ -12,8 +13,9 @@
 
 <div class="row">
     <div class="col-md-6">
-        <form id="profile-form" method="post" enctype="multipart/form-data">
+        <form id="create-form" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input type="hidden" asp-for="Data.Id" />
             <div class="form-floating mb-3">
                 <input asp-for="Data.Name" class="form-control" />
                 <label asp-for="Data.Name" class="form-label"></label>
@@ -29,9 +31,10 @@
                 <label asp-for="Data.Remark" class="form-label"></label>
                 <span asp-validation-for="Data.Remark" class="text-danger"></span>
             </div>
-            <p></p>
-            <a class="w-30 btn btn-lg btn-secondary" asp-page="./Index"><i class="bi bi-arrow-left-circle-fill"></i></a>
-            <button id="create-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+            <div class="form-floating mb-3">
+                <a class="w-30 btn btn-lg btn-secondary" asp-page="./Index"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                <button id="create-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+            </div>
         </form>
     </div>
 </div>
