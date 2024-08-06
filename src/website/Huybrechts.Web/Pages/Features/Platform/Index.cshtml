@@ -3,7 +3,7 @@
 @model Huybrechts.Web.Pages.Features.Platform.IndexModel
 @{
     ViewData["CardTitle"] =  Localizer["Your platforms"];
-    ViewData["ActivePage"] = ManageNavPages.Info;
+    //ViewData["ActivePage"] = ManageNavPages.Info;
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
