@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Huybrechts.Web.Controllers;
 
 [Route("[controller]/[action]")]
-public class CultureController : Controller
+public class ApplicationController : Controller
 {
     public IActionResult SetLanguage(string culture, string returnUrl)
     {

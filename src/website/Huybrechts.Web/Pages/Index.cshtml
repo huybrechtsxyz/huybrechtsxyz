@@ -12,7 +12,7 @@
         if (applicationUser is not null && applicationUser.ProfilePicture is not null)
             imageSource = $"data:image/*;base64,{Convert.ToBase64String(applicationUser.ProfilePicture)}";
         else
-            imageSource = "/img/unknownuser32.png";
+            imageSource = "/lib/bootstrap-icons/person-badge.svg";
     }
 }
 <!DOCTYPE html>

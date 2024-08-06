@@ -33,7 +33,7 @@ public record Entity : IEntity, ICopyableEntity
     public DateTime? ModifiedDT { get; set; }
 
     [Timestamp]
-    public required Byte[] TimeStamp { get; set; }
+    public Byte[] TimeStamp { get; set; } = default!;
 
     public void Initialize()
     {

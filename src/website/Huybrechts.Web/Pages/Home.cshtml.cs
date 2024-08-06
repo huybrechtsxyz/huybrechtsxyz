@@ -1,10 +1,10 @@
-
 using Finbuckle.MultiTenant;
 using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 
 namespace Huybrechts.Web.Pages;
 
@@ -28,13 +28,15 @@ public class HomeModel : PageModel
         public ICollection<ApplicationTenant>? Tenants { get; set; }
     }
 
-	public HomeModel(ApplicationUserManager userManager, ApplicationTenantManager tenantManager)
+    public HomeModel(
+        ApplicationUserManager userManager, 
+        ApplicationTenantManager tenantManager)
     {
         _userManager = userManager;
-		_tenantManager = tenantManager;
-	}
+        _tenantManager = tenantManager;
+    }
 
-	public async Task<IActionResult> OnGetAsync()
+    public async Task<IActionResult> OnGetAsync()
     {
         var tenantInfo = HttpContext.GetMultiTenantContext<TenantInfo>().TenantInfo;
 

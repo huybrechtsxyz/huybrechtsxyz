@@ -17,7 +17,7 @@
 }
 
 <div>
-    <form id="selectLanguage" asp-controller="Culture"
+    <form id="selectLanguage" asp-controller="Application"
           asp-action="SetLanguage" asp-route-returnUrl="@returnUrl"
           method="post" class="form-horizontal" role="form">
         <select name="culture" onchange="this.form.submit();" 
