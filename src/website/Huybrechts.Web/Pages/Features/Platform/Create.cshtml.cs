@@ -1,9 +1,10 @@
-using Huybrechts.App.Features.Platform.Info;
 using Huybrechts.App.Web;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+
+using Flow = Huybrechts.App.Features.Platform.PlatformInfoFlow;
 
 namespace Huybrechts.Web.Pages.Features.Platform;
 
@@ -13,7 +14,7 @@ public class CreateModel : PageModel
     private readonly IMediator _mediator;
 
     [BindProperty]
-    public CreateFlow.Command Data { get; set; } = new();
+    public Flow.CreateCommand Data { get; set; }
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
@@ -21,11 +22,12 @@ public class CreateModel : PageModel
     public CreateModel(IMediator mediator)
     {
         _mediator = mediator;
+        Data = Flow.CreateNew();
     }
 
     public void OnGet()
     {
-        Data = new CreateFlow.Command();
+        Data = new Flow.CreateCommand();
     }
 
     public async Task<IActionResult> OnPostAsync()

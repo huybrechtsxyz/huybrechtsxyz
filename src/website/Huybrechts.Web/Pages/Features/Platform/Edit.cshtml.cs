@@ -1,9 +1,10 @@
-using Huybrechts.App.Features.Platform.Info;
 using Huybrechts.App.Web;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+
+using Flow = Huybrechts.App.Features.Platform.PlatformInfoFlow;
 
 namespace Huybrechts.Web.Pages.Features.Platform;
 
@@ -15,14 +16,14 @@ public class EditModel : PageModel
     public EditModel(IMediator mediator) => _mediator = mediator;
 
     [BindProperty]
-    public EditFlow.Command Data { get; set; } = new();
+    public Flow.UpdateCommand Data { get; set; } = new();
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    public async Task OnGetAsync(EditFlow.Query query)
+    public async Task OnGetAsync(Flow.UpdateQuery query)
     {
-        Data = await _mediator.Send(query);
+        Data = await _mediator.Send(query) ?? new();
     }
 
     public async Task<IActionResult> OnPostAsync()

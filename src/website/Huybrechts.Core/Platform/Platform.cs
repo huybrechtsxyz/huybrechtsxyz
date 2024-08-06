@@ -12,7 +12,7 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("Platform")]
 [DisplayName("Platform")]
-public record PlatformInfo : Entity, IEntity, ICopyableEntity
+public record PlatformInfo : Entity, IEntity
 {
     [Required]
     [MaxLength(128)]
@@ -33,15 +33,4 @@ public record PlatformInfo : Entity, IEntity, ICopyableEntity
     /// Navigate to Services
     /// </summary>
     public virtual ICollection<PlatformService>? Services{ get; set; } = [];
-
-    /// <summary>
-    /// Copy parameters for update and creation
-    /// </summary>
-    /// <param name="info">Record to copy from</param>
-    public void CopyFrom(PlatformInfo info)
-    {
-        Name = info.Name;
-        Description = info.Description;
-        Remark = info.Remark;
-    }
 }

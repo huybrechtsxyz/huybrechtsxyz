@@ -1,9 +1,10 @@
-using Huybrechts.App.Features.Platform.Info;
 using Huybrechts.App.Web;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+
+using Flow = Huybrechts.App.Features.Platform.PlatformInfoFlow;
 
 namespace Huybrechts.Web.Pages.Features.Platform;
 
@@ -12,14 +13,14 @@ public class DeleteModel : PageModel
 {
     private readonly IMediator _mediator;
 
-    public DeleteFlow.Model Data { get; private set; } = new();
+    public Flow.DeleteCommand Data { get; private set; } = new();
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
     public DeleteModel(IMediator mediator) => _mediator = mediator;
 
-    public async Task OnGetAsync(DeleteFlow.Query query)
+    public async Task OnGetAsync(Flow.DeleteQuery query)
         => Data = await _mediator.Send(query);
 
     public async Task<IActionResult> OnPostAsync()
