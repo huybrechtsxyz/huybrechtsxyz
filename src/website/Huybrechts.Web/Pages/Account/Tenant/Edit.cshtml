@@ -105,6 +105,7 @@
         <table class="table table-responsive">
             <tr>
                 <th>@Html.DisplayNameFor(model => model.UserRoles.First().User.Fullname)</th>
+                <th>@Html.DisplayNameFor(model => model.UserRoles.First().User.Email)</th>
                 <th>@Html.DisplayNameFor(model => model.UserRoles.First().Role.Label)</th>
                 <th></th>
             </tr>
@@ -112,6 +113,7 @@
             {
                 <tr>
                     <td>@Html.DisplayFor(modelItem => item!.User.Fullname)</td>
+                    <td>@Html.DisplayFor(modelItem => item!.User.Email)</td>
                     <td>@Html.DisplayFor(modelItem => item!.Role.Label)</td>
                     <td>
                         <form method="post" asp-page-handler="DeleteUser">

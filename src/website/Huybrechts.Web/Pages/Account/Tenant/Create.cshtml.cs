@@ -1,4 +1,5 @@
 using Huybrechts.App.Application;
+using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Localization;
@@ -53,14 +54,17 @@ namespace Huybrechts.Web.Pages.Account.Tenant
                 return Page();
             }
 
-            var item = await _tenantManager.GetTenantAsync(user, Input.Id);
-            if (item is null)
-                return NotFound($"Unable to load team with ID '{Input.Id}'.");
+            //var item = await _tenantManager.GetTenantAsync(user, Input.Id);
+            //if (item is null)
+            //    return NotFound($"Unable to load team with ID '{Input.Id}'.");
 
-            item.Id = Input.Id;
-            item.Name = Input.Name;
-            item.Description = Input.Description;
-            item.Remark = Input.Remark;
+            ApplicationTenant item = new()
+            {
+                Id = Input.Id,
+                Name = Input.Name,
+                Description = Input.Description,
+                Remark = Input.Remark
+            };
 
             if (Request.Form.Files is not null && Request.Form.Files.Count > 0)
             { 
