@@ -7,9 +7,8 @@ namespace Huybrechts.Core.Setup;
 
 [Table("SetupCurrency")]
 [DisplayName("Currency")]
-public record SetupCurrency
+public record Currency : Entity, IEntity
 {
-    [Key]
     [Required]
     [MaxLength(10)]
     [DisplayName("Currency")]

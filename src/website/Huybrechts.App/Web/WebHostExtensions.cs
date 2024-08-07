@@ -182,7 +182,7 @@ public static class WebHostExtensions
         log.Information("Configure authentication identity");
         builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
         {
-            options.SignIn.RequireConfirmedAccount = (!builder.Environment.IsDevelopment());
+            options.SignIn.RequireConfirmedAccount = builder.Environment.IsStaging() || builder.Environment.IsProduction();
             options.Password.RequireUppercase = true;
             options.Password.RequireLowercase = true;
             options.Password.RequireDigit = true;

@@ -27,9 +27,11 @@
                 <label asp-for="Data.Description" class="form-label"></label>
                 <span asp-validation-for="Data.Description" class="text-danger"></span>
             </div>
-            <div class="mb-3">
+            <div class="form-floating mb-3">
+                <select asp-for="Data.Provider"
+                        asp-items="Html.GetEnumSelectList<PlatformProvider>()"
+                        class="form-select"></select>
                 <label asp-for="Data.Provider" class="form-label"></label>
-                <select asp-for="Data.Provider" asp-items="Html.GetEnumSelectList<PlatformProvider>()"></select>
                 <span asp-validation-for="Data.Provider" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">

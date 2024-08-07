@@ -31,6 +31,12 @@ public class PlatformContext : FeatureContext
 
     public DbSet<PlatformInfo> Platforms { get; set; }
 
+    public DbSet<PlatformRegion> Regions { get; set; }
+
+    //
+    // TODO
+    //
+    /*
     public DbSet<PlatformLocation> Locations { get; set; }
 
     public DbSet<PlatformMeasureUnit> MeasureUnits { get; set; }
@@ -46,4 +52,5 @@ public class PlatformContext : FeatureContext
     public DbSet<PlatformRateUnit> RateUnits { get; set; }
 
     public DbSet<PlatformSearchRate> SearchRates { get; set; }
+    */
 }

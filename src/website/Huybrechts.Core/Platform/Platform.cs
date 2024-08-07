@@ -12,36 +12,51 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("Platform")]
 [DisplayName("Platform")]
+[Comment("Platforms that provide compute resources")]
 public record PlatformInfo : Entity, IEntity
 {
+    /// <summary>
+    /// Name
+    /// </summary>
     [Required]
     [MaxLength(128)]
-    [DisplayName("Name")]
-    [Comment("Name")]
+    [Comment("Name of the platform")]
     public string Name { get; set;} = string.Empty;
 
+    /// <summary>
+    /// Description
+    /// </summary>
     [MaxLength(256)]
-    [DisplayName("Description")]
-    [Comment("Description")]
+    [Comment("Description of the platform")]
     public string? Description { get; set;}
 
-    [DisplayName("Supported Provider")]
-    [Comment("What is the supported provider for this platform")]
+    /// <summary>
+    /// Supported provider for automation purposes
+    /// </summary>
+    [Comment("Supported automation providers of the platform")]
     public PlatformProvider Provider { get; set; }
 
-    [DisplayName("Remark")]
-    [Comment("Remark")]
-    public string? Remark { get; set; }
-
     /// <summary>
-    /// Navigate to Services
+    /// General remark
     /// </summary>
-    public virtual ICollection<PlatformService>? Services{ get; set; } = [];
+    [Comment("Remark about the platform")]
+    public string? Remark { get; set; }
 }
 
+/// <summary>
+/// Providers that are support for automation
+/// </summary>
 public enum PlatformProvider
 {
+    /// <summary>
+    /// No automation provider
+    /// </summary>
+    [Comment("No automation provider")]
     None = 0,
 
+    /// <summary>
+    /// Azure automation provider
+    /// </summary>
+    [Comment("Azure as automation provider")]
     Azure = 1
 }

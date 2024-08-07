@@ -120,8 +120,14 @@
   <data name="Description" xml:space="preserve">
     <value>Omschrijving</value>
   </data>
+  <data name="Label" xml:space="preserve">
+    <value>Label</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Naam</value>
+  </data>
+  <data name="Platform" xml:space="preserve">
+    <value>Platform</value>
   </data>
   <data name="Provider" xml:space="preserve">
     <value>Ondersteunde leverancier</value>

@@ -3,13 +3,13 @@
 @inject IViewLocalizer Localizer
 @model CreateModel
 @{
-    ViewData["CardTitle"] = Localizer["New Platform"];
+    ViewData["CardTitle"] = Localizer["New Region"];
     //ViewData["ActivePage"] = ManageNavPages.Info;
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
-    @Localizer["Enter the platform details."]
+    @Localizer["Enter the platform region details."]
 </p>
 
 <div class="row">
@@ -18,21 +18,30 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <input type="hidden" asp-for="Data.Id" />
             <div class="form-floating mb-3">
+                <select asp-for="Data.PlatformInfoId"
+                        asp-items="Model.Platforms?.Select(p => new SelectListItem
+                                {
+                                    Value = p.Id.ToString(),
+                                    Text = p.Name
+                                }).ToList()"
+                        class="form-select"></select>
+                <label asp-for="Data.PlatformInfoId" class="form-label"></label>
+                <span asp-validation-for="Data.PlatformInfoId" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
                 <input asp-for="Data.Name" class="form-control" />
                 <label asp-for="Data.Name" class="form-label"></label>
                 <span asp-validation-for="Data.Name" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
+                <input asp-for="Data.Label" class="form-control" />
+                <label asp-for="Data.Label" class="form-label"></label>
+                <span asp-validation-for="Data.Label" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
                 <input asp-for="Data.Description" class="form-control" />
                 <label asp-for="Data.Description" class="form-label"></label>
                 <span asp-validation-for="Data.Description" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <select asp-for="Data.Provider"
-                        asp-items="Html.GetEnumSelectList<PlatformProvider>()"
-                        class="form-select"></select>
-                <label asp-for="Data.Provider" class="form-label"></label>
-                <span asp-validation-for="Data.Provider" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Remark" class="form-control" />
