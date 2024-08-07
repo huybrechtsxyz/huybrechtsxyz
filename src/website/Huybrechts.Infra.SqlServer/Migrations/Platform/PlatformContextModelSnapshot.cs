@@ -47,6 +47,10 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                         .HasColumnType("nvarchar(128)")
                         .HasComment("Name");
 
+                    b.Property<int>("Provider")
+                        .HasColumnType("int")
+                        .HasComment("What is the supported provider for this platform");
+
                     b.Property<string>("Remark")
                         .HasColumnType("nvarchar(max)")
                         .HasComment("Remark");

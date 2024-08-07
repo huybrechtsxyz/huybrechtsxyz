@@ -47,6 +47,10 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                         .HasColumnType("character varying(128)")
                         .HasComment("Name");
 
+                    b.Property<int>("Provider")
+                        .HasColumnType("integer")
+                        .HasComment("What is the supported provider for this platform");
+
                     b.Property<string>("Remark")
                         .HasColumnType("text")
                         .HasComment("Remark");

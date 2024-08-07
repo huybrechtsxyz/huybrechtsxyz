@@ -18,6 +18,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                     Id = table.Column<string>(type: "TEXT", nullable: false, comment: "Primary Key"),
                     Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false, comment: "Name"),
                     Description = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true, comment: "Description"),
+                    Provider = table.Column<int>(type: "INTEGER", nullable: false, comment: "What is the supported provider for this platform"),
                     Remark = table.Column<string>(type: "TEXT", nullable: true, comment: "Remark"),
                     TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     CreatedDT = table.Column<DateTime>(type: "TEXT", nullable: false, comment: "Date time created"),

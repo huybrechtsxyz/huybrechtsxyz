@@ -18,6 +18,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                     Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
                     Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false, comment: "Name"),
                     Description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true, comment: "Description"),
+                    Provider = table.Column<int>(type: "integer", nullable: false, comment: "What is the supported provider for this platform"),
                     Remark = table.Column<string>(type: "text", nullable: true, comment: "Remark"),
                     TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     CreatedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Date time created"),

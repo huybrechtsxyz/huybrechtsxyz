@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 {
     [DbContext(typeof(PlatformContext))]
-    [Migration("20240806153515_CreatePlatformSchema")]
+    [Migration("20240807105835_CreatePlatformSchema")]
     partial class CreatePlatformSchema
     {
         /// <inheritdoc />
@@ -49,6 +49,10 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)")
                         .HasComment("Name");
+
+                    b.Property<int>("Provider")
+                        .HasColumnType("integer")
+                        .HasComment("What is the supported provider for this platform");
 
                     b.Property<string>("Remark")
                         .HasColumnType("text")

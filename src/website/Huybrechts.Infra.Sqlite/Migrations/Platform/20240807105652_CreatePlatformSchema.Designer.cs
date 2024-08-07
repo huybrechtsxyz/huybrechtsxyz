@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 {
     [DbContext(typeof(PlatformContext))]
-    [Migration("20240806153434_CreatePlatformSchema")]
+    [Migration("20240807105652_CreatePlatformSchema")]
     partial class CreatePlatformSchema
     {
         /// <inheritdoc />
@@ -44,6 +44,10 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                         .HasMaxLength(128)
                         .HasColumnType("TEXT")
                         .HasComment("Name");
+
+                    b.Property<int>("Provider")
+                        .HasColumnType("INTEGER")
+                        .HasComment("What is the supported provider for this platform");
 
                     b.Property<string>("Remark")
                         .HasColumnType("TEXT")

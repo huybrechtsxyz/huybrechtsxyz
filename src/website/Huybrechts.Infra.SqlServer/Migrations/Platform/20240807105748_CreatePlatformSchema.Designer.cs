@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 {
     [DbContext(typeof(PlatformContext))]
-    [Migration("20240806153454_CreatePlatformSchema")]
+    [Migration("20240807105748_CreatePlatformSchema")]
     partial class CreatePlatformSchema
     {
         /// <inheritdoc />
@@ -49,6 +49,10 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)")
                         .HasComment("Name");
+
+                    b.Property<int>("Provider")
+                        .HasColumnType("int")
+                        .HasComment("What is the supported provider for this platform");
 
                     b.Property<string>("Remark")
                         .HasColumnType("nvarchar(max)")

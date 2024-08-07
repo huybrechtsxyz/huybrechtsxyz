@@ -42,6 +42,10 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                         .HasColumnType("TEXT")
                         .HasComment("Name");
 
+                    b.Property<int>("Provider")
+                        .HasColumnType("INTEGER")
+                        .HasComment("What is the supported provider for this platform");
+
                     b.Property<string>("Remark")
                         .HasColumnType("TEXT")
                         .HasComment("Remark");

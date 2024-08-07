@@ -18,6 +18,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                     Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "Name"),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "Description"),
+                    Provider = table.Column<int>(type: "int", nullable: false, comment: "What is the supported provider for this platform"),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Remark"),
                     TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
