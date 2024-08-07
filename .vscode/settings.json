@@ -8,5 +8,7 @@
   "[csharp]": {
     "editor.tabSize": 4
   },
-  "asciidoc.antora.enableAntoraSupport": false
+  "asciidoc.antora.enableAntoraSupport": false,
+  "plantuml.render": "PlantUMLServer",
+  "plantuml.server": "https://www.plantuml.com/plantuml"
 }
