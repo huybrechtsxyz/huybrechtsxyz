@@ -25,6 +25,10 @@ public record PlatformInfo : Entity, IEntity
     [Comment("Description")]
     public string? Description { get; set;}
 
+    [DisplayName("Supported Provider")]
+    [Comment("What is the supported provider for this platform")]
+    public PlatformProvider Provider { get; set; }
+
     [DisplayName("Remark")]
     [Comment("Remark")]
     public string? Remark { get; set; }
@@ -33,4 +37,11 @@ public record PlatformInfo : Entity, IEntity
     /// Navigate to Services
     /// </summary>
     public virtual ICollection<PlatformService>? Services{ get; set; } = [];
+}
+
+public enum PlatformProvider
+{
+    None = 0,
+
+    Azure = 1
 }

@@ -23,6 +23,8 @@ public class EditModel : PageModel
 
     public async Task OnGetAsync(Flow.UpdateQuery query)
     {
+
+
         Data = await _mediator.Send(query) ?? new();
     }
 

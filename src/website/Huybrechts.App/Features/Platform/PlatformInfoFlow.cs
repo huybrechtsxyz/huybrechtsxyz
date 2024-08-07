@@ -23,6 +23,9 @@ public static class PlatformInfoFlow
         [Display(Name = nameof(Description), ResourceType = typeof(PlatformLocalization))]
         public string? Description { get; set; }
 
+        [Display(Name = nameof(Provider), ResourceType = typeof(PlatformLocalization))]
+        public PlatformProvider Provider { get; set; }
+
         [Display(Name = nameof(Remark), ResourceType = typeof(PlatformLocalization))]
         public string? Remark { get; set; }
     }
@@ -142,6 +145,7 @@ public static class PlatformInfoFlow
                 Id = request.Id,
                 Name = request.Name,
                 Description = request.Description,
+                Provider = request.Provider,
                 Remark = request.Remark,
                 CreatedDT = DateTime.UtcNow
             };
@@ -218,6 +222,7 @@ public static class PlatformInfoFlow
 
             record.Name = command.Name;
             record.Description = command.Description;
+            record.Provider = command.Provider;
             record.Remark = command.Remark;
             record.ModifiedDT = DateTime.UtcNow;
 

@@ -123,6 +123,9 @@
   <data name="Name" xml:space="preserve">
     <value>Naam</value>
   </data>
+  <data name="Provider" xml:space="preserve">
+    <value>Ondersteunde leverancier</value>
+  </data>
   <data name="Remark" xml:space="preserve">
     <value>Opmerking</value>
   </data>

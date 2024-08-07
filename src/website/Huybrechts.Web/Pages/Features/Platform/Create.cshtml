@@ -1,4 +1,5 @@
 ﻿@page
+@using Huybrechts.Core.Platform
 @inject IViewLocalizer Localizer
 @model CreateModel
 @{
@@ -25,6 +26,11 @@
                 <input asp-for="Data.Description" class="form-control" />
                 <label asp-for="Data.Description" class="form-label"></label>
                 <span asp-validation-for="Data.Description" class="text-danger"></span>
+            </div>
+            <div class="form mb-3">
+                <label asp-for="Data.Provider" class="form-label"></label>
+                <select asp-for="Data.Provider" asp-items="Html.GetEnumSelectList<PlatformProvider>()"></select>
+                <span asp-validation-for="Data.Provider" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Remark" class="form-control" />
