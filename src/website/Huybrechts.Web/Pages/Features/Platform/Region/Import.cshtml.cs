@@ -8,16 +8,16 @@ using Flow = Huybrechts.App.Features.Platform.PlatformRegionFlow;
 namespace Huybrechts.Web.Pages.Features.Platform.Region;
 
 [Authorize(Policy = TenantPolicies.IsMember)]
-public class IndexModel : PageModel
+public class ImportModel : PageModel
 {
     private readonly IMediator _mediator;
 
-    public Flow.ListResult Data { get; set; } = new();
+    public Flow.ImportResult Data { get; set; } = new();
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    public IndexModel(IMediator mediator)
+    public ImportModel(IMediator mediator)
     {
         _mediator = mediator;
     }
@@ -29,9 +29,9 @@ public class IndexModel : PageModel
         string sortOrder,
         int? pageIndex)
     {
-        Data = await _mediator.Send(request: new Flow.ListQuery
-        { 
-            PlatformInfoId = platformInfoId,
+        Data = await _mediator.Send(request: new Flow.ImportQuery
+        {
+            PlatformInfoId = platformInfoId ?? Ulid.Empty,
             CurrentFilter = currentFilter,
             SearchText = searchText,
             SortOrder = sortOrder,

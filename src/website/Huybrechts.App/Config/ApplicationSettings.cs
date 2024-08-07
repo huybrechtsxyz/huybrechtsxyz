@@ -134,6 +134,15 @@ public static class ApplicationSettings
         return options ?? new();
     }
 
+    public static PlatformImportOptions GetPlatformImportOptions(IConfiguration configuration)
+    {
+        PlatformImportOptions? options;
+
+        options = new();
+        configuration.GetSection(nameof(PlatformImportOptions)).Bind(options);
+        return options ?? new();
+    }
+
     public static SmtpServerOptions GetSmtpServerOptions(IConfiguration configuration)
     {
         SmtpServerOptions? options;

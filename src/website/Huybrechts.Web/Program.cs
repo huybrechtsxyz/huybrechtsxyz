@@ -37,6 +37,7 @@ try
 
     Log.Information("Add options to configuration");
     builder.Services.AddSingleton(ApplicationSettings.GetSmtpServerOptions(builder.Configuration));
+    builder.Services.AddSingleton(ApplicationSettings.GetPlatformImportOptions(builder.Configuration));
     Log.Information("Connect to the database");
     builder.AddDatabaseServices(Log.Logger);
     Log.Information("Connect to the identity provider");

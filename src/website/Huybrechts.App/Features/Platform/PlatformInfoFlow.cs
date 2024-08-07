@@ -6,6 +6,7 @@ using Huybrechts.App.Data;
 using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Profiling.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
 
@@ -39,7 +40,7 @@ public static class PlatformInfoFlow
         }
     }
 
-    public static Result RecordNotFound(Ulid id) => Result.Fail($"Unable to find platform with ID {id}");
+    private static Result RecordNotFound(Ulid id) => Result.Fail($"Unable to find platform with ID {id}");
 
     //
     // LIST
@@ -49,7 +50,7 @@ public static class PlatformInfoFlow
     {
     }
 
-    public sealed class ListMapping : Profile
+    internal sealed class ListMapping : Profile
     {
         public ListMapping() => CreateProjection<PlatformInfo, ListModel>();
     }
@@ -82,14 +83,14 @@ public static class PlatformInfoFlow
             {
                 query = query.Where(q => 
                     q.Name.Contains(searchString)
-                    || q.Description!.Contains(searchString));
+                    || (q.Description.HasValue() && q.Description!.Contains(searchString)));
             }
 
             if (!string.IsNullOrEmpty(request.SortOrder))
             {
-                query.OrderBy(request.SortOrder);
+                query = query.OrderBy(request.SortOrder);
             }
-            else query.OrderBy(o => o.Name);
+            else query = query.OrderBy(o => o.Name);
 
             int pageSize = EntityListFlow.PageSize;
             int pageNumber = request.Page ?? 1;
@@ -164,7 +165,7 @@ public static class PlatformInfoFlow
         public Ulid? Id { get; init; }
     }
 
-    public sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
+    internal sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
     {
         public UpdateQueryValidator()
         {
@@ -176,16 +177,16 @@ public static class PlatformInfoFlow
     {
     }
 
-    public class UpdateCommandValidator : ModelValidator<UpdateCommand>
+    internal class UpdateCommandValidator : ModelValidator<UpdateCommand>
     {
     }
 
-    public class UpdateCommandMapping : Profile
+    internal class UpdateCommandMapping : Profile
     {
         public UpdateCommandMapping() => CreateProjection<PlatformInfo, UpdateCommand>();
     }
 
-    public class UpdateQueryHandler : IRequestHandler<UpdateQuery, UpdateCommand?>
+    internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, UpdateCommand?>
     {
         private readonly PlatformContext _dbcontext;
         private readonly IConfigurationProvider _configuration;
@@ -205,7 +206,7 @@ public static class PlatformInfoFlow
         }
     }
 
-    public class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
+    internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
     {
         private readonly PlatformContext _dbcontext;
 
@@ -241,7 +242,7 @@ public static class PlatformInfoFlow
         public Ulid? Id { get; init; }
     }
 
-    public class DeleteQueryValidator : AbstractValidator<DeleteQuery>
+    internal class DeleteQueryValidator : AbstractValidator<DeleteQuery>
     {
         public DeleteQueryValidator()
         {
@@ -253,7 +254,7 @@ public static class PlatformInfoFlow
     {
     }
 
-    public sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
+    internal sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
     {
         public DeleteCommandValidator()
         {
@@ -261,7 +262,7 @@ public static class PlatformInfoFlow
         }
     }
 
-    public sealed class DeleteCommandMapping : Profile
+    internal sealed class DeleteCommandMapping : Profile
     {
         public DeleteCommandMapping()
         {
@@ -269,7 +270,7 @@ public static class PlatformInfoFlow
         }
     }
 
-    public sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, DeleteCommand?>
+    internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, DeleteCommand?>
     {
         private readonly PlatformContext _dbcontext;
         private readonly IConfigurationProvider _configuration;
@@ -289,7 +290,7 @@ public static class PlatformInfoFlow
         }
     }
 
-    public class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
+    internal class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
     {
         private readonly PlatformContext _dbcontext;
 
