@@ -1,0 +1,40 @@
+@startuml Platform CD
+
+class Location {
+}
+
+class Platform {
+}
+
+class Service {
+}
+
+class Region {
+}
+
+class SearchRate {
+}
+
+class Product {
+}
+
+class Rate {
+}
+
+class RateUnit {
+}
+
+Platform "1" -- "0..*" SearchRate
+
+Platform "1" -- "0..*" Service
+Platform "1" -- "0..*" Region
+
+Location "1" -- "0..*"Region
+
+Platform "1" -- "0..*" Product
+Product "1" -- "0..1" Service
+Product "1" -- "0..1" Region
+Product "1" -- "0..*" Rate
+Rate "1" -- "0..*" RateUnit 
+
+@enduml
