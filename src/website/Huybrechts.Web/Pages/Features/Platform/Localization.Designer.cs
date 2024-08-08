@@ -223,6 +223,42 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new region.
+        /// </summary>
+        public static string RegionCreateInfo {
+            get {
+                return ResourceManager.GetString("RegionCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Regions.
+        /// </summary>
+        public static string RegionCreateTitle {
+            get {
+                return ResourceManager.GetString("RegionCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit existing region.
+        /// </summary>
+        public static string RegionEditInfo {
+            get {
+                return ResourceManager.GetString("RegionEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Regions.
+        /// </summary>
+        public static string RegionEditTitle {
+            get {
+                return ResourceManager.GetString("RegionEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import platform regions.
         /// </summary>
         public static string RegionImportInfo {

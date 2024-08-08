@@ -1,15 +1,14 @@
 ﻿@page
 @using Huybrechts.Core.Platform
-@inject IViewLocalizer Localizer
-@model CreateModel
+@inject IStringLocalizer<Localization> SL
+@model Huybrechts.Web.Pages.Features.Platform.Region.CreateModel
 @{
-    ViewData["CardTitle"] = Localizer["New Region"];
+    ViewData["CardTitle"] = SL["RegionCreateTitle"];
     //ViewData["ActivePage"] = ManageNavPages.Info;
 }
-
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
-    @Localizer["Enter the platform region details."]
+    @SL["RegionCreateInfo"]
 </p>
 
 <div class="row">
@@ -55,6 +54,11 @@
         </form>
     </div>
 </div>
+
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Region/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Regions"]</a></li>
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

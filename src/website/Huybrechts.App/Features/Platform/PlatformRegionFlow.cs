@@ -250,21 +250,22 @@ public static class PlatformRegionFlow
     // UPDATE
     //
 
-    public sealed record UpdateQuery : IRequest<UpdateCommand?>
+    public sealed record UpdateQuery : IRequest<Result<UpdateCommand>>
     {
-        public Ulid? Id { get; init; }
+        public Ulid Id { get; init; }
     }
 
     internal sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
     {
         public UpdateQueryValidator()
         {
-            RuleFor(m => m.Id).NotNull();
+            RuleFor(m => m.Id).NotNull().NotEqual(Ulid.Empty);
         }
     }
 
     public record UpdateCommand : Model, IRequest<Result>
     {
+        public IList<PlatformInfo> Platforms { get; set; } = [];
     }
 
     internal class UpdateCommandValidator : ModelValidator<UpdateCommand>
@@ -278,7 +279,7 @@ public static class PlatformRegionFlow
             .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
     }
 
-    internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, UpdateCommand?>
+    internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
     {
         private readonly PlatformContext _dbcontext;
         private readonly IConfigurationProvider _configuration;
@@ -289,13 +290,17 @@ public static class PlatformRegionFlow
             _configuration = configuration;
         }
 
-        public async Task<UpdateCommand?> Handle(UpdateQuery request, CancellationToken token)
+        public async Task<Result<UpdateCommand>> Handle(UpdateQuery request, CancellationToken token)
         {
-            return await _dbcontext.Set<PlatformRegion>()
+            var record = await _dbcontext.Set<PlatformRegion>()
                 .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<UpdateCommand>(_configuration)
                 .SingleOrDefaultAsync(token);
+            if (record == null) 
+                return RecordNotFound(request.Id);
+            record.Platforms = await _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
+            return Result.Ok(record);
         }
     }
 

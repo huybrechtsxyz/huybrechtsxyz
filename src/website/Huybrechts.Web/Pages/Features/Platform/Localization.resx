@@ -171,6 +171,18 @@
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
   </data>
+  <data name="RegionCreateInfo" xml:space="preserve">
+    <value>Create new region</value>
+  </data>
+  <data name="RegionCreateTitle" xml:space="preserve">
+    <value>Regions</value>
+  </data>
+  <data name="RegionEditInfo" xml:space="preserve">
+    <value>Edit existing region</value>
+  </data>
+  <data name="RegionEditTitle" xml:space="preserve">
+    <value>Regions</value>
+  </data>
   <data name="RegionImportInfo" xml:space="preserve">
     <value>Import platform regions</value>
   </data>
