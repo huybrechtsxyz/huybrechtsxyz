@@ -13,7 +13,6 @@ namespace Huybrechts.Core.Platform;
 /// </summary>
 [MultiTenant]
 [Table("PlatformRegion")]
-[DisplayName("Platform Region")]
 [Comment("Support regions of the Platform")]
 public record PlatformRegion : Entity, IEntity
 {

@@ -11,7 +11,6 @@ namespace Huybrechts.Core.Platform;
 /// </summary>
 [MultiTenant]
 [Table("Platform")]
-[DisplayName("Platform")]
 [Comment("Platforms that provide compute resources")]
 public record PlatformInfo : Entity, IEntity
 {
@@ -51,12 +50,14 @@ public enum PlatformProvider
     /// <summary>
     /// No automation provider
     /// </summary>
+    [Display(Name = nameof(None), Description = nameof(None), ResourceType = typeof(Localization))]
     [Comment("No automation provider")]
     None = 0,
 
     /// <summary>
     /// Azure automation provider
     /// </summary>
+    [Display(Name = nameof(Azure), Description = nameof(Azure), ResourceType = typeof(Localization))]
     [Comment("Azure as automation provider")]
     Azure = 1
 }

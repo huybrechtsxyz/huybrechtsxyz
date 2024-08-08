@@ -7,23 +7,38 @@ namespace Huybrechts.Core;
 
 public interface IEntity
 {
+    /// <summary>
+    /// Primary key
+    /// </summary>
     Ulid Id { get; set; }
 }
 
 [MultiTenant]
 public record Entity : IEntity
 {
+    /// <summary>
+    /// Primary key
+    /// </summary>
     [Key]
     [Required]
     [Comment("Primary Key")]
     public Ulid Id { get; set; }
 
+    /// <summary>
+    /// Date time created
+    /// </summary>
     [Comment("Date time created")]
     public DateTime CreatedDT { get; set; }
 
+    /// <summary>
+    /// Modified time created
+    /// </summary>
     [Comment("Modified time created")]
     public DateTime? ModifiedDT { get; set; }
 
+    /// <summary>
+    /// Timestamp
+    /// </summary>
     [Timestamp]
     public Byte[] TimeStamp { get; set; } = default!;
 }
