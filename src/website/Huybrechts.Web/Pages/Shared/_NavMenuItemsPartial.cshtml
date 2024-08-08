@@ -1,5 +1,6 @@
-﻿@inject ApplicationTenantManager TenantManager
-@inject IViewLocalizer Localizer
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Shared> Local
+@inject ApplicationTenantManager TenantManager
 @{
     var tenants = await TenantManager.GetAllActiveTenantsAsync();
 }
@@ -13,7 +14,7 @@
                     <i class="bi bi-cloud fs-5 me-2"></i>
                     <span class="nav-label mininav-content ms-1">
                         <span data-popper-arrow class="arrow"></span>
-                        @Localizer["Platforms"] <span class="badge bg-info ms-auto">@Localizer["NEW"]</span>
+                        @Local["Platforms"] <span class="badge bg-info ms-auto">@Local["NEW"]</span>
                     </span>
                 </a>
             </li>

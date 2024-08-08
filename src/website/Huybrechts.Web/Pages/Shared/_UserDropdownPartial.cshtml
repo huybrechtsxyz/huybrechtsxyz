@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
 
-@inject IViewLocalizer Localizer
+@inject IStringLocalizer<Shared> Local
 @inject ApplicationSignInManager SignInManager
 @inject ApplicationUserManager UserManager
 
@@ -50,13 +50,13 @@
                 <!-- User menu link -->
                 <div class="list-group list-group-borderless h-100 py-3">
                     <a asp-page="/Account/Manage/Index" class="list-group-item list-group-item-action">
-                        <i class="bi bi-person-badge fs-5 me-2"></i> @Localizer["Profile"]
+                        <i class="bi bi-person-badge fs-5 me-2"></i> @Local["Profile"]
                     </a>
                     <a asp-page="/Account/Tenant/Index" class="list-group-item list-group-item-action">
-                        <i class="bi bi-collection-fill fs-5 me-2"></i> @Localizer["Teams"]
+                        <i class="bi bi-collection-fill fs-5 me-2"></i> @Local["Teams"]
                     </a>
                     <a asp-page="/Account/Logout" asp-route-returnUrl="/Index" class="list-group-item list-group-item-action">
-                        <i class="bi bi-lock fs-5 me-2"></i> @Localizer["Logout"]
+                        <i class="bi bi-lock fs-5 me-2"></i> @Local["Logout"]
                     </a>
                     <div class="list-group-item list-group-item-action">
                         <partial name="_SelectLanguagePartial" />

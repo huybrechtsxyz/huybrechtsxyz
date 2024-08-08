@@ -48,7 +48,7 @@ try
     Log.Information("Configuring other services");
     builder.AddConfigurationServices();
     Log.Information("Configuring user interface");
-    builder.Services.AddSingleton<IStringLocalizerFactory, FeatureStringLocalizerFactory>();
+    //builder.Services.AddSingleton<IStringLocalizerFactory, FeatureStringLocalizerFactory>();
     builder.Services.AddSingleton<IResourceNamesCache, ResourceNamesCache>();
     builder.Services.AddLocalization();
     builder.Services.AddAntiforgery();

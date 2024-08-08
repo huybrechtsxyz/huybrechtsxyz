@@ -34,7 +34,7 @@ public class FeatureStringLocalizerFactory : IStringLocalizerFactory
         var baseNamespace = baseName.Substring(0, baseName.LastIndexOf('.'));
         var featureName = baseNamespace.Split('.').Last();
 
-        var resourcePath = Path.Combine(_env.ContentRootPath, "Resources", $"{baseName}.resx");
+        var resourcePath = Path.Combine(_env.ContentRootPath, "Pages", $"{baseName}.resx");
         if (!File.Exists(resourcePath))
             resourcePath = Path.Combine(_env.ContentRootPath, "Features", featureName, "Localization.resx");
 
