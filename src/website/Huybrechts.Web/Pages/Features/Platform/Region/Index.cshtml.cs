@@ -12,6 +12,7 @@ public class IndexModel : PageModel
 {
     private readonly IMediator _mediator;
 
+    [BindProperty]
     public Flow.ListResult Data { get; set; } = new();
 
     [TempData]

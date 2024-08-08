@@ -117,10 +117,82 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Change your platform settings" xml:space="preserve">
-    <value>Wijzig uw platforminstellingen</value>
+  <data name="Add New" xml:space="preserve">
+    <value>Toevoegen</value>
   </data>
-  <data name="Manage your platforms" xml:space="preserve">
-    <value>Beheer uw platforms</value>
+  <data name="Add Selection" xml:space="preserve">
+    <value>Add Selection</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuleer</value>
+  </data>
+  <data name="Clear Filter" xml:space="preserve">
+    <value>Wis filter</value>
+  </data>
+  <data name="CreateInfo" xml:space="preserve">
+    <value>Maak een nieuw platform aan</value>
+  </data>
+  <data name="CreateTitle" xml:space="preserve">
+    <value>Platformen</value>
+  </data>
+  <data name="DeleteInfo" xml:space="preserve">
+    <value>Verwijder de platforminformatie</value>
+  </data>
+  <data name="DeleteTitle" xml:space="preserve">
+    <value>Platformen</value>
+  </data>
+  <data name="EditInfo" xml:space="preserve">
+    <value>Pas de platforminformatie aan</value>
+  </data>
+  <data name="EditTitle" xml:space="preserve">
+    <value>Platformen</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Importeer</value>
+  </data>
+  <data name="IndexInfo" xml:space="preserve">
+    <value>Lijst van platformen</value>
+  </data>
+  <data name="IndexTitle" xml:space="preserve">
+    <value>Platformen</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Volgende</value>
+  </data>
+  <data name="PageInfo" xml:space="preserve">
+    <value>Beheer uw cloud- en lokale computerplatforms</value>
+  </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Platformen</value>
+  </data>
+  <data name="Platforms" xml:space="preserve">
+    <value>Platformen</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Vorige</value>
+  </data>
+  <data name="RegionImportInfo" xml:space="preserve">
+    <value>Importeer platform regio's</value>
+  </data>
+  <data name="RegionImportTitle" xml:space="preserve">
+    <value>Regio's</value>
+  </data>
+  <data name="RegionIndexInfo" xml:space="preserve">
+    <value>Beschikbare platform regio's</value>
+  </data>
+  <data name="RegionIndexTitle" xml:space="preserve">
+    <value>Regio's</value>
+  </data>
+  <data name="Regions" xml:space="preserve">
+    <value>Regio's</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Zoek</value>
+  </data>
+  <data name="Search..." xml:space="preserve">
+    <value>Zoek...</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Selecteer</value>
   </data>
 </root>

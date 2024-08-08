@@ -120,6 +120,9 @@
   <data name="Description" xml:space="preserve">
     <value>Description</value>
   </data>
+  <data name="IsSelected" xml:space="preserve">
+    <value>Selected?</value>
+  </data>
   <data name="Label" xml:space="preserve">
     <value>Label</value>
   </data>

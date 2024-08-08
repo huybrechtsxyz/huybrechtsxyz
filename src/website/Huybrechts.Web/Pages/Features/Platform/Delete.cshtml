@@ -1,14 +1,16 @@
 ﻿@page
-@inject IViewLocalizer Localizer
+@using Huybrechts.Core.Platform
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Localization> SL
 @model DeleteModel
 @{
-    ViewData["CardTitle"] = "Delete Platform";
+    ViewData["CardTitle"] = SL["DeleteTitle"];
     //ViewData["ActivePage"] = ManageNavPages.Info;
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
-    Delete platform and related information.
+    @SL["DeleteInfo"]
 </p>
 
 <div class="row">
@@ -16,15 +18,15 @@
         <form id="delete-form" method="post">
             <input type="hidden" asp-for="Data.Id" />
             <div class="form-floating mb-3">
-                <input asp-for="Data.Name" class="form-control" placeholder="Please choose the platform name." />
+                <input asp-for="Data.Name" class="form-control" />
                 <label asp-for="Data.Name" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Description" class="form-control" placeholder="Please choose the platform description." />
+                <input asp-for="Data.Description" class="form-control" />
                 <label asp-for="Data.Description" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Remark" class="form-control" placeholder="Remarks about the platform." />
+                <input asp-for="Data.Remark" class="form-control" />
                 <label asp-for="Data.Remark" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">

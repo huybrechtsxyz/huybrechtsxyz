@@ -1,15 +1,16 @@
 ﻿@page
 @using Huybrechts.Core.Platform
-@inject IViewLocalizer Localizer
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Localization> SL
 @model CreateModel
 @{
-    ViewData["CardTitle"] = Localizer["New Platform"];
+    ViewData["CardTitle"] = SL["CreateTitle"];
     //ViewData["ActivePage"] = ManageNavPages.Info;
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
-    @Localizer["Enter the platform details."]
+    @SL["CreateInfo"]
 </p>
 
 <div class="row">

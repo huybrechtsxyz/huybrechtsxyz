@@ -12,6 +12,7 @@ public class ImportModel : PageModel
 {
     private readonly IMediator _mediator;
 
+    [BindProperty]
     public Flow.ImportResult Data { get; set; } = new();
 
     [TempData]
@@ -37,5 +38,18 @@ public class ImportModel : PageModel
             SortOrder = sortOrder,
             Page = pageIndex
         });
+    }
+
+    public async Task<IActionResult> OnPostAsync()
+    {
+        var selection = Data.Results.Where(q => q.IsSelected == true).ToList();
+
+        var result = await _mediator.Send(request: new Flow.ImportCommand
+        {
+            PlatformInfoId = Data.PlatformInfoId ?? Ulid.Empty,
+            Items = selection
+        });
+
+        return this.RedirectToPage(nameof(Index));
     }
 }

@@ -5,6 +5,8 @@
 @model Huybrechts.Web.Pages.IndexModel
 @{
     Layout = null;
+    var workPage = "/abc/Features/Platform/Region";
+    var workId = "01J4PBB0SM8CS4N89S0V0HBJ1T";
     var applicationUser = await UserManager.GetUserAsync(User);
     var imageSource = "/img/community.png";
     if (SignInManager.IsSignedIn(User))
@@ -98,11 +100,11 @@
                                     <environment names="Development">
                                         <h3>DEVELOPMENT</h3>
                                     </environment>
-                                    <environment names="Test">
-                                        <h4>TEST</h4>
-                                    </environment>
                                     <environment names="Staging">
                                         <h4>STAGING</h4>
+                                    </environment>
+                                    <environment names="Test">
+                                        <h4>TEST</h4>
                                     </environment>
 
                                     <h1 class="ah-headline clip is-full-width">
@@ -117,11 +119,23 @@
 
                                 <div class="clearfix"></div>
 
-                                <a class="mouse-scroll hidden-xs dadada" asp-page="Home">
-                                    <span class="mouse">
-                                        <span class="mouse-movement"></span>
-                                    </span>
-                                </a>
+                                <environment names="Development,Test">
+                                    <a class="mouse-scroll hidden-xs dadada" 
+                                        asp-page="@workPage"
+                                        asp-route-platformInfoId="@workId">
+                                        <span class="mouse">
+                                            <span class="mouse-movement"></span>
+                                        </span>
+                                    </a>
+                                </environment>
+                                <environment names="Production,Staging">
+                                    <a class="mouse-scroll hidden-xs dadada" asp-page="Home">
+                                        <span class="mouse">
+                                            <span class="mouse-movement"></span>
+                                        </span>
+                                    </a>
+                                </environment>
+
                             </div>
                         </div>
                     </div>

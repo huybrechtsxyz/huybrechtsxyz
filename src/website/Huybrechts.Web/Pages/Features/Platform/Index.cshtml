@@ -3,14 +3,14 @@
 @inject IStringLocalizer<Localization> SL
 @model Huybrechts.Web.Pages.Features.Platform.IndexModel
 @{
-    ViewData["CardTitle"] =  SL["Platforms"];
+    ViewData["CardTitle"] =  SL["IndexTitle"];
     //ViewData["ActivePage"] = ManageNavPages.Info;
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
-    @SL["The list of platforms."]
+    @SL["IndexInfo"]
 </p>
 <div class="row">
     <div class="col-md-12">
@@ -21,13 +21,13 @@
                     <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Create">
                         <i class="bi bi-plus-circle fs-5"></i>
                         <span class="vr"></span>
-                        @Localizer["Add New"]
+                        @SL["Add New"]
                     </a>
                 </div>
                 <div class="col-md-9 d-flex gap-1 align-items-center justify-content-md-end mb-3">
-                    <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="Search..." class="form-control" autocomplete="off" />
-                    <input type="submit" value="Search" class="btn btn-primary" /> | 
-                    <a asp-page="Index" class="btn btn-secondary text-nowrap" type="button" role="button">@Localizer["Clear Filter"]</a>
+                    <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="@SL["Search..."]" class="form-control" autocomplete="off" />
+                    <input type="submit" value="@SL["Search"]" class="btn btn-primary" /> |
+                    <a asp-page="Index" class="btn btn-secondary text-nowrap" type="button" role="button">@SL["Clear Filter"]</a>
                 </div>
             </form>
             @if (Model.Data.Results.Count > 0)
@@ -65,7 +65,7 @@
                             asp-route-currentFilter="@Model.Data.CurrentFilter"
                             class="page-link" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">@Localizer["Previous"]</span>
+                                <span class="sr-only">@SL["Previous"]</span>
                             </a>
                         </li>
                         @for (int i = 1; i <= Model.Data.Results.TotalPages; i++)
@@ -85,7 +85,7 @@
                             asp-route-currentFilter="@Model.Data.CurrentFilter"
                             class="page-link" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">@Localizer["Next"]</span>
+                                <span class="sr-only">@SL["Next"]</span>
                             </a>
                         </li>
                     </ul>

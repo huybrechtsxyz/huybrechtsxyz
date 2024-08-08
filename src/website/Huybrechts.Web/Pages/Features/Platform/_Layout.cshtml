@@ -1,12 +1,12 @@
 ﻿
-@inject IStringLocalizer Localizer
+@inject IStringLocalizer<Localization> SL
 @{
     Layout = "/Pages/Shared/_Layout.cshtml";
 
     ViewData["MetaTitle"] = "Platforms";
     ViewData["MetaInfo"] = "The platform management pages allows a user to manage infrastructure platform definitions.";
-    ViewData["PageTitle"] = Localizer["Manage your platforms"];
-    ViewData["PageInfo"] = Localizer["Change your platform settings"];
+    ViewData["PageTitle"] = SL["PageTitle"];
+    ViewData["PageInfo"] = SL["PageInfo"];
 }
 
 <div class="content__boxed">
@@ -26,7 +26,8 @@
 </div>
 
 @section Breadcrumb {
-    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Index">@Localizer["Platforms"]</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Index">@SL["Platforms"]</a></li>
+    @RenderSection("Breadcrumb", required: false)
 }
 
 @section Scripts {

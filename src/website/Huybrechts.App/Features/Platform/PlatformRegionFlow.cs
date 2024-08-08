@@ -4,6 +4,7 @@ using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Config;
 using Huybrechts.App.Data;
+using Huybrechts.App.Services;
 using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +12,13 @@ using Newtonsoft.Json;
 using StackExchange.Profiling.Internal;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing.Printing;
 using System.Linq.Dynamic.Core;
+using System.Linq.Dynamic.Core.Tokenizer;
 using System.Text.Json.Serialization;
+using static Huybrechts.App.Services.AzurePricingService;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Huybrechts.App.Features.Platform;
 
@@ -53,6 +58,8 @@ public static class PlatformRegionFlow
             RuleFor(m => m.Description).Length(1, 256);
         }
     }
+
+    private static Result PlatformNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORM_ID.Replace("{0}", id.ToString()));
 
     private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMREGION_ID.Replace("{0}", id.ToString()));
 
@@ -392,7 +399,9 @@ public static class PlatformRegionFlow
 
     public sealed record ImportModel : Model
     {
-
+        [NotMapped]
+        [Display(Name = nameof(IsSelected), ResourceType = typeof(Localization))]
+        public bool IsSelected { get; set; }
     }
 
     public sealed class ImportQuery : EntityListFlow.Query, IRequest<ImportResult>
@@ -415,23 +424,34 @@ public static class PlatformRegionFlow
         public IList<PlatformInfo>? Platforms = null;
     }
 
-    internal sealed class ImportHandler :
+    internal sealed class ImportQueryHandler :
        EntityListFlow.Handler<PlatformRegion, ImportModel>,
        IRequestHandler<ImportQuery, ImportResult>
     {
         private readonly PlatformImportOptions _options;
 
-        public ImportHandler(PlatformContext dbcontext, IConfigurationProvider configuration, PlatformImportOptions options)
+        public ImportQueryHandler(PlatformContext dbcontext, IConfigurationProvider configuration, PlatformImportOptions options)
             : base(dbcontext, configuration)
         {
             _options = options;
         }
 
-        public async Task<ImportResult> Handle(ImportQuery request, CancellationToken cancellationToken)
+        public async Task<ImportResult> Handle(ImportQuery request, CancellationToken token)
         {
             var platforms = _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToList();
 
-            List<ImportModel> regions = await GetAzureLocationsAsync(request.PlatformInfoId);
+            var platform = platforms.FirstOrDefault(f => f.Id == request.PlatformInfoId);
+            if (platform is null)
+                return new ImportResult()
+                {
+                    PlatformInfoId = Ulid.Empty,
+                    CurrentFilter = request.CurrentFilter,
+                    SearchText = request.SearchText,
+                    SortOrder = request.SortOrder,
+                    Results = []
+                };
+
+            List<ImportModel> regions = await GetAzureLocationsAsync(platform.Provider.ToString(), request.PlatformInfoId);
 
             var searchString = request.SearchText ?? request.CurrentFilter;
             if (!string.IsNullOrEmpty(searchString))
@@ -462,193 +482,92 @@ public static class PlatformRegionFlow
             };
         }
 
-        private async Task<List<ImportModel>> GetAzureLocationsAsync(Ulid platformInfoId)
+        private async Task<List<ImportModel>> GetAzureLocationsAsync(string platform, Ulid platformInfoId)
         {
-            var azureOptions = _options.Platforms["Azure"];
-            var locations = new HashSet<string>();
-            string requestUrl = azureOptions.Regions;
-            int maxPages = 20;
-            int currentPage = 0;
-
             List<ImportModel> result = [];
-            using HttpClient httpClient = new();
+            var service = new AzurePricingService(_options);
+            var pricing = await service.GetRegionsAsync();
 
-            while (!string.IsNullOrEmpty(requestUrl) && currentPage < maxPages)
+            if (pricing is null)
+                return [];
+
+            foreach (var item in pricing.Items ?? [])
             {
-                try
-                {
-                    var response = await httpClient.GetStringAsync(requestUrl);
-                    var pricingResponse = JsonConvert.DeserializeObject<PricingResponse>(response);
-                    if (pricingResponse is not null)
-                    { 
-                        foreach (var item in pricingResponse.Items ?? [])
-                        {
-                            if (!string.IsNullOrEmpty(item.ArmRegionName))
-                            {
-                                if (locations.Add(item.ArmRegionName))
-                                {
-                                    result.Add(new ImportModel()
-                                    {
-                                        Id = Ulid.NewUlid(),
-                                        PlatformInfoId = platformInfoId,
-                                        Name = item.ArmRegionName,
-                                        Label = item.Location ?? item.ArmRegionName
-                                    });
-                                }
-                            }
-                        }
-                    }
+                if (item is null || string.IsNullOrEmpty(item.Location))
+                    continue;
 
-                    requestUrl = pricingResponse?.NextPageLink ?? string.Empty;
-                    currentPage++;
-                }
-                catch (HttpRequestException e)
+                result.Add(new ImportModel()
                 {
-                    // Handle the exception (e.g., log the error)
-                    break; // Exit the loop if there's an issue with the request
-                }
+                    Id = Ulid.NewUlid(),
+                    PlatformInfoId = platformInfoId,
+                    Name = item.Location,
+                    Label = item.ArmRegionName ?? item.Location
+                });
             }
 
             return result;
         }
     }
 
-    private class PricingResponse
+    public sealed record ImportCommand : IRequest<Result>
     {
-        public string? BillingCurrency { get; set; }
+        public Ulid PlatformInfoId { get; set; }
 
-        public string? CustomerEntityId { get; set; }
-
-        public string? CustomerEntityType { get; set; }
-
-        public List<PricingItem>? Items { get; set; }
-
-        public string? NextPageLink { get; set; }
-
-        public int Count { get; set; }
+        public List<ImportModel> Items { get; set; } = [];
     }
 
-    public class PricingItem
+    internal sealed class ImportCommandValidator : AbstractValidator<ImportCommand>
     {
-        /// <summary>
-        /// "currencyCode":"USD"
-        /// </summary>
-        [JsonPropertyName("currencyCode")]
-        public string? CurrencyCode { get; set; }
+        public ImportCommandValidator()
+        {
+            RuleFor(m => m.PlatformInfoId).NotNull();
+        }
+    }
 
-        /// <summary>
-        /// "tierMinimumUnits":0.0
-        /// </summary>
-        [JsonPropertyName("tierMinimumUnits")]
-        public double TierMinimumUnits { get; set; }
+    internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
+    {
+        private readonly PlatformContext _dbcontext;
 
-        /// <summary>
-        /// "retailPrice":0.29601
-        /// </summary>
-        [JsonPropertyName("retailPrice")]
-        public double RetailPrice { get; set; }
+        public ImportCommandHandler(PlatformContext dbcontext)
+        {
+            _dbcontext = dbcontext;
+        }
 
-        /// <summary>
-        /// "unitPrice":0.29601
-        /// </summary>
-        [JsonPropertyName("unitPrice")]
-        public double UnitPrice { get; set; }
+        public async Task<Result> Handle(ImportCommand command, CancellationToken token)
+        {
+            if (command is null || command.Items is null || command.Items.Count < 0)
+                return Result.Ok();
 
-        /// <summary>
-        /// "armRegionName":"southindia"
-        /// </summary>
-        [JsonPropertyName("armRegionName")]
-        public string? ArmRegionName { get; set; }
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([command.PlatformInfoId], cancellationToken: token);
+            if (platform is null)
+                return PlatformNotFound(command.PlatformInfoId);
 
-        /// <summary>
-        /// "location":"IN South"
-        /// </summary>
-        [JsonPropertyName("location")]
-        public string? Location { get; set; }
+            bool changes = false;
+            foreach (var item in command.Items)
+            {
+                var query = _dbcontext.Set<PlatformRegion>().FirstOrDefault(q => q.PlatformInfoId == platform.Id && q.Name == item.Name);
+                if (query is null)
+                {
+                    PlatformRegion record = new()
+                    {
+                        Id = Ulid.NewUlid(),
+                        PlatformInfo = platform,
+                        Name = item.Name,
+                        Label = item.Label,
+                        Description = item.Description,
+                        Remark = item.Remark,
+                        CreatedDT = DateTime.UtcNow
+                    };
+                    _dbcontext.Set<PlatformRegion>().Add(record);
+                    changes = true;
+                }
+            }
 
-        /// <summary>
-        /// "":"2024-08-01T00:00:00Z"
-        /// </summary>
-        [JsonPropertyName("effectiveStartDate")]
-        public string? EffectiveStartDate { get; set; }
+            if (changes)
+                await _dbcontext.SaveChangesAsync(token);
 
-        /// <summary>
-        /// "meterId":"000009d0-057f-5f2b-b7e9-9e26add324a8"
-        /// </summary>
-        [JsonPropertyName("meterId")]
-        public string? MeterId { get; set; }
-
-        /// <summary>
-        /// "meterName":"D14/DS14 Spot"
-        /// </summary>
-        [JsonPropertyName("meterName")]
-        public string? MeterName { get; set; }
-
-        /// <summary>
-        /// "productId":"DZH318Z0BPVW"
-        /// </summary>
-        [JsonPropertyName("productId")]
-        public string? ProductId { get; set; }
-
-        /// <summary>
-        /// "skuId":"DZH318Z0BPVW/00QZ"
-        /// </summary>
-        [JsonPropertyName("skuId")]
-        public string? SkuId { get; set; }
-
-        /// <summary>
-        /// "productName":"Virtual Machines D Series Windows"
-        /// </summary>
-        [JsonPropertyName("productName")]
-        public string? ProductName { get; set; }
-
-        /// <summary>
-        /// "skuName":"D14 Spot"
-        /// </summary>
-        [JsonPropertyName("skuName")]
-        public string? SkuName { get; set; }
-
-        /// <summary>
-        /// "serviceName":"Virtual Machines"
-        /// </summary>
-        [JsonPropertyName("serviceName")]
-        public string? ServiceName { get; set; }
-
-        /// <summary>
-        /// "serviceId":"DZH313Z7MMC8"
-        /// </summary>
-        [JsonPropertyName("serviceId")]
-        public string? ServiceId { get; set; }
-
-        /// <summary>
-        /// "serviceFamily":"Compute"
-        /// </summary>
-        [JsonPropertyName("serviceFamily")]
-        public string? ServiceFamily { get; set; }
-
-        /// <summary>
-        /// "unitOfMeasure":"1 Hour"
-        /// </summary>
-        [JsonPropertyName("unitOfMeasure")]
-        public string? UnitOfMeasure { get; set; }
-
-        /// <summary>
-        /// "type":"Consumption"
-        /// </summary>
-        [JsonPropertyName("type")]
-        public string? Type { get; set; }
-
-        /// <summary>
-        /// "isPrimaryMeterRegion": true
-        /// </summary>
-        [JsonPropertyName("isPrimaryMeterRegion")]
-        public bool IsPrimaryMeterRegion { get; set; }
-
-        /// <summary>
-        /// "armSkuName":"Standard_D14"
-        /// </summary>
-        [JsonPropertyName("armSkuName")]
-        public string? ArmSkuName { get; set; }
+            return Result.Ok();
+        }
     }
 
 }

@@ -61,7 +61,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Toevoegen.
+        ///   Looks up a localized string similar to Add New.
         /// </summary>
         public static string Add_New {
             get {
@@ -70,34 +70,115 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change your platform settings.
+        ///   Looks up a localized string similar to Add Selection.
         /// </summary>
-        public static string Change_your_platform_settings {
+        public static string Add_Selection {
             get {
-                return ResourceManager.GetString("Change your platform settings", resourceCulture);
+                return ResourceManager.GetString("Add Selection", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wis filter.
+        ///   Looks up a localized string similar to Cancel.
         /// </summary>
-        public static string Clear_filter {
+        public static string Cancel {
             get {
-                return ResourceManager.GetString("Clear filter", resourceCulture);
+                return ResourceManager.GetString("Cancel", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Manage your platforms.
+        ///   Looks up a localized string similar to Clear Filter.
         /// </summary>
-        public static string Manage_your_platforms {
+        public static string Clear_Filter {
             get {
-                return ResourceManager.GetString("Manage your platforms", resourceCulture);
+                return ResourceManager.GetString("Clear Filter", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vorige.
+        ///   Looks up a localized string similar to Create a new platform.
+        /// </summary>
+        public static string CreateInfo {
+            get {
+                return ResourceManager.GetString("CreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platforms.
+        /// </summary>
+        public static string CreateTitle {
+            get {
+                return ResourceManager.GetString("CreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete the platform information.
+        /// </summary>
+        public static string DeleteInfo {
+            get {
+                return ResourceManager.GetString("DeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platforms.
+        /// </summary>
+        public static string DeleteTitle {
+            get {
+                return ResourceManager.GetString("DeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update the platform information.
+        /// </summary>
+        public static string EditInfo {
+            get {
+                return ResourceManager.GetString("EditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platforms.
+        /// </summary>
+        public static string EditTitle {
+            get {
+                return ResourceManager.GetString("EditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Importeer.
+        /// </summary>
+        public static string Import {
+            get {
+                return ResourceManager.GetString("Import", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List of platforms.
+        /// </summary>
+        public static string IndexInfo {
+            get {
+                return ResourceManager.GetString("IndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platforms.
+        /// </summary>
+        public static string IndexTitle {
+            get {
+                return ResourceManager.GetString("IndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Next.
         /// </summary>
         public static string Next {
             get {
@@ -106,7 +187,34 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Volgende.
+        ///   Looks up a localized string similar to Manage you cloud and on premise computer platforms.
+        /// </summary>
+        public static string PageInfo {
+            get {
+                return ResourceManager.GetString("PageInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platform.
+        /// </summary>
+        public static string PageTitle {
+            get {
+                return ResourceManager.GetString("PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platforms.
+        /// </summary>
+        public static string Platforms {
+            get {
+                return ResourceManager.GetString("Platforms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Previous.
         /// </summary>
         public static string Previous {
             get {
@@ -115,20 +223,74 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to De lijst met platforms..
+        ///   Looks up a localized string similar to Import platform regions.
         /// </summary>
-        public static string The_list_of_platforms_ {
+        public static string RegionImportInfo {
             get {
-                return ResourceManager.GetString("The list of platforms.", resourceCulture);
+                return ResourceManager.GetString("RegionImportInfo", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to De platformen.
+        ///   Looks up a localized string similar to Regions.
         /// </summary>
-        public static string Your_platforms {
+        public static string RegionImportTitle {
             get {
-                return ResourceManager.GetString("Your platforms", resourceCulture);
+                return ResourceManager.GetString("RegionImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The available platform regions.
+        /// </summary>
+        public static string RegionIndexInfo {
+            get {
+                return ResourceManager.GetString("RegionIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Regions.
+        /// </summary>
+        public static string RegionIndexTitle {
+            get {
+                return ResourceManager.GetString("RegionIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Regions.
+        /// </summary>
+        public static string Regions {
+            get {
+                return ResourceManager.GetString("Regions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string Search {
+            get {
+                return ResourceManager.GetString("Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search....
+        /// </summary>
+        public static string Search___ {
+            get {
+                return ResourceManager.GetString("Search...", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select.
+        /// </summary>
+        public static string Select {
+            get {
+                return ResourceManager.GetString("Select", resourceCulture);
             }
         }
     }
