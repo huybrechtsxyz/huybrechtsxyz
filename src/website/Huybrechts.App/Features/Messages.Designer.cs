@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Huybrechts.App.Features.Platform {
+namespace Huybrechts.App.Features {
     using System;
     
     
@@ -22,24 +22,24 @@ namespace Huybrechts.App.Features.Platform {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class PlatformLocalization {
+    internal class Messages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal PlatformLocalization() {
+        internal Messages() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.App.Features.Platform.PlatformLocalization", typeof(PlatformLocalization).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.App.Features.Messages", typeof(Messages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace Huybrechts.App.Features.Platform {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,56 +61,20 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Description.
+        ///   Looks up a localized string similar to Kan platform met ID {0} niet vinden.
         /// </summary>
-        public static string Description {
+        internal static string NOT_FOUND_PLATFORM_ID {
             get {
-                return ResourceManager.GetString("Description", resourceCulture);
+                return ResourceManager.GetString("NOT_FOUND_PLATFORM_ID", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Label.
+        ///   Looks up a localized string similar to Kan platform region met ID {0} niet vinden.
         /// </summary>
-        public static string Label {
+        internal static string NOT_FOUND_PLATFORMREGION_ID {
             get {
-                return ResourceManager.GetString("Label", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Name.
-        /// </summary>
-        public static string Name {
-            get {
-                return ResourceManager.GetString("Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Platform.
-        /// </summary>
-        public static string Platform {
-            get {
-                return ResourceManager.GetString("Platform", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Supported system.
-        /// </summary>
-        public static string Provider {
-            get {
-                return ResourceManager.GetString("Provider", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remark.
-        /// </summary>
-        public static string Remark {
-            get {
-                return ResourceManager.GetString("Remark", resourceCulture);
+                return ResourceManager.GetString("NOT_FOUND_PLATFORMREGION_ID", resourceCulture);
             }
         }
     }

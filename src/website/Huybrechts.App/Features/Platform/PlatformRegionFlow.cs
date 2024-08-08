@@ -23,22 +23,22 @@ public static class PlatformRegionFlow
     {
         public Ulid Id { get; init; }
 
-        [Display(Name = "Platform", ResourceType = typeof(PlatformLocalization))]
+        [Display(Name = "Platform", ResourceType = typeof(Localization))]
         public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
 
-        [Display(Name = "Platform", ResourceType = typeof(PlatformLocalization))]
+        [Display(Name = "Platform", ResourceType = typeof(Localization))]
         public string PlatformInfoName { get; set; } = string.Empty;
 
-        [Display(Name = nameof(Name), ResourceType = typeof(PlatformLocalization))]
+        [Display(Name = nameof(Name), ResourceType = typeof(Localization))]
         public string Name { get; set; } = string.Empty;
 
-        [Display(Name = nameof(Label), ResourceType = typeof(PlatformLocalization))]
+        [Display(Name = nameof(Label), ResourceType = typeof(Localization))]
         public string Label { get; set; } = string.Empty;
 
-        [Display(Name = nameof(Description), ResourceType = typeof(PlatformLocalization))]
+        [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
         public string? Description { get; set; }
 
-        [Display(Name = nameof(Remark), ResourceType = typeof(PlatformLocalization))]
+        [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
         public string? Remark { get; set; }
     }
 
@@ -54,7 +54,7 @@ public static class PlatformRegionFlow
         }
     }
 
-    private static Result RecordNotFound(Ulid id) => Result.Fail($"Unable to find platform region with ID {id}");
+    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMREGION_ID.Replace("{0}", id.ToString()));
 
     //
     // LIST

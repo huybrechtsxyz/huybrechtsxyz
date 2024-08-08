@@ -18,16 +18,16 @@ public static class PlatformInfoFlow
     {
         public Ulid Id { get; init; }
 
-        [Display(Name = nameof(Name), ResourceType = typeof(PlatformLocalization))]
+        [Display(Name = nameof(Name), ResourceType = typeof(Localization))]
         public string Name { get; set; } = string.Empty;
 
-        [Display(Name = nameof(Description), ResourceType = typeof(PlatformLocalization))]
+        [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
         public string? Description { get; set; }
 
-        [Display(Name = nameof(Provider), ResourceType = typeof(PlatformLocalization))]
+        [Display(Name = nameof(Provider), ResourceType = typeof(Localization))]
         public PlatformProvider Provider { get; set; }
 
-        [Display(Name = nameof(Remark), ResourceType = typeof(PlatformLocalization))]
+        [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
         public string? Remark { get; set; }
     }
 
@@ -40,7 +40,7 @@ public static class PlatformInfoFlow
         }
     }
 
-    private static Result RecordNotFound(Ulid id) => Result.Fail($"Unable to find platform with ID {id}");
+    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORM_ID.Replace("{0}", id.ToString()));
 
     //
     // LIST
