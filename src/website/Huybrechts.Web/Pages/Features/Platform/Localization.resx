@@ -120,8 +120,14 @@
   <data name="Add New" xml:space="preserve">
     <value>Toevoegen</value>
   </data>
+  <data name="Change your platform settings" xml:space="preserve">
+    <value>Change your platform settings</value>
+  </data>
   <data name="Clear filter" xml:space="preserve">
     <value>Wis filter</value>
+  </data>
+  <data name="Manage your platforms" xml:space="preserve">
+    <value>Manage your platforms</value>
   </data>
   <data name="Next" xml:space="preserve">
     <value>Vorige</value>

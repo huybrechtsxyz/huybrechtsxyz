@@ -1,15 +1,16 @@
 ﻿@page
-@inject IViewLocalizer Localizer
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Localization> SL
 @model Huybrechts.Web.Pages.Features.Platform.IndexModel
 @{
-    ViewData["CardTitle"] =  Localizer["Your platforms"];
+    ViewData["CardTitle"] =  SL["Platforms"];
     //ViewData["ActivePage"] = ManageNavPages.Info;
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
-    @Localizer["The list of platforms."]
+    @SL["The list of platforms."]
 </p>
 <div class="row">
     <div class="col-md-12">

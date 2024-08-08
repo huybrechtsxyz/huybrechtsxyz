@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Huybrechts.App.Features {
+namespace Huybrechts.Web.Pages.Features.Platform {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Huybrechts.App.Features {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.App.Features.Localization", typeof(Localization).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.Web.Pages.Features.Platform.Localization", typeof(Localization).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,56 +61,74 @@ namespace Huybrechts.App.Features {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Description.
+        ///   Looks up a localized string similar to Toevoegen.
         /// </summary>
-        public static string Description {
+        public static string Add_New {
             get {
-                return ResourceManager.GetString("Description", resourceCulture);
+                return ResourceManager.GetString("Add New", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Label.
+        ///   Looks up a localized string similar to Change your platform settings.
         /// </summary>
-        public static string Label {
+        public static string Change_your_platform_settings {
             get {
-                return ResourceManager.GetString("Label", resourceCulture);
+                return ResourceManager.GetString("Change your platform settings", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Name.
+        ///   Looks up a localized string similar to Wis filter.
         /// </summary>
-        public static string Name {
+        public static string Clear_filter {
             get {
-                return ResourceManager.GetString("Name", resourceCulture);
+                return ResourceManager.GetString("Clear filter", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Platform.
+        ///   Looks up a localized string similar to Manage your platforms.
         /// </summary>
-        public static string Platform {
+        public static string Manage_your_platforms {
             get {
-                return ResourceManager.GetString("Platform", resourceCulture);
+                return ResourceManager.GetString("Manage your platforms", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Supported system.
+        ///   Looks up a localized string similar to Vorige.
         /// </summary>
-        public static string Provider {
+        public static string Next {
             get {
-                return ResourceManager.GetString("Provider", resourceCulture);
+                return ResourceManager.GetString("Next", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remark.
+        ///   Looks up a localized string similar to Volgende.
         /// </summary>
-        public static string Remark {
+        public static string Previous {
             get {
-                return ResourceManager.GetString("Remark", resourceCulture);
+                return ResourceManager.GetString("Previous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to De lijst met platforms..
+        /// </summary>
+        public static string The_list_of_platforms_ {
+            get {
+                return ResourceManager.GetString("The list of platforms.", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to De platformen.
+        /// </summary>
+        public static string Your_platforms {
+            get {
+                return ResourceManager.GetString("Your platforms", resourceCulture);
             }
         }
     }

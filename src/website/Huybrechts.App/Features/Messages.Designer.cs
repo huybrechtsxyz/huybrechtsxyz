@@ -22,7 +22,7 @@ namespace Huybrechts.App.Features {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Messages {
+    public class Messages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Huybrechts.App.Features {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.App.Features.Messages", typeof(Messages).Assembly);
@@ -51,7 +51,7 @@ namespace Huybrechts.App.Features {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Huybrechts.App.Features {
         /// <summary>
         ///   Looks up a localized string similar to Kan platform met ID {0} niet vinden.
         /// </summary>
-        internal static string NOT_FOUND_PLATFORM_ID {
+        public static string NOT_FOUND_PLATFORM_ID {
             get {
                 return ResourceManager.GetString("NOT_FOUND_PLATFORM_ID", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Huybrechts.App.Features {
         /// <summary>
         ///   Looks up a localized string similar to Kan platform region met ID {0} niet vinden.
         /// </summary>
-        internal static string NOT_FOUND_PLATFORMREGION_ID {
+        public static string NOT_FOUND_PLATFORMREGION_ID {
             get {
                 return ResourceManager.GetString("NOT_FOUND_PLATFORMREGION_ID", resourceCulture);
             }

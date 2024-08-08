@@ -49,6 +49,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>TenantViewModels.resx</DependentUpon>
     </Compile>
+    <Compile Update="Pages\Features\Platform\Localization.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Localization.resx</DependentUpon>
+    </Compile>
     <Compile Update="Pages\Shared\Shared.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -70,6 +75,10 @@
     <EmbeddedResource Update="Pages\Account\Tenant\TenantViewModels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>TenantViewModels.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\Features\Platform\Localization.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Localization.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Pages\Shared\Shared.nl.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
