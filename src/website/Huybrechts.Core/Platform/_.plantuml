@@ -1,16 +1,26 @@
 @startuml Platform CD
 
-class Location {
-}
-
 class Platform {
-}
-
-class Service {
 }
 
 class Region {
 }
+
+Platform "1" -- "0..*" Region
+
+
+
+
+
+
+class Location {
+}
+
+
+class Service {
+}
+
+
 
 class SearchRate {
 }
@@ -27,7 +37,7 @@ class RateUnit {
 Platform "1" -- "0..*" SearchRate
 
 Platform "1" -- "0..*" Service
-Platform "1" -- "0..*" Region
+
 
 Location "1" -- "0..*"Region
 
