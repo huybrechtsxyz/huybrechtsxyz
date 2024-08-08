@@ -8,17 +8,10 @@ using Huybrechts.App.Services;
 using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using StackExchange.Profiling.Internal;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Drawing.Printing;
 using System.Linq.Dynamic.Core;
-using System.Linq.Dynamic.Core.Tokenizer;
-using System.Text.Json.Serialization;
-using static Huybrechts.App.Services.AzurePricingService;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Huybrechts.App.Features.Platform;
 
@@ -335,21 +328,22 @@ public static class PlatformRegionFlow
     // DELETE
     //
 
-    public sealed record DeleteQuery : IRequest<DeleteCommand>
+    public sealed record DeleteQuery : IRequest<Result<DeleteCommand>>
     {
-        public Ulid? Id { get; init; }
+        public Ulid Id { get; init; }
     }
 
     internal class DeleteQueryValidator : AbstractValidator<DeleteQuery>
     {
         public DeleteQueryValidator()
         {
-            RuleFor(m => m.Id).NotNull();
+            RuleFor(m => m.Id).NotNull().NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
     public sealed record DeleteCommand : Model, IRequest<Result>
     {
+        public IList<PlatformInfo> Platforms { get; set; } = [];
     }
 
     internal sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
@@ -367,7 +361,7 @@ public static class PlatformRegionFlow
             .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
     }
 
-    internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, DeleteCommand?>
+    internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<DeleteCommand>>
     {
         private readonly PlatformContext _dbcontext;
         private readonly IConfigurationProvider _configuration;
@@ -378,13 +372,17 @@ public static class PlatformRegionFlow
             _configuration = configuration;
         }
 
-        public async Task<DeleteCommand?> Handle(DeleteQuery request, CancellationToken token)
+        public async Task<Result<DeleteCommand>> Handle(DeleteQuery request, CancellationToken token)
         {
-            return await _dbcontext.Set<PlatformRegion>()
+            var record = await _dbcontext.Set<PlatformRegion>()
                 .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<DeleteCommand>(_configuration)
                 .SingleOrDefaultAsync(token);
+            if (record == null)
+                return RecordNotFound(request.Id);
+            record.Platforms = await _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
+            return Result.Ok(record);
         }
     }
 
@@ -400,8 +398,9 @@ public static class PlatformRegionFlow
         public async Task<Result> Handle(DeleteCommand command, CancellationToken token)
         {
             var record = await _dbcontext.Set<PlatformRegion>().FindAsync([command.Id], cancellationToken: token);
-            if(record is null)
+            if (record is null)
                 return RecordNotFound(command.Id);
+
             _dbcontext.Set<PlatformRegion>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();

@@ -241,6 +241,24 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete existing region.
+        /// </summary>
+        public static string RegionDeleteInfo {
+            get {
+                return ResourceManager.GetString("RegionDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Regions.
+        /// </summary>
+        public static string RegionDeleteTitle {
+            get {
+                return ResourceManager.GetString("RegionDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit existing region.
         /// </summary>
         public static string RegionEditInfo {

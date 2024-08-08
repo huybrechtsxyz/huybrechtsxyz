@@ -177,6 +177,12 @@
   <data name="RegionCreateTitle" xml:space="preserve">
     <value>Regions</value>
   </data>
+  <data name="RegionDeleteInfo" xml:space="preserve">
+    <value>Delete existing region</value>
+  </data>
+  <data name="RegionDeleteTitle" xml:space="preserve">
+    <value>Regions</value>
+  </data>
   <data name="RegionEditInfo" xml:space="preserve">
     <value>Edit existing region</value>
   </data>

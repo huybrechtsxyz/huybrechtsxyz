@@ -1,15 +1,15 @@
 ﻿@page
 @using Huybrechts.Core.Platform
 @inject IStringLocalizer<Localization> SL
-@model Huybrechts.Web.Pages.Features.Platform.Region.EditModel
+@model Huybrechts.Web.Pages.Features.Platform.Region.DeleteModel
 @{
-    ViewData["CardTitle"] = SL["RegionEditTitle"];
+    ViewData["CardTitle"] = SL["RegionDeleteTitle"];
     //ViewData["ActivePage"] = ManageNavPages.Info;
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
-    @SL["RegionEditInfo"]
+    @SL["RegionDeleteInfo"]
 </p>
 
 <div class="row">
@@ -29,28 +29,28 @@
                 <label asp-for="Data.PlatformInfoId" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Name" class="form-control" />
+                <input asp-for="Data.Name" class="form-control" disabled />
                 <label asp-for="Data.Name" class="form-label"></label>
                 <span asp-validation-for="Data.Name" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Label" class="form-control" />
+                <input asp-for="Data.Label" class="form-control" disabled />
                 <label asp-for="Data.Label" class="form-label"></label>
                 <span asp-validation-for="Data.Label" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Description" class="form-control" />
+                <input asp-for="Data.Description" class="form-control" disabled />
                 <label asp-for="Data.Description" class="form-label"></label>
                 <span asp-validation-for="Data.Description" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Remark" class="form-control" />
+                <input asp-for="Data.Remark" class="form-control" disabled />
                 <label asp-for="Data.Remark" class="form-label"></label>
                 <span asp-validation-for="Data.Remark" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <a class="w-30 btn btn-lg btn-secondary" asp-page="./Index"><i class="bi bi-arrow-left-circle-fill"></i></a>
-                <button id="edit-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+                <button id="delete-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-trash2-fill"></i></button>
             </div>
         </form>
     </div>
