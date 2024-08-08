@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Huybrechts.Core.Application {
+namespace Huybrechts.Core {
     using System;
     
     
@@ -22,7 +22,7 @@ namespace Huybrechts.Core.Application {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Localization {
+    internal class Localization {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,10 +36,10 @@ namespace Huybrechts.Core.Application {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.Core.Application.Localization", typeof(Localization).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.Core.Localization", typeof(Localization).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace Huybrechts.Core.Application {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Administrator.
         /// </summary>
-        public static string Administrator {
+        internal static string Administrator {
             get {
                 return ResourceManager.GetString("Administrator", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to The system administrator role.
         /// </summary>
-        public static string Administrator_d {
+        internal static string Administrator_d {
             get {
                 return ResourceManager.GetString("Administrator_d", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Contributor.
         /// </summary>
-        public static string Contributor {
+        internal static string Contributor {
             get {
                 return ResourceManager.GetString("Contributor", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to The contributor has read/write access to the data.
         /// </summary>
-        public static string Contributor_d {
+        internal static string Contributor_d {
             get {
                 return ResourceManager.GetString("Contributor_d", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Guest.
         /// </summary>
-        public static string Guest {
+        internal static string Guest {
             get {
                 return ResourceManager.GetString("Guest", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to The guest can read the data.
         /// </summary>
-        public static string Guest_d {
+        internal static string Guest_d {
             get {
                 return ResourceManager.GetString("Guest_d", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Manager.
         /// </summary>
-        public static string Manager {
+        internal static string Manager {
             get {
                 return ResourceManager.GetString("Manager", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to The manager has privileged access.
         /// </summary>
-        public static string Manager_d {
+        internal static string Manager_d {
             get {
                 return ResourceManager.GetString("Manager_d", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Member.
         /// </summary>
-        public static string Member {
+        internal static string Member {
             get {
                 return ResourceManager.GetString("Member", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to The member can read/write some of the data.
         /// </summary>
-        public static string Member_d {
+        internal static string Member_d {
             get {
                 return ResourceManager.GetString("Member_d", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to None.
         /// </summary>
-        public static string None {
+        internal static string None {
             get {
                 return ResourceManager.GetString("None", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to A role that does not provide any access.
         /// </summary>
-        public static string None_d {
+        internal static string None_d {
             get {
                 return ResourceManager.GetString("None_d", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Owner.
         /// </summary>
-        public static string Owner {
+        internal static string Owner {
             get {
                 return ResourceManager.GetString("Owner", resourceCulture);
             }
@@ -180,16 +180,52 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to The owner has administrator access.
         /// </summary>
-        public static string Owner_d {
+        internal static string Owner_d {
             get {
                 return ResourceManager.GetString("Owner_d", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Azure.
+        /// </summary>
+        internal static string PlatformProvider_Azure {
+            get {
+                return ResourceManager.GetString("PlatformProvider_Azure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Azure.
+        /// </summary>
+        internal static string PlatformProvider_Azure_d {
+            get {
+                return ResourceManager.GetString("PlatformProvider_Azure_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        internal static string PlatformProvider_None {
+            get {
+                return ResourceManager.GetString("PlatformProvider_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No automation.
+        /// </summary>
+        internal static string PlatformProvider_None_d {
+            get {
+                return ResourceManager.GetString("PlatformProvider_None_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Active.
         /// </summary>
-        public static string State_Active {
+        internal static string State_Active {
             get {
                 return ResourceManager.GetString("State_Active", resourceCulture);
             }
@@ -198,7 +234,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Active.
         /// </summary>
-        public static string State_Active_d {
+        internal static string State_Active_d {
             get {
                 return ResourceManager.GetString("State_Active_d", resourceCulture);
             }
@@ -207,7 +243,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Disabled.
         /// </summary>
-        public static string State_Disabled {
+        internal static string State_Disabled {
             get {
                 return ResourceManager.GetString("State_Disabled", resourceCulture);
             }
@@ -216,7 +252,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Disabled.
         /// </summary>
-        public static string State_Disabled_d {
+        internal static string State_Disabled_d {
             get {
                 return ResourceManager.GetString("State_Disabled_d", resourceCulture);
             }
@@ -225,7 +261,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Disabling.
         /// </summary>
-        public static string State_Disabling {
+        internal static string State_Disabling {
             get {
                 return ResourceManager.GetString("State_Disabling", resourceCulture);
             }
@@ -234,7 +270,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Disabling.
         /// </summary>
-        public static string State_Disabling_d {
+        internal static string State_Disabling_d {
             get {
                 return ResourceManager.GetString("State_Disabling_d", resourceCulture);
             }
@@ -243,7 +279,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to New.
         /// </summary>
-        public static string State_New {
+        internal static string State_New {
             get {
                 return ResourceManager.GetString("State_New", resourceCulture);
             }
@@ -252,7 +288,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to New.
         /// </summary>
-        public static string State_New_d {
+        internal static string State_New_d {
             get {
                 return ResourceManager.GetString("State_New_d", resourceCulture);
             }
@@ -261,7 +297,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Pending.
         /// </summary>
-        public static string State_Pending {
+        internal static string State_Pending {
             get {
                 return ResourceManager.GetString("State_Pending", resourceCulture);
             }
@@ -270,7 +306,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Pending.
         /// </summary>
-        public static string State_Pending_d {
+        internal static string State_Pending_d {
             get {
                 return ResourceManager.GetString("State_Pending_d", resourceCulture);
             }
@@ -279,7 +315,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Removed.
         /// </summary>
-        public static string State_Removed {
+        internal static string State_Removed {
             get {
                 return ResourceManager.GetString("State_Removed", resourceCulture);
             }
@@ -288,7 +324,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Removed.
         /// </summary>
-        public static string State_Removed_d {
+        internal static string State_Removed_d {
             get {
                 return ResourceManager.GetString("State_Removed_d", resourceCulture);
             }
@@ -297,7 +333,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Removing.
         /// </summary>
-        public static string State_Removing {
+        internal static string State_Removing {
             get {
                 return ResourceManager.GetString("State_Removing", resourceCulture);
             }
@@ -306,7 +342,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to Removing.
         /// </summary>
-        public static string State_Removing_d {
+        internal static string State_Removing_d {
             get {
                 return ResourceManager.GetString("State_Removing_d", resourceCulture);
             }
@@ -315,7 +351,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to User.
         /// </summary>
-        public static string User {
+        internal static string User {
             get {
                 return ResourceManager.GetString("User", resourceCulture);
             }
@@ -324,7 +360,7 @@ namespace Huybrechts.Core.Application {
         /// <summary>
         ///   Looks up a localized string similar to The standard user role.
         /// </summary>
-        public static string User_d {
+        internal static string User_d {
             get {
                 return ResourceManager.GetString("User_d", resourceCulture);
             }

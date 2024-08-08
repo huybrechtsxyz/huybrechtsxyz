@@ -1,6 +1,5 @@
 using Finbuckle.MultiTenant;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -50,14 +49,14 @@ public enum PlatformProvider
     /// <summary>
     /// No automation provider
     /// </summary>
-    [Display(Name = nameof(None), Description = nameof(None), ResourceType = typeof(Localization))]
+    [Display(Name = nameof(PlatformProvider) + "_" + nameof(None), Description = nameof(PlatformProvider) + "_" + nameof(None) + "_d", ResourceType = typeof(Localization))]
     [Comment("No automation provider")]
     None = 0,
 
     /// <summary>
     /// Azure automation provider
     /// </summary>
-    [Display(Name = nameof(Azure), Description = nameof(Azure), ResourceType = typeof(Localization))]
+    [Display(Name = nameof(PlatformProvider) + "_" + nameof(Azure), Description = nameof(PlatformProvider) + "_" + nameof(Azure) + "_d", ResourceType = typeof(Localization))]
     [Comment("Azure as automation provider")]
     Azure = 1
 }
