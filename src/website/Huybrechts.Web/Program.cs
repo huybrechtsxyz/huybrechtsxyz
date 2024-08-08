@@ -5,6 +5,7 @@ using Huybrechts.App.Data;
 using Huybrechts.App.Features.Platform;
 using Huybrechts.App.Web;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.Localization;
 using Serilog;
 using System.Reflection;
 
@@ -47,19 +48,14 @@ try
     Log.Information("Configuring other services");
     builder.AddConfigurationServices();
     Log.Information("Configuring user interface");
-    builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+    builder.Services.AddSingleton<IStringLocalizerFactory, FeatureStringLocalizerFactory>();
+    builder.Services.AddSingleton<IResourceNamesCache, ResourceNamesCache>();
+    builder.Services.AddLocalization();
     builder.Services.AddAntiforgery();
     builder.Services.AddControllers();
     builder.Services.AddRazorPages()
         .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-        .AddDataAnnotationsLocalization(opts =>
-        {
-            //opts.DataAnnotationLocalizerProvider = (type, factory) =>
-            //{
-            //    var assemblyName = new AssemblyName(typeof(Huybrechts.Web.Resources.ViewModels).GetTypeInfo().Assembly.FullName!);
-            //    return factory.Create(nameof(Huybrechts.Web.Resources.ViewModels), assemblyName.Name!);
-            //};
-        });
+        .AddDataAnnotationsLocalization();
     builder.Services.AddDistributedMemoryCache();
     builder.Services.AddSession(opts =>
     {
