@@ -28,14 +28,21 @@ public class CreateModel : PageModel
         Data = new();
     }
 
-    public async void OnGet(Ulid? PlatformInfoId)
+    public async Task<IActionResult> OnGetAsync(Ulid PlatformInfoId)
     {
         var result = await _mediator.Send(request: new Flow.CreateQuery
         {
-            PlatformInfoId = PlatformInfoId ?? Ulid.Empty
+            PlatformInfoId = PlatformInfoId
         });
-        Data = result.Region;
-        Platforms = result.Platforms;
+        if (result.IsFailed)
+        {
+            StatusMessage = result.Errors[0].Message;
+            return this.RedirectToPage(nameof(Index));
+        }
+
+        Platforms = result.Value.Platforms;
+        Data = result.Value.Region;
+        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()

@@ -158,7 +158,7 @@ public static class PlatformRegionFlow
         PlatformInfoId = platformInfoId ?? Ulid.Empty
     };
 
-    public sealed record CreateQuery : IRequest<CreateResult>
+    public sealed record CreateQuery : IRequest<Result<CreateResult>>
     {
         public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
     }
@@ -167,6 +167,7 @@ public static class PlatformRegionFlow
     {
         public CreateQueryValidator()
         {
+            RuleFor(m => m.PlatformInfoId).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
@@ -177,7 +178,7 @@ public static class PlatformRegionFlow
         public IList<PlatformInfo> Platforms { get; set; } = [];
     }
 
-    internal class CreateQueryHandler : IRequestHandler<CreateQuery, CreateResult>
+    internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateResult>>
     {
         private readonly PlatformContext _dbcontext;
 
@@ -186,15 +187,19 @@ public static class PlatformRegionFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<CreateResult> Handle(CreateQuery request, CancellationToken token)
+        public async Task<Result<CreateResult>> Handle(CreateQuery request, CancellationToken token)
         {
             IList<PlatformInfo> platforms = await _dbcontext.Set<PlatformInfo>().ToListAsync(cancellationToken: token);
 
-            return new CreateResult()
+            var platform = platforms.FirstOrDefault(f => f.Id == request.PlatformInfoId);
+            if (platform is null)
+                return PlatformNotFound(request.PlatformInfoId);
+
+            return Result.Ok(new CreateResult()
             {
                 Region = CreateNew(request.PlatformInfoId),
                 Platforms = platforms
-            };
+            });
         }
     }
 
@@ -220,16 +225,21 @@ public static class PlatformRegionFlow
 
         public async Task<Result<Ulid>> Handle(CreateCommand request, CancellationToken token)
         {
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([request.PlatformInfoId], cancellationToken: token);
+            if (platform is null)
+                return PlatformNotFound(request.PlatformInfoId);
+
             var record = new PlatformRegion
             {
                 Id = request.Id,
-                PlatformInfoId = request.PlatformInfoId,
+                PlatformInfo = platform,
                 Name = request.Name,
                 Description = request.Description,
                 Label = request.Label,
                 Remark = request.Remark,
                 CreatedDT = DateTime.UtcNow
             };
+
             await _dbcontext.Set<PlatformRegion>().AddAsync(record, token);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok(record.Id);
