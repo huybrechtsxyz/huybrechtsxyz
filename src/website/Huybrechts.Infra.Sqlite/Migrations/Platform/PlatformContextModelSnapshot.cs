@@ -30,7 +30,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                     b.Property<string>("Description")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT")
-                        .HasComment("Description");
+                        .HasComment("Description of the platform");
 
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("TEXT")
@@ -40,15 +40,15 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("TEXT")
-                        .HasComment("Name");
+                        .HasComment("Name of the platform");
 
                     b.Property<int>("Provider")
                         .HasColumnType("INTEGER")
-                        .HasComment("What is the supported provider for this platform");
+                        .HasComment("Supported automation providers of the platform");
 
                     b.Property<string>("Remark")
                         .HasColumnType("TEXT")
-                        .HasComment("Remark");
+                        .HasComment("Remark about the platform");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
@@ -63,12 +63,15 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 
                     b.HasKey("Id");
 
-                    b.ToTable("Platform");
+                    b.ToTable("Platform", t =>
+                        {
+                            t.HasComment("Platforms that provide compute resources");
+                        });
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformLocation", b =>
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT")
@@ -81,13 +84,13 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                     b.Property<string>("Description")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT")
-                        .HasComment("Description");
+                        .HasComment("Description of the region");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("TEXT")
-                        .HasComment("Label");
+                        .HasComment("Label of the region");
 
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("TEXT")
@@ -97,11 +100,16 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("TEXT")
-                        .HasComment("Name");
+                        .HasComment("Name of the region");
+
+                    b.Property<string>("PlatformInfoId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasComment("PlatformInfo FK");
 
                     b.Property<string>("Remark")
                         .HasColumnType("TEXT")
-                        .HasComment("Remark");
+                        .HasComment("Remark about the region");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
@@ -116,547 +124,12 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 
                     b.HasKey("Id");
 
-                    b.ToTable("PlatformLocation");
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformMeasureDefault", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT")
-                        .HasComment("Primary Key");
-
-                    b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Date time created");
-
-                    b.Property<decimal>("DefaultValue")
-                        .HasPrecision(12, 4)
-                        .HasColumnType("TEXT")
-                        .HasComment("Default unit rate");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT")
-                        .HasComment("Measuring unit description");
-
-                    b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Modified time created");
-
-                    b.Property<string>("PlatformMeasureUnitId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformMeasureUnit FK");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB");
-
-                    b.Property<decimal>("UnitFactor")
-                        .HasPrecision(12, 6)
-                        .HasColumnType("TEXT")
-                        .HasComment("Conversion factor");
-
-                    b.Property<string>("UnitOfMeasure")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("TEXT")
-                        .HasComment("Unit of measure");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PlatformMeasureDefault");
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformMeasureUnit", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT")
-                        .HasComment("Primary Key");
-
-                    b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Date time created");
-
-                    b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Modified time created");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("Name");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PlatformMeasure");
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT")
-                        .HasComment("Primary Key");
-
-                    b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Date time created");
-
-                    b.Property<string>("CurrencyCode")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("TEXT")
-                        .HasComment("Currency code");
-
-                    b.Property<bool?>("IsPrimaryRegion")
-                        .HasColumnType("INTEGER")
-                        .HasComment("Is primary meter region");
-
-                    b.Property<string>("MeterId")
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT")
-                        .HasComment("Meter id");
-
-                    b.Property<string>("MeterName")
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("Meter name");
-
-                    b.Property<decimal>("MininumUnits")
-                        .HasPrecision(12, 4)
-                        .HasColumnType("TEXT")
-                        .HasComment("Tier mininum units");
-
-                    b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Modified time created");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("Name");
-
-                    b.Property<string>("PlatformInfoId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformInfo FK");
-
-                    b.Property<string>("PlatformLocationId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformLocation FK");
-
-                    b.Property<string>("PlatformResourceId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformResource FK");
-
-                    b.Property<string>("PlatformServiceId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformService FK");
-
-                    b.Property<string>("Product")
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("Product");
-
-                    b.Property<string>("Remark")
-                        .HasColumnType("TEXT")
-                        .HasComment("Remark");
-
-                    b.Property<decimal>("RetailPrice")
-                        .HasPrecision(12, 4)
-                        .HasColumnType("TEXT")
-                        .HasComment("Retail price");
-
-                    b.Property<string>("Sku")
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("Sku name");
-
-                    b.Property<string>("SkuId")
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT")
-                        .HasComment("Sku id");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB");
-
-                    b.Property<string>("Type")
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("Rate type");
-
-                    b.Property<string>("UnitOfMeasure")
-                        .HasMaxLength(32)
-                        .HasColumnType("TEXT")
-                        .HasComment("Azure rate unit of measure");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasPrecision(12, 4)
-                        .HasColumnType("TEXT")
-                        .HasComment("Unit price");
-
-                    b.Property<DateTime>("ValidFrom")
-                        .HasColumnType("TEXT")
-                        .HasComment("Rate is valid from");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlatformResourceId");
-
-                    b.ToTable("PlatformRate");
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRateUnit", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT")
-                        .HasComment("Primary Key");
-
-                    b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Date time created");
-
-                    b.Property<decimal>("DefaultValue")
-                        .HasPrecision(12, 4)
-                        .HasColumnType("TEXT")
-                        .HasComment("Default unit rate");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT")
-                        .HasComment("Measuring unit description");
-
-                    b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Modified time created");
-
-                    b.Property<string>("PlatformInfoId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformInfo FK");
-
-                    b.Property<string>("PlatformMeasureUnitId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformMeasureUnit FK");
-
-                    b.Property<string>("PlatformRateId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformRate FK");
-
-                    b.Property<string>("PlatformResourceId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformResource FK");
-
-                    b.Property<string>("PlatformServiceId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformService FK");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB");
-
-                    b.Property<decimal>("UnitFactor")
-                        .HasPrecision(12, 6)
-                        .HasColumnType("TEXT")
-                        .HasComment("Conversion factor");
-
-                    b.Property<string>("UnitOfMeasure")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("TEXT")
-                        .HasComment("Unit of measure");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlatformRateId");
-
-                    b.ToTable("PlatformRateUnit");
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformResource", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT")
-                        .HasComment("Primary Key");
-
-                    b.Property<string>("AboutURL")
-                        .HasMaxLength(512)
-                        .HasColumnType("TEXT")
-                        .HasComment("Resource url");
-
-                    b.Property<string>("CostBasedOn")
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("Cost based on");
-
-                    b.Property<string>("CostDriver")
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT")
-                        .HasComment("Cost driver");
-
-                    b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Date time created");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT")
-                        .HasComment("Description");
-
-                    b.Property<string>("Limitations")
-                        .HasMaxLength(512)
-                        .HasColumnType("TEXT")
-                        .HasComment("Resource limitations");
-
-                    b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Modified time created");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("Name");
-
-                    b.Property<string>("PlatformInfoId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformInfo FK");
-
-                    b.Property<string>("PlatformServiceId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformService FK");
-
-                    b.Property<string>("PricingURL")
-                        .HasMaxLength(512)
-                        .HasColumnType("TEXT")
-                        .HasComment("Pricing url");
-
-                    b.Property<string>("Product")
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT")
-                        .HasComment("Product");
-
-                    b.Property<string>("ProductId")
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT")
-                        .HasComment("Product id");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("TEXT")
-                        .HasComment("Remarks");
-
-                    b.Property<string>("Size")
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("Resource size");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlatformServiceId");
-
-                    b.ToTable("PlatformResource");
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformSearchRate", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformSearchRate PK");
-
-                    b.Property<string>("Category")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT")
-                        .HasComment("Service category")
-                        .HasAnnotation("Relational:JsonPropertyName", "serviceFamily");
-
-                    b.Property<string>("CurrencyCode")
-                        .HasMaxLength(10)
-                        .HasColumnType("TEXT")
-                        .HasComment("Currency code")
-                        .HasAnnotation("Relational:JsonPropertyName", "currencyCode");
-
-                    b.Property<bool?>("IsPrimaryRegion")
-                        .HasColumnType("INTEGER")
-                        .HasComment("Is primary meter region")
-                        .HasAnnotation("Relational:JsonPropertyName", "isPrimaryMeterRegion");
-
-                    b.Property<string>("Location")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT")
-                        .HasComment("Location name")
-                        .HasAnnotation("Relational:JsonPropertyName", "location");
-
-                    b.Property<string>("MeterId")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT")
-                        .HasComment("Meter id")
-                        .HasAnnotation("Relational:JsonPropertyName", "meterId");
-
-                    b.Property<string>("MeterName")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT")
-                        .HasComment("Meter name")
-                        .HasAnnotation("Relational:JsonPropertyName", "meterName");
-
-                    b.Property<decimal>("MiminumUnits")
-                        .HasPrecision(12, 4)
-                        .HasColumnType("TEXT")
-                        .HasComment("Tier miminum units")
-                        .HasAnnotation("Relational:JsonPropertyName", "tierMinimumUnits");
-
-                    b.Property<string>("PlatformProviderId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformProvider FK");
-
-                    b.Property<string>("Product")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT")
-                        .HasComment("Product")
-                        .HasAnnotation("Relational:JsonPropertyName", "productName");
-
-                    b.Property<string>("ProductId")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT")
-                        .HasComment("Product id")
-                        .HasAnnotation("Relational:JsonPropertyName", "productId");
-
-                    b.Property<string>("Region")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT")
-                        .HasComment("Region")
-                        .HasAnnotation("Relational:JsonPropertyName", "armRegionName");
-
-                    b.Property<decimal>("RetailPrice")
-                        .HasPrecision(12, 4)
-                        .HasColumnType("TEXT")
-                        .HasComment("Retail price")
-                        .HasAnnotation("Relational:JsonPropertyName", "retailPrice");
-
-                    b.Property<string>("Service")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT")
-                        .HasComment("Service name")
-                        .HasAnnotation("Relational:JsonPropertyName", "serviceName");
-
-                    b.Property<string>("ServiceId")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT")
-                        .HasComment("Service id")
-                        .HasAnnotation("Relational:JsonPropertyName", "serviceId");
-
-                    b.Property<string>("Sku")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT")
-                        .HasComment("Sku name")
-                        .HasAnnotation("Relational:JsonPropertyName", "skuName");
-
-                    b.Property<string>("SkuId")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT")
-                        .HasComment("Sku id")
-                        .HasAnnotation("Relational:JsonPropertyName", "skuId");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Type")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT")
-                        .HasComment("Rate type")
-                        .HasAnnotation("Relational:JsonPropertyName", "type");
-
-                    b.Property<string>("UnitOfMeasure")
-                        .HasMaxLength(30)
-                        .HasColumnType("TEXT")
-                        .HasComment("Azure rate unit of measure")
-                        .HasAnnotation("Relational:JsonPropertyName", "unitOfMeasure");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasPrecision(12, 4)
-                        .HasColumnType("TEXT")
-                        .HasComment("Unit price")
-                        .HasAnnotation("Relational:JsonPropertyName", "unitPrice");
-
-                    b.Property<DateTime>("ValidFrom")
-                        .HasColumnType("TEXT")
-                        .HasComment("Rate is valid from")
-                        .HasAnnotation("Relational:JsonPropertyName", "effectiveStartDate");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PlatformSearchRate");
+                    b.HasIndex("PlatformInfoId");
+
+                    b.ToTable("PlatformRegion", t =>
+                        {
+                            t.HasComment("Support regions of the Platform");
+                        });
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
@@ -666,10 +139,6 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                     b.Property<string>("Id")
                         .HasColumnType("TEXT")
                         .HasComment("Primary Key");
-
-                    b.Property<bool>("Allowed")
-                        .HasColumnType("INTEGER")
-                        .HasComment("Is the service allowed?");
 
                     b.Property<string>("Category")
                         .HasMaxLength(100)
@@ -684,6 +153,12 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                         .HasMaxLength(256)
                         .HasColumnType("TEXT")
                         .HasComment("Description");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasComment("Label of the service");
 
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("TEXT")
@@ -724,60 +199,26 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
                 {
-                    b.HasOne("Huybrechts.Core.Platform.PlatformResource", null)
-                        .WithMany("Rates")
-                        .HasForeignKey("PlatformResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRateUnit", b =>
-                {
-                    b.HasOne("Huybrechts.Core.Platform.PlatformRate", null)
-                        .WithMany("RateUnits")
-                        .HasForeignKey("PlatformRateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformResource", b =>
-                {
-                    b.HasOne("Huybrechts.Core.Platform.PlatformService", null)
-                        .WithMany("Resources")
-                        .HasForeignKey("PlatformServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
-                {
-                    b.HasOne("Huybrechts.Core.Platform.PlatformInfo", null)
-                        .WithMany("Services")
+                    b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")
+                        .WithMany()
                         .HasForeignKey("PlatformInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformInfo", b =>
-                {
-                    b.Navigation("Services");
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>
-                {
-                    b.Navigation("RateUnits");
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformResource", b =>
-                {
-                    b.Navigation("Rates");
+                    b.Navigation("PlatformInfo");
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
                 {
-                    b.Navigation("Resources");
+                    b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")
+                        .WithMany()
+                        .HasForeignKey("PlatformInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlatformInfo");
                 });
 #pragma warning restore 612, 618
         }

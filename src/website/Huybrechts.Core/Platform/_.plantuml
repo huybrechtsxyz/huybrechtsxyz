@@ -13,41 +13,20 @@ class Service {
 
 Platform "1" -- "0..*" Service
 
-
-
-
-
-
-
-
-
-
-class Location {
-}
-
-class SearchRate {
-}
-
 class Product {
 }
+
+Platform "1" -- "0..*" Product
+Service "1" -- "0..*" Product
 
 class Rate {
 }
 
+Product "1" -- "0..*" Rate
+
 class RateUnit {
 }
 
-Platform "1" -- "0..*" SearchRate
-
-
-
-
-Location "1" -- "0..*"Region
-
-Platform "1" -- "0..*" Product
-Product "1" -- "0..1" Service
-Product "1" -- "0..1" Region
-Product "1" -- "0..*" Rate
-Rate "1" -- "0..*" RateUnit 
+Rate "1" -- "0..*" RateUnit
 
 @enduml

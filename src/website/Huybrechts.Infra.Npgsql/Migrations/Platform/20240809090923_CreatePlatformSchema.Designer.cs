@@ -3,17 +3,17 @@ using System;
 using Huybrechts.App.Features.Platform;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Huybrechts.Infra.SqlServer.Migrations.Platform
+namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 {
     [DbContext(typeof(PlatformContext))]
-    [Migration("20240807120654_UpdatePlatformSchema")]
-    partial class UpdatePlatformSchema
+    [Migration("20240809090923_CreatePlatformSchema")]
+    partial class CreatePlatformSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,53 +21,53 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformInfo", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Primary Key");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Description of the platform");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Name of the platform");
 
                     b.Property<int>("Provider")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Supported automation providers of the platform");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Remark about the platform");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("character varying(64)");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -82,53 +82,53 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Primary Key");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Description of the region");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Label of the region");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Name of the region");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("PlatformInfo FK");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Remark about the region");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("character varying(64)");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -142,7 +142,83 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasComment("Service Category");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasComment("Description");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Label of the service");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Name");
+
+                    b.Property<string>("PlatformInfoId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("PlatformInfo FK");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("text")
+                        .HasComment("Remark");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlatformInfoId");
+
+                    b.ToTable("PlatformService");
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")
+                        .WithMany()
+                        .HasForeignKey("PlatformInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlatformInfo");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
                 {
                     b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")
                         .WithMany()
