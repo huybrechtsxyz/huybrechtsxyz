@@ -8,6 +8,15 @@ class Region {
 
 Platform "1" -- "0..*" Region
 
+class Service {
+}
+
+Platform "1" -- "0..*" Service
+
+
+
+
+
 
 
 
@@ -15,12 +24,6 @@ Platform "1" -- "0..*" Region
 
 class Location {
 }
-
-
-class Service {
-}
-
-
 
 class SearchRate {
 }
@@ -36,7 +39,7 @@ class RateUnit {
 
 Platform "1" -- "0..*" SearchRate
 
-Platform "1" -- "0..*" Service
+
 
 
 Location "1" -- "0..*"Region

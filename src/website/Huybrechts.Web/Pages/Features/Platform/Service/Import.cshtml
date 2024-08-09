@@ -1,15 +1,15 @@
 ﻿@page
 @inject IStringLocalizer<Localization> SL
-@model Huybrechts.Web.Pages.Features.Platform.Region.ImportModel
+@model Huybrechts.Web.Pages.Features.Platform.Service.ImportModel
 @{
-    ViewData["CardTitle"] = SL["RegionImportTitle"];
+    ViewData["CardTitle"] = SL["ServiceImportTitle"];
     //ViewData["ActivePage"] = ManageNavPages.Info;
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
-    @SL["RegionImportInfo"]
+    @SL["ServiceImportInfo"]
 </p>
 <div class="row">
     <div class="col-md-12">
@@ -125,7 +125,7 @@
 </div>
 
 @section Breadcrumb {
-    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Region/Index">@SL["Regions"]</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Service/Index">@SL["Services"]</a></li>
 }
 
 @section Scripts {

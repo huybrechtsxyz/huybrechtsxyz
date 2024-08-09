@@ -232,7 +232,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Regions.
+        ///   Looks up a localized string similar to Create region.
         /// </summary>
         public static string RegionCreateTitle {
             get {
@@ -250,7 +250,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Regions.
+        ///   Looks up a localized string similar to Delete region.
         /// </summary>
         public static string RegionDeleteTitle {
             get {
@@ -268,7 +268,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Regions.
+        ///   Looks up a localized string similar to Edit region.
         /// </summary>
         public static string RegionEditTitle {
             get {
@@ -286,7 +286,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Regions.
+        ///   Looks up a localized string similar to Import regions.
         /// </summary>
         public static string RegionImportTitle {
             get {
@@ -345,6 +345,96 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         public static string Select {
             get {
                 return ResourceManager.GetString("Select", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new Service.
+        /// </summary>
+        public static string ServiceCreateInfo {
+            get {
+                return ResourceManager.GetString("ServiceCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create service.
+        /// </summary>
+        public static string ServiceCreateTitle {
+            get {
+                return ResourceManager.GetString("ServiceCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete existing Service.
+        /// </summary>
+        public static string ServiceDeleteInfo {
+            get {
+                return ResourceManager.GetString("ServiceDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete service.
+        /// </summary>
+        public static string ServiceDeleteTitle {
+            get {
+                return ResourceManager.GetString("ServiceDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit existing Service.
+        /// </summary>
+        public static string ServiceEditInfo {
+            get {
+                return ResourceManager.GetString("ServiceEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit service.
+        /// </summary>
+        public static string ServiceEditTitle {
+            get {
+                return ResourceManager.GetString("ServiceEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import platform Services.
+        /// </summary>
+        public static string ServiceImportInfo {
+            get {
+                return ResourceManager.GetString("ServiceImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import services.
+        /// </summary>
+        public static string ServiceImportTitle {
+            get {
+                return ResourceManager.GetString("ServiceImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The available platform Services.
+        /// </summary>
+        public static string ServiceIndexInfo {
+            get {
+                return ResourceManager.GetString("ServiceIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Services.
+        /// </summary>
+        public static string ServiceIndexTitle {
+            get {
+                return ResourceManager.GetString("ServiceIndexTitle", resourceCulture);
             }
         }
     }

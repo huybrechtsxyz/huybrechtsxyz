@@ -6,16 +6,38 @@ namespace Huybrechts.App.Services;
 
 public class AzurePricingService
 {
+    private enum ServiceType
+    {
+        All = 0,
+        Regions = 1,
+        Services = 2
+    }
+
     private readonly PlatformImportOptions _options;
 
-    private static async Task<PricingResponse?> GetPricingItemsAsync(string requestUrl, bool region)
+    private static async Task<PricingResponse?> GetPricingItemsAsync(PlatformImportOptionSettings request, ServiceType type, string searchString)
     {
         PricingResponse? pricingResult = null;
         var uniqueset = new HashSet<string>();
+        string requestUrl = string.Empty;
         int currentPage = 0;
         int maxPages = 20;
 
         using HttpClient httpClient = new();
+
+        if (ServiceType.Regions == type)
+        {
+            requestUrl = request.RegionUrl;
+            if (!string.IsNullOrEmpty(searchString))
+                requestUrl += request.RegionSearch.Replace("{0}", searchString);
+        }
+        else if (ServiceType.Services == type)
+        {
+            requestUrl = request.ServiceUrl;
+            if (!string.IsNullOrEmpty(searchString))
+                requestUrl += request.ServiceSearch.Replace("{0}", searchString);
+        }
+        else throw new NotImplementedException();
 
         while (!string.IsNullOrEmpty(requestUrl) && currentPage < maxPages)
         {
@@ -35,11 +57,22 @@ public class AzurePricingService
 
                     if (pricingResponse.Items is not null && pricingResponse.Items.Count > 0)
                     {
-                        if (region)
+                        if (ServiceType.Regions == type)
                         {
                             foreach (var item in pricingResponse.Items ?? [])
                             {
                                 if (!string.IsNullOrEmpty(item.ArmRegionName) && uniqueset.Add(item.ArmRegionName))
+                                {
+                                    pricingResult.Items!.Add(item);
+                                    pricingResult.Count += 1;
+                                }
+                            }
+                        }
+                        else if (ServiceType.Services == type)
+                        {
+                            foreach (var item in pricingResponse.Items ?? [])
+                            {
+                                if (!string.IsNullOrEmpty(item.ServiceName) && uniqueset.Add(item.ServiceName))
                                 {
                                     pricingResult.Items!.Add(item);
                                     pricingResult.Count += 1;
@@ -209,8 +242,13 @@ public class AzurePricingService
         _options = options;
     }
 
-    public async Task<PricingResponse?> GetRegionsAsync()
+    public async Task<PricingResponse?> GetRegionsAsync(string searchString)
     {
-        return await GetPricingItemsAsync(_options.Platforms["Azure"].Regions, true);
+        return await GetPricingItemsAsync(_options.Platforms["Azure"], ServiceType.Regions, searchString);
+    }
+
+    public async Task<PricingResponse?> GetServicesAsync(string searchString)
+    {
+        return await GetPricingItemsAsync(_options.Platforms["Azure"], ServiceType.Services, searchString);
     }
 }

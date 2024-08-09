@@ -15,7 +15,7 @@ using System.Linq.Dynamic.Core;
 
 namespace Huybrechts.App.Features.Platform;
 
-public static class PlatformRegionFlow
+public static class PlatformServiceFlow
 {
     public record Model
     {
@@ -33,6 +33,9 @@ public static class PlatformRegionFlow
         [Display(Name = nameof(Label), ResourceType = typeof(Localization))]
         public string Label { get; set; } = string.Empty;
 
+        [Display(Name = nameof(Category), ResourceType = typeof(Localization))]
+        public string Category { get; set; } = string.Empty;
+
         [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
         public string? Description { get; set; }
 
@@ -47,14 +50,14 @@ public static class PlatformRegionFlow
             RuleFor(m => m.Id).NotNull().NotEmpty();
             RuleFor(m => m.PlatformInfoId).NotNull().NotEmpty();
             RuleFor(m => m.Name).NotNull().Length(1, 128);
-            RuleFor(m => m.Label).Length(1, 128);
+            RuleFor(m => m.Category).Length(1, 128);
             RuleFor(m => m.Description).Length(1, 256);
         }
     }
 
     private static Result PlatformNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORM_ID.Replace("{0}", id.ToString()));
 
-    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMREGION_ID.Replace("{0}", id.ToString()));
+    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMSERVICE_ID.Replace("{0}", id.ToString()));
 
     //
     // LIST
@@ -67,7 +70,7 @@ public static class PlatformRegionFlow
     internal sealed class ListMapping : Profile
     {
         public ListMapping() =>
-            CreateProjection<PlatformRegion, ListModel>()
+            CreateProjection<PlatformService, ListModel>()
             .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
     }
 
@@ -86,7 +89,7 @@ public static class PlatformRegionFlow
     }
 
     internal sealed class ListHandler :
-        EntityListFlow.Handler<PlatformRegion, ListModel>,
+        EntityListFlow.Handler<PlatformService, ListModel>,
         IRequestHandler<ListQuery, ListResult>
     {
         public ListHandler(PlatformContext dbcontext, IConfigurationProvider configuration)
@@ -96,7 +99,7 @@ public static class PlatformRegionFlow
 
         public async Task<ListResult> Handle(ListQuery request, CancellationToken cancellationToken)
         {
-            IQueryable<PlatformRegion> query = _dbcontext.Set<PlatformRegion>();
+            IQueryable<PlatformService> query = _dbcontext.Set<PlatformService>();
 
             if (request.PlatformInfoId.HasValue)
             {
@@ -108,7 +111,7 @@ public static class PlatformRegionFlow
             {
                 query = query.Where(q =>
                     q.Name.Contains(searchString)
-                    || q.Label.Contains(searchString)
+                    || (q.Category.HasValue() && q.Category!.Contains(searchString))
                     || (q.Description.HasValue() && q.Description!.Contains(searchString)));
             }
 
@@ -166,7 +169,7 @@ public static class PlatformRegionFlow
 
     public record CreateResult
     {
-        public CreateCommand Region { get; set; } = new();
+        public CreateCommand Service { get; set; } = new();
 
         public IList<PlatformInfo> Platforms { get; set; } = [];
     }
@@ -190,7 +193,7 @@ public static class PlatformRegionFlow
 
             return Result.Ok(new CreateResult()
             {
-                Region = CreateNew(request.PlatformInfoId),
+                Service = CreateNew(request.PlatformInfoId),
                 Platforms = platforms
             });
         }
@@ -222,18 +225,19 @@ public static class PlatformRegionFlow
             if (platform is null)
                 return PlatformNotFound(request.PlatformInfoId);
 
-            var record = new PlatformRegion
+            var record = new PlatformService
             {
                 Id = request.Id,
                 PlatformInfo = platform,
                 Name = request.Name,
                 Description = request.Description,
                 Label = request.Label,
+                Category = request.Category,
                 Remark = request.Remark,
                 CreatedDT = DateTime.UtcNow
             };
 
-            await _dbcontext.Set<PlatformRegion>().AddAsync(record, token);
+            await _dbcontext.Set<PlatformService>().AddAsync(record, token);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok(record.Id);
         }
@@ -268,7 +272,7 @@ public static class PlatformRegionFlow
     internal class UpdateCommandMapping : Profile
     {
         public UpdateCommandMapping() => 
-            CreateProjection<PlatformRegion, UpdateCommand>()
+            CreateProjection<PlatformService, UpdateCommand>()
             .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
     }
 
@@ -285,7 +289,7 @@ public static class PlatformRegionFlow
 
         public async Task<Result<UpdateCommand>> Handle(UpdateQuery request, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformRegion>()
+            var record = await _dbcontext.Set<PlatformService>()
                 .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<UpdateCommand>(_configuration)
@@ -308,17 +312,18 @@ public static class PlatformRegionFlow
 
         public async Task<Result> Handle(UpdateCommand command, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformRegion>().FindAsync([command.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<PlatformService>().FindAsync([command.Id], cancellationToken: token);
             if (record is null)
                 return RecordNotFound(command.Id);
 
             record.Name = command.Name;
             record.Description = command.Description;
             record.Label = command.Label;
+            record.Category = command.Category;
             record.Remark = command.Remark;
             record.ModifiedDT = DateTime.UtcNow;
 
-            _dbcontext.Set<PlatformRegion>().Update(record);
+            _dbcontext.Set<PlatformService>().Update(record);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();
         }
@@ -357,7 +362,7 @@ public static class PlatformRegionFlow
     internal sealed class DeleteCommandMapping : Profile
     {
         public DeleteCommandMapping() => 
-            CreateProjection<PlatformRegion, DeleteCommand>()
+            CreateProjection<PlatformService, DeleteCommand>()
             .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
     }
 
@@ -374,7 +379,7 @@ public static class PlatformRegionFlow
 
         public async Task<Result<DeleteCommand>> Handle(DeleteQuery request, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformRegion>()
+            var record = await _dbcontext.Set<PlatformService>()
                 .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<DeleteCommand>(_configuration)
@@ -397,11 +402,11 @@ public static class PlatformRegionFlow
 
         public async Task<Result> Handle(DeleteCommand command, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformRegion>().FindAsync([command.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<PlatformService>().FindAsync([command.Id], cancellationToken: token);
             if (record is null)
                 return RecordNotFound(command.Id);
 
-            _dbcontext.Set<PlatformRegion>().Remove(record);
+            _dbcontext.Set<PlatformService>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();
         }
@@ -416,6 +421,9 @@ public static class PlatformRegionFlow
         [NotMapped]
         [Display(Name = nameof(IsSelected), ResourceType = typeof(Localization))]
         public bool IsSelected { get; set; }
+
+        [NotMapped]
+        public string? ServiceId { get; set; }
     }
 
     public sealed class ImportQuery : EntityListFlow.Query, IRequest<ImportResult>
@@ -454,7 +462,7 @@ public static class PlatformRegionFlow
     }
 
     internal sealed class ImportQueryHandler :
-       EntityListFlow.Handler<PlatformRegion, ImportModel>,
+       EntityListFlow.Handler<PlatformService, ImportModel>,
        IRequestHandler<ImportQuery, ImportResult>
     {
         private readonly PlatformImportOptions _options;
@@ -481,18 +489,18 @@ public static class PlatformRegionFlow
                 };
 
             var searchString = request.SearchText ?? request.CurrentFilter;
-            List<ImportModel> regions = await GetAzureLocationsAsync(platform.Provider.ToString(), request.PlatformInfoId, searchString);
+            List<ImportModel> Services = await GetAzureServicesAsync(platform.Provider.ToString(), request.PlatformInfoId, searchString);
             
             if (!string.IsNullOrEmpty(searchString))
             {
-                regions = regions.Where(q =>
+                Services = Services.Where(q =>
                     q.Name.Contains(searchString, StringComparison.InvariantCultureIgnoreCase)
                     || q.Label.Contains(searchString, StringComparison.InvariantCultureIgnoreCase)
                     || (q.Description.HasValue() && q.Description!.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
                     ).ToList();
             }
 
-            regions = [.. regions.OrderBy(o => o.Name)];
+            Services = [.. Services.OrderBy(o => o.Name)];
             int pageSize = EntityListFlow.PageSize;
             int pageNumber = request.Page ?? 1;
 
@@ -504,34 +512,35 @@ public static class PlatformRegionFlow
                 SortOrder = request.SortOrder,
                 Platforms = platforms,
                 Results = new PaginatedList<ImportModel>(
-                    regions.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
-                    regions.Count,
+                    Services.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
+                    Services.Count,
                     pageNumber,
                     pageSize)
             };
         }
 
-        private async Task<List<ImportModel>> GetAzureLocationsAsync(string platform, Ulid platformInfoId, string searchString)
+        private async Task<List<ImportModel>> GetAzureServicesAsync(string platform, Ulid platformInfoId, string searchString)
         {
             List<ImportModel> result = [];
-            
+
             var service = new AzurePricingService(_options);
-            var pricing = await service.GetRegionsAsync(searchString);
+            var pricing = await service.GetServicesAsync(searchString);
 
             if (pricing is null)
                 return [];
 
             foreach (var item in pricing.Items ?? [])
             {
-                if (item is null || string.IsNullOrEmpty(item.Location))
+                if (item is null || string.IsNullOrEmpty(item.ServiceName))
                     continue;
 
                 result.Add(new ImportModel()
                 {
                     Id = Ulid.NewUlid(),
                     PlatformInfoId = platformInfoId,
-                    Name = item.Location,
-                    Label = item.ArmRegionName ?? item.Location
+                    Name = item.ServiceName,
+                    Label = item.ServiceName,
+                    Category = item.ServiceFamily ?? string.Empty
                 });
             }
 
@@ -560,20 +569,21 @@ public static class PlatformRegionFlow
             bool changes = false;
             foreach (var item in command.Items)
             {
-                var query = _dbcontext.Set<PlatformRegion>().FirstOrDefault(q => q.PlatformInfoId == platform.Id && q.Name == item.Name);
+                var query = _dbcontext.Set<PlatformService>().FirstOrDefault(q => q.PlatformInfoId == platform.Id && q.Name == item.Name);
                 if (query is null)
                 {
-                    PlatformRegion record = new()
+                    PlatformService record = new()
                     {
                         Id = Ulid.NewUlid(),
                         PlatformInfo = platform,
                         Name = item.Name,
                         Label = item.Label,
+                        Category = item.Category,
                         Description = item.Description,
                         Remark = item.Remark,
                         CreatedDT = DateTime.UtcNow
                     };
-                    _dbcontext.Set<PlatformRegion>().Add(record);
+                    _dbcontext.Set<PlatformService>().Add(record);
                     changes = true;
                 }
             }
@@ -584,5 +594,4 @@ public static class PlatformRegionFlow
             return Result.Ok();
         }
     }
-
 }

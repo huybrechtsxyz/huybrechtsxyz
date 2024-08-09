@@ -175,25 +175,25 @@
     <value>Create new region</value>
   </data>
   <data name="RegionCreateTitle" xml:space="preserve">
-    <value>Regions</value>
+    <value>Create region</value>
   </data>
   <data name="RegionDeleteInfo" xml:space="preserve">
     <value>Delete existing region</value>
   </data>
   <data name="RegionDeleteTitle" xml:space="preserve">
-    <value>Regions</value>
+    <value>Delete region</value>
   </data>
   <data name="RegionEditInfo" xml:space="preserve">
     <value>Edit existing region</value>
   </data>
   <data name="RegionEditTitle" xml:space="preserve">
-    <value>Regions</value>
+    <value>Edit region</value>
   </data>
   <data name="RegionImportInfo" xml:space="preserve">
     <value>Import platform regions</value>
   </data>
   <data name="RegionImportTitle" xml:space="preserve">
-    <value>Regions</value>
+    <value>Import regions</value>
   </data>
   <data name="RegionIndexInfo" xml:space="preserve">
     <value>The available platform regions</value>
@@ -212,5 +212,35 @@
   </data>
   <data name="Select" xml:space="preserve">
     <value>Select</value>
+  </data>
+  <data name="ServiceCreateInfo" xml:space="preserve">
+    <value>Create new Service</value>
+  </data>
+  <data name="ServiceCreateTitle" xml:space="preserve">
+    <value>Create service</value>
+  </data>
+  <data name="ServiceDeleteInfo" xml:space="preserve">
+    <value>Delete existing Service</value>
+  </data>
+  <data name="ServiceDeleteTitle" xml:space="preserve">
+    <value>Delete service</value>
+  </data>
+  <data name="ServiceEditInfo" xml:space="preserve">
+    <value>Edit existing Service</value>
+  </data>
+  <data name="ServiceEditTitle" xml:space="preserve">
+    <value>Edit service</value>
+  </data>
+  <data name="ServiceImportInfo" xml:space="preserve">
+    <value>Import platform Services</value>
+  </data>
+  <data name="ServiceImportTitle" xml:space="preserve">
+    <value>Import services</value>
+  </data>
+  <data name="ServiceIndexInfo" xml:space="preserve">
+    <value>The available platform Services</value>
+  </data>
+  <data name="ServiceIndexTitle" xml:space="preserve">
+    <value>Services</value>
   </data>
 </root>

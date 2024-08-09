@@ -175,25 +175,25 @@
     <value>Maak een nieuwe region aan</value>
   </data>
   <data name="RegionCreateTitle" xml:space="preserve">
-    <value>Regio's</value>
+    <value>Nieuwe regio</value>
   </data>
   <data name="RegionDeleteInfo" xml:space="preserve">
     <value>Verwijder region</value>
   </data>
   <data name="RegionDeleteTitle" xml:space="preserve">
-    <value>Regio's</value>
+    <value>Verwijder regio</value>
   </data>
   <data name="RegionEditInfo" xml:space="preserve">
     <value>Pas de region aan</value>
   </data>
   <data name="RegionEditTitle" xml:space="preserve">
-    <value>Regio's</value>
+    <value>Regio aanpassen</value>
   </data>
   <data name="RegionImportInfo" xml:space="preserve">
     <value>Importeer platform regio's</value>
   </data>
   <data name="RegionImportTitle" xml:space="preserve">
-    <value>Regio's</value>
+    <value>Importeer regio's</value>
   </data>
   <data name="RegionIndexInfo" xml:space="preserve">
     <value>Beschikbare platform regio's</value>
@@ -212,5 +212,38 @@
   </data>
   <data name="Select" xml:space="preserve">
     <value>Selecteer</value>
+  </data>
+  <data name="ServiceCreateInfo" xml:space="preserve">
+    <value>Maak een nieuwe dienst aan</value>
+  </data>
+  <data name="ServiceCreateTitle" xml:space="preserve">
+    <value>Nieuwe dienst</value>
+  </data>
+  <data name="ServiceDeleteInfo" xml:space="preserve">
+    <value>Verwijder dienst</value>
+  </data>
+  <data name="ServiceDeleteTitle" xml:space="preserve">
+    <value>Verwijder dienst</value>
+  </data>
+  <data name="ServiceEditInfo" xml:space="preserve">
+    <value>Pas de dienst aan</value>
+  </data>
+  <data name="ServiceEditTitle" xml:space="preserve">
+    <value>Dienst aanpassen</value>
+  </data>
+  <data name="ServiceImportInfo" xml:space="preserve">
+    <value>Importeer platform diensten</value>
+  </data>
+  <data name="ServiceImportTitle" xml:space="preserve">
+    <value>Importeer diensten</value>
+  </data>
+  <data name="ServiceIndexInfo" xml:space="preserve">
+    <value>Beschikbare platform diensten</value>
+  </data>
+  <data name="ServiceIndexTitle" xml:space="preserve">
+    <value>Diensten</value>
+  </data>
+  <data name="Services" xml:space="preserve">
+    <value>Diensten</value>
   </data>
 </root>

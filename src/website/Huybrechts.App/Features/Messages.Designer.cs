@@ -61,7 +61,7 @@ namespace Huybrechts.App.Features {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Kan platform met ID {0} niet vinden.
+        ///   Looks up a localized string similar to Unable to find platform with ID {0}.
         /// </summary>
         public static string NOT_FOUND_PLATFORM_ID {
             get {
@@ -70,11 +70,20 @@ namespace Huybrechts.App.Features {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Kan platform region met ID {0} niet vinden.
+        ///   Looks up a localized string similar to Unable to find region with ID {0}.
         /// </summary>
         public static string NOT_FOUND_PLATFORMREGION_ID {
             get {
                 return ResourceManager.GetString("NOT_FOUND_PLATFORMREGION_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find service with ID {0}.
+        /// </summary>
+        public static string NOT_FOUND_PLATFORMSERVICE_ID {
+            get {
+                return ResourceManager.GetString("NOT_FOUND_PLATFORMSERVICE_ID", resourceCulture);
             }
         }
     }
