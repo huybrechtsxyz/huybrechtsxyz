@@ -1,15 +1,14 @@
 ﻿@page
 @using Huybrechts.Core.Platform
 @inject IStringLocalizer<Localization> SL
-@model Huybrechts.Web.Pages.Features.Platform.Service.EditModel
+@model Huybrechts.Web.Pages.Features.Platform.Product.CreateModel
 @{
-    ViewData["CardTitle"] = SL["ServiceEditTitle"];
+    ViewData["CardTitle"] = SL["ProductCreateTitle"];
     //ViewData["ActivePage"] = ManageNavPages.Info;
 }
-
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
-    @SL["ServiceEditInfo"]
+    @SL["ProductCreateInfo"]
 </p>
 
 <div class="row">
@@ -54,15 +53,16 @@
                 <span asp-validation-for="Data.Remark" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <a class="w-30 btn btn-lg btn-secondary" asp-page="./Index"><i class="bi bi-arrow-left-circle-fill"></i></a>
-                <button id="edit-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+                <a class="w-30 btn btn-lg btn-secondary" asp-page="Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                <button id="create-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
             </div>
         </form>
     </div>
 </div>
 
+
 @section Breadcrumb {
-    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Service/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Services"]</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Products"]</a></li>
 }
 
 @section Scripts {

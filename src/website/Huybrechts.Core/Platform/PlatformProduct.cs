@@ -6,12 +6,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Huybrechts.Core.Platform;
 
 /// <summary>
-/// The services available on the platform (type of resource)
+/// The Products available on the platform (type of resource)
 /// Azure -> API Management
 /// </summary>
 [MultiTenant]
-[Table("PlatformService")]
-public record PlatformService : Entity, IEntity
+[Table("PlatformProduct")]
+public record PlatformProduct : Entity, IEntity
 {
     /// <summary>
     /// PlatformInfo FK
@@ -26,30 +26,30 @@ public record PlatformService : Entity, IEntity
     public virtual PlatformInfo PlatformInfo { get; set; } = new();
 
     /// <summary>
-    /// Name of the object
+    /// Name of the product
     /// </summary>
     [Required]
     [MaxLength(128)]
-    [Comment("Name")]
+    [Comment("Name of the product")]
     public string Name { get; set;} = string.Empty;
 
     /// <summary>
-    /// Label of the service
+    /// Label of the product
     /// </summary>
     [Required]
     [MaxLength(128)]
-    [Comment("Label of the service")]
+    [Comment("Label of the product")]
     public string Label { get; set; } = string.Empty;
 
     /// <summary>
-    /// Category or family of the object
+    /// Category or family of the product
     /// </summary>
     [MaxLength(100)]
-    [Comment("Service Category")]
+    [Comment("Product category")]
     public string? Category { get; set; }
 
     /// <summary>
-    /// Description of the object
+    /// Description of the product
     /// </summary>
     [MaxLength(256)]
     [Comment("Description")]

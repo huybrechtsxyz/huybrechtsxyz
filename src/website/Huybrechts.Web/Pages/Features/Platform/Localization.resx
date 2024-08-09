@@ -171,6 +171,39 @@
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
   </data>
+  <data name="ProductCreateInfo" xml:space="preserve">
+    <value>Create new Product</value>
+  </data>
+  <data name="ProductCreateTitle" xml:space="preserve">
+    <value>Create product</value>
+  </data>
+  <data name="ProductDeleteInfo" xml:space="preserve">
+    <value>Delete existing Product</value>
+  </data>
+  <data name="ProductDeleteTitle" xml:space="preserve">
+    <value>Delete product</value>
+  </data>
+  <data name="ProductEditInfo" xml:space="preserve">
+    <value>Edit existing Product</value>
+  </data>
+  <data name="ProductEditTitle" xml:space="preserve">
+    <value>Edit product</value>
+  </data>
+  <data name="ProductImportInfo" xml:space="preserve">
+    <value>Import platform Products</value>
+  </data>
+  <data name="ProductImportTitle" xml:space="preserve">
+    <value>Import products</value>
+  </data>
+  <data name="ProductIndexInfo" xml:space="preserve">
+    <value>The available platform Products</value>
+  </data>
+  <data name="ProductIndexTitle" xml:space="preserve">
+    <value>Products</value>
+  </data>
+  <data name="Products" xml:space="preserve">
+    <value>Products</value>
+  </data>
   <data name="RegionCreateInfo" xml:space="preserve">
     <value>Create new region</value>
   </data>

@@ -5,34 +5,34 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-using Flow = Huybrechts.App.Features.Platform.PlatformServiceFlow;
+using Flow = Huybrechts.App.Features.Platform.PlatformProductFlow;
 
-namespace Huybrechts.Web.Pages.Features.Platform.Service;
+namespace Huybrechts.Web.Pages.Features.Platform.Product;
 
 [Authorize(Policy = TenantPolicies.IsManager)]
-public class CreateModel : PageModel
+public class EditModel : PageModel
 {
     private readonly IMediator _mediator;
 
     [BindProperty]
-    public Flow.CreateCommand Data { get; set; }
+    public Flow.UpdateCommand Data { get; set; }
 
     public IList<PlatformInfo> Platforms { get; set; } = [];
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    public CreateModel(IMediator mediator)
+    public EditModel(IMediator mediator)
     {
         _mediator = mediator;
         Data = new();
     }
 
-    public async Task<IActionResult> OnGetAsync(Ulid PlatformInfoId)
+    public async Task<IActionResult> OnGetAsync(Ulid Id)
     {
-        var result = await _mediator.Send(request: new Flow.CreateQuery
+        var result = await _mediator.Send(request: new Flow.UpdateQuery
         {
-            PlatformInfoId = PlatformInfoId
+            Id = Id
         });
         if (result.IsFailed)
         {
@@ -41,7 +41,7 @@ public class CreateModel : PageModel
         }
 
         Platforms = result.Value.Platforms;
-        Data = result.Value.Service;
+        Data = result.Value;
         return Page();
     }
 

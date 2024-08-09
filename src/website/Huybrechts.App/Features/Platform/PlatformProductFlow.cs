@@ -15,7 +15,7 @@ using System.Linq.Dynamic.Core;
 
 namespace Huybrechts.App.Features.Platform;
 
-public static class PlatformServiceFlow
+public static class PlatformProductFlow
 {
     public record Model
     {
@@ -70,7 +70,7 @@ public static class PlatformServiceFlow
     internal sealed class ListMapping : Profile
     {
         public ListMapping() =>
-            CreateProjection<PlatformService, ListModel>()
+            CreateProjection<PlatformProduct, ListModel>()
             .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
     }
 
@@ -89,7 +89,7 @@ public static class PlatformServiceFlow
     }
 
     internal sealed class ListHandler :
-        EntityListFlow.Handler<PlatformService, ListModel>,
+        EntityListFlow.Handler<PlatformProduct, ListModel>,
         IRequestHandler<ListQuery, ListResult>
     {
         public ListHandler(PlatformContext dbcontext, IConfigurationProvider configuration)
@@ -99,11 +99,11 @@ public static class PlatformServiceFlow
 
         public async Task<ListResult> Handle(ListQuery request, CancellationToken cancellationToken)
         {
-            IQueryable<PlatformService> query = _dbcontext.Set<PlatformService>();
+            IQueryable<PlatformProduct> query = _dbcontext.Set<PlatformProduct>();
 
             if (request.PlatformInfoId.HasValue)
             {
-                query.Where(q => q.PlatformInfoId == request.PlatformInfoId);
+                query = query.Where(q => q.PlatformInfoId == request.PlatformInfoId);
             }
 
             var searchString = request.SearchText ?? request.CurrentFilter;
@@ -169,7 +169,7 @@ public static class PlatformServiceFlow
 
     public record CreateResult
     {
-        public CreateCommand Service { get; set; } = new();
+        public CreateCommand Item { get; set; } = new();
 
         public IList<PlatformInfo> Platforms { get; set; } = [];
     }
@@ -193,7 +193,7 @@ public static class PlatformServiceFlow
 
             return Result.Ok(new CreateResult()
             {
-                Service = CreateNew(request.PlatformInfoId),
+                Item = CreateNew(request.PlatformInfoId),
                 Platforms = platforms
             });
         }
@@ -225,7 +225,7 @@ public static class PlatformServiceFlow
             if (platform is null)
                 return PlatformNotFound(request.PlatformInfoId);
 
-            var record = new PlatformService
+            var record = new PlatformProduct
             {
                 Id = request.Id,
                 PlatformInfo = platform,
@@ -237,7 +237,7 @@ public static class PlatformServiceFlow
                 CreatedDT = DateTime.UtcNow
             };
 
-            await _dbcontext.Set<PlatformService>().AddAsync(record, token);
+            await _dbcontext.Set<PlatformProduct>().AddAsync(record, token);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok(record.Id);
         }
@@ -272,7 +272,7 @@ public static class PlatformServiceFlow
     internal class UpdateCommandMapping : Profile
     {
         public UpdateCommandMapping() => 
-            CreateProjection<PlatformService, UpdateCommand>()
+            CreateProjection<PlatformProduct, UpdateCommand>()
             .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
     }
 
@@ -289,7 +289,7 @@ public static class PlatformServiceFlow
 
         public async Task<Result<UpdateCommand>> Handle(UpdateQuery request, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformService>()
+            var record = await _dbcontext.Set<PlatformProduct>()
                 .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<UpdateCommand>(_configuration)
@@ -312,7 +312,7 @@ public static class PlatformServiceFlow
 
         public async Task<Result> Handle(UpdateCommand command, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformService>().FindAsync([command.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<PlatformProduct>().FindAsync([command.Id], cancellationToken: token);
             if (record is null)
                 return RecordNotFound(command.Id);
 
@@ -323,7 +323,7 @@ public static class PlatformServiceFlow
             record.Remark = command.Remark;
             record.ModifiedDT = DateTime.UtcNow;
 
-            _dbcontext.Set<PlatformService>().Update(record);
+            _dbcontext.Set<PlatformProduct>().Update(record);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();
         }
@@ -362,7 +362,7 @@ public static class PlatformServiceFlow
     internal sealed class DeleteCommandMapping : Profile
     {
         public DeleteCommandMapping() => 
-            CreateProjection<PlatformService, DeleteCommand>()
+            CreateProjection<PlatformProduct, DeleteCommand>()
             .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
     }
 
@@ -379,7 +379,7 @@ public static class PlatformServiceFlow
 
         public async Task<Result<DeleteCommand>> Handle(DeleteQuery request, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformService>()
+            var record = await _dbcontext.Set<PlatformProduct>()
                 .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<DeleteCommand>(_configuration)
@@ -402,11 +402,11 @@ public static class PlatformServiceFlow
 
         public async Task<Result> Handle(DeleteCommand command, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformService>().FindAsync([command.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<PlatformProduct>().FindAsync([command.Id], cancellationToken: token);
             if (record is null)
                 return RecordNotFound(command.Id);
 
-            _dbcontext.Set<PlatformService>().Remove(record);
+            _dbcontext.Set<PlatformProduct>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();
         }
@@ -462,7 +462,7 @@ public static class PlatformServiceFlow
     }
 
     internal sealed class ImportQueryHandler :
-       EntityListFlow.Handler<PlatformService, ImportModel>,
+       EntityListFlow.Handler<PlatformProduct, ImportModel>,
        IRequestHandler<ImportQuery, ImportResult>
     {
         private readonly PlatformImportOptions _options;
@@ -569,10 +569,10 @@ public static class PlatformServiceFlow
             bool changes = false;
             foreach (var item in command.Items)
             {
-                var query = _dbcontext.Set<PlatformService>().FirstOrDefault(q => q.PlatformInfoId == platform.Id && q.Name == item.Name);
+                var query = _dbcontext.Set<PlatformProduct>().FirstOrDefault(q => q.PlatformInfoId == platform.Id && q.Name == item.Name);
                 if (query is null)
                 {
-                    PlatformService record = new()
+                    PlatformProduct record = new()
                     {
                         Id = Ulid.NewUlid(),
                         PlatformInfo = platform,
@@ -583,7 +583,7 @@ public static class PlatformServiceFlow
                         Remark = item.Remark,
                         CreatedDT = DateTime.UtcNow
                     };
-                    _dbcontext.Set<PlatformService>().Add(record);
+                    _dbcontext.Set<PlatformProduct>().Add(record);
                     changes = true;
                 }
             }

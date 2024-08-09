@@ -1,15 +1,15 @@
 ﻿@page
 @inject IStringLocalizer<Localization> SL
-@model Huybrechts.Web.Pages.Features.Platform.Service.IndexModel
+@model Huybrechts.Web.Pages.Features.Platform.Product.IndexModel
 @{
-    ViewData["CardTitle"] = SL["ServiceIndexTitle"];
+    ViewData["CardTitle"] = SL["ProductIndexTitle"];
     //ViewData["ActivePage"] = ManageNavPages.Info;
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
-    @SL["ServiceIndexInfo"]
+    @SL["ProductIndexInfo"]
 </p>
 <div class="row">
     <div class="col-md-12">
@@ -115,5 +115,5 @@
 </div>
 
 @section Breadcrumb {
-    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Service/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Services"]</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Products"]</a></li>
 }

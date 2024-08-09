@@ -76,6 +76,71 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformProduct", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasComment("Product category");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasComment("Description");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Label of the product");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Name of the product");
+
+                    b.Property<string>("PlatformInfoId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("PlatformInfo FK");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("text")
+                        .HasComment("Remark");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlatformInfoId");
+
+                    b.ToTable("PlatformProduct");
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
                 {
                     b.Property<string>("Id")
@@ -139,72 +204,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("character varying(26)")
-                        .HasComment("Primary Key");
-
-                    b.Property<string>("Category")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasComment("Service Category");
-
-                    b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("timestamp with time zone")
-                        .HasComment("Date time created");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasComment("Description");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasComment("Label of the service");
-
-                    b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("timestamp with time zone")
-                        .HasComment("Modified time created");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasComment("Name");
-
-                    b.Property<string>("PlatformInfoId")
-                        .IsRequired()
-                        .HasColumnType("character varying(26)")
-                        .HasComment("PlatformInfo FK");
-
-                    b.Property<string>("Remark")
-                        .HasColumnType("text")
-                        .HasComment("Remark");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlatformInfoId");
-
-                    b.ToTable("PlatformService");
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformProduct", b =>
                 {
                     b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")
                         .WithMany()
@@ -215,7 +215,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                     b.Navigation("PlatformInfo");
                 });
 
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
                 {
                     b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")
                         .WithMany()

@@ -8,25 +8,14 @@ class Region {
 
 Platform "1" -- "0..*" Region
 
-class Service {
-}
-
-Platform "1" -- "0..*" Service
-
 class Product {
 }
 
 Platform "1" -- "0..*" Product
-Service "1" -- "0..*" Product
 
-class Rate {
-}
 
-Product "1" -- "0..*" Rate
 
-class RateUnit {
-}
 
-Rate "1" -- "0..*" RateUnit
+
 
 @enduml

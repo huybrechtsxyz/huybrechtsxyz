@@ -100,7 +100,7 @@ public static class PlatformRegionFlow
 
             if (request.PlatformInfoId.HasValue)
             {
-                query.Where(q => q.PlatformInfoId == request.PlatformInfoId);
+                query = query.Where(q => q.PlatformInfoId == request.PlatformInfoId);
             }
 
             var searchString = request.SearchText ?? request.CurrentFilter;

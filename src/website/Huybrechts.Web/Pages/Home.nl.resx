@@ -120,4 +120,10 @@
   <data name="Home" xml:space="preserve">
     <value>Start</value>
   </data>
+  <data name="Please create a team before continuing." xml:space="preserve">
+    <value>Maak een team aan voordat u doorgaat.</value>
+  </data>
+  <data name="Start here" xml:space="preserve">
+    <value>Start hier</value>
+  </data>
 </root>

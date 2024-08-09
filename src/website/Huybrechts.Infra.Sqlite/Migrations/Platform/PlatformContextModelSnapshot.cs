@@ -71,6 +71,71 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformProduct", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
+                        .HasComment("Primary Key");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT")
+                        .HasComment("Product category");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("TEXT")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasComment("Description");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasComment("Label of the product");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("TEXT")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasComment("Name of the product");
+
+                    b.Property<string>("PlatformInfoId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasComment("PlatformInfo FK");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("TEXT")
+                        .HasComment("Remark");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("BLOB");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlatformInfoId");
+
+                    b.ToTable("PlatformProduct");
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
                 {
                     b.Property<string>("Id")
@@ -134,72 +199,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT")
-                        .HasComment("Primary Key");
-
-                    b.Property<string>("Category")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT")
-                        .HasComment("Service Category");
-
-                    b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Date time created");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT")
-                        .HasComment("Description");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("Label of the service");
-
-                    b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Modified time created");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("Name");
-
-                    b.Property<string>("PlatformInfoId")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("PlatformInfo FK");
-
-                    b.Property<string>("Remark")
-                        .HasColumnType("TEXT")
-                        .HasComment("Remark");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlatformInfoId");
-
-                    b.ToTable("PlatformService");
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformProduct", b =>
                 {
                     b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")
                         .WithMany()
@@ -210,7 +210,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                     b.Navigation("PlatformInfo");
                 });
 
-            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
                 {
                     b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")
                         .WithMany()

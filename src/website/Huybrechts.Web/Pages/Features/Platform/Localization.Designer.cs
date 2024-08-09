@@ -223,6 +223,105 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new Product.
+        /// </summary>
+        public static string ProductCreateInfo {
+            get {
+                return ResourceManager.GetString("ProductCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create product.
+        /// </summary>
+        public static string ProductCreateTitle {
+            get {
+                return ResourceManager.GetString("ProductCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete existing Product.
+        /// </summary>
+        public static string ProductDeleteInfo {
+            get {
+                return ResourceManager.GetString("ProductDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete product.
+        /// </summary>
+        public static string ProductDeleteTitle {
+            get {
+                return ResourceManager.GetString("ProductDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit existing Product.
+        /// </summary>
+        public static string ProductEditInfo {
+            get {
+                return ResourceManager.GetString("ProductEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit product.
+        /// </summary>
+        public static string ProductEditTitle {
+            get {
+                return ResourceManager.GetString("ProductEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import platform Products.
+        /// </summary>
+        public static string ProductImportInfo {
+            get {
+                return ResourceManager.GetString("ProductImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import products.
+        /// </summary>
+        public static string ProductImportTitle {
+            get {
+                return ResourceManager.GetString("ProductImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The available platform Products.
+        /// </summary>
+        public static string ProductIndexInfo {
+            get {
+                return ResourceManager.GetString("ProductIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Products.
+        /// </summary>
+        public static string ProductIndexTitle {
+            get {
+                return ResourceManager.GetString("ProductIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Products.
+        /// </summary>
+        public static string Products {
+            get {
+                return ResourceManager.GetString("Products", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new region.
         /// </summary>
         public static string RegionCreateInfo {

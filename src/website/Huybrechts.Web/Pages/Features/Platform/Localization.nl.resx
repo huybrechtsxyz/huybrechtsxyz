@@ -171,6 +171,39 @@
   <data name="Previous" xml:space="preserve">
     <value>Vorige</value>
   </data>
+  <data name="ProductCreateInfo" xml:space="preserve">
+    <value>Maak een nieuwe product aan</value>
+  </data>
+  <data name="ProductCreateTitle" xml:space="preserve">
+    <value>Nieuw product</value>
+  </data>
+  <data name="ProductDeleteInfo" xml:space="preserve">
+    <value>Verwijder product</value>
+  </data>
+  <data name="ProductDeleteTitle" xml:space="preserve">
+    <value>Verwijder product</value>
+  </data>
+  <data name="ProductEditInfo" xml:space="preserve">
+    <value>Pas het product aan</value>
+  </data>
+  <data name="ProductEditTitle" xml:space="preserve">
+    <value>Product aanpassen</value>
+  </data>
+  <data name="ProductImportInfo" xml:space="preserve">
+    <value>Importeer platform producten</value>
+  </data>
+  <data name="ProductImportTitle" xml:space="preserve">
+    <value>Importeer producten</value>
+  </data>
+  <data name="ProductIndexInfo" xml:space="preserve">
+    <value>Beschikbare platform producten</value>
+  </data>
+  <data name="ProductIndexTitle" xml:space="preserve">
+    <value>Producten</value>
+  </data>
+  <data name="Products" xml:space="preserve">
+    <value>Producten</value>
+  </data>
   <data name="RegionCreateInfo" xml:space="preserve">
     <value>Maak een nieuwe region aan</value>
   </data>

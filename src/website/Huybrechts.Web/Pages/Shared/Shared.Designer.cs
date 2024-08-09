@@ -79,7 +79,7 @@ namespace Huybrechts.Web.Pages.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Uitloggen.
+        ///   Looks up a localized string similar to Logout.
         /// </summary>
         public static string Logout {
             get {

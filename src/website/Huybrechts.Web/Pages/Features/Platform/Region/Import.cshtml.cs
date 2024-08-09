@@ -50,6 +50,6 @@ public class ImportModel : PageModel
             Items = selection
         });
 
-        return this.RedirectToPage(nameof(Index));
+        return this.RedirectToPage(nameof(Index), new { platformInfoId = Data.PlatformInfoId });
     }
 }

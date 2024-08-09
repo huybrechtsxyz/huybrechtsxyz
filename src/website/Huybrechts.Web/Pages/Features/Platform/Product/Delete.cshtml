@@ -1,15 +1,15 @@
 ﻿@page
 @using Huybrechts.Core.Platform
 @inject IStringLocalizer<Localization> SL
-@model Huybrechts.Web.Pages.Features.Platform.Service.DeleteModel
+@model Huybrechts.Web.Pages.Features.Platform.Product.DeleteModel
 @{
-    ViewData["CardTitle"] = SL["ServiceDeleteTitle"];
+    ViewData["CardTitle"] = SL["ProductDeleteTitle"];
     //ViewData["ActivePage"] = ManageNavPages.Info;
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
 <p class="text-info">
-    @SL["ServiceDeleteInfo"]
+    @SL["ProductDeleteInfo"]
 </p>
 
 <div class="row">
@@ -54,7 +54,7 @@
                 <span asp-validation-for="Data.Remark" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <a class="w-30 btn btn-lg btn-secondary" asp-page="./Index"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                <a class="w-30 btn btn-lg btn-secondary" asp-page="Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId"><i class="bi bi-arrow-left-circle-fill"></i></a>
                 <button id="delete-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-trash2-fill"></i></button>
             </div>
         </form>
@@ -62,7 +62,7 @@
 </div>
 
 @section Breadcrumb {
-    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Service/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Services"]</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Products"]</a></li>
 }
 
 @section Scripts {
