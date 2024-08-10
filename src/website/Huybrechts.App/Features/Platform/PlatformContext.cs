@@ -35,6 +35,8 @@ public class PlatformContext : FeatureContext
 
     public DbSet<PlatformProduct> Products { get; set; }
 
+    public DbSet<PlatformService> Services { get; set; }
+
     //
     // TODO
     //
@@ -44,8 +46,6 @@ public class PlatformContext : FeatureContext
     public DbSet<PlatformMeasureUnit> MeasureUnits { get; set; }
 
     public DbSet<PlatformMeasureDefault> MeasureDefaults { get; set; }
-
-    public DbSet<PlatformResource> Resources { get; set; }
 
     public DbSet<PlatformRate> Rates { get; set; }
 

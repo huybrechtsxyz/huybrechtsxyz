@@ -10,12 +10,19 @@ public class AzurePricingService
     {
         All = 0,
         Regions = 1,
-        Services = 2
+        Services = 2,
+        Rates = 3
     }
 
     private readonly PlatformImportOptions _options;
 
-    private static async Task<PricingResponse?> GetPricingItemsAsync(PlatformImportOptionSettings request, ServiceType type, string searchString)
+    private static async Task<PricingResponse?> GetPricingItemsAsync(
+        PlatformImportOptionSettings request, 
+        ServiceType type,
+        string currency, 
+        string service, 
+        string location,
+        string searchString)
     {
         PricingResponse? pricingResult = null;
         var uniqueset = new HashSet<string>();
@@ -37,7 +44,15 @@ public class AzurePricingService
             if (!string.IsNullOrEmpty(searchString))
                 requestUrl += request.ServiceSearch.Replace("{0}", searchString);
         }
-        else throw new NotImplementedException();
+        else
+        {
+            requestUrl = request.RatesUrl
+                .Replace("{currency}", currency)
+                .Replace("{service}", service)
+                .Replace("{location}", location);
+            if (!string.IsNullOrEmpty(searchString))
+                requestUrl += request.RatesSearch.Replace("{0}", searchString);
+        }
 
         while (!string.IsNullOrEmpty(requestUrl) && currentPage < maxPages)
         {
@@ -242,13 +257,36 @@ public class AzurePricingService
         _options = options;
     }
 
-    public async Task<PricingResponse?> GetRegionsAsync(string searchString)
+    public async Task<PricingResponse?> GetRegionsAsync(string currency, string service, string location, string searchString)
     {
-        return await GetPricingItemsAsync(_options.Platforms["Azure"], ServiceType.Regions, searchString);
+        return await GetPricingItemsAsync(
+            _options.Platforms["Azure"],
+            ServiceType.Regions,
+            currency,
+            service,
+            location,
+            searchString);
     }
 
-    public async Task<PricingResponse?> GetServicesAsync(string searchString)
+    public async Task<PricingResponse?> GetServicesAsync(string currency, string service, string location, string searchString)
     {
-        return await GetPricingItemsAsync(_options.Platforms["Azure"], ServiceType.Services, searchString);
+        return await GetPricingItemsAsync(
+            _options.Platforms["Azure"],
+            ServiceType.Services,
+            currency,
+            service,
+            location,
+            searchString);
+    }
+
+    public async Task<PricingResponse?> GetRatesAsync(string currency, string service, string location, string searchString)
+    {
+        return await GetPricingItemsAsync(
+            _options.Platforms["Azure"], 
+            ServiceType.Rates, 
+            currency,
+            service,
+            location,
+            searchString);
     }
 }

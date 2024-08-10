@@ -6,13 +6,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Huybrechts.Core.Platform;
 
 /// <summary>
-/// The products of the platform
+/// The services of the platform
 /// Azure -> APIm - Standard
-/// One Platform has multiple products
+/// One Platform has multiple services
 /// </summary>
 [MultiTenant]
-[Table("PlatformProduct")]
-public record PlatformResource : Entity, IEntity
+[Table("PlatformService")]
+public record PlatformService : Entity, IEntity
 {
     /// <summary>
     /// PlatformInfo FK
@@ -34,54 +34,54 @@ public record PlatformResource : Entity, IEntity
     public Ulid? PlatformRegionId { get; set; }
 
     /// <summary>
-    /// PlatformService FK
+    /// PlatformProduct FK
     /// </summary>
     [Required]
-    [Comment("PlatformService FK")]
-    public Ulid? PlatformServiceId { get; set;}
+    [Comment("PlatformProduct FK")]
+    public Ulid? PlatformProductId { get; set;}
 
     /// <summary>
-    /// Name of the product
+    /// Name of the service
     /// </summary>
     [Required]
     [MaxLength(128)]
-    [Comment("Name of the product")]
+    [Comment("Name of the service")]
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// Label of the product
+    /// Label of the service
     /// </summary>
     [Required]
     [MaxLength(128)]
-    [Comment("Label of the product")]
+    [Comment("Label of the service")]
     public string Label { get; set; } = string.Empty;
 
     /// <summary>
-    /// Description of the product
+    /// Description of the service
     /// </summary>
     [MaxLength(256)]
-    [Comment("Description of the product")]
+    [Comment("Description of the service")]
     public string? Description { get; set; }
 
     /// <summary>
-    /// Cost driver of the product
+    /// Cost driver of the service
     /// </summary>
     [MaxLength(256)]
     [Comment("Cost driver")]
     public string? CostDriver { get; set; }
 
     /// <summary>
-    /// The cost is based on ? for the product
+    /// The cost is based on ? for the service
     /// </summary>
     [MaxLength(128)]
-    [Comment("Cost is based on what parameters for the product")]
+    [Comment("Cost is based on what parameters for the service")]
     public string? CostBasedOn { get; set; }
 
     /// <summary>
-    /// Limitations of the product
+    /// Limitations of the service
     /// </summary>
     [MaxLength(512)]
-    [Comment("Limitations of the product")]
+    [Comment("Limitations of the service")]
     public string? Limitations { get; set; }
 
     /// <summary>
@@ -99,29 +99,29 @@ public record PlatformResource : Entity, IEntity
     public string? PricingURL { get; set; }
 
     /// <summary>
-    /// Original id of the product
+    /// Original id of the service
     /// </summary>
     [MaxLength(64)]
-    [Comment("Original id of the product")]
-    public string? ProductId { get; set; }
+    [Comment("Original id of the service")]
+    public string? ServiceId { get; set; }
 
     /// <summary>
-    /// Original name of the product
+    /// Original name of the service
     /// </summary>
     [MaxLength(64)]
-    [Comment("Original name of the product")]
-    public string? ProductName { get; set; }
+    [Comment("Original name of the service")]
+    public string? ServiceName { get; set; }
 
     /// <summary>
-    /// Size/pricing tier of the product
+    /// Size/pricing tier of the service
     /// </summary>
     [MaxLength(128)]
-    [Comment("Size/pricing tier of the product")]
+    [Comment("Size/pricing tier of the service")]
     public string? Size { get; set; }
 
     /// <summary>
-    /// Size/pricing tier of the product
+    /// Size/pricing tier of the service
     /// </summary>
-    [Comment("Remarks about the product")]
+    [Comment("Remarks about the service")]
     public string? Remark { get; set; }
 }

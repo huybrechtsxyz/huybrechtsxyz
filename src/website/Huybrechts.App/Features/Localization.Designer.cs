@@ -61,6 +61,33 @@ namespace Huybrechts.App.Features {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to About URL.
+        /// </summary>
+        public static string AboutURL {
+            get {
+                return ResourceManager.GetString("AboutURL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Region Name (ARM).
+        /// </summary>
+        public static string ArmRegionName {
+            get {
+                return ResourceManager.GetString("ArmRegionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sku Name (ARM).
+        /// </summary>
+        public static string ArmSkuName {
+            get {
+                return ResourceManager.GetString("ArmSkuName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Category.
         /// </summary>
         public static string Category {
@@ -70,11 +97,56 @@ namespace Huybrechts.App.Features {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cost is based on.
+        /// </summary>
+        public static string CostBasedOn {
+            get {
+                return ResourceManager.GetString("CostBasedOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cost is driven by.
+        /// </summary>
+        public static string CostDriver {
+            get {
+                return ResourceManager.GetString("CostDriver", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Currency.
+        /// </summary>
+        public static string CurrencyCode {
+            get {
+                return ResourceManager.GetString("CurrencyCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Description.
         /// </summary>
         public static string Description {
             get {
                 return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Effective Start Date.
+        /// </summary>
+        public static string EffectiveStartDate {
+            get {
+                return ResourceManager.GetString("EffectiveStartDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Primary Meter Region.
+        /// </summary>
+        public static string IsPrimaryMeterRegion {
+            get {
+                return ResourceManager.GetString("IsPrimaryMeterRegion", resourceCulture);
             }
         }
         
@@ -97,6 +169,42 @@ namespace Huybrechts.App.Features {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Limitations.
+        /// </summary>
+        public static string Limitations {
+            get {
+                return ResourceManager.GetString("Limitations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location.
+        /// </summary>
+        public static string Location {
+            get {
+                return ResourceManager.GetString("Location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meter Identifier.
+        /// </summary>
+        public static string MeterId {
+            get {
+                return ResourceManager.GetString("MeterId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meter Name.
+        /// </summary>
+        public static string MeterName {
+            get {
+                return ResourceManager.GetString("MeterName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Name {
@@ -115,6 +223,42 @@ namespace Huybrechts.App.Features {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pricing URL.
+        /// </summary>
+        public static string PricingURL {
+            get {
+                return ResourceManager.GetString("PricingURL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product.
+        /// </summary>
+        public static string Product {
+            get {
+                return ResourceManager.GetString("Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product Identifier.
+        /// </summary>
+        public static string ProductId {
+            get {
+                return ResourceManager.GetString("ProductId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product Name.
+        /// </summary>
+        public static string ProductName {
+            get {
+                return ResourceManager.GetString("ProductName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Supported system.
         /// </summary>
         public static string Provider {
@@ -124,11 +268,119 @@ namespace Huybrechts.App.Features {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Region.
+        /// </summary>
+        public static string Region {
+            get {
+                return ResourceManager.GetString("Region", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remark.
         /// </summary>
         public static string Remark {
             get {
                 return ResourceManager.GetString("Remark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retail Price.
+        /// </summary>
+        public static string RetailPrice {
+            get {
+                return ResourceManager.GetString("RetailPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Family.
+        /// </summary>
+        public static string ServiceFamily {
+            get {
+                return ResourceManager.GetString("ServiceFamily", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Identifier.
+        /// </summary>
+        public static string ServiceId {
+            get {
+                return ResourceManager.GetString("ServiceId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Name.
+        /// </summary>
+        public static string ServiceName {
+            get {
+                return ResourceManager.GetString("ServiceName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        public static string Size {
+            get {
+                return ResourceManager.GetString("Size", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sku Identifier.
+        /// </summary>
+        public static string SkuId {
+            get {
+                return ResourceManager.GetString("SkuId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sku Name.
+        /// </summary>
+        public static string SkuName {
+            get {
+                return ResourceManager.GetString("SkuName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tier Minimum Units.
+        /// </summary>
+        public static string TierMinimumUnits {
+            get {
+                return ResourceManager.GetString("TierMinimumUnits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string Type {
+            get {
+                return ResourceManager.GetString("Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unit Of Measure.
+        /// </summary>
+        public static string UnitOfMeasure {
+            get {
+                return ResourceManager.GetString("UnitOfMeasure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unit Price.
+        /// </summary>
+        public static string UnitPrice {
+            get {
+                return ResourceManager.GetString("UnitPrice", resourceCulture);
             }
         }
     }

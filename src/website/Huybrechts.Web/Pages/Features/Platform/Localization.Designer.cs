@@ -115,6 +115,15 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Currency.
+        /// </summary>
+        public static string Currency {
+            get {
+                return ResourceManager.GetString("Currency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete the platform information.
         /// </summary>
         public static string DeleteInfo {

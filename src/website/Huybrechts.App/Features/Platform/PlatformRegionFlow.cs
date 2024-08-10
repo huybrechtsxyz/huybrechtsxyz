@@ -516,7 +516,7 @@ public static class PlatformRegionFlow
             List<ImportModel> result = [];
             
             var service = new AzurePricingService(_options);
-            var pricing = await service.GetRegionsAsync(searchString);
+            var pricing = await service.GetRegionsAsync("", "", "", searchString);
 
             if (pricing is null)
                 return [];

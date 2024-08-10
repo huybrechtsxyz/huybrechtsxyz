@@ -13,7 +13,10 @@ class Product {
 
 Platform "1" -- "0..*" Product
 
+class Service {
+}
 
+Platform "1" -- "0..*" Service
 
 
 

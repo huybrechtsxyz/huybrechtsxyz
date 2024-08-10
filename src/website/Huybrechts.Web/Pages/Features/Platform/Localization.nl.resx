@@ -135,6 +135,9 @@
   <data name="CreateTitle" xml:space="preserve">
     <value>Platformen</value>
   </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Munteenheid</value>
+  </data>
   <data name="DeleteInfo" xml:space="preserve">
     <value>Verwijder de platforminformatie</value>
   </data>

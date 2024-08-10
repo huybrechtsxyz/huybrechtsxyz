@@ -135,6 +135,9 @@
   <data name="CreateTitle" xml:space="preserve">
     <value>Platforms</value>
   </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
   <data name="DeleteInfo" xml:space="preserve">
     <value>Delete the platform information</value>
   </data>

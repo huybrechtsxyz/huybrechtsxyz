@@ -117,11 +117,35 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AboutURL" xml:space="preserve">
+    <value>About URL</value>
+  </data>
+  <data name="ArmRegionName" xml:space="preserve">
+    <value>Region Name (ARM)</value>
+  </data>
+  <data name="ArmSkuName" xml:space="preserve">
+    <value>Sku Name (ARM)</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Category</value>
   </data>
+  <data name="CostBasedOn" xml:space="preserve">
+    <value>Cost is based on</value>
+  </data>
+  <data name="CostDriver" xml:space="preserve">
+    <value>Cost is driven by</value>
+  </data>
+  <data name="CurrencyCode" xml:space="preserve">
+    <value>Currency</value>
+  </data>
   <data name="Description" xml:space="preserve">
     <value>Description</value>
+  </data>
+  <data name="EffectiveStartDate" xml:space="preserve">
+    <value>Effective Start Date</value>
+  </data>
+  <data name="IsPrimaryMeterRegion" xml:space="preserve">
+    <value>Is Primary Meter Region</value>
   </data>
   <data name="IsSelected" xml:space="preserve">
     <value>Selected?</value>
@@ -129,16 +153,76 @@
   <data name="Label" xml:space="preserve">
     <value>Label</value>
   </data>
+  <data name="Limitations" xml:space="preserve">
+    <value>Limitations</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="MeterId" xml:space="preserve">
+    <value>Meter Identifier</value>
+  </data>
+  <data name="MeterName" xml:space="preserve">
+    <value>Meter Name</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
   <data name="Platform" xml:space="preserve">
     <value>Platform</value>
   </data>
+  <data name="PricingURL" xml:space="preserve">
+    <value>Pricing URL</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="ProductId" xml:space="preserve">
+    <value>Product Identifier</value>
+  </data>
+  <data name="ProductName" xml:space="preserve">
+    <value>Product Name</value>
+  </data>
   <data name="Provider" xml:space="preserve">
     <value>Supported system</value>
   </data>
+  <data name="Region" xml:space="preserve">
+    <value>Region</value>
+  </data>
   <data name="Remark" xml:space="preserve">
     <value>Remark</value>
+  </data>
+  <data name="RetailPrice" xml:space="preserve">
+    <value>Retail Price</value>
+  </data>
+  <data name="ServiceFamily" xml:space="preserve">
+    <value>Service Family</value>
+  </data>
+  <data name="ServiceId" xml:space="preserve">
+    <value>Service Identifier</value>
+  </data>
+  <data name="ServiceName" xml:space="preserve">
+    <value>Service Name</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="SkuId" xml:space="preserve">
+    <value>Sku Identifier</value>
+  </data>
+  <data name="SkuName" xml:space="preserve">
+    <value>Sku Name</value>
+  </data>
+  <data name="TierMinimumUnits" xml:space="preserve">
+    <value>Tier Minimum Units</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="UnitOfMeasure" xml:space="preserve">
+    <value>Unit Of Measure</value>
+  </data>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>Unit Price</value>
   </data>
 </root>
