@@ -859,32 +859,45 @@ public static class PlatformServiceFlow
                     .Replace("{0}", item.ServiceFamily)
                     .Replace("{1}", item.MeterName);
 
-                var query = _dbcontext.Set<PlatformService>().FirstOrDefault(q => q.PlatformInfoId == platform.Id && q.Name == serviceName);
+                PlatformService record = null!;
+                var query = await _dbcontext.Set<PlatformService>().FirstOrDefaultAsync(q => q.PlatformInfoId == platform.Id && q.Name == serviceName, token);
                 if (query is null)
                 {
-                    PlatformService record = new()
+                    var existingEntity = _dbcontext.ChangeTracker.Entries<PlatformService>().FirstOrDefault(e => e.Entity.Name == serviceName);
+                    if (existingEntity == null)
                     {
-                        Id = Ulid.NewUlid(),
-                        PlatformInfo = platform,
-                        PlatformRegionId = command.PlatformRegionId,
-                        PlatformProductId = command.PlatformProductId,
-                        Name = serviceName,
-                        Label = serviceLabel,
-                        Description = description,
-                        //Remark = ...
-                        CreatedDT = DateTime.UtcNow,
+                        record = new()
+                        {
+                            Id = Ulid.NewUlid(),
+                            PlatformInfo = platform,
+                            PlatformRegionId = command.PlatformRegionId,
+                            PlatformProductId = command.PlatformProductId,
+                            Name = serviceName,
+                            Label = serviceLabel,
+                            Description = description,
+                            //Remark = ...
+                            CreatedDT = DateTime.UtcNow,
 
-                        //CostDriver = ...
-                        //CostBasedOn = ...
-                        //Limitations = ...
-                        //AboutURL = ...
-                        //PricingURL = ...
-                        ServiceId = item.ServiceId,
-                        ServiceName = item.ServiceName,
-                        Size = item.ArmSkuName
-                    };
-                    _dbcontext.Set<PlatformService>().Add(record);
-                    changes = true;
+                            //CostDriver = ...
+                            //CostBasedOn = ...
+                            //Limitations = ...
+                            //AboutURL = ...
+                            //PricingURL = ...
+                            ServiceId = item.ServiceId,
+                            ServiceName = item.ServiceName,
+                            Size = item.ArmSkuName
+                        };
+                        await _dbcontext.Set<PlatformService>().AddAsync(record, token);
+                        changes = true;
+                    }
+                    else
+                    {
+                        record = existingEntity.Entity;
+                    }
+                }
+                else
+                {
+                    record = query;
                 }
             }
 

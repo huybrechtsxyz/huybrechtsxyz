@@ -569,7 +569,7 @@ public static class PlatformProductFlow
             bool changes = false;
             foreach (var item in command.Items)
             {
-                var query = _dbcontext.Set<PlatformProduct>().FirstOrDefault(q => q.PlatformInfoId == platform.Id && q.Name == item.Name);
+                var query = await _dbcontext.Set<PlatformProduct>().FirstOrDefaultAsync(q => q.PlatformInfoId == platform.Id && q.Name == item.Name, cancellationToken: token);
                 if (query is null)
                 {
                     PlatformProduct record = new()
@@ -583,7 +583,7 @@ public static class PlatformProductFlow
                         Remark = item.Remark,
                         CreatedDT = DateTime.UtcNow
                     };
-                    _dbcontext.Set<PlatformProduct>().Add(record);
+                    await _dbcontext.Set<PlatformProduct>().AddAsync(record, token);
                     changes = true;
                 }
             }

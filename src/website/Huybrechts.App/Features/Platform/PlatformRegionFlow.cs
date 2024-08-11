@@ -560,7 +560,7 @@ public static class PlatformRegionFlow
             bool changes = false;
             foreach (var item in command.Items)
             {
-                var query = _dbcontext.Set<PlatformRegion>().FirstOrDefault(q => q.PlatformInfoId == platform.Id && q.Name == item.Name);
+                var query = await _dbcontext.Set<PlatformRegion>().FirstOrDefaultAsync(q => q.PlatformInfoId == platform.Id && q.Name == item.Name);
                 if (query is null)
                 {
                     PlatformRegion record = new()
@@ -573,7 +573,7 @@ public static class PlatformRegionFlow
                         Remark = item.Remark,
                         CreatedDT = DateTime.UtcNow
                     };
-                    _dbcontext.Set<PlatformRegion>().Add(record);
+                    await _dbcontext.Set<PlatformRegion>().AddAsync(record, token);
                     changes = true;
                 }
             }
