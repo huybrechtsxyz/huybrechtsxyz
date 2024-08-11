@@ -8,8 +8,10 @@ using Huybrechts.App.Services;
 using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Profiling.Internal;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Linq.Dynamic.Core;
 
 using static Huybrechts.App.Services.AzurePricingService;
@@ -58,9 +60,11 @@ public static class PlatformServiceFlow
         [Display(Name = nameof(Limitations), ResourceType = typeof(Localization))]
         public string? Limitations { get; set; }
 
+        [DataType(DataType.Url)]
         [Display(Name = nameof(AboutURL), ResourceType = typeof(Localization))]
         public string? AboutURL { get; set; }
 
+        [DataType(DataType.Url)]
         [Display(Name = nameof(PricingURL), ResourceType = typeof(Localization))]
         public string? PricingURL { get; set; }
 
@@ -69,6 +73,9 @@ public static class PlatformServiceFlow
 
         [Display(Name = nameof(ServiceName), ResourceType = typeof(Localization))]
         public string? ServiceName { get; set; }
+
+        [Display(Name = nameof(ServiceFamily), ResourceType = typeof(Localization))]
+        public string? ServiceFamily { get; set; }
 
         [Display(Name = nameof(Size), ResourceType = typeof(Localization))]
         public string? Size { get; set; }
@@ -215,6 +222,10 @@ public static class PlatformServiceFlow
         public CreateCommand Service { get; set; } = new();
 
         public IList<PlatformInfo> Platforms { get; set; } = [];
+
+        public IList<PlatformRegion> Regions { get; set; } = [];
+
+        public IList<PlatformProduct> Products { get; set; } = [];
     }
 
     internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateResult>>
@@ -229,6 +240,8 @@ public static class PlatformServiceFlow
         public async Task<Result<CreateResult>> Handle(CreateQuery request, CancellationToken token)
         {
             IList<PlatformInfo> platforms = await _dbcontext.Set<PlatformInfo>().ToListAsync(cancellationToken: token);
+            IList<PlatformRegion> regions = await _dbcontext.Set<PlatformRegion>().Where(q => q.PlatformInfoId == request.PlatformInfoId).ToListAsync(cancellationToken: token);
+            IList<PlatformProduct> products = await _dbcontext.Set<PlatformProduct>().Where(q => q.PlatformInfoId == request.PlatformInfoId).ToListAsync(cancellationToken: token);
 
             var platform = platforms.FirstOrDefault(f => f.Id == request.PlatformInfoId);
             if (platform is null)
@@ -237,7 +250,9 @@ public static class PlatformServiceFlow
             return Result.Ok(new CreateResult()
             {
                 Service = CreateNew(request.PlatformInfoId),
-                Platforms = platforms
+                Platforms = platforms,
+                Regions = regions,
+                Products = products
             });
         }
     }
@@ -316,6 +331,10 @@ public static class PlatformServiceFlow
     public record UpdateCommand : Model, IRequest<Result>
     {
         public IList<PlatformInfo> Platforms { get; set; } = [];
+
+        public IList<PlatformRegion> Regions { get; set; } = [];
+
+        public IList<PlatformProduct> Products { get; set; } = [];
     }
 
     internal class UpdateCommandValidator : ModelValidator<UpdateCommand>
@@ -350,6 +369,8 @@ public static class PlatformServiceFlow
             if (record == null) 
                 return RecordNotFound(request.Id);
             record.Platforms = await _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
+            record.Regions = await _dbcontext.Set<PlatformRegion>().Where(q => q.PlatformInfoId == record.PlatformInfoId).OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
+            record.Products = await _dbcontext.Set<PlatformProduct>().Where(q => q.PlatformInfoId == record.PlatformInfoId).OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
             return Result.Ok(record);
         }
     }
@@ -412,6 +433,10 @@ public static class PlatformServiceFlow
     public sealed record DeleteCommand : Model, IRequest<Result>
     {
         public IList<PlatformInfo> Platforms { get; set; } = [];
+
+        public IList<PlatformRegion> Regions { get; set; } = [];
+
+        public IList<PlatformProduct> Products { get; set; } = [];
     }
 
     internal sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
@@ -449,7 +474,9 @@ public static class PlatformServiceFlow
                 .SingleOrDefaultAsync(token);
             if (record == null)
                 return RecordNotFound(request.Id);
-            record.Platforms = await _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
+            record.Platforms = await _dbcontext.Set<PlatformInfo>().Where(q => q.Id == record.PlatformInfoId).OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
+            record.Regions = await _dbcontext.Set<PlatformRegion>().Where(q => q.Id == record.PlatformRegionId).OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
+            record.Products = await _dbcontext.Set<PlatformProduct>().Where(q => q.Id == record.PlatformProductId).OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
             return Result.Ok(record);
         }
     }
@@ -655,6 +682,10 @@ public static class PlatformServiceFlow
     {
         public Ulid PlatformInfoId { get; set; }
 
+        public Ulid PlatformRegionId { get; set; }
+
+        public Ulid PlatformProductId { get; set; }
+
         public List<ImportModel> Items { get; set; } = [];
     }
 
@@ -814,33 +845,47 @@ public static class PlatformServiceFlow
             bool changes = false;
             foreach (var item in command.Items)
             {
-                //var query = _dbcontext.Set<PlatformService>().FirstOrDefault(q => q.PlatformInfoId == platform.Id && q.Name == item.Name);
-                //if (query is null)
-                //{
-                //    PlatformService record = new()
-                //    {
-                //        Id = Ulid.NewUlid(),
-                //        PlatformInfo = platform,
-                //        //Name = item.Name,
-                //        //Label = item.Label,
-                //        //Description = item.Description,
-                //        //Remark = item.Remark,
-                //        //CreatedDT = DateTime.UtcNow,
+                var serviceName = "{0} - {1} - {2}"
+                    .Replace("{0}", item.ServiceName)
+                    .Replace("{1}", item.SkuName)
+                    .Replace("{2}", item.Location);
 
-                //        //PlatformRegionId = item.PlatformRegionId,
-                //        //PlatformProductId = item.PlatformProductId,
-                //        //CostDriver = item.CostDriver,
-                //        //CostBasedOn = item.CostBasedOn,
-                //        //Limitations = item.Limitations,
-                //        //AboutURL = item.AboutURL,
-                //        //PricingURL = item.PricingURL,
-                //        //ServiceId = item.ServiceId,
-                //        //ServiceName = item.ServiceName,
-                //        //Size = item.Size
-                //    };
-                //    _dbcontext.Set<PlatformService>().Add(record);
-                //    changes = true;
-                //}
+                var serviceLabel = "{0} - {1} - {2}"
+                    .Replace("{0}", item.ServiceName)
+                    .Replace("{1}", item.SkuName)
+                    .Replace("{2}", item.Location);
+
+                var description = "{0} - {1}"
+                    .Replace("{0}", item.ServiceFamily)
+                    .Replace("{1}", item.MeterName);
+
+                var query = _dbcontext.Set<PlatformService>().FirstOrDefault(q => q.PlatformInfoId == platform.Id && q.Name == serviceName);
+                if (query is null)
+                {
+                    PlatformService record = new()
+                    {
+                        Id = Ulid.NewUlid(),
+                        PlatformInfo = platform,
+                        PlatformRegionId = command.PlatformRegionId,
+                        PlatformProductId = command.PlatformProductId,
+                        Name = serviceName,
+                        Label = serviceLabel,
+                        Description = description,
+                        //Remark = ...
+                        CreatedDT = DateTime.UtcNow,
+
+                        //CostDriver = ...
+                        //CostBasedOn = ...
+                        //Limitations = ...
+                        //AboutURL = ...
+                        //PricingURL = ...
+                        ServiceId = item.ServiceId,
+                        ServiceName = item.ServiceName,
+                        Size = item.ArmSkuName
+                    };
+                    _dbcontext.Set<PlatformService>().Add(record);
+                    changes = true;
+                }
             }
 
             if (changes)

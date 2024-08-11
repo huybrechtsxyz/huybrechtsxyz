@@ -51,9 +51,21 @@
                                         <a asp-page="Edit" asp-route-id="@record!.Id" class="btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i></a>
                                         <a asp-page="Delete" asp-route-id="@record!.Id" class="btn btn-icon btn-secondary"><i class="bi bi-trash2-fill"></i></a>
 
-                                        <a asp-page="/Features/Platform/Region/Index" asp-route-platformInfoId="@record!.Id" class="btn btn-icon btn-info"><i class="bi bi-geo-alt-fill"></i></a>
-                                        <a asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@record!.Id" class="btn btn-icon btn-info"><i class="bi bi-gear-wide-connected"></i></a>
-                                        <a asp-page="/Features/Platform/Service/Index" asp-route-platformInfoId="@record!.Id" class="btn btn-icon btn-info"><i class="bi bi-bounding-box-circles"></i></a>
+                                        <a asp-page="/Features/Platform/Region/Index" asp-route-platformInfoId="@record!.Id" class="btn btn-info">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                            <span class="vr"></span>
+                                            @SL["Regions"]
+                                        </a>
+                                        <a asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@record!.Id" class="btn btn-info">
+                                            <i class="bi bi-box-fill"></i>
+                                            <span class="vr"></span>
+                                            @SL["Products"]
+                                        </a>
+                                        <a asp-page="/Features/Platform/Service/Index" asp-route-platformInfoId="@record!.Id" class="btn btn-info">
+                                            <i class="bi bi-tools"></i>
+                                            <span class="vr"></span>
+                                            @SL["Services"]
+                                        </a>
                                     </td>
                                 </tr>
                             }

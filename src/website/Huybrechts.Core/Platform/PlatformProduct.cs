@@ -6,58 +6,60 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Huybrechts.Core.Platform;
 
 /// <summary>
-/// The Products available on the platform (type of resource)
-/// Azure -> API Management
+/// Represents the products or types of resources available on a platform.
+/// For example, in Azure: API Management.
 /// </summary>
 [MultiTenant]
 [Table("PlatformProduct")]
+[Comment("Products or services offered by the platform, such as compute, storage, or networking resources.")]
+[Index(nameof(PlatformInfoId), nameof(Name), IsUnique = true)]
 public record PlatformProduct : Entity, IEntity
 {
     /// <summary>
-    /// PlatformInfo FK
+    /// Foreign key to the PlatformInfo entity.
     /// </summary>
     [Required]
-    [Comment("PlatformInfo FK")]
-    public Ulid PlatformInfoId { get; set;} = Ulid.Empty;
+    [Comment("Foreign key referencing the PlatformInfo entity.")]
+    public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
 
     /// <summary>
-    /// Navigate to PlatformInfo
+    /// Navigation property to the related PlatformInfo.
     /// </summary>
     public virtual PlatformInfo PlatformInfo { get; set; } = new();
 
     /// <summary>
-    /// Name of the product
+    /// The name of the product, such as a specific service or resource type.
     /// </summary>
     [Required]
     [MaxLength(128)]
-    [Comment("Name of the product")]
-    public string Name { get; set;} = string.Empty;
+    [Comment("The name of the product or service offered by the platform.")]
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// Label of the product
+    /// The label of the product, typically used to identify it in the user interface.
     /// </summary>
     [Required]
     [MaxLength(128)]
-    [Comment("Label of the product")]
+    [Comment("A label representing the product, often used in the user interface.")]
     public string Label { get; set; } = string.Empty;
 
     /// <summary>
-    /// Category or family of the product
+    /// The category or family to which the product belongs, helping to group similar products.
     /// </summary>
     [MaxLength(100)]
-    [Comment("Product category")]
+    [Comment("The category or family of the product, helping to classify it among similar offerings.")]
     public string? Category { get; set; }
 
     /// <summary>
-    /// Description of the product
+    /// A brief description of the product.
     /// </summary>
     [MaxLength(256)]
-    [Comment("Description")]
-    public string? Description { get; set;}
+    [Comment("A brief description providing additional details about the product.")]
+    public string? Description { get; set; }
 
     /// <summary>
-    /// Remark
+    /// Any additional remarks about the product.
     /// </summary>
-    [Comment("Remark")]
+    [Comment("Additional remarks or notes regarding the product.")]
     public string? Remark { get; set; }
 }

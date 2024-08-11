@@ -130,31 +130,31 @@
     <value>Wis filter</value>
   </data>
   <data name="CreateInfo" xml:space="preserve">
-    <value>Maak een nieuw platform aan</value>
+    <value>Voeg een nieuw platform toe door de naam, beschrijving, en ondersteunde automatiseringsprovider in te vullen. Gebruik deze pagina om een nieuw cloudplatform of een on-premise oplossing te configureren.</value>
   </data>
   <data name="CreateTitle" xml:space="preserve">
-    <value>Platformen</value>
+    <value>Nieuw platform</value>
   </data>
   <data name="Currency" xml:space="preserve">
     <value>Munteenheid</value>
   </data>
   <data name="DeleteInfo" xml:space="preserve">
-    <value>Verwijder de platforminformatie</value>
+    <value>Verwijder een bestaand platform uit het systeem. Het verwijderen van een platform zal ook alle bijbehorende regio's, producten en diensten verwijderen. Gebruik deze pagina om een cloudplatform of een on-premise oplossing permanent te verwijderen.</value>
   </data>
   <data name="DeleteTitle" xml:space="preserve">
-    <value>Platformen</value>
+    <value>Verwijder platform</value>
   </data>
   <data name="EditInfo" xml:space="preserve">
-    <value>Pas de platforminformatie aan</value>
+    <value>Bewerk een bestaand platform door de naam, beschrijving of ondersteunde automatiseringsprovider bij te werken. Gebruik deze pagina om de configuratie van een bestaand cloudplatform of een on-premise oplossing aan te passen.</value>
   </data>
   <data name="EditTitle" xml:space="preserve">
-    <value>Platformen</value>
+    <value>Pas platform aan</value>
   </data>
   <data name="Import" xml:space="preserve">
     <value>Importeer</value>
   </data>
   <data name="IndexInfo" xml:space="preserve">
-    <value>Lijst van platformen</value>
+    <value>Beheer cloudplatforms en on-premise oplossingen, inclusief het aanmaken, bewerken en verwijderen van platforms. Navigeer eenvoudig naar de configuratie van bijbehorende regio's, producten en diensten.</value>
   </data>
   <data name="IndexTitle" xml:space="preserve">
     <value>Platformen</value>
@@ -175,31 +175,31 @@
     <value>Vorige</value>
   </data>
   <data name="ProductCreateInfo" xml:space="preserve">
-    <value>Maak een nieuwe product aan</value>
+    <value>Voeg een nieuw product toe aan het platform door de naam, het label en de categorie op te geven. Gebruik deze pagina om een nieuwe dienst of type middel voor een cloudplatform of on-premise oplossing te definiëren.</value>
   </data>
   <data name="ProductCreateTitle" xml:space="preserve">
     <value>Nieuw product</value>
   </data>
   <data name="ProductDeleteInfo" xml:space="preserve">
-    <value>Verwijder product</value>
+    <value>Verwijder een bestaand product van het platform. Het verwijderen van een product zal het permanent verwijderen uit de lijst met beschikbare diensten en middelen. Gebruik deze pagina om een product van een cloudplatform of on-premise oplossing te verwijderen.</value>
   </data>
   <data name="ProductDeleteTitle" xml:space="preserve">
     <value>Verwijder product</value>
   </data>
   <data name="ProductEditInfo" xml:space="preserve">
-    <value>Pas het product aan</value>
+    <value>Bewerk de details van een bestaand product, waaronder de naam, het label of de categorie. Gebruik deze pagina om de configuratie van een dienst of type middel binnen een cloudplatform of on-premise oplossing bij te werken.</value>
   </data>
   <data name="ProductEditTitle" xml:space="preserve">
     <value>Product aanpassen</value>
   </data>
   <data name="ProductImportInfo" xml:space="preserve">
-    <value>Importeer platform producten</value>
+    <value>Importeer producten in het platform door te kiezen uit de volledige lijst met beschikbare diensten en middelen. Gebruik deze pagina om snel meerdere producten toe te voegen aan een cloudplatform of on-premise oplossing.</value>
   </data>
   <data name="ProductImportTitle" xml:space="preserve">
     <value>Importeer producten</value>
   </data>
   <data name="ProductIndexInfo" xml:space="preserve">
-    <value>Beschikbare platform producten</value>
+    <value>Bekijk en beheer de lijst met producten die beschikbaar zijn op het platform. Gebruik deze pagina om diensten en middelen die door een cloudplatform of on-premise oplossing worden aangeboden, te creëren, bij te werken of te verwijderen.</value>
   </data>
   <data name="ProductIndexTitle" xml:space="preserve">
     <value>Producten</value>
@@ -208,31 +208,31 @@
     <value>Producten</value>
   </data>
   <data name="RegionCreateInfo" xml:space="preserve">
-    <value>Maak een nieuwe region aan</value>
+    <value>Voeg een nieuwe regio toe aan een platform door de naam, het label en de beschrijving in te vullen. Gebruik deze pagina om een nieuwe datacenterregio voor een cloudplatform of on-premise oplossing te definiëren.</value>
   </data>
   <data name="RegionCreateTitle" xml:space="preserve">
     <value>Nieuwe regio</value>
   </data>
   <data name="RegionDeleteInfo" xml:space="preserve">
-    <value>Verwijder region</value>
+    <value>Verwijder een bestaande regio uit een platform. Het verwijderen van een regio zal de bijbehorende datacenterlocatie permanent verwijderen. Gebruik deze pagina om een regio uit een cloudplatform of on-premise oplossing te verwijderen.</value>
   </data>
   <data name="RegionDeleteTitle" xml:space="preserve">
     <value>Verwijder regio</value>
   </data>
   <data name="RegionEditInfo" xml:space="preserve">
-    <value>Pas de region aan</value>
+    <value>Bewerk de details van een bestaande regio, waaronder de naam, het label of de beschrijving. Gebruik deze pagina om de configuratie van een datacenterregio binnen een cloudplatform of on-premise oplossing bij te werken.</value>
   </data>
   <data name="RegionEditTitle" xml:space="preserve">
     <value>Regio aanpassen</value>
   </data>
   <data name="RegionImportInfo" xml:space="preserve">
-    <value>Importeer platform regio's</value>
+    <value>Importeer regio's in het platform door te kiezen uit de volledige lijst met beschikbare datacenterlocaties. Gebruik deze pagina om snel meerdere regio's toe te voegen aan een cloudplatform of on-premise oplossing.</value>
   </data>
   <data name="RegionImportTitle" xml:space="preserve">
     <value>Importeer regio's</value>
   </data>
   <data name="RegionIndexInfo" xml:space="preserve">
-    <value>Beschikbare platform regio's</value>
+    <value>Bekijk en beheer de lijst met regio's binnen een platform. Gebruik deze pagina om datacenterregio's die aan een cloudplatform of on-premise oplossing zijn gekoppeld te creëren, bij te werken of te verwijderen.</value>
   </data>
   <data name="RegionIndexTitle" xml:space="preserve">
     <value>Regio's</value>
@@ -250,31 +250,31 @@
     <value>Selecteer</value>
   </data>
   <data name="ServiceCreateInfo" xml:space="preserve">
-    <value>Maak een nieuwe dienst aan</value>
+    <value>Voeg een nieuwe dienst toe aan het platform door de naam, het label en het bijbehorende product op te geven. Gebruik deze pagina om een nieuwe dienst te definiëren, inclusief de beschrijving, kostenfactor en prijsdetails.</value>
   </data>
   <data name="ServiceCreateTitle" xml:space="preserve">
     <value>Nieuwe dienst</value>
   </data>
   <data name="ServiceDeleteInfo" xml:space="preserve">
-    <value>Verwijder dienst</value>
+    <value>Verwijder een bestaande dienst van het platform. Het verwijderen van een dienst zal deze permanent verwijderen uit de lijst met beschikbare aanbiedingen. Gebruik deze pagina om een dienst van een cloudplatform of on-premise oplossing te verwijderen.</value>
   </data>
   <data name="ServiceDeleteTitle" xml:space="preserve">
     <value>Verwijder dienst</value>
   </data>
   <data name="ServiceEditInfo" xml:space="preserve">
-    <value>Pas de dienst aan</value>
+    <value>Bewerk de details van een bestaande dienst, zoals de naam, het label of de beschrijving. Gebruik deze pagina om informatie over een dienst bij te werken, inclusief kostenparameters en beperkingen.</value>
   </data>
   <data name="ServiceEditTitle" xml:space="preserve">
     <value>Dienst aanpassen</value>
   </data>
   <data name="ServiceImportInfo" xml:space="preserve">
-    <value>Importeer platform diensten</value>
+    <value>Importeer diensten in het platform door te kiezen uit de volledige lijst met beschikbare diensten. Deze functie zal ook bijbehorende service tarieven en meeteenheden creëren. Gebruik deze pagina om snel meerdere diensten toe te voegen aan een cloudplatform of on-premise oplossing.</value>
   </data>
   <data name="ServiceImportTitle" xml:space="preserve">
     <value>Importeer diensten</value>
   </data>
   <data name="ServiceIndexInfo" xml:space="preserve">
-    <value>Beschikbare platform diensten</value>
+    <value>Bekijk en beheer de lijst met diensten die door het platform worden aangeboden. Gebruik deze pagina om diensten te creëren, bij te werken of te verwijderen die door een cloudplatform of on-premise oplossing worden geleverd.</value>
   </data>
   <data name="ServiceIndexTitle" xml:space="preserve">
     <value>Diensten</value>

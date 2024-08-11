@@ -6,53 +6,54 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Huybrechts.Core.Platform;
 
 /// <summary>
-/// The data center region of the platform
-/// Azure -> WEU1 - West Europe
-/// One Platform has multiple Locations
+/// Represents a data center region within a platform. 
+/// For example, in Azure: WEU1 - West Europe.
+/// A single platform can have multiple regions.
 /// </summary>
 [MultiTenant]
 [Table("PlatformRegion")]
-[Comment("Support regions of the Platform")]
+[Comment("Regions supported by the platform, representing data center locations.")]
+[Index(nameof(PlatformInfoId), nameof(Name), IsUnique = true)]
 public record PlatformRegion : Entity, IEntity
 {
     /// <summary>
-    /// FK to PlatformInfo
+    /// Foreign key to the PlatformInfo entity.
     /// </summary>
     [Required]
-    [Comment("PlatformInfo FK")]
+    [Comment("Foreign key referencing the PlatformInfo.")]
     public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
 
     /// <summary>
-    /// Navigate to PlatformInfo
+    /// Navigation property to the related PlatformInfo.
     /// </summary>
     public virtual PlatformInfo PlatformInfo { get; set; } = new();
 
     /// <summary>
-    /// Name of the region
+    /// The name of the region, such as 'armRegionName'.
     /// </summary>
     [Required]
     [MaxLength(128)]
-    [Comment("Name of the region")]
-    public string Name { get; set;} = string.Empty;
+    [Comment("The unique name identifier of the region.")]
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// Label of the region
+    /// The label of the region, typically the location name.
     /// </summary>
     [Required]
     [MaxLength(128)]
-    [Comment("Label of the region")]
-    public string Label { get; set;} = string.Empty;
+    [Comment("A label representing the region, often the location name.")]
+    public string Label { get; set; } = string.Empty;
 
     /// <summary>
-    /// Description of the region
+    /// A brief description of the region.
     /// </summary>
     [MaxLength(256)]
-    [Comment("Description of the region")]
-    public string? Description { get; set;}
+    [Comment("A brief description providing additional details about the region.")]
+    public string? Description { get; set; }
 
     /// <summary>
-    /// Remark about the region
+    /// Any additional remarks about the region.
     /// </summary>
-    [Comment("Remark about the region")]
+    [Comment("Additional remarks or notes regarding the region.")]
     public string? Remark { get; set; }
 }

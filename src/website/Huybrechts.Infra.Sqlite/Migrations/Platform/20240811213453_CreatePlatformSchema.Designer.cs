@@ -3,68 +3,66 @@ using System;
 using Huybrechts.App.Features.Platform;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Huybrechts.Infra.SqlServer.Migrations.Platform
+namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 {
     [DbContext(typeof(PlatformContext))]
-    partial class PlatformContextModelSnapshot : ModelSnapshot
+    [Migration("20240811213453_CreatePlatformSchema")]
+    partial class CreatePlatformSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformInfo", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("TEXT")
                         .HasComment("Primary Key");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("TEXT")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("TEXT")
                         .HasComment("Detailed description of the platform.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("TEXT")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("TEXT")
                         .HasComment("Name of the platform.");
 
                     b.Property<int>("Provider")
-                        .HasColumnType("int")
+                        .HasColumnType("INTEGER")
                         .HasComment("The platform's supported automation provider, enabling automated resource management.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("TEXT")
                         .HasComment("Additional remarks or comments about the platform.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("TEXT");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("BLOB");
 
                     b.HasKey("Id");
 
@@ -79,58 +77,58 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformProduct", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("TEXT")
                         .HasComment("Primary Key");
 
                     b.Property<string>("Category")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("TEXT")
                         .HasComment("The category or family of the product, helping to classify it among similar offerings.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("TEXT")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("TEXT")
                         .HasComment("A brief description providing additional details about the product.");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("TEXT")
                         .HasComment("A label representing the product, often used in the user interface.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("TEXT")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("TEXT")
                         .HasComment("The name of the product or service offered by the platform.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("TEXT")
                         .HasComment("Foreign key referencing the PlatformInfo entity.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("TEXT")
                         .HasComment("Additional remarks or notes regarding the product.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("TEXT");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("BLOB");
 
                     b.HasKey("Id");
 
@@ -148,53 +146,53 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("TEXT")
                         .HasComment("Primary Key");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("TEXT")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("TEXT")
                         .HasComment("A brief description providing additional details about the region.");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("TEXT")
                         .HasComment("A label representing the region, often the location name.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("TEXT")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("TEXT")
                         .HasComment("The unique name identifier of the region.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("TEXT")
                         .HasComment("Foreign key referencing the PlatformInfo.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("TEXT")
                         .HasComment("Additional remarks or notes regarding the region.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("TEXT");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("BLOB");
 
                     b.HasKey("Id");
 
@@ -212,108 +210,108 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("TEXT")
                         .HasComment("Primary Key");
 
                     b.Property<string>("AboutURL")
                         .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
+                        .HasColumnType("TEXT")
                         .HasComment("URL linking to additional information about the service.");
 
                     b.Property<string>("CostBasedOn")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("TEXT")
                         .HasComment("Parameters or metrics on which the cost of the service is based.");
 
                     b.Property<string>("CostDriver")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("TEXT")
                         .HasComment("The cost driver or factor that influences the pricing of the service.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("TEXT")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("TEXT")
                         .HasComment("A brief description providing details about the service.");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("TEXT")
                         .HasComment("A label representing the service, often used for display purposes.");
 
                     b.Property<string>("Limitations")
                         .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
+                        .HasColumnType("TEXT")
                         .HasComment("Limitations or constraints related to the service.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("TEXT")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("TEXT")
                         .HasComment("The name of the service offered by the platform.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("TEXT")
                         .HasComment("Foreign key referencing the PlatformInfo entity.");
 
                     b.Property<string>("PlatformProductId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("TEXT")
                         .HasComment("Foreign key referencing the PlatformProduct entity.");
 
                     b.Property<string>("PlatformRegionId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("TEXT")
                         .HasComment("Foreign key referencing the PlatformRegion entity.");
 
                     b.Property<string>("PricingURL")
                         .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
+                        .HasColumnType("TEXT")
                         .HasComment("URL providing pricing information for the service.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("TEXT")
                         .HasComment("Additional remarks or notes regarding the service.");
 
                     b.Property<string>("ServiceFamily")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("TEXT")
                         .HasComment("Service family or category");
 
                     b.Property<string>("ServiceId")
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("TEXT")
                         .HasComment("Original identifier used to reference the service.");
 
                     b.Property<string>("ServiceName")
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("TEXT")
                         .HasComment("Original name of the service used for external identification.");
 
                     b.Property<string>("Size")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("TEXT")
                         .HasComment("Size or pricing tier associated with the service.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("TEXT");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("BLOB");
 
                     b.HasKey("Id");
 

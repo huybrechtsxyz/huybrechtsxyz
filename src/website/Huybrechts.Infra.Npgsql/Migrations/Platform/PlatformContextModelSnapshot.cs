@@ -35,7 +35,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                     b.Property<string>("Description")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
-                        .HasComment("Description of the platform");
+                        .HasComment("Detailed description of the platform.");
 
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("timestamp with time zone")
@@ -45,15 +45,15 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)")
-                        .HasComment("Name of the platform");
+                        .HasComment("Name of the platform.");
 
                     b.Property<int>("Provider")
                         .HasColumnType("integer")
-                        .HasComment("Supported automation providers of the platform");
+                        .HasComment("The platform's supported automation provider, enabling automated resource management.");
 
                     b.Property<string>("Remark")
                         .HasColumnType("text")
-                        .HasComment("Remark about the platform");
+                        .HasComment("Additional remarks or comments about the platform.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
@@ -70,7 +70,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
                     b.ToTable("Platform", t =>
                         {
-                            t.HasComment("Platforms that provide compute resources");
+                            t.HasComment("Table storing information about platforms that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.");
                         });
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
@@ -85,7 +85,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                     b.Property<string>("Category")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasComment("Product category");
+                        .HasComment("The category or family of the product, helping to classify it among similar offerings.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("timestamp with time zone")
@@ -94,13 +94,13 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                     b.Property<string>("Description")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
-                        .HasComment("Description");
+                        .HasComment("A brief description providing additional details about the product.");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)")
-                        .HasComment("Label of the product");
+                        .HasComment("A label representing the product, often used in the user interface.");
 
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("timestamp with time zone")
@@ -110,16 +110,16 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)")
-                        .HasComment("Name of the product");
+                        .HasComment("The name of the product or service offered by the platform.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
                         .HasColumnType("character varying(26)")
-                        .HasComment("PlatformInfo FK");
+                        .HasComment("Foreign key referencing the PlatformInfo entity.");
 
                     b.Property<string>("Remark")
                         .HasColumnType("text")
-                        .HasComment("Remark");
+                        .HasComment("Additional remarks or notes regarding the product.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
@@ -134,9 +134,13 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PlatformInfoId");
+                    b.HasIndex("PlatformInfoId", "Name")
+                        .IsUnique();
 
-                    b.ToTable("PlatformProduct");
+                    b.ToTable("PlatformProduct", t =>
+                        {
+                            t.HasComment("Products or services offered by the platform, such as compute, storage, or networking resources.");
+                        });
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
@@ -154,13 +158,13 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                     b.Property<string>("Description")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
-                        .HasComment("Description of the region");
+                        .HasComment("A brief description providing additional details about the region.");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)")
-                        .HasComment("Label of the region");
+                        .HasComment("A label representing the region, often the location name.");
 
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("timestamp with time zone")
@@ -170,16 +174,16 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)")
-                        .HasComment("Name of the region");
+                        .HasComment("The unique name identifier of the region.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
                         .HasColumnType("character varying(26)")
-                        .HasComment("PlatformInfo FK");
+                        .HasComment("Foreign key referencing the PlatformInfo.");
 
                     b.Property<string>("Remark")
                         .HasColumnType("text")
-                        .HasComment("Remark about the region");
+                        .HasComment("Additional remarks or notes regarding the region.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
@@ -194,12 +198,129 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PlatformInfoId");
+                    b.HasIndex("PlatformInfoId", "Name")
+                        .IsUnique();
 
                     b.ToTable("PlatformRegion", t =>
                         {
-                            t.HasComment("Support regions of the Platform");
+                            t.HasComment("Regions supported by the platform, representing data center locations.");
                         });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<string>("AboutURL")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasComment("URL linking to additional information about the service.");
+
+                    b.Property<string>("CostBasedOn")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Parameters or metrics on which the cost of the service is based.");
+
+                    b.Property<string>("CostDriver")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasComment("The cost driver or factor that influences the pricing of the service.");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasComment("A brief description providing details about the service.");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("A label representing the service, often used for display purposes.");
+
+                    b.Property<string>("Limitations")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasComment("Limitations or constraints related to the service.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("The name of the service offered by the platform.");
+
+                    b.Property<string>("PlatformInfoId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Foreign key referencing the PlatformInfo entity.");
+
+                    b.Property<string>("PlatformProductId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Foreign key referencing the PlatformProduct entity.");
+
+                    b.Property<string>("PlatformRegionId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Foreign key referencing the PlatformRegion entity.");
+
+                    b.Property<string>("PricingURL")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasComment("URL providing pricing information for the service.");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("text")
+                        .HasComment("Additional remarks or notes regarding the service.");
+
+                    b.Property<string>("ServiceFamily")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Service family or category");
+
+                    b.Property<string>("ServiceId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasComment("Original identifier used to reference the service.");
+
+                    b.Property<string>("ServiceName")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasComment("Original name of the service used for external identification.");
+
+                    b.Property<string>("Size")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Size or pricing tier associated with the service.");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlatformInfoId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("PlatformService");
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
@@ -216,6 +337,17 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")
+                        .WithMany()
+                        .HasForeignKey("PlatformInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlatformInfo");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
                 {
                     b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")
                         .WithMany()

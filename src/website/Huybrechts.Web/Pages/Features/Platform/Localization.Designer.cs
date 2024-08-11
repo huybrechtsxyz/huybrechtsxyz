@@ -97,7 +97,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create a new platform.
+        ///   Looks up a localized string similar to Add a new platform by entering its name, description, and supported automation provider. Use this page to configure a new cloud platform or on-premise solution..
         /// </summary>
         public static string CreateInfo {
             get {
@@ -106,7 +106,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Platforms.
+        ///   Looks up a localized string similar to Create platform.
         /// </summary>
         public static string CreateTitle {
             get {
@@ -124,7 +124,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete the platform information.
+        ///   Looks up a localized string similar to Remove an existing platform from the system. Deleting a platform will also remove all associated regions, products, and services. Use this page to permanently delete a cloud platform or on-premise solution..
         /// </summary>
         public static string DeleteInfo {
             get {
@@ -133,7 +133,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Platforms.
+        ///   Looks up a localized string similar to Delete platform.
         /// </summary>
         public static string DeleteTitle {
             get {
@@ -142,7 +142,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Update the platform information.
+        ///   Looks up a localized string similar to Modify an existing platform by updating its name, description, or supported automation provider. Use this page to adjust the configuration of an existing cloud platform or on-premise solution..
         /// </summary>
         public static string EditInfo {
             get {
@@ -151,7 +151,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Platforms.
+        ///   Looks up a localized string similar to Edit platform.
         /// </summary>
         public static string EditTitle {
             get {
@@ -169,7 +169,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to List of platforms.
+        ///   Looks up a localized string similar to Manage cloud platforms and on-premise solutions, including the creation, editing, and deletion of platforms. Easily navigate to configure associated regions, products, and services..
         /// </summary>
         public static string IndexInfo {
             get {
@@ -232,7 +232,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create new Product.
+        ///   Looks up a localized string similar to Add a new product to the platform by specifying its name, label, and category. Use this page to define a new service or resource type for a cloud platform or on-premise solution..
         /// </summary>
         public static string ProductCreateInfo {
             get {
@@ -250,7 +250,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete existing Product.
+        ///   Looks up a localized string similar to Remove an existing product from the platform. Deleting a product will permanently remove it from the list of available services and resources. Use this page to delete a product from a cloud platform or on-premise solution..
         /// </summary>
         public static string ProductDeleteInfo {
             get {
@@ -268,7 +268,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit existing Product.
+        ///   Looks up a localized string similar to Modify the details of an existing product, including its name, label, or category. Use this page to update the configuration of a service or resource type within a cloud platform or on-premise solution..
         /// </summary>
         public static string ProductEditInfo {
             get {
@@ -286,7 +286,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Import platform Products.
+        ///   Looks up a localized string similar to Import products into the platform by selecting from the full list of available services and resources. Use this page to quickly add multiple products to a cloud platform or on-premise solution..
         /// </summary>
         public static string ProductImportInfo {
             get {
@@ -304,7 +304,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The available platform Products.
+        ///   Looks up a localized string similar to View and manage the list of products available on the platform. Use this page to create, update, or delete services and resources offered by a cloud platform or on-premise solution..
         /// </summary>
         public static string ProductIndexInfo {
             get {
@@ -331,7 +331,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create new region.
+        ///   Looks up a localized string similar to Add a new region to a platform by specifying its name, label, and description. Use this page to define a new data center region for a cloud platform or on-premise solution..
         /// </summary>
         public static string RegionCreateInfo {
             get {
@@ -349,7 +349,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete existing region.
+        ///   Looks up a localized string similar to Remove an existing region from a platform. Deleting a region will permanently remove the associated data center location. Use this page to delete a region from a cloud platform or on-premise solution..
         /// </summary>
         public static string RegionDeleteInfo {
             get {
@@ -367,7 +367,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit existing region.
+        ///   Looks up a localized string similar to Modify the details of an existing region, including its name, label, or description. Use this page to update the configuration of a data center region within a cloud platform or on-premise solution..
         /// </summary>
         public static string RegionEditInfo {
             get {
@@ -385,7 +385,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Import platform regions.
+        ///   Looks up a localized string similar to Import regions into the platform by selecting from the full list of available data center locations. Use this page to quickly add multiple regions to a cloud platform or on-premise solution..
         /// </summary>
         public static string RegionImportInfo {
             get {
@@ -403,7 +403,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The available platform regions.
+        ///   Looks up a localized string similar to View and manage the list of regions within a platform. Use this page to create, update, or delete data center regions associated with a cloud platform or on-premise solution..
         /// </summary>
         public static string RegionIndexInfo {
             get {
@@ -457,7 +457,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create new Service.
+        ///   Looks up a localized string similar to Add a new service to the platform by specifying its name, label, and associated product. Use this page to define a new service, including its description, cost driver, and pricing details..
         /// </summary>
         public static string ServiceCreateInfo {
             get {
@@ -475,7 +475,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete existing Service.
+        ///   Looks up a localized string similar to Remove an existing service from the platform. Deleting a service will permanently remove it from the list of available offerings. Use this page to delete a service from a cloud platform or on-premise solution..
         /// </summary>
         public static string ServiceDeleteInfo {
             get {
@@ -493,7 +493,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit existing Service.
+        ///   Looks up a localized string similar to Modify the details of an existing service, including its name, label, or description. Use this page to update information about a service, including its cost parameters and limitations..
         /// </summary>
         public static string ServiceEditInfo {
             get {
@@ -511,7 +511,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Import platform Services.
+        ///   Looks up a localized string similar to Import services into the platform by selecting from the full list of available services. This function will also create associated service rates and measurement units. Use this page to quickly add multiple services to a cloud platform or on-premise solution..
         /// </summary>
         public static string ServiceImportInfo {
             get {
@@ -529,7 +529,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The available platform Services.
+        ///   Looks up a localized string similar to View and manage the list of services offered by the platform. Use this page to create, update, or delete services provided by a cloud platform or on-premise solution..
         /// </summary>
         public static string ServiceIndexInfo {
             get {

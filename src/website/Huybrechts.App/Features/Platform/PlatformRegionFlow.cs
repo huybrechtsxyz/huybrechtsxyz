@@ -523,15 +523,15 @@ public static class PlatformRegionFlow
 
             foreach (var item in pricing.Items ?? [])
             {
-                if (item is null || string.IsNullOrEmpty(item.Location))
+                if (item is null || string.IsNullOrEmpty(item.ArmRegionName))
                     continue;
 
                 result.Add(new ImportModel()
                 {
                     Id = Ulid.NewUlid(),
                     PlatformInfoId = platformInfoId,
-                    Name = item.Location,
-                    Label = item.ArmRegionName ?? item.Location
+                    Name = item.ArmRegionName,
+                    Label = item.Location ?? item.ArmRegionName
                 });
             }
 
