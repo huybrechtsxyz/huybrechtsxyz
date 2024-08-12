@@ -23,7 +23,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                     TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     CreatedDT = table.Column<DateTime>(type: "TEXT", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "TEXT", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "BLOB", rowVersion: true, nullable: false)
+                    TimeStamp = table.Column<byte[]>(type: "BLOB", rowVersion: true, nullable: true, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -45,7 +45,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                     TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     CreatedDT = table.Column<DateTime>(type: "TEXT", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "TEXT", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "BLOB", rowVersion: true, nullable: false)
+                    TimeStamp = table.Column<byte[]>(type: "BLOB", rowVersion: true, nullable: true, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -72,7 +72,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                     TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     CreatedDT = table.Column<DateTime>(type: "TEXT", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "TEXT", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "BLOB", rowVersion: true, nullable: false)
+                    TimeStamp = table.Column<byte[]>(type: "BLOB", rowVersion: true, nullable: true, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -110,7 +110,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
                     TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     CreatedDT = table.Column<DateTime>(type: "TEXT", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "TEXT", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "BLOB", rowVersion: true, nullable: false)
+                    TimeStamp = table.Column<byte[]>(type: "BLOB", rowVersion: true, nullable: true, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {

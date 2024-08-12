@@ -62,7 +62,6 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea");
 
@@ -128,7 +127,6 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea");
 
@@ -192,7 +190,6 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea");
 
@@ -311,7 +308,6 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea");
 

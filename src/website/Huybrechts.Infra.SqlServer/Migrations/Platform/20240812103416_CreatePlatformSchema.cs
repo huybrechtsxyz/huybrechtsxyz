@@ -23,7 +23,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                     TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -45,7 +45,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                     TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -72,7 +72,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                     TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -110,7 +110,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
                     TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {

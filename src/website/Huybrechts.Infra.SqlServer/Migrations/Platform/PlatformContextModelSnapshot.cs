@@ -62,7 +62,6 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
@@ -128,7 +127,6 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
@@ -192,7 +190,6 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
@@ -311,7 +308,6 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 

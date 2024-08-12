@@ -2,7 +2,6 @@
 using Huybrechts.App.Data;
 using Huybrechts.Core.Platform;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Huybrechts.App.Features.Platform;
 
@@ -17,6 +16,11 @@ public class PlatformContext : FeatureContext
     {
         // set a global query filter, e.g. to support soft delete
         //modelBuilder.Entity<Post>().HasQueryFilter(p => !p.IsDeleted);
+
+        if (Database.IsSqlite()) 
+        { 
+            base.SetTimeStampForFieldsForSqlite(modelBuilder);
+        }
 
         // call the base library implementation AFTER the above
         base.OnModelCreating(modelBuilder);

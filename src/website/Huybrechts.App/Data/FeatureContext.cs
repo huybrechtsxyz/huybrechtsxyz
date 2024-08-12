@@ -2,7 +2,9 @@
 using Finbuckle.MultiTenant.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Reflection;
 
 namespace Huybrechts.App.Data;
 
@@ -12,6 +14,28 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
 
     public FeatureContext(IMultiTenantContextAccessor multiTenantContextAccessor, DbContextOptions options) : base(multiTenantContextAccessor, options)
     {
+    }
+
+    protected void SetTimeStampForFieldsForSqlite(ModelBuilder modelBuilder)
+    {
+        if (!Database.IsSqlite())
+            return;
+
+        var entityTypes = modelBuilder.Model.GetEntityTypes();
+        foreach (var entityType in entityTypes)
+        {
+            var clrType = entityType.ClrType;
+            var timestampProperties = clrType.GetProperties()
+                .Where(p => p.GetCustomAttribute<TimestampAttribute>() != null);
+            foreach (var property in timestampProperties)
+            {
+                modelBuilder.Entity(clrType)
+                    .Property(property.Name)
+                    .ValueGeneratedOnAddOrUpdate()
+                    .IsConcurrencyToken()
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            }
+        }
     }
 
     public async Task BeginTransactionAsync()

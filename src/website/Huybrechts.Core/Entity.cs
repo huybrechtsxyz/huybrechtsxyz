@@ -40,5 +40,5 @@ public record Entity : IEntity
     /// Timestamp
     /// </summary>
     [Timestamp]
-    public Byte[] TimeStamp { get; set; } = default!;
+    public Byte[]? TimeStamp { get; set; }
 }

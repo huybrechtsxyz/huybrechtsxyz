@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 {
     [DbContext(typeof(PlatformContext))]
-    [Migration("20240811213544_CreatePlatformSchema")]
+    [Migration("20240812103441_CreatePlatformSchema")]
     partial class CreatePlatformSchema
     {
         /// <inheritdoc />
@@ -65,7 +65,6 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea");
 
@@ -131,7 +130,6 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea");
 
@@ -195,7 +193,6 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea");
 
@@ -314,7 +311,6 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea");
 
