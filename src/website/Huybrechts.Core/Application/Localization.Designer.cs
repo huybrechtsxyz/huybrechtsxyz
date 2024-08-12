@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Huybrechts.Core {
+namespace Huybrechts.Core.Application {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Huybrechts.Core {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.Core.Localization", typeof(Localization).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.Core.Application.Localization", typeof(Localization).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -183,42 +183,6 @@ namespace Huybrechts.Core {
         public static string Owner_d {
             get {
                 return ResourceManager.GetString("Owner_d", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Azure.
-        /// </summary>
-        public static string PlatformProvider_Azure {
-            get {
-                return ResourceManager.GetString("PlatformProvider_Azure", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Azure.
-        /// </summary>
-        public static string PlatformProvider_Azure_d {
-            get {
-                return ResourceManager.GetString("PlatformProvider_Azure_d", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to None.
-        /// </summary>
-        public static string PlatformProvider_None {
-            get {
-                return ResourceManager.GetString("PlatformProvider_None", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No automation.
-        /// </summary>
-        public static string PlatformProvider_None_d {
-            get {
-                return ResourceManager.GetString("PlatformProvider_None_d", resourceCulture);
             }
         }
         

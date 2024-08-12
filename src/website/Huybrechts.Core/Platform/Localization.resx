@@ -117,48 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Administrator" xml:space="preserve">
-    <value>Administrator</value>
-  </data>
-  <data name="Administrator_d" xml:space="preserve">
-    <value>The system administrator role</value>
-  </data>
-  <data name="Contributor" xml:space="preserve">
-    <value>Contributor</value>
-  </data>
-  <data name="Contributor_d" xml:space="preserve">
-    <value>The contributor has read/write access to the data</value>
-  </data>
-  <data name="Guest" xml:space="preserve">
-    <value>Guest</value>
-  </data>
-  <data name="Guest_d" xml:space="preserve">
-    <value>The guest can read the data</value>
-  </data>
-  <data name="Manager" xml:space="preserve">
-    <value>Manager</value>
-  </data>
-  <data name="Manager_d" xml:space="preserve">
-    <value>The manager has privileged access</value>
-  </data>
-  <data name="Member" xml:space="preserve">
-    <value>Member</value>
-  </data>
-  <data name="Member_d" xml:space="preserve">
-    <value>The member can read/write some of the data</value>
-  </data>
-  <data name="None" xml:space="preserve">
-    <value>None</value>
-  </data>
-  <data name="None_d" xml:space="preserve">
-    <value>A role that does not provide any access</value>
-  </data>
-  <data name="Owner" xml:space="preserve">
-    <value>Owner</value>
-  </data>
-  <data name="Owner_d" xml:space="preserve">
-    <value>The owner has administrator access</value>
-  </data>
   <data name="PlatformProvider_Azure" xml:space="preserve">
     <value>Azure</value>
     <comment>Azure</comment>
@@ -172,53 +130,5 @@
   </data>
   <data name="PlatformProvider_None_d" xml:space="preserve">
     <value>No automation</value>
-  </data>
-  <data name="State_Active" xml:space="preserve">
-    <value>Active</value>
-  </data>
-  <data name="State_Active_d" xml:space="preserve">
-    <value>Active</value>
-  </data>
-  <data name="State_Disabled" xml:space="preserve">
-    <value>Disabled</value>
-  </data>
-  <data name="State_Disabled_d" xml:space="preserve">
-    <value>Disabled</value>
-  </data>
-  <data name="State_Disabling" xml:space="preserve">
-    <value>Disabling</value>
-  </data>
-  <data name="State_Disabling_d" xml:space="preserve">
-    <value>Disabling</value>
-  </data>
-  <data name="State_New" xml:space="preserve">
-    <value>New</value>
-  </data>
-  <data name="State_New_d" xml:space="preserve">
-    <value>New</value>
-  </data>
-  <data name="State_Pending" xml:space="preserve">
-    <value>Pending</value>
-  </data>
-  <data name="State_Pending_d" xml:space="preserve">
-    <value>Pending</value>
-  </data>
-  <data name="State_Removed" xml:space="preserve">
-    <value>Removed</value>
-  </data>
-  <data name="State_Removed_d" xml:space="preserve">
-    <value>Removed</value>
-  </data>
-  <data name="State_Removing" xml:space="preserve">
-    <value>Removing</value>
-  </data>
-  <data name="State_Removing_d" xml:space="preserve">
-    <value>Removing</value>
-  </data>
-  <data name="User" xml:space="preserve">
-    <value>User</value>
-  </data>
-  <data name="User_d" xml:space="preserve">
-    <value>The standard user role</value>
   </data>
 </root>

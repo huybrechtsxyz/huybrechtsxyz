@@ -16,7 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Localization.Designer.cs">
+    <Compile Update="Application\Localization.Designer.cs">
+      <DependentUpon>Localization.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Platform\Localization.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Localization.resx</DependentUpon>
@@ -24,10 +29,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Localization.nl.resx">
+    <EmbeddedResource Update="Application\Localization.nl.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Localization.resx">
+    <EmbeddedResource Update="Application\Localization.resx">
+      <LastGenOutput>Localization.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Platform\Localization.nl.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Platform\Localization.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Localization.Designer.cs</LastGenOutput>
     </EmbeddedResource>
