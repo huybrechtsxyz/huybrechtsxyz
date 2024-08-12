@@ -10,8 +10,9 @@ public class AzurePricingService
     {
         All = 0,
         Regions = 1,
-        Services = 2,
-        Rates = 3
+        Products = 2,
+        Services = 3,
+        Rates = 4
     }
 
     private readonly PlatformImportOptions _options;
@@ -38,11 +39,15 @@ public class AzurePricingService
             if (!string.IsNullOrEmpty(searchString))
                 requestUrl += request.RegionSearch.Replace("{0}", searchString);
         }
+        else if (ServiceType.Products == type)
+        {
+            requestUrl = request.ProductUrl;
+            if (!string.IsNullOrEmpty(searchString))
+                requestUrl += request.ProductSearch.Replace("{0}", searchString);
+        }
         else if (ServiceType.Services == type)
         {
-            requestUrl = request.ServiceUrl;
-            if (!string.IsNullOrEmpty(searchString))
-                requestUrl += request.ServiceSearch.Replace("{0}", searchString);
+            throw new InvalidOperationException();
         }
         else
         {
@@ -83,7 +88,7 @@ public class AzurePricingService
                                 }
                             }
                         }
-                        else if (ServiceType.Services == type)
+                        else if (ServiceType.Products == type)
                         {
                             foreach (var item in pricingResponse.Items ?? [])
                             {
@@ -93,6 +98,10 @@ public class AzurePricingService
                                     pricingResult.Count += 1;
                                 }
                             }
+                        }
+                        else if (ServiceType.Services == type)
+                        {
+                            throw new InvalidOperationException();
                         }
                         else
                         { 
@@ -243,7 +252,7 @@ public class AzurePricingService
         /// "isPrimaryMeterRegion": true
         /// </summary>
         [JsonPropertyName("isPrimaryMeterRegion")]
-        public bool IsPrimaryMeterRegion { get; set; }
+        public bool IsPrimaryRegion { get; set; }
 
         /// <summary>
         /// "armSkuName":"Standard_D14"
@@ -268,6 +277,17 @@ public class AzurePricingService
             searchString);
     }
 
+    public async Task<PricingResponse?> GetProductsAsync(string currency, string service, string location, string searchString)
+    {
+        return await GetPricingItemsAsync(
+            _options.Platforms["Azure"],
+            ServiceType.Products,
+            currency,
+            service,
+            location,
+            searchString);
+    }
+
     public async Task<PricingResponse?> GetServicesAsync(string currency, string service, string location, string searchString)
     {
         return await GetPricingItemsAsync(
@@ -278,6 +298,7 @@ public class AzurePricingService
             location,
             searchString);
     }
+
 
     public async Task<PricingResponse?> GetRatesAsync(string currency, string service, string location, string searchString)
     {
