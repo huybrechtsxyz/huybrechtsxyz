@@ -50,12 +50,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ApplicationLocalization.resx</DependentUpon>
     </Compile>
-    <Compile Update="Features\Localization.Designer.cs">
+    <Compile Update="Features\Platform\Localization.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Localization.resx</DependentUpon>
     </Compile>
-    <Compile Update="Features\Messages.Designer.cs">
+    <Compile Update="Features\Platform\Messages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Messages.resx</DependentUpon>
@@ -70,17 +70,17 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ApplicationLocalization.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Features\Localization.nl.resx">
+    <EmbeddedResource Update="Features\Platform\Localization.nl.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Features\Localization.resx">
+    <EmbeddedResource Update="Features\Platform\Localization.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Localization.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Features\Messages.nl.resx">
+    <EmbeddedResource Update="Features\Platform\Messages.nl.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Features\Messages.resx">
+    <EmbeddedResource Update="Features\Platform\Messages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
