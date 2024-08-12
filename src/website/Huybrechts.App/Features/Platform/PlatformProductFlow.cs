@@ -50,6 +50,7 @@ public static class PlatformProductFlow
             RuleFor(m => m.Id).NotNull().NotEmpty();
             RuleFor(m => m.PlatformInfoId).NotNull().NotEmpty();
             RuleFor(m => m.Name).NotNull().Length(1, 128);
+            RuleFor(m => m.Label).Length(1, 128);
             RuleFor(m => m.Category).Length(1, 128);
             RuleFor(m => m.Description).Length(1, 256);
         }
@@ -57,7 +58,7 @@ public static class PlatformProductFlow
 
     private static Result PlatformNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORM_ID.Replace("{0}", id.ToString()));
 
-    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMSERVICE_ID.Replace("{0}", id.ToString()));
+    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMPRODUCT_ID.Replace("{0}", id.ToString()));
 
     //
     // LIST
@@ -128,7 +129,10 @@ public static class PlatformProductFlow
                 .ProjectTo<ListModel>(_configuration)
                 .PaginatedListAsync(pageNumber, pageSize);
 
-            var platforms = _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToList();
+            var platforms = await _dbcontext.Set<PlatformInfo>()
+                .Where(q => q.Id == request.PlatformInfoId)
+                .OrderBy(o => o.Name)
+                .ToListAsync();
 
             var model = new ListResult
             {
@@ -185,7 +189,10 @@ public static class PlatformProductFlow
 
         public async Task<Result<CreateResult>> Handle(CreateQuery request, CancellationToken token)
         {
-            IList<PlatformInfo> platforms = await _dbcontext.Set<PlatformInfo>().ToListAsync(cancellationToken: token);
+            IList<PlatformInfo> platforms = await _dbcontext.Set<PlatformInfo>()
+                .Where(q => q.Id == request.PlatformInfoId)
+                .OrderBy(o => o.Name)
+                .ToListAsync(cancellationToken: token);
 
             var platform = platforms.FirstOrDefault(f => f.Id == request.PlatformInfoId);
             if (platform is null)
@@ -296,7 +303,10 @@ public static class PlatformProductFlow
                 .SingleOrDefaultAsync(token);
             if (record == null) 
                 return RecordNotFound(request.Id);
-            record.Platforms = await _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
+            record.Platforms = await _dbcontext.Set<PlatformInfo>()
+                .Where(q => q.Id == record.PlatformInfoId)
+                .OrderBy(o => o.Name)
+                .ToListAsync(token);
             return Result.Ok(record);
         }
     }
@@ -386,7 +396,10 @@ public static class PlatformProductFlow
                 .SingleOrDefaultAsync(token);
             if (record == null)
                 return RecordNotFound(request.Id);
-            record.Platforms = await _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
+            record.Platforms = await _dbcontext.Set<PlatformInfo>()
+                .Where(q => q.Id == record.PlatformInfoId)
+                .OrderBy(o => o.Name)
+                .ToListAsync(cancellationToken: token);
             return Result.Ok(record);
         }
     }
@@ -475,8 +488,11 @@ public static class PlatformProductFlow
 
         public async Task<ImportResult> Handle(ImportQuery request, CancellationToken token)
         {
-            var platforms = _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToList();
-
+            var platforms = await _dbcontext.Set<PlatformInfo>()
+                .Where(q => q.Id == request.PlatformInfoId)
+                .OrderBy(o => o.Name)
+                .ToListAsync(token);
+            
             var platform = platforms.FirstOrDefault(f => f.Id == request.PlatformInfoId);
             if (platform is null)
                 return new ImportResult()

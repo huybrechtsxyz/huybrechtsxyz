@@ -94,7 +94,7 @@ public static class PlatformRegionFlow
         {
         }
 
-        public async Task<ListResult> Handle(ListQuery request, CancellationToken cancellationToken)
+        public async Task<ListResult> Handle(ListQuery request, CancellationToken token)
         {
             IQueryable<PlatformRegion> query = _dbcontext.Set<PlatformRegion>();
 
@@ -125,7 +125,10 @@ public static class PlatformRegionFlow
                 .ProjectTo<ListModel>(_configuration)
                 .PaginatedListAsync(pageNumber, pageSize);
 
-            var platforms = _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToList();
+            var platforms = await _dbcontext.Set<PlatformInfo>()
+                .Where(q => q.Id == request.PlatformInfoId)
+                .OrderBy(o => o.Name)
+                .ToListAsync(cancellationToken: token);
 
             var model = new ListResult
             {
@@ -182,7 +185,10 @@ public static class PlatformRegionFlow
 
         public async Task<Result<CreateResult>> Handle(CreateQuery request, CancellationToken token)
         {
-            IList<PlatformInfo> platforms = await _dbcontext.Set<PlatformInfo>().ToListAsync(cancellationToken: token);
+            IList<PlatformInfo> platforms = await _dbcontext.Set<PlatformInfo>()
+                .Where(q => q.Id == request.PlatformInfoId)
+                .OrderBy(o => o.Name)
+                .ToListAsync(cancellationToken: token);
 
             var platform = platforms.FirstOrDefault(f => f.Id == request.PlatformInfoId);
             if (platform is null)
@@ -292,7 +298,10 @@ public static class PlatformRegionFlow
                 .SingleOrDefaultAsync(token);
             if (record == null) 
                 return RecordNotFound(request.Id);
-            record.Platforms = await _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
+            record.Platforms = await _dbcontext.Set<PlatformInfo>()
+                .Where(q => q.Id == record.PlatformInfoId)
+                .OrderBy(o => o.Name)
+                .ToListAsync(cancellationToken: token);
             return Result.Ok(record);
         }
     }
@@ -381,7 +390,10 @@ public static class PlatformRegionFlow
                 .SingleOrDefaultAsync(token);
             if (record == null)
                 return RecordNotFound(request.Id);
-            record.Platforms = await _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToListAsync(cancellationToken: token);
+            record.Platforms = await _dbcontext.Set<PlatformInfo>()
+                .Where(q => q.Id == record.PlatformInfoId)
+                .OrderBy(o => o.Name)
+                .ToListAsync(cancellationToken: token);
             return Result.Ok(record);
         }
     }
@@ -467,7 +479,10 @@ public static class PlatformRegionFlow
 
         public async Task<ImportResult> Handle(ImportQuery request, CancellationToken token)
         {
-            var platforms = _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToList();
+            var platforms = await _dbcontext.Set<PlatformInfo>()
+                .Where(q => q.Id == request.PlatformInfoId)
+                .OrderBy(o => o.Name)
+                .ToListAsync(token);
 
             var platform = platforms.FirstOrDefault(f => f.Id == request.PlatformInfoId);
             if (platform is null)
@@ -560,7 +575,7 @@ public static class PlatformRegionFlow
             bool changes = false;
             foreach (var item in command.Items)
             {
-                var query = await _dbcontext.Set<PlatformRegion>().FirstOrDefaultAsync(q => q.PlatformInfoId == platform.Id && q.Name == item.Name);
+                var query = await _dbcontext.Set<PlatformRegion>().FirstOrDefaultAsync(q => q.PlatformInfoId == platform.Id && q.Name == item.Name, cancellationToken: token);
                 if (query is null)
                 {
                     PlatformRegion record = new()

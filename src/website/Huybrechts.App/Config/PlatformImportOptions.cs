@@ -11,6 +11,10 @@ public class PlatformImportOptionSettings
 
     public string RegionSearch { get; set; } = string.Empty;
 
+    public string ProductUrl { get; set; } = string.Empty;
+
+    public string ProductSearch { get; set; } = string.Empty;
+
     public string ServiceUrl { get; set; } = string.Empty;
 
     public string ServiceSearch { get; set; } = string.Empty;

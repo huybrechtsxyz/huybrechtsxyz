@@ -74,7 +74,7 @@ public static class PlatformInfoFlow
         {
         }
 
-        public async Task<ListResult> Handle(ListQuery request, CancellationToken cancellationToken)
+        public async Task<ListResult> Handle(ListQuery request, CancellationToken token)
         {
             IQueryable<PlatformInfo> query = _dbcontext.Set<PlatformInfo>();
 
