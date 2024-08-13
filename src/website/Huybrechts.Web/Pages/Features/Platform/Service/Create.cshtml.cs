@@ -45,9 +45,7 @@ public class CreateModel : PageModel
         }
 
         Platforms = result.Value.Platforms;
-        Regions = result.Value.Regions;
-        Products = result.Value.Products;
-        Data = result.Value.Service;
+        Data = result.Value.Item;
         return Page();
     }
 

@@ -47,7 +47,9 @@ public class AzurePricingService
         }
         else if (ServiceType.Services == type)
         {
-            throw new InvalidOperationException();
+            requestUrl = request.ServiceUrl;
+            if (!string.IsNullOrEmpty(searchString))
+                requestUrl += request.ServiceSearch.Replace("{0}", searchString);
         }
         else
         {
@@ -101,7 +103,14 @@ public class AzurePricingService
                         }
                         else if (ServiceType.Services == type)
                         {
-                            throw new InvalidOperationException();
+                            foreach (var item in pricingResponse.Items ?? [])
+                            {
+                                if (!string.IsNullOrEmpty(item.ServiceName) && uniqueset.Add(item.ServiceName))
+                                {
+                                    pricingResult.Items!.Add(item);
+                                    pricingResult.Count += 1;
+                                }
+                            }
                         }
                         else
                         { 

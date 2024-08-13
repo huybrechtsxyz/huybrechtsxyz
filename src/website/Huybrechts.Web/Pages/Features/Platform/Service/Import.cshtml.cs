@@ -39,11 +39,7 @@ public class ImportModel : PageModel
             CurrentFilter = currentFilter,
             SearchText = searchText,
             SortOrder = sortOrder,
-            Page = pageIndex,
-
-            CurrencyCode = currencyCode,
-            PlatformRegionId = platformRegionId,
-            PlatformProductId = platformProductId,
+            Page = pageIndex
         });
     }
 

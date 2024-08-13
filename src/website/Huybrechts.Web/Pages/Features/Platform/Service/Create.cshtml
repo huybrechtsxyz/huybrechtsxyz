@@ -37,24 +37,9 @@
                 <span asp-validation-for="Data.Label" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <select asp-for="Data.PlatformRegionId"
-                        asp-items="Model.Regions?.Select(p => new SelectListItem
-                                {
-                                    Value = p.Id.ToString(),
-                                    Text = p.Name
-                                }).ToList()"
-                        class="form-select"></select>
-                <label asp-for="Data.PlatformRegionId" class="form-label"></label>
-            </div>
-            <div class="form-floating mb-3">
-                <select asp-for="Data.PlatformProductId"
-                        asp-items="Model.Products?.Select(p => new SelectListItem
-                                {
-                                    Value = p.Id.ToString(),
-                                    Text = p.Name
-                                }).ToList()"
-                        class="form-select"></select>
-                <label asp-for="Data.PlatformProductId" class="form-label"></label>
+                <input asp-for="Data.Category" class="form-control" />
+                <label asp-for="Data.Category" class="form-label"></label>
+                <span asp-validation-for="Data.Category" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Description" class="form-control" />
@@ -77,11 +62,6 @@
                 <span asp-validation-for="Data.Limitations" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Size" class="form-control" />
-                <label asp-for="Data.Size" class="form-label"></label>
-                <span asp-validation-for="Data.Size" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
                 <input asp-for="Data.AboutURL" class="form-control" />
                 <label asp-for="Data.AboutURL" class="form-label"></label>
                 <span asp-validation-for="Data.AboutURL" class="text-danger"></span>
@@ -92,19 +72,9 @@
                 <span asp-validation-for="Data.PricingURL" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.ServiceId" class="form-control" />
-                <label asp-for="Data.ServiceId" class="form-label"></label>
-                <span asp-validation-for="Data.ServiceId" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Data.ServiceName" class="form-control" />
-                <label asp-for="Data.ServiceName" class="form-label"></label>
-                <span asp-validation-for="Data.ServiceName" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Data.ServiceFamily" class="form-control" />
-                <label asp-for="Data.ServiceFamily" class="form-label"></label>
-                <span asp-validation-for="Data.ServiceFamily" class="text-danger"></span>
+                <input asp-for="Data.PricingTier" class="form-control" />
+                <label asp-for="Data.PricingTier" class="form-label"></label>
+                <span asp-validation-for="Data.PricingTier" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Remark" class="form-control" />

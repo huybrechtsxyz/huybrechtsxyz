@@ -121,10 +121,10 @@
     <value>About URL</value>
   </data>
   <data name="ArmRegionName" xml:space="preserve">
-    <value>Region Name (ARM)</value>
+    <value>Region name (ARM)</value>
   </data>
   <data name="ArmSkuName" xml:space="preserve">
-    <value>Sku Name (ARM)</value>
+    <value>Sku name (ARM)</value>
   </data>
   <data name="Category" xml:space="preserve">
     <value>Category</value>
@@ -142,10 +142,10 @@
     <value>Description</value>
   </data>
   <data name="EffectiveStartDate" xml:space="preserve">
-    <value>Effective Start Date</value>
+    <value>Effective start date</value>
   </data>
-  <data name="IsPrimaryMeterRegion" xml:space="preserve">
-    <value>Is Primary Meter Region</value>
+  <data name="IsPrimaryRegion" xml:space="preserve">
+    <value>Is primary region</value>
   </data>
   <data name="IsSelected" xml:space="preserve">
     <value>Selected?</value>
@@ -160,16 +160,19 @@
     <value>Location</value>
   </data>
   <data name="MeterId" xml:space="preserve">
-    <value>Meter Identifier</value>
+    <value>Meter identifier</value>
   </data>
   <data name="MeterName" xml:space="preserve">
-    <value>Meter Name</value>
+    <value>Meter name</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
   <data name="Platform" xml:space="preserve">
     <value>Platform</value>
+  </data>
+  <data name="PricingTier" xml:space="preserve">
+    <value>Pricing tier</value>
   </data>
   <data name="PricingURL" xml:space="preserve">
     <value>Pricing URL</value>
@@ -178,10 +181,10 @@
     <value>Product</value>
   </data>
   <data name="ProductId" xml:space="preserve">
-    <value>Product Identifier</value>
+    <value>Product identifier</value>
   </data>
   <data name="ProductName" xml:space="preserve">
-    <value>Product Name</value>
+    <value>Product name</value>
   </data>
   <data name="Provider" xml:space="preserve">
     <value>Supported system</value>
@@ -193,36 +196,33 @@
     <value>Remark</value>
   </data>
   <data name="RetailPrice" xml:space="preserve">
-    <value>Retail Price</value>
+    <value>Retail price</value>
   </data>
   <data name="ServiceFamily" xml:space="preserve">
-    <value>Service Family</value>
+    <value>Service family</value>
   </data>
   <data name="ServiceId" xml:space="preserve">
-    <value>Service Identifier</value>
+    <value>Service identifier</value>
   </data>
   <data name="ServiceName" xml:space="preserve">
-    <value>Service Name</value>
-  </data>
-  <data name="Size" xml:space="preserve">
-    <value>Size</value>
+    <value>Service name</value>
   </data>
   <data name="SkuId" xml:space="preserve">
-    <value>Sku Identifier</value>
+    <value>Sku identifier</value>
   </data>
   <data name="SkuName" xml:space="preserve">
-    <value>Sku Name</value>
+    <value>Sku name</value>
   </data>
   <data name="TierMinimumUnits" xml:space="preserve">
-    <value>Tier Minimum Units</value>
+    <value>Tier minimum units</value>
   </data>
   <data name="Type" xml:space="preserve">
     <value>Type</value>
   </data>
   <data name="UnitOfMeasure" xml:space="preserve">
-    <value>Unit Of Measure</value>
+    <value>Unit of measure</value>
   </data>
   <data name="UnitPrice" xml:space="preserve">
-    <value>Unit Price</value>
+    <value>Unit price</value>
   </data>
 </root>

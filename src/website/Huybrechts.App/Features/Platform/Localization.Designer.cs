@@ -70,7 +70,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Region Name (ARM).
+        ///   Looks up a localized string similar to Region name (ARM).
         /// </summary>
         public static string ArmRegionName {
             get {
@@ -79,7 +79,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sku Name (ARM).
+        ///   Looks up a localized string similar to Sku name (ARM).
         /// </summary>
         public static string ArmSkuName {
             get {
@@ -133,7 +133,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Effective Start Date.
+        ///   Looks up a localized string similar to Effective start date.
         /// </summary>
         public static string EffectiveStartDate {
             get {
@@ -142,11 +142,11 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Is Primary Meter Region.
+        ///   Looks up a localized string similar to Is primary region.
         /// </summary>
-        public static string IsPrimaryMeterRegion {
+        public static string IsPrimaryRegion {
             get {
-                return ResourceManager.GetString("IsPrimaryMeterRegion", resourceCulture);
+                return ResourceManager.GetString("IsPrimaryRegion", resourceCulture);
             }
         }
         
@@ -187,7 +187,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Meter Identifier.
+        ///   Looks up a localized string similar to Meter identifier.
         /// </summary>
         public static string MeterId {
             get {
@@ -196,7 +196,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Meter Name.
+        ///   Looks up a localized string similar to Meter name.
         /// </summary>
         public static string MeterName {
             get {
@@ -223,6 +223,15 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pricing tier.
+        /// </summary>
+        public static string PricingTier {
+            get {
+                return ResourceManager.GetString("PricingTier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pricing URL.
         /// </summary>
         public static string PricingURL {
@@ -241,7 +250,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Product Identifier.
+        ///   Looks up a localized string similar to Product identifier.
         /// </summary>
         public static string ProductId {
             get {
@@ -250,7 +259,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Product Name.
+        ///   Looks up a localized string similar to Product name.
         /// </summary>
         public static string ProductName {
             get {
@@ -286,7 +295,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Retail Price.
+        ///   Looks up a localized string similar to Retail price.
         /// </summary>
         public static string RetailPrice {
             get {
@@ -295,7 +304,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Service Family.
+        ///   Looks up a localized string similar to Service family.
         /// </summary>
         public static string ServiceFamily {
             get {
@@ -304,7 +313,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Service Identifier.
+        ///   Looks up a localized string similar to Service identifier.
         /// </summary>
         public static string ServiceId {
             get {
@@ -313,7 +322,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Service Name.
+        ///   Looks up a localized string similar to Service name.
         /// </summary>
         public static string ServiceName {
             get {
@@ -322,16 +331,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Size.
-        /// </summary>
-        public static string Size {
-            get {
-                return ResourceManager.GetString("Size", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sku Identifier.
+        ///   Looks up a localized string similar to Sku identifier.
         /// </summary>
         public static string SkuId {
             get {
@@ -340,7 +340,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sku Name.
+        ///   Looks up a localized string similar to Sku name.
         /// </summary>
         public static string SkuName {
             get {
@@ -349,7 +349,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tier Minimum Units.
+        ///   Looks up a localized string similar to Tier minimum units.
         /// </summary>
         public static string TierMinimumUnits {
             get {
@@ -367,7 +367,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unit Of Measure.
+        ///   Looks up a localized string similar to Unit of measure.
         /// </summary>
         public static string UnitOfMeasure {
             get {
@@ -376,7 +376,7 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unit Price.
+        ///   Looks up a localized string similar to Unit price.
         /// </summary>
         public static string UnitPrice {
             get {

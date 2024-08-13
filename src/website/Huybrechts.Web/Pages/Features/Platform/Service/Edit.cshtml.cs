@@ -45,8 +45,6 @@ public class EditModel : PageModel
         }
 
         Platforms = result.Value.Platforms;
-        Regions = result.Value.Regions;
-        Products = result.Value.Products;
         Data = result.Value;
         return Page();
     }

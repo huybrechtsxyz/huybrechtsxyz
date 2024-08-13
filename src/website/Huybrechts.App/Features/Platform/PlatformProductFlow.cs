@@ -512,7 +512,6 @@ public static class PlatformProductFlow
                 Services = Services.Where(q =>
                     q.Name.Contains(searchString, StringComparison.InvariantCultureIgnoreCase)
                     || q.Label.Contains(searchString, StringComparison.InvariantCultureIgnoreCase)
-                    || (q.Description.HasValue() && q.Description!.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
                     ).ToList();
             }
 
@@ -540,7 +539,7 @@ public static class PlatformProductFlow
             List<ImportModel> result = [];
 
             var service = new AzurePricingService(_options);
-            var pricing = await service.GetServicesAsync("", "", "", searchString);
+            var pricing = await service.GetProductsAsync("", "", "", searchString);
 
             if (pricing is null)
                 return [];
