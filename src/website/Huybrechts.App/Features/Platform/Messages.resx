@@ -120,6 +120,9 @@
   <data name="NOT_FOUND_PLATFORMPRODUCT_ID" xml:space="preserve">
     <value>Unable to find product with ID {0}</value>
   </data>
+  <data name="NOT_FOUND_PLATFORMRATE_ID" xml:space="preserve">
+    <value>Unable to find rate with ID {0}</value>
+  </data>
   <data name="NOT_FOUND_PLATFORMREGION_ID" xml:space="preserve">
     <value>Unable to find region with ID {0}</value>
   </data>

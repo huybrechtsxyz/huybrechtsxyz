@@ -165,6 +165,9 @@
   <data name="MeterName" xml:space="preserve">
     <value>Meter name</value>
   </data>
+  <data name="MininumUnits" xml:space="preserve">
+    <value>Mininum eenheden</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Naam</value>
   </data>
@@ -189,6 +192,9 @@
   <data name="Provider" xml:space="preserve">
     <value>Ondersteunde leverancier</value>
   </data>
+  <data name="RateType" xml:space="preserve">
+    <value>Type prijs</value>
+  </data>
   <data name="Region" xml:space="preserve">
     <value>Regio</value>
   </data>
@@ -197,6 +203,9 @@
   </data>
   <data name="RetailPrice" xml:space="preserve">
     <value>Verkoopprijs</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>Dienst</value>
   </data>
   <data name="ServiceFamily" xml:space="preserve">
     <value>Categorie</value>
@@ -224,5 +233,8 @@
   </data>
   <data name="UnitPrice" xml:space="preserve">
     <value>Stukprijs</value>
+  </data>
+  <data name="ValidFrom" xml:space="preserve">
+    <value>Geldig van</value>
   </data>
 </root>

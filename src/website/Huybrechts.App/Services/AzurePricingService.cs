@@ -53,10 +53,7 @@ public class AzurePricingService
         }
         else
         {
-            requestUrl = request.RatesUrl
-                .Replace("{currency}", currency)
-                .Replace("{service}", service)
-                .Replace("{location}", location);
+            requestUrl = request.RatesUrl.Replace("{currency}", currency).Replace("{service}", service).Replace("{location}", location);
             if (!string.IsNullOrEmpty(searchString))
                 requestUrl += request.RatesSearch.Replace("{0}", searchString);
         }

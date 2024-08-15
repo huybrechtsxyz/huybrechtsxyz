@@ -41,6 +41,8 @@ public class PlatformContext : FeatureContext
 
     public DbSet<PlatformService> Services { get; set; }
 
+    public DbSet<PlatformRate> Rates { get; set; }
+
     //
     // TODO
     //

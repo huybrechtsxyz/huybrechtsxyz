@@ -207,6 +207,36 @@
   <data name="Products" xml:space="preserve">
     <value>Products</value>
   </data>
+  <data name="RateCreateInfo" xml:space="preserve">
+    <value>Use this form to add a new pricing rate for a service on the platform. Be sure to provide all required fields, such as the service name, currency, and validity period.</value>
+  </data>
+  <data name="RateCreateTitle" xml:space="preserve">
+    <value>Add New Platform Rate</value>
+  </data>
+  <data name="RateDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this pricing rate? This action cannot be undone.</value>
+  </data>
+  <data name="RateDeleteTitle" xml:space="preserve">
+    <value>Delete Platform Rate</value>
+  </data>
+  <data name="RateEditInfo" xml:space="preserve">
+    <value>Use this form to edit the details of an existing pricing rate. Update the fields below as needed and save your changes.</value>
+  </data>
+  <data name="RateEditTitle" xml:space="preserve">
+    <value>Edit Platform Rate</value>
+  </data>
+  <data name="RateImportInfo" xml:space="preserve">
+    <value>Use this page to import Azure platform rates directly from the Azure Pricing API. This ensures that the latest pricing information for Azure services is automatically integrated into the system, allowing for accurate and up-to-date rate management.</value>
+  </data>
+  <data name="RateImportTitle" xml:space="preserve">
+    <value>Import Azure Platform Rates</value>
+  </data>
+  <data name="RateIndexInfo" xml:space="preserve">
+    <value>This page lists all the pricing rates for services on the platform. You can view details such as the service name, currency, retail price, and more.</value>
+  </data>
+  <data name="RateIndexTitle" xml:space="preserve">
+    <value>Platform Rates</value>
+  </data>
   <data name="RegionCreateInfo" xml:space="preserve">
     <value>Add a new region to a platform by specifying its name, label, and description. Use this page to define a new data center region for a cloud platform or on-premise solution.</value>
   </data>

@@ -205,6 +205,15 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mininum units.
+        /// </summary>
+        public static string MininumUnits {
+            get {
+                return ResourceManager.GetString("MininumUnits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Name {
@@ -277,6 +286,15 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rate type.
+        /// </summary>
+        public static string RateType {
+            get {
+                return ResourceManager.GetString("RateType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Region.
         /// </summary>
         public static string Region {
@@ -300,6 +318,15 @@ namespace Huybrechts.App.Features.Platform {
         public static string RetailPrice {
             get {
                 return ResourceManager.GetString("RetailPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service.
+        /// </summary>
+        public static string Service {
+            get {
+                return ResourceManager.GetString("Service", resourceCulture);
             }
         }
         
@@ -381,6 +408,15 @@ namespace Huybrechts.App.Features.Platform {
         public static string UnitPrice {
             get {
                 return ResourceManager.GetString("UnitPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Valid from.
+        /// </summary>
+        public static string ValidFrom {
+            get {
+                return ResourceManager.GetString("ValidFrom", resourceCulture);
             }
         }
     }

@@ -1,0 +1,129 @@
+﻿@page
+@inject IStringLocalizer<Localization> SL
+@model Huybrechts.Web.Pages.Features.Platform.Rate.CreateModel
+@{
+    ViewData["CardTitle"] = SL["RateCreateTitle"];
+    //ViewData["ActivePage"] = ManageNavPages.Service;
+}
+<partial name="_StatusMessage" for="StatusMessage" />
+<p class="text-info">
+    @SL["RateCreateInfo"]
+</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <form id="create-form" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input type="hidden" asp-for="Data.Id" />
+            <div class="form-floating mb-3">
+                <input type="hidden" asp-for="Data.PlatformServiceId" />
+                <select asp-for="Data.PlatformRegionId"
+                        asp-items="Model.Regions?.Select(p => new SelectListItem
+                                {
+                                    Value = p.Id.ToString(),
+                                    Text = p.Name
+                                }).ToList()"
+                        class="form-select" ></select>
+                <label asp-for="Data.PlatformRegionId" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Data.PlatformProductId"
+                        asp-items="Model.Products?.Select(p => new SelectListItem
+                                {
+                                    Value = p.Id.ToString(),
+                                    Text = p.Name
+                                }).ToList()"
+                        class="form-select" ></select>
+                <label asp-for="Data.PlatformProductId" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Data.CurrencyCode"
+                        asp-items="Model.Currencies?.Select(p => new SelectListItem
+                                {
+                                    Value = p,
+                                    Text = p
+                                }).ToList()"
+                        class="form-select" ></select>
+                <label asp-for="Data.CurrencyCode" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.ValidFrom" class="form-control" />
+                <label asp-for="Data.ValidFrom" class="form-label"></label>
+                <span asp-validation-for="Data.ValidFrom" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.ServiceName" class="form-control" />
+                <label asp-for="Data.ServiceName" class="form-label"></label>
+                <span asp-validation-for="Data.ServiceName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.ServiceFamily" class="form-control" />
+                <label asp-for="Data.ServiceFamily" class="form-label"></label>
+                <span asp-validation-for="Data.ServiceFamily" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.ProductName" class="form-control" />
+                <label asp-for="Data.ProductName" class="form-label"></label>
+                <span asp-validation-for="Data.ProductName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.SkuName" class="form-control" />
+                <label asp-for="Data.SkuName" class="form-label"></label>
+                <span asp-validation-for="Data.SkuName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.MeterName" class="form-control" />
+                <label asp-for="Data.MeterName" class="form-label"></label>
+                <span asp-validation-for="Data.MeterName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.RateType" class="form-control" />
+                <label asp-for="Data.RateType" class="form-label"></label>
+                <span asp-validation-for="Data.RateType" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.RetailPrice" class="form-control" />
+                <label asp-for="Data.RetailPrice" class="form-label"></label>
+                <span asp-validation-for="Data.RetailPrice" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.UnitPrice" class="form-control" />
+                <label asp-for="Data.UnitPrice" class="form-label"></label>
+                <span asp-validation-for="Data.UnitPrice" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.MininumUnits" class="form-control" />
+                <label asp-for="Data.MininumUnits" class="form-label"></label>
+                <span asp-validation-for="Data.MininumUnits" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.UnitOfMeasure" class="form-control" />
+                <label asp-for="Data.UnitOfMeasure" class="form-label"></label>
+                <span asp-validation-for="Data.UnitOfMeasure" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.IsPrimaryRegion" class="form-control" />
+                <label asp-for="Data.IsPrimaryRegion" class="form-label"></label>
+                <span asp-validation-for="Data.IsPrimaryRegion" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Remark" class="form-control" />
+                <label asp-for="Data.Remark" class="form-label"></label>
+                <span asp-validation-for="Data.Remark" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <a class="w-30 btn btn-lg btn-secondary" asp-page="Index" asp-route-platformServiceId="@Model.Data.PlatformServiceId"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                <button id="create-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Rate/Index" asp-route-platformServiceId="@Model.Data.PlatformServiceId">@SL["Rates"]</a></li>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

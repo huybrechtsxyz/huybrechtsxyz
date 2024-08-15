@@ -79,6 +79,15 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find rate with ID {0}.
+        /// </summary>
+        public static string NOT_FOUND_PLATFORMRATE_ID {
+            get {
+                return ResourceManager.GetString("NOT_FOUND_PLATFORMRATE_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find region with ID {0}.
         /// </summary>
         public static string NOT_FOUND_PLATFORMREGION_ID {

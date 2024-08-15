@@ -331,6 +331,96 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use this form to add a new pricing rate for a service on the platform. Be sure to provide all required fields, such as the service name, currency, and validity period..
+        /// </summary>
+        public static string RateCreateInfo {
+            get {
+                return ResourceManager.GetString("RateCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New Platform Rate.
+        /// </summary>
+        public static string RateCreateTitle {
+            get {
+                return ResourceManager.GetString("RateCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this pricing rate? This action cannot be undone..
+        /// </summary>
+        public static string RateDeleteInfo {
+            get {
+                return ResourceManager.GetString("RateDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Platform Rate.
+        /// </summary>
+        public static string RateDeleteTitle {
+            get {
+                return ResourceManager.GetString("RateDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this form to edit the details of an existing pricing rate. Update the fields below as needed and save your changes..
+        /// </summary>
+        public static string RateEditInfo {
+            get {
+                return ResourceManager.GetString("RateEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Platform Rate.
+        /// </summary>
+        public static string RateEditTitle {
+            get {
+                return ResourceManager.GetString("RateEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this page to import Azure platform rates directly from the Azure Pricing API. This ensures that the latest pricing information for Azure services is automatically integrated into the system, allowing for accurate and up-to-date rate management..
+        /// </summary>
+        public static string RateImportInfo {
+            get {
+                return ResourceManager.GetString("RateImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Azure Platform Rates.
+        /// </summary>
+        public static string RateImportTitle {
+            get {
+                return ResourceManager.GetString("RateImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page lists all the pricing rates for services on the platform. You can view details such as the service name, currency, retail price, and more..
+        /// </summary>
+        public static string RateIndexInfo {
+            get {
+                return ResourceManager.GetString("RateIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platform Rates.
+        /// </summary>
+        public static string RateIndexTitle {
+            get {
+                return ResourceManager.GetString("RateIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add a new region to a platform by specifying its name, label, and description. Use this page to define a new data center region for a cloud platform or on-premise solution..
         /// </summary>
         public static string RegionCreateInfo {
