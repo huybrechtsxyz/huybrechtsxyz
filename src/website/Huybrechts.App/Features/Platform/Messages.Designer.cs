@@ -88,6 +88,15 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate platform service for {0}.
+        /// </summary>
+        public static string DUPLICATE_PLATFORMSERVICE_NAME {
+            get {
+                return ResourceManager.GetString("DUPLICATE_PLATFORMSERVICE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find platform with ID {0}.
         /// </summary>
         public static string NOT_FOUND_PLATFORM_ID {

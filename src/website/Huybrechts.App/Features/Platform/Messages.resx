@@ -123,6 +123,9 @@
   <data name="DUPLICATE_PLATFORMREGION_NAME" xml:space="preserve">
     <value>Duplicate region name for {0}</value>
   </data>
+  <data name="DUPLICATE_PLATFORMSERVICE_NAME" xml:space="preserve">
+    <value>Duplicate platform service for {0}</value>
+  </data>
   <data name="DUPLICATE_PLATFORM_NAME" xml:space="preserve">
     <value>Duplicate platform for {0}</value>
   </data>

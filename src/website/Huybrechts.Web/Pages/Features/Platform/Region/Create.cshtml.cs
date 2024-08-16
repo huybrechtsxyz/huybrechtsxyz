@@ -17,10 +17,6 @@ public class CreateModel : PageModel
     [BindProperty]
     public Flow.CreateCommand Data { get; set; }
 
-    public IList<PlatformInfo> Platforms { get; set; } = [];
-
-    public string PlatformInfoName { get; set; } = string.Empty;
-
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
@@ -39,12 +35,9 @@ public class CreateModel : PageModel
         if (result.IsFailed)
         {
             StatusMessage = result.Errors[0].Message;
-            return this.RedirectToPage(nameof(Index));
+            return this.RedirectToPage(nameof(Index), new { platformInfoId = PlatformInfoId });
         }
-
-        Platforms = result.Value.Platforms;
-        PlatformInfoName = Platforms.FirstOrDefault(f => f.Id == PlatformInfoId)?.Name ?? string.Empty;
-        Data = result.Value.Region;
+        Data = result.Value;
         return Page();
     }
 
@@ -55,6 +48,6 @@ public class CreateModel : PageModel
         {
             StatusMessage = result.Errors[0].Message;
         }
-        return this.RedirectToPage(nameof(Index), new { platformInfoId = Data.PlatformInfoId });
+        return RedirectToPage(nameof(Index), new { platformInfoId = Data.PlatformInfoId });
     }
 }

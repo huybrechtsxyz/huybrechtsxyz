@@ -23,14 +23,14 @@ public class ImportModel : PageModel
         _mediator = mediator;
     }
 
-    public async Task OnGetAsync(
+    public async Task<IActionResult> OnGetAsync(
         Ulid? platformInfoId,
         string currentFilter,
         string searchText,
         string sortOrder,
         int? pageIndex)
     {
-        Data = await _mediator.Send(request: new Flow.ImportQuery
+        var result = await _mediator.Send(request: new Flow.ImportQuery
         {
             PlatformInfoId = platformInfoId ?? Ulid.Empty,
             CurrentFilter = currentFilter,
@@ -38,6 +38,13 @@ public class ImportModel : PageModel
             SortOrder = sortOrder,
             Page = pageIndex
         });
+        if (result.IsFailed)
+        {
+            StatusMessage = result.Errors[0].Message;
+            return this.RedirectToPage(nameof(Index), new { platformInfoId = Data.Platform.Id });
+        }
+        Data = result.Value;
+        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -46,10 +53,10 @@ public class ImportModel : PageModel
 
         var result = await _mediator.Send(request: new Flow.ImportCommand
         {
-            PlatformInfoId = Data.PlatformInfoId ?? Ulid.Empty,
+            PlatformInfoId = Data.Platform.Id,
             Items = selection
         });
 
-        return this.RedirectToPage(nameof(Index), new { platformInfoId = Data.PlatformInfoId });
+        return this.RedirectToPage(nameof(Index), new { platformInfoId = Data.Platform.Id });
     }
 }

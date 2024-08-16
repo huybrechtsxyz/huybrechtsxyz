@@ -17,10 +17,6 @@ public class EditModel : PageModel
     [BindProperty]
     public Flow.UpdateCommand Data { get; set; }
 
-    public IList<PlatformInfo> Platforms { get; set; } = [];
-
-    public string PlatformInfoName { get; set; } = string.Empty;
-
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
@@ -39,11 +35,8 @@ public class EditModel : PageModel
         if (result.IsFailed)
         {
             StatusMessage = result.Errors[0].Message;
-            return this.RedirectToPage(nameof(Index));
+            return this.RedirectToPage(nameof(Index), new { platformInfoId = Data.PlatformInfoId });
         }
-
-        Platforms = result.Value.Platforms;
-        PlatformInfoName = result.Value.PlatformInfoName;
         Data = result.Value;
         return Page();
     }

@@ -12,6 +12,7 @@ using StackExchange.Profiling.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Huybrechts.App.Features.Platform;
 
@@ -71,9 +72,7 @@ public static class PlatformRegionFlow
     // LIST
     //
 
-    public sealed record ListModel : Model
-    {
-    }
+    public sealed record ListModel : Model { }
 
     internal sealed class ListMapping : Profile
     {
@@ -82,7 +81,7 @@ public static class PlatformRegionFlow
             .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
     }
 
-    public sealed class ListQuery : EntityListFlow.Query, IRequest<ListResult>
+    public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
     {
         public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
     }
@@ -91,25 +90,19 @@ public static class PlatformRegionFlow
 
     public sealed class ListResult : EntityListFlow.Result<ListModel>
     {
-        public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
-
-        public string PlatformInfoName { get; set; } = string.Empty;
-
-        public PlatformProvider PlatformInfoProvider { get; set; } = PlatformProvider.None;
-
-        public IList<PlatformInfo>? Platforms = null;
+        public PlatformInfo Platform = new();
     }
 
     internal sealed class ListHandler :
         EntityListFlow.Handler<PlatformRegion, ListModel>,
-        IRequestHandler<ListQuery, ListResult>
+        IRequestHandler<ListQuery, Result<ListResult>>
     {
         public ListHandler(PlatformContext dbcontext, IConfigurationProvider configuration)
             : base(dbcontext, configuration)
         {
         }
 
-        public async Task<ListResult> Handle(ListQuery request, CancellationToken token)
+        public async Task<Result<ListResult>> Handle(ListQuery request, CancellationToken token)
         {
             IQueryable<PlatformRegion> query = _dbcontext.Set<PlatformRegion>();
 
@@ -140,20 +133,14 @@ public static class PlatformRegionFlow
                 .ProjectTo<ListModel>(_configuration)
                 .PaginatedListAsync(pageNumber, pageSize);
 
-            var platforms = await _dbcontext.Set<PlatformInfo>()
-                .Where(q => q.Id == request.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: token);
+            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(q => q.Id == request.PlatformInfoId, cancellationToken: token);
 
             var model = new ListResult
             {
-                PlatformInfoId = request.PlatformInfoId,
-                PlatformInfoName = platforms.FirstOrDefault()?.Name ?? string.Empty,
-                PlatformInfoProvider = platforms.FirstOrDefault()?.Provider ?? PlatformProvider.None,
                 CurrentFilter = searchString,
                 SearchText = searchString,
                 SortOrder = request.SortOrder,
-                Platforms = platforms,
+                Platform = platform ?? new(),
                 Results = results ?? []
             };
 
@@ -165,13 +152,15 @@ public static class PlatformRegionFlow
     // CREATE
     //
 
-    public static CreateCommand CreateNew(Ulid? platformInfoId) => new()
+    public static CreateCommand CreateNew(PlatformInfo platform) => new()
     {
         Id = Ulid.NewUlid(),
-        PlatformInfoId = platformInfoId ?? Ulid.Empty
+        Platform = platform,
+        PlatformInfoId = platform.Id,
+        PlatformInfoName = platform.Name,
     };
 
-    public sealed record CreateQuery : IRequest<Result<CreateResult>>
+    public sealed record CreateQuery : IRequest<Result<CreateCommand>>
     {
         public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
     }
@@ -184,14 +173,19 @@ public static class PlatformRegionFlow
         }
     }
 
-    public record CreateResult
+    public sealed record CreateCommand : Model, IRequest<Result<Ulid>>
     {
-        public CreateCommand Region { get; set; } = new();
-
-        public IList<PlatformInfo> Platforms { get; set; } = [];
+        public PlatformInfo Platform { get; set; } = new();
     }
 
-    internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateResult>>
+    internal sealed class CreateCommandValidator : ModelValidator<CreateCommand>
+    {
+        public CreateCommandValidator() : base()
+        {
+        }
+    }
+
+    internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCommand>>
     {
         private readonly PlatformContext _dbcontext;
 
@@ -200,33 +194,17 @@ public static class PlatformRegionFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result<CreateResult>> Handle(CreateQuery request, CancellationToken token)
+        public async Task<Result<CreateCommand>> Handle(CreateQuery message, CancellationToken token)
         {
-            IList<PlatformInfo> platforms = await _dbcontext.Set<PlatformInfo>()
-                .Where(q => q.Id == request.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: token);
-
-            var platform = platforms.FirstOrDefault(f => f.Id == request.PlatformInfoId);
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([message.PlatformInfoId], cancellationToken: token);
             if (platform is null)
-                return PlatformNotFound(request.PlatformInfoId);
+                return PlatformNotFound(message.PlatformInfoId, new CreateCommand()
+                {
+                    PlatformInfoId = message.PlatformInfoId
+                });
 
-            return Result.Ok(new CreateResult()
-            {
-                Region = CreateNew(request.PlatformInfoId),
-                Platforms = platforms
-            });
-        }
-    }
-
-    public sealed record CreateCommand : Model, IRequest<Result<Ulid>>
-    {
-    }
-
-    internal sealed class CreateCommandValidator : ModelValidator<CreateCommand>
-    {
-        public CreateCommandValidator() : base()
-        {
+            var record = CreateNew(platform);
+            return Result.Ok(record);
         }
     }
 
@@ -239,23 +217,23 @@ public static class PlatformRegionFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result<Ulid>> Handle(CreateCommand request, CancellationToken token)
+        public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
         {
-            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([request.PlatformInfoId], cancellationToken: token);
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([message.PlatformInfoId], cancellationToken: token);
             if (platform is null)
-                return PlatformNotFound(request.PlatformInfoId);
+                return PlatformNotFound(message.PlatformInfoId);
 
-            if (await IsDuplicateNameAsync(_dbcontext, request.Name, request.PlatformInfoId))
-                return DuplicateRecordFound(request.Name);
+            if (await IsDuplicateNameAsync(_dbcontext, message.Name, message.PlatformInfoId))
+                return DuplicateRecordFound(message.Name);
 
             var record = new PlatformRegion
             {
-                Id = request.Id,
+                Id = message.Id,
                 PlatformInfo = platform,
-                Name = request.Name.Trim(),
-                Description = request.Description?.Trim(),
-                Label = request.Label.Trim(),
-                Remark = request.Remark?.Trim(),
+                Name = message.Name.Trim(),
+                Description = message.Description?.Trim(),
+                Label = message.Label.Trim(),
+                Remark = message.Remark?.Trim(),
                 CreatedDT = DateTime.UtcNow
             };
 
@@ -284,12 +262,10 @@ public static class PlatformRegionFlow
 
     public record UpdateCommand : Model, IRequest<Result>
     {
-        public IList<PlatformInfo> Platforms { get; set; } = [];
+        public PlatformInfo Platform { get; set; } = new();
     }
 
-    internal class UpdateCommandValidator : ModelValidator<UpdateCommand>
-    {
-    }
+    internal class UpdateCommandValidator : ModelValidator<UpdateCommand> { }
 
     internal class UpdateCommandMapping : Profile
     {
@@ -309,20 +285,22 @@ public static class PlatformRegionFlow
             _configuration = configuration;
         }
 
-        public async Task<Result<UpdateCommand>> Handle(UpdateQuery request, CancellationToken token)
+        public async Task<Result<UpdateCommand>> Handle(UpdateQuery message, CancellationToken token)
         {
             var record = await _dbcontext.Set<PlatformRegion>()
-                .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<UpdateCommand>(_configuration)
-                .FirstOrDefaultAsync(token);
+                .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
             if (record == null) 
-                return RecordNotFound(request.Id);
-            record.Platforms = await _dbcontext.Set<PlatformInfo>()
-                .Where(q => q.Id == record.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: token);
+                return RecordNotFound(message.Id);
+
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([record.PlatformInfoId], cancellationToken: token);
+            if (platform is null)
+                return PlatformNotFound(record.PlatformInfoId);
+            record.Platform = platform;
+
             return Result.Ok(record);
+
         }
     }
 
@@ -335,19 +313,19 @@ public static class PlatformRegionFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result> Handle(UpdateCommand command, CancellationToken token)
+        public async Task<Result> Handle(UpdateCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformRegion>().FindAsync([command.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<PlatformRegion>().FindAsync([message.Id], cancellationToken: token);
             if (record is null)
-                return RecordNotFound(command.Id);
+                return RecordNotFound(message.Id);
 
-            if (await IsDuplicateNameAsync(_dbcontext, command.Name, command.PlatformInfoId, record.Id))
-                return DuplicateRecordFound(command.Name);
+            if (await IsDuplicateNameAsync(_dbcontext, message.Name, message.PlatformInfoId, record.Id))
+                return DuplicateRecordFound(message.Name);
 
-            record.Name = command.Name.Trim();
-            record.Description = command.Description?.Trim();
-            record.Label = command.Label.Trim();
-            record.Remark = command.Remark?.Trim();
+            record.Name = message.Name.Trim();
+            record.Description = message.Description?.Trim();
+            record.Label = message.Label.Trim();
+            record.Remark = message.Remark?.Trim();
             record.ModifiedDT = DateTime.UtcNow;
 
             _dbcontext.Set<PlatformRegion>().Update(record);
@@ -375,7 +353,7 @@ public static class PlatformRegionFlow
 
     public sealed record DeleteCommand : Model, IRequest<Result>
     {
-        public IList<PlatformInfo> Platforms { get; set; } = [];
+        public PlatformInfo Platform { get; set; } = new();
     }
 
     internal sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
@@ -404,19 +382,20 @@ public static class PlatformRegionFlow
             _configuration = configuration;
         }
 
-        public async Task<Result<DeleteCommand>> Handle(DeleteQuery request, CancellationToken token)
+        public async Task<Result<DeleteCommand>> Handle(DeleteQuery message, CancellationToken token)
         {
             var record = await _dbcontext.Set<PlatformRegion>()
-                .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<DeleteCommand>(_configuration)
-                .FirstOrDefaultAsync(token);
+                .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
             if (record == null)
-                return RecordNotFound(request.Id);
-            record.Platforms = await _dbcontext.Set<PlatformInfo>()
-                .Where(q => q.Id == record.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: token);
+                return RecordNotFound(message.Id);
+
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([record.PlatformInfoId], cancellationToken: token);
+            if (platform is null)
+                return PlatformNotFound(record.PlatformInfoId);
+            record.Platform = platform;
+
             return Result.Ok(record);
         }
     }
@@ -430,11 +409,11 @@ public static class PlatformRegionFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result> Handle(DeleteCommand command, CancellationToken token)
+        public async Task<Result> Handle(DeleteCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformRegion>().FindAsync([command.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<PlatformRegion>().FindAsync([message.Id], cancellationToken: token);
             if (record is null)
-                return RecordNotFound(command.Id);
+                return RecordNotFound(message.Id);
 
             _dbcontext.Set<PlatformRegion>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);
@@ -453,7 +432,7 @@ public static class PlatformRegionFlow
         public bool IsSelected { get; set; }
     }
 
-    public sealed class ImportQuery : EntityListFlow.Query, IRequest<ImportResult>
+    public sealed class ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
     {
         public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
     }
@@ -468,11 +447,7 @@ public static class PlatformRegionFlow
 
     public sealed class ImportResult : EntityListFlow.Result<ImportModel>
     {
-        public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
-
-        public string PlatformInfoName { get; set; } = string.Empty;
-
-        public IList<PlatformInfo>? Platforms = null;
+        public PlatformInfo Platform { get; set; } = new();
     }
 
     public sealed record ImportCommand : IRequest<Result>
@@ -492,7 +467,7 @@ public static class PlatformRegionFlow
 
     internal sealed class ImportQueryHandler :
        EntityListFlow.Handler<PlatformRegion, ImportModel>,
-       IRequestHandler<ImportQuery, ImportResult>
+       IRequestHandler<ImportQuery, Result<ImportResult>>
     {
         private readonly PlatformImportOptions _options;
 
@@ -502,26 +477,14 @@ public static class PlatformRegionFlow
             _options = options;
         }
 
-        public async Task<ImportResult> Handle(ImportQuery request, CancellationToken token)
+        public async Task<Result<ImportResult>> Handle(ImportQuery message, CancellationToken token)
         {
-            var platforms = await _dbcontext.Set<PlatformInfo>()
-                .Where(q => q.Id == request.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(token);
-
-            var platform = platforms.FirstOrDefault(f => f.Id == request.PlatformInfoId);
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([message.PlatformInfoId], cancellationToken: token);
             if (platform is null)
-                return new ImportResult()
-                {
-                    PlatformInfoId = Ulid.Empty,
-                    CurrentFilter = request.CurrentFilter,
-                    SearchText = request.SearchText,
-                    SortOrder = request.SortOrder,
-                    Results = []
-                };
+                return PlatformNotFound(message.PlatformInfoId);
 
-            var searchString = request.SearchText ?? request.CurrentFilter;
-            List<ImportModel> regions = await GetAzureLocationsAsync(platform.Provider.ToString(), request.PlatformInfoId, searchString);
+            var searchString = message.SearchText ?? message.CurrentFilter;
+            List<ImportModel> regions = await GetAzureLocationsAsync(platform.Provider.ToString(), message.PlatformInfoId, searchString);
             
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -534,16 +497,14 @@ public static class PlatformRegionFlow
 
             regions = [.. regions.OrderBy(o => o.Name)];
             int pageSize = EntityListFlow.PageSize;
-            int pageNumber = request.Page ?? 1;
+            int pageNumber = message.Page ?? 1;
 
             return new ImportResult()
             {
-                PlatformInfoId = request.PlatformInfoId,
-                PlatformInfoName = platform.Name,
+                Platform = platform,
                 CurrentFilter = searchString,
                 SearchText = searchString,
-                SortOrder = request.SortOrder,
-                Platforms = platforms,
+                SortOrder = message.SortOrder,
                 Results = new PaginatedList<ImportModel>(
                     regions.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
                     regions.Count,
@@ -589,17 +550,17 @@ public static class PlatformRegionFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result> Handle(ImportCommand command, CancellationToken token)
+        public async Task<Result> Handle(ImportCommand message, CancellationToken token)
         {
-            if (command is null || command.Items is null || command.Items.Count < 0)
+            if (message is null || message.Items is null || message.Items.Count < 0)
                 return Result.Ok();
 
-            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([command.PlatformInfoId], cancellationToken: token);
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([message.PlatformInfoId], cancellationToken: token);
             if (platform is null)
-                return PlatformNotFound(command.PlatformInfoId);
+                return PlatformNotFound(message.PlatformInfoId);
 
             bool changes = false;
-            foreach (var item in command.Items)
+            foreach (var item in message.Items)
             {
                 var query = await _dbcontext.Set<PlatformRegion>().FirstOrDefaultAsync(q => q.PlatformInfoId == platform.Id && q.Name == item.Name, cancellationToken: token);
                 if (query is null)

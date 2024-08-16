@@ -123,6 +123,9 @@
   <data name="DUPLICATE_PLATFORMPRODUCT_NAME" xml:space="preserve">
     <value>Product met naam {0} bestaat al</value>
   </data>
+  <data name="DUPLICATE_PLATFORMSERVICE_NAME" xml:space="preserve">
+    <value>Dienst met naam {0} bestaat al</value>
+  </data>
   <data name="DUPLICATE_PLATFORM_NAME" xml:space="preserve">
     <value>Platform met naam {0} bestaat al</value>
   </data>
