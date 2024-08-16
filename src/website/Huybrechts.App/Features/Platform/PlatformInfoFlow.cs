@@ -56,39 +56,30 @@ public static class PlatformInfoFlow
     // LIST
     //
 
-    public sealed record ListModel : Model
-    {
-    }
+    public sealed record ListModel : Model { }
 
-    internal sealed class ListMapping : Profile
-    {
-        public ListMapping() => CreateProjection<PlatformInfo, ListModel>();
-    }
+    internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<PlatformInfo, ListModel>(); }
 
-    public sealed class ListQuery : EntityListFlow.Query, IRequest<ListResult>
-    {
-    }
+    public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
 
     internal sealed class ListValidator : AbstractValidator<ListQuery> { public ListValidator() { } }
 
-    public sealed class ListResult : EntityListFlow.Result<ListModel>
-    {
-    }
+    public sealed class ListResult : EntityListFlow.Result<ListModel> { }
 
     internal sealed class ListHandler :
         EntityListFlow.Handler<PlatformInfo, ListModel>,
-        IRequestHandler<ListQuery, ListResult>
+        IRequestHandler<ListQuery, Result<ListResult>>
     {
         public ListHandler(PlatformContext dbcontext, IConfigurationProvider configuration)
             : base(dbcontext, configuration)
         {
         }
 
-        public async Task<ListResult> Handle(ListQuery request, CancellationToken token)
+        public async Task<Result<ListResult>> Handle(ListQuery message, CancellationToken token)
         {
             IQueryable<PlatformInfo> query = _dbcontext.Set<PlatformInfo>();
 
-            var searchString = request.SearchText ?? request.CurrentFilter;
+            var searchString = message.SearchText ?? message.CurrentFilter;
             if (!string.IsNullOrEmpty(searchString))
             {
                 query = query.Where(q => 
@@ -96,14 +87,14 @@ public static class PlatformInfoFlow
                     || (q.Description.HasValue() && q.Description!.Contains(searchString)));
             }
 
-            if (!string.IsNullOrEmpty(request.SortOrder))
+            if (!string.IsNullOrEmpty(message.SortOrder))
             {
-                query = query.OrderBy(request.SortOrder);
+                query = query.OrderBy(message.SortOrder);
             }
             else query = query.OrderBy(o => o.Name);
 
             int pageSize = EntityListFlow.PageSize;
-            int pageNumber = request.Page ?? 1;
+            int pageNumber = message.Page ?? 1;
             var results = await query
                 .ProjectTo<ListModel>(_configuration)
                 .PaginatedListAsync(pageNumber, pageSize);
@@ -112,7 +103,7 @@ public static class PlatformInfoFlow
             {
                 CurrentFilter = searchString,
                 SearchText = searchString,
-                SortOrder = request.SortOrder,
+                SortOrder = message.SortOrder,
                 Results = results ?? []
             };
 
@@ -124,21 +115,11 @@ public static class PlatformInfoFlow
     // CREATE
     //
 
-    public static CreateCommand CreateNew() => new()
-    {
-        Id = Ulid.NewUlid()
-    };
+    public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
 
-    public sealed record CreateCommand : Model, IRequest<Result<Ulid>>
-    {
-    }
+    public sealed record CreateCommand : Model, IRequest<Result<Ulid>> { }
 
-    internal sealed class CreateValidator : ModelValidator<CreateCommand>
-    {
-        public CreateValidator() : base()
-        {
-        }
-    }
+    internal sealed class CreateValidator : ModelValidator<CreateCommand> { public CreateValidator() : base() { } }
 
     internal sealed class CreateHandler : IRequestHandler<CreateCommand, Result<Ulid>>
     {
@@ -149,18 +130,18 @@ public static class PlatformInfoFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result<Ulid>> Handle(CreateCommand request, CancellationToken token)
+        public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
         {
-            if (await IsDuplicateNameAsync(_dbcontext, request.Name))
-                return DuplicateFound(request.Name);
+            if (await IsDuplicateNameAsync(_dbcontext, message.Name))
+                return DuplicateFound(message.Name);
             
             var record = new PlatformInfo
             {
-                Id = request.Id,
-                Name = request.Name.Trim(),
-                Description = request.Description?.Trim(),
-                Provider = request.Provider,
-                Remark = request.Remark?.Trim(),
+                Id = message.Id,
+                Name = message.Name.Trim(),
+                Description = message.Description?.Trim(),
+                Provider = message.Provider,
+                Remark = message.Remark?.Trim(),
                 CreatedDT = DateTime.UtcNow
             };
             await _dbcontext.Set<PlatformInfo>().AddAsync(record, token);
@@ -173,10 +154,7 @@ public static class PlatformInfoFlow
     // UPDATE
     //
 
-    public sealed record UpdateQuery : IRequest<UpdateCommand?>
-    {
-        public Ulid? Id { get; init; }
-    }
+    public sealed record UpdateQuery : IRequest<Result<UpdateCommand>> { public Ulid? Id { get; init; } }
 
     internal sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
     {
@@ -186,20 +164,13 @@ public static class PlatformInfoFlow
         }
     }
 
-    public record UpdateCommand : Model, IRequest<Result>
-    {
-    }
+    public record UpdateCommand : Model, IRequest<Result> { }
 
-    internal class UpdateCommandValidator : ModelValidator<UpdateCommand>
-    {
-    }
+    internal class UpdateCommandValidator : ModelValidator<UpdateCommand> { }
 
-    internal class UpdateCommandMapping : Profile
-    {
-        public UpdateCommandMapping() => CreateProjection<PlatformInfo, UpdateCommand>();
-    }
+    internal class UpdateCommandMapping : Profile { public UpdateCommandMapping() => CreateProjection<PlatformInfo, UpdateCommand>(); }
 
-    internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, UpdateCommand?>
+    internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
     {
         private readonly PlatformContext _dbcontext;
         private readonly IConfigurationProvider _configuration;
@@ -210,12 +181,15 @@ public static class PlatformInfoFlow
             _configuration = configuration;
         }
 
-        public async Task<UpdateCommand?> Handle(UpdateQuery request, CancellationToken token)
+        public async Task<Result<UpdateCommand>> Handle(UpdateQuery message, CancellationToken token)
         {
-            return await _dbcontext.Set<PlatformInfo>()
-                .Where(s => s.Id == request.Id)
+            var command = await _dbcontext.Set<PlatformInfo>()
                 .ProjectTo<UpdateCommand>(_configuration)
-                .SingleOrDefaultAsync(token);
+                .FirstOrDefaultAsync(q => q.Id == message.Id);
+            if (command is null)
+                return RecordNotFound(message.Id ?? Ulid.Empty);
+
+            return Result.Ok(command);
         }
     }
 
@@ -253,10 +227,7 @@ public static class PlatformInfoFlow
     // DELETE
     //
 
-    public sealed record DeleteQuery : IRequest<DeleteCommand>
-    {
-        public Ulid? Id { get; init; }
-    }
+    public sealed record DeleteQuery : IRequest<Result<DeleteCommand>> { public Ulid? Id { get; init; } }
 
     internal class DeleteQueryValidator : AbstractValidator<DeleteQuery>
     {
@@ -266,9 +237,7 @@ public static class PlatformInfoFlow
         }
     }
 
-    public sealed record DeleteCommand : Model, IRequest<Result>
-    {
-    }
+    public sealed record DeleteCommand : Model, IRequest<Result> { }
 
     internal sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
     {
@@ -286,7 +255,7 @@ public static class PlatformInfoFlow
         }
     }
 
-    internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, DeleteCommand?>
+    internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<DeleteCommand>>
     {
         private readonly PlatformContext _dbcontext;
         private readonly IConfigurationProvider _configuration;
@@ -297,12 +266,14 @@ public static class PlatformInfoFlow
             _configuration = configuration;
         }
 
-        public async Task<DeleteCommand?> Handle(DeleteQuery request, CancellationToken token)
+        public async Task<Result<DeleteCommand>> Handle(DeleteQuery message, CancellationToken token)
         {
-            return await _dbcontext.Set<PlatformInfo>()
-                .Where(s => s.Id == request.Id)
+            var command = await _dbcontext.Set<PlatformInfo>()
                 .ProjectTo<DeleteCommand>(_configuration)
-                .SingleOrDefaultAsync(token);
+                .FirstOrDefaultAsync(q => q.Id == message.Id);
+            if (command is null)
+                return RecordNotFound(message.Id ?? Ulid.Empty);
+            return Result.Ok(command);
         }
     }
 
@@ -320,6 +291,7 @@ public static class PlatformInfoFlow
             var record = await _dbcontext.Set<PlatformInfo>().FindAsync([command.Id], cancellationToken: token);
             if(record is null)
                 return RecordNotFound(command.Id);
+
             _dbcontext.Set<PlatformInfo>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();

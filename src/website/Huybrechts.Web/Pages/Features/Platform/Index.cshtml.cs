@@ -29,12 +29,17 @@ public class IndexModel : PageModel
             string sortOrder,
             int? pageIndex)
     {
-        Data = await _mediator.Send(request: new Flow.ListQuery
+        var result = await _mediator.Send(request: new Flow.ListQuery
         { 
             CurrentFilter = currentFilter,
             SearchText = searchText,
             SortOrder = sortOrder,
             Page = pageIndex
         });
+        if (result.IsFailed)
+        {
+            StatusMessage = result.Errors[0].Message;
+        }
+        Data = result.Value;
     }
 }

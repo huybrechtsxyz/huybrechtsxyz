@@ -23,7 +23,12 @@ public class DeleteModel : PageModel
 
     public async Task OnGetAsync(Flow.DeleteQuery query)
     {
-        Data = await _mediator.Send(query);
+        var result = await _mediator.Send(query);
+        if (result.IsFailed)
+        {
+            StatusMessage = result.Errors[0].Message;
+        }
+        Data = result.Value;
     }
 
     public async Task<IActionResult> OnPostAsync()

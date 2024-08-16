@@ -23,9 +23,12 @@ public class EditModel : PageModel
 
     public async Task OnGetAsync(Flow.UpdateQuery query)
     {
-
-
-        Data = await _mediator.Send(query) ?? new();
+        var result = await _mediator.Send(query) ?? new();
+        if (result.IsFailed)
+        {
+            StatusMessage = result.Errors[0].Message;
+        }
+        Data = result.Value;
     }
 
     public async Task<IActionResult> OnPostAsync()
