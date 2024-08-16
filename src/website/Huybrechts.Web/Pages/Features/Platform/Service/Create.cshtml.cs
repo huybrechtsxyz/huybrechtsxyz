@@ -17,7 +17,7 @@ public class CreateModel : PageModel
     [BindProperty]
     public Flow.CreateCommand Data { get; set; }
 
-    public IList<PlatformInfo> Platforms { get; set; } = [];
+    public PlatformInfo Platform { get; set; } = new();
 
     public IList<PlatformRegion> Regions { get; set; } = [];
 
@@ -44,7 +44,7 @@ public class CreateModel : PageModel
             return this.RedirectToPage(nameof(Index));
         }
 
-        Platforms = result.Value.Platforms;
+        Platform = result.Value.Platform;
         Data = result.Value.Item;
         return Page();
     }

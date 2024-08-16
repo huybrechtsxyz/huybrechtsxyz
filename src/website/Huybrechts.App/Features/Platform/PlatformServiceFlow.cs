@@ -88,6 +88,17 @@ public static class PlatformServiceFlow
 
     private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMSERVICE_ID.Replace("{0}", id.ToString()));
 
+    private static Result DuplicateRecordFound(string name) => Result.Fail(Messages.DUPLICATE_PLATFORMSERVICE_NAME.Replace("{0}", name.ToString()));
+
+    public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid platformInfoId, Ulid? currentId = null)
+    {
+        name = name.ToLower().Trim();
+        return await context.Set<PlatformRegion>()
+            .AnyAsync(pr => pr.Name.ToLower() == name
+                         && pr.PlatformInfoId == platformInfoId
+                         && (!currentId.HasValue || pr.Id != currentId.Value));
+    }
+
     //
     // LIST
     //
@@ -114,7 +125,7 @@ public static class PlatformServiceFlow
     {
         public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
 
-        public IList<PlatformInfo>? Platforms = null;
+        public PlatformInfo Platform = new();
     }
 
     internal sealed class ListHandler :
@@ -126,7 +137,7 @@ public static class PlatformServiceFlow
         {
         }
 
-        public async Task<ListResult> Handle(ListQuery request, CancellationToken cancellationToken)
+        public async Task<ListResult> Handle(ListQuery request, CancellationToken token)
         {
             IQueryable<PlatformService> query = _dbcontext.Set<PlatformService>();
 
@@ -157,10 +168,10 @@ public static class PlatformServiceFlow
                 .ProjectTo<ListModel>(_configuration)
                 .PaginatedListAsync(pageNumber, pageSize);
 
-            var platforms = await _dbcontext.Set<PlatformInfo>()
+            var platform = await _dbcontext.Set<PlatformInfo>()
                 .Where(q => q.Id == request.PlatformInfoId)
                 .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken: token);
 
             var model = new ListResult
             {
@@ -168,7 +179,7 @@ public static class PlatformServiceFlow
                 CurrentFilter = searchString,
                 SearchText = searchString,
                 SortOrder = request.SortOrder,
-                Platforms = platforms,
+                Platform = platform ?? new(),
                 Results = results ?? []
             };
 
@@ -203,7 +214,7 @@ public static class PlatformServiceFlow
     {
         public CreateCommand Item { get; set; } = new();
 
-        public IList<PlatformInfo> Platforms { get; set; } = [];
+        public PlatformInfo Platform { get; set; } = new();
     }
 
     internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateResult>>
@@ -217,19 +228,17 @@ public static class PlatformServiceFlow
 
         public async Task<Result<CreateResult>> Handle(CreateQuery request, CancellationToken token)
         {
-            IList<PlatformInfo> platforms = await _dbcontext.Set<PlatformInfo>()
+            PlatformInfo? platform = await _dbcontext.Set<PlatformInfo>()
                 .Where(q => q.Id == request.PlatformInfoId)
                 .OrderBy(o => o.Name)
-                .ToListAsync(token);
-
-            var platform = platforms.FirstOrDefault(f => f.Id == request.PlatformInfoId);
+                .FirstOrDefaultAsync(token);
             if (platform is null)
                 return PlatformNotFound(request.PlatformInfoId);
 
             return Result.Ok(new CreateResult()
             {
                 Item = CreateNew(request.PlatformInfoId),
-                Platforms = platforms
+                Platform = platform
             });
         }
     }
@@ -260,23 +269,26 @@ public static class PlatformServiceFlow
             if (platform is null)
                 return PlatformNotFound(request.PlatformInfoId);
 
+            if (await IsDuplicateNameAsync(_dbcontext, request.Name, request.PlatformInfoId))
+                return DuplicateRecordFound(request.Name);
+
             var record = new PlatformService
             {
                 Id = request.Id,
                 PlatformInfo = platform,
-                Name = request.Name,
-                Description = request.Description,
-                Label = request.Label,
-                Category = request.Category,
-                Remark = request.Remark,
+                Name = request.Name.Trim(),
+                Description = request.Description?.Trim(),
+                Label = request.Label.Trim(),
+                Category = request.Category.Trim(),
+                Remark = request.Remark?.Trim(),
                 CreatedDT = DateTime.UtcNow,
 
-                CostBasedOn = request.CostBasedOn,
-                CostDriver = request.CostDriver,
-                Limitations = request.Limitations,
-                AboutURL = request.AboutURL,
-                PricingURL = request.PricingURL,
-                PricingTier = request.PricingTier,
+                CostBasedOn = request.CostBasedOn?.Trim(),
+                CostDriver = request.CostDriver?.Trim(),
+                Limitations = request.Limitations?.Trim(),
+                AboutURL = request.AboutURL?.Trim(),
+                PricingURL = request.PricingURL?.Trim(),
+                PricingTier = request.PricingTier?.Trim(),
             };
 
             await _dbcontext.Set<PlatformService>().AddAsync(record, token);
@@ -304,7 +316,7 @@ public static class PlatformServiceFlow
 
     public record UpdateCommand : Model, IRequest<Result>
     {
-        public IList<PlatformInfo> Platforms { get; set; } = [];
+        public PlatformInfo Platform { get; set; } = new();
     }
 
     internal class UpdateCommandValidator : ModelValidator<UpdateCommand>
@@ -338,10 +350,12 @@ public static class PlatformServiceFlow
                 .SingleOrDefaultAsync(token);
             if (record == null) 
                 return RecordNotFound(request.Id);
-            record.Platforms = await _dbcontext.Set<PlatformInfo>()
-                .Where(q => q.Id == record.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: token);
+
+            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(q => q.Id == record.PlatformInfoId, cancellationToken: token);
+            if (platform is null)
+                return PlatformNotFound(record.PlatformInfoId);
+
+            record.Platform = platform;
             return Result.Ok(record);
         }
     }
@@ -361,19 +375,22 @@ public static class PlatformServiceFlow
             if (record is null)
                 return RecordNotFound(command.Id);
 
-            record.Name = command.Name;
-            record.Description = command.Description;
-            record.Label = command.Label;
-            record.Category = command.Category;
-            record.Remark = command.Remark;
+            if (await IsDuplicateNameAsync(_dbcontext, command.Name, command.PlatformInfoId))
+                return DuplicateRecordFound(command.Name);
+
+            record.Name = command.Name.Trim();
+            record.Description = command.Description?.Trim();
+            record.Label = command.Label.Trim();
+            record.Category = command.Category.Trim();
+            record.Remark = command.Remark?.Trim();
             record.ModifiedDT = DateTime.UtcNow;
 
-            record.CostBasedOn = command.CostBasedOn;
-            record.CostDriver = command.CostDriver;
-            record.Limitations = command.Limitations;
-            record.AboutURL = command.AboutURL;
-            record.PricingURL = command.PricingURL;
-            record.PricingTier = command.PricingTier;
+            record.CostBasedOn = command.CostBasedOn?.Trim();
+            record.CostDriver = command.CostDriver?.Trim();
+            record.Limitations = command.Limitations?.Trim();
+            record.AboutURL = command.AboutURL?.Trim();
+            record.PricingURL = command.PricingURL?.Trim();
+            record.PricingTier = command.PricingTier?.Trim();
 
             _dbcontext.Set<PlatformService>().Update(record);
             await _dbcontext.SaveChangesAsync(token);
@@ -400,7 +417,7 @@ public static class PlatformServiceFlow
 
     public sealed record DeleteCommand : Model, IRequest<Result>
     {
-        public IList<PlatformInfo> Platforms { get; set; } = [];
+        public PlatformInfo Platform { get; set; } = new();
     }
 
     internal sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
@@ -435,13 +452,15 @@ public static class PlatformServiceFlow
                 .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<DeleteCommand>(_configuration)
-                .SingleOrDefaultAsync(token);
+                .FirstOrDefaultAsync(token);
             if (record == null)
                 return RecordNotFound(request.Id);
-            record.Platforms = await _dbcontext.Set<PlatformInfo>()
-                .Where(q => q.Id == record.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: token);
+
+            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(q => q.Id == record.PlatformInfoId, cancellationToken: token);
+            if (platform is null)
+                return PlatformNotFound(record.PlatformInfoId);
+
+            record.Platform = platform;
             return Result.Ok(record);
         }
     }
@@ -493,9 +512,7 @@ public static class PlatformServiceFlow
 
     public sealed class ImportResult : EntityListFlow.Result<ImportModel>
     {
-        public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
-
-        public IList<PlatformInfo>? Platforms = null;
+        public PlatformInfo Platform = new();
     }
 
     public sealed record ImportCommand : IRequest<Result>
@@ -527,13 +544,11 @@ public static class PlatformServiceFlow
 
         public async Task<ImportResult> Handle(ImportQuery request, CancellationToken token)
         {
-            var platforms = _dbcontext.Set<PlatformInfo>().OrderBy(o => o.Name).ToList();
-
-            var platform = platforms.FirstOrDefault(f => f.Id == request.PlatformInfoId);
+            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(f => f.Id == request.PlatformInfoId, cancellationToken: token);
             if (platform is null)
                 return new ImportResult()
                 {
-                    PlatformInfoId = Ulid.Empty,
+                    Platform = new(),
                     CurrentFilter = request.CurrentFilter,
                     SearchText = request.SearchText,
                     SortOrder = request.SortOrder,
@@ -558,11 +573,10 @@ public static class PlatformServiceFlow
 
             return new ImportResult()
             {
-                PlatformInfoId = request.PlatformInfoId,
+                Platform = platform,
                 CurrentFilter = searchString,
                 SearchText = searchString,
                 SortOrder = request.SortOrder,
-                Platforms = platforms,
                 Results = new PaginatedList<ImportModel>(
                     Services.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
                     Services.Count,

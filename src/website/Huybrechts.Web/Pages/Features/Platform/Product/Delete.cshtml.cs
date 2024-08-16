@@ -17,8 +17,6 @@ public class DeleteModel : PageModel
     [BindProperty]
     public Flow.DeleteCommand Data { get; set; }
 
-    public IList<PlatformInfo> Platforms { get; set; } = [];
-
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
@@ -37,10 +35,8 @@ public class DeleteModel : PageModel
         if (result.IsFailed)
         {
             StatusMessage = result.Errors[0].Message;
-            return this.RedirectToPage(nameof(Index));
+            return this.RedirectToPage(nameof(Index), new { platformInfoId = Data.PlatformInfoId });
         }
-
-        Platforms = result.Value.Platforms;
         Data = result.Value;
         return Page();
     }

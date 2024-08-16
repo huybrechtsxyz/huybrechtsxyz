@@ -11,6 +11,7 @@ namespace Huybrechts.Core.Platform;
 /// </summary>
 [MultiTenant]
 [Table("PlatformService")]
+[Comment("Represents a service offered on a specific platform, detailing attributes such as the service's name, description, and other relevant metadata.")]
 [Index(nameof(PlatformInfoId), nameof(Name), IsUnique = true)]
 public record PlatformService : Entity, IEntity
 {

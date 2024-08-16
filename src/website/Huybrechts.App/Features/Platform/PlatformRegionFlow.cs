@@ -198,10 +198,7 @@ public static class PlatformRegionFlow
         {
             var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([message.PlatformInfoId], cancellationToken: token);
             if (platform is null)
-                return PlatformNotFound(message.PlatformInfoId, new CreateCommand()
-                {
-                    PlatformInfoId = message.PlatformInfoId
-                });
+                return PlatformNotFound(message.PlatformInfoId);
 
             var record = CreateNew(platform);
             return Result.Ok(record);
