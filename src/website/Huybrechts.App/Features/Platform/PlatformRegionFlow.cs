@@ -82,6 +82,8 @@ public static class PlatformRegionFlow
     {
         public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
 
+        public string PlatformInfoName { get; set; } = string.Empty;
+
         public IList<PlatformInfo>? Platforms = null;
     }
 
@@ -133,6 +135,7 @@ public static class PlatformRegionFlow
             var model = new ListResult
             {
                 PlatformInfoId = request.PlatformInfoId,
+                PlatformInfoName = platforms.FirstOrDefault()?.Name ?? string.Empty,
                 CurrentFilter = searchString,
                 SearchText = searchString,
                 SortOrder = request.SortOrder,

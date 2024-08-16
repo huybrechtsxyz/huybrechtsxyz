@@ -19,6 +19,8 @@ public class DeleteModel : PageModel
 
     public IList<PlatformInfo> Platforms { get; set; } = [];
 
+    public string PlatformInfoName { get; set; } = string.Empty;
+
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
@@ -41,6 +43,7 @@ public class DeleteModel : PageModel
         }
 
         Platforms = result.Value.Platforms;
+        PlatformInfoName = result.Value.PlatformInfoName;
         Data = result.Value;
         return Page();
     }

@@ -19,6 +19,8 @@ public class CreateModel : PageModel
 
     public IList<PlatformInfo> Platforms { get; set; } = [];
 
+    public string PlatformInfoName { get; set; } = string.Empty;
+
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
@@ -41,6 +43,7 @@ public class CreateModel : PageModel
         }
 
         Platforms = result.Value.Platforms;
+        PlatformInfoName = Platforms.FirstOrDefault(f => f.Id == PlatformInfoId)?.Name ?? string.Empty;
         Data = result.Value.Region;
         return Page();
     }
