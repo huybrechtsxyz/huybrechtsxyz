@@ -119,8 +119,8 @@
     </div>
 </div>
 
-
 @section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Service/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Services"]</a></li>
     <li class="breadcrumb-item"><a asp-page="/Features/Platform/Rate/Index" asp-route-platformServiceId="@Model.Data.PlatformServiceId">@SL["Rates"]</a></li>
 }
 

@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DUPLICATE_PLATFORMPRODUCT_NAME" xml:space="preserve">
+    <value>Duplicate platform name for {0}</value>
+  </data>
+  <data name="DUPLICATE_PLATFORMREGION_NAME" xml:space="preserve">
+    <value>Duplicate region name for {0}</value>
+  </data>
+  <data name="DUPLICATE_PLATFORM_NAME" xml:space="preserve">
+    <value>Duplicate platform for {0}</value>
+  </data>
   <data name="NOT_FOUND_PLATFORMPRODUCT_ID" xml:space="preserve">
     <value>Unable to find product with ID {0}</value>
   </data>

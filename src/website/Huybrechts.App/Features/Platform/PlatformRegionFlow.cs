@@ -56,6 +56,17 @@ public static class PlatformRegionFlow
 
     private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMREGION_ID.Replace("{0}", id.ToString()));
 
+    private static Result DuplicateRecordFound(string name) => Result.Fail(Messages.DUPLICATE_PLATFORMREGION_NAME.Replace("{0}", name.ToString()));
+
+    public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid platformInfoId, Ulid? currentId = null)
+    {
+        name = name.ToLower().Trim();
+        return await context.Set<PlatformRegion>()
+            .AnyAsync(pr => pr.Name.ToLower() == name
+                         && pr.PlatformInfoId == platformInfoId
+                         && (!currentId.HasValue || pr.Id != currentId.Value));
+    }
+
     //
     // LIST
     //
@@ -83,6 +94,8 @@ public static class PlatformRegionFlow
         public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
 
         public string PlatformInfoName { get; set; } = string.Empty;
+
+        public PlatformProvider PlatformInfoProvider { get; set; } = PlatformProvider.None;
 
         public IList<PlatformInfo>? Platforms = null;
     }
@@ -136,6 +149,7 @@ public static class PlatformRegionFlow
             {
                 PlatformInfoId = request.PlatformInfoId,
                 PlatformInfoName = platforms.FirstOrDefault()?.Name ?? string.Empty,
+                PlatformInfoProvider = platforms.FirstOrDefault()?.Provider ?? PlatformProvider.None,
                 CurrentFilter = searchString,
                 SearchText = searchString,
                 SortOrder = request.SortOrder,
@@ -231,14 +245,17 @@ public static class PlatformRegionFlow
             if (platform is null)
                 return PlatformNotFound(request.PlatformInfoId);
 
+            if (await IsDuplicateNameAsync(_dbcontext, request.Name, request.PlatformInfoId))
+                return DuplicateRecordFound(request.Name);
+
             var record = new PlatformRegion
             {
                 Id = request.Id,
                 PlatformInfo = platform,
-                Name = request.Name,
-                Description = request.Description,
-                Label = request.Label,
-                Remark = request.Remark,
+                Name = request.Name.Trim(),
+                Description = request.Description?.Trim(),
+                Label = request.Label.Trim(),
+                Remark = request.Remark?.Trim(),
                 CreatedDT = DateTime.UtcNow
             };
 
@@ -298,7 +315,7 @@ public static class PlatformRegionFlow
                 .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<UpdateCommand>(_configuration)
-                .SingleOrDefaultAsync(token);
+                .FirstOrDefaultAsync(token);
             if (record == null) 
                 return RecordNotFound(request.Id);
             record.Platforms = await _dbcontext.Set<PlatformInfo>()
@@ -324,10 +341,13 @@ public static class PlatformRegionFlow
             if (record is null)
                 return RecordNotFound(command.Id);
 
-            record.Name = command.Name;
-            record.Description = command.Description;
-            record.Label = command.Label;
-            record.Remark = command.Remark;
+            if (await IsDuplicateNameAsync(_dbcontext, command.Name, command.PlatformInfoId, record.Id))
+                return DuplicateRecordFound(command.Name);
+
+            record.Name = command.Name.Trim();
+            record.Description = command.Description?.Trim();
+            record.Label = command.Label.Trim();
+            record.Remark = command.Remark?.Trim();
             record.ModifiedDT = DateTime.UtcNow;
 
             _dbcontext.Set<PlatformRegion>().Update(record);
@@ -390,7 +410,7 @@ public static class PlatformRegionFlow
                 .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<DeleteCommand>(_configuration)
-                .SingleOrDefaultAsync(token);
+                .FirstOrDefaultAsync(token);
             if (record == null)
                 return RecordNotFound(request.Id);
             record.Platforms = await _dbcontext.Set<PlatformInfo>()
@@ -449,6 +469,8 @@ public static class PlatformRegionFlow
     public sealed class ImportResult : EntityListFlow.Result<ImportModel>
     {
         public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
+
+        public string PlatformInfoName { get; set; } = string.Empty;
 
         public IList<PlatformInfo>? Platforms = null;
     }
@@ -517,6 +539,7 @@ public static class PlatformRegionFlow
             return new ImportResult()
             {
                 PlatformInfoId = request.PlatformInfoId,
+                PlatformInfoName = platform.Name,
                 CurrentFilter = searchString,
                 SearchText = searchString,
                 SortOrder = request.SortOrder,
@@ -585,10 +608,10 @@ public static class PlatformRegionFlow
                     {
                         Id = Ulid.NewUlid(),
                         PlatformInfo = platform,
-                        Name = item.Name,
-                        Label = item.Label,
-                        Description = item.Description,
-                        Remark = item.Remark,
+                        Name = item.Name.Trim(),
+                        Label = item.Label.Trim(),
+                        Description = item.Description?.Trim(),
+                        Remark = item.Remark?.Trim(),
                         CreatedDT = DateTime.UtcNow
                     };
                     await _dbcontext.Set<PlatformRegion>().AddAsync(record, token);
@@ -602,5 +625,4 @@ public static class PlatformRegionFlow
             return Result.Ok();
         }
     }
-
 }

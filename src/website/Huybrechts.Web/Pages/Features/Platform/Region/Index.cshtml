@@ -22,11 +22,14 @@
                         <span class="vr"></span>
                         @SL["Add New"]
                     </a>
-                    <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Import" asp-route-platformInfoId="@Model.Data.PlatformInfoId">
-                        <i class="bi bi-cloud-arrow-down-fill fs-5"></i>
-                        <span class="vr"></span>
-                        @SL["Import"]
-                    </a>
+                    @if(Model.Data.PlatformInfoProvider != Core.Platform.PlatformProvider.None)
+                    {
+                        <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Import" asp-route-platformInfoId="@Model.Data.PlatformInfoId">
+                            <i class="bi bi-cloud-arrow-down-fill fs-5"></i>
+                            <span class="vr"></span>
+                            @SL["Import"]
+                        </a>
+                    }
                 </div>
                 <div class="col-md-9 d-flex gap-1 align-items-center justify-content-md-end mb-3">
                     <select asp-for="Data.PlatformInfoId" 

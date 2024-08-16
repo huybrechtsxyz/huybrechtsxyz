@@ -16,7 +16,9 @@ namespace Huybrechts.App.Features.Platform;
 
 public static class PlatformRateFlow
 {
-    public static List<string> DefaultCurrencies = ["EUR", "USD"];
+    private static List<string> defaultCurrencies = ["EUR", "USD"];
+
+    public static List<string> DefaultCurrencies { get => defaultCurrencies; set => defaultCurrencies = value; }
 
     public record Model
     {
@@ -56,17 +58,21 @@ public static class PlatformRateFlow
 
         [DataType(DataType.Date)]
         [Display(Name = nameof(ValidFrom), ResourceType = typeof(Localization))]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime ValidFrom { get; set; }
 
         [Precision(12, 6)]
+        [DisplayFormat(DataFormatString = "{0:F6}", ApplyFormatInEditMode = true)]
         [Display(Name = nameof(RetailPrice), ResourceType = typeof(Localization))]
         public decimal RetailPrice { get; set; } = 0;
 
         [Precision(12, 6)]
+        [DisplayFormat(DataFormatString = "{0:F6}", ApplyFormatInEditMode = true)]
         [Display(Name = nameof(UnitPrice), ResourceType = typeof(Localization))]
         public decimal UnitPrice { get; set; } = 0;
 
         [Precision(12, 6)]
+        [DisplayFormat(DataFormatString = "{0:F6}", ApplyFormatInEditMode = true)]
         [Display(Name = nameof(MininumUnits), ResourceType = typeof(Localization))]
         public decimal MininumUnits { get; set; } = 0;
 
@@ -132,6 +138,8 @@ public static class PlatformRateFlow
 
     public sealed class ListQuery : EntityListFlow.Query, IRequest<ListResult>
     {
+        public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
+
         public Ulid? PlatformServiceId { get; set; } = Ulid.Empty;
     }
 
@@ -139,6 +147,8 @@ public static class PlatformRateFlow
 
     public sealed class ListResult : EntityListFlow.Result<ListModel>
     {
+        public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
+
         public Ulid? PlatformServiceId { get; set; } = Ulid.Empty;
 
         public Ulid? PlatformRegionId { get; set; } = Ulid.Empty;
@@ -168,23 +178,22 @@ public static class PlatformRateFlow
             IQueryable<PlatformRate> query = _dbcontext.Set<PlatformRate>();
             PlatformService? service = null!;
 
-            if (request.PlatformServiceId.HasValue)
-            {
-                service = await _dbcontext.Set<PlatformService>().FindAsync([request.PlatformServiceId], cancellationToken: token);
-                if (service is null)
-                    return new ListResult()
-                    {
-                        PlatformServiceId = request.PlatformServiceId,
-                        CurrentFilter = request.CurrentFilter,
-                        SearchText = request.SearchText,
-                        SortOrder = request.SortOrder,
-                        Regions = [],
-                        Products = [],
-                        Currencies = DefaultCurrencies,
-                        Results = []
-                    };
-                query = query.Where(q => q.PlatformServiceId == request.PlatformServiceId);
-            }
+            service = await _dbcontext.Set<PlatformService>().FindAsync([request.PlatformServiceId], cancellationToken: token);
+            if (service is null)
+                return new ListResult()
+                {
+                    PlatformInfoId = request.PlatformInfoId,
+                    PlatformServiceId = request.PlatformServiceId,
+                    CurrentFilter = request.CurrentFilter,
+                    SearchText = request.SearchText,
+                    SortOrder = request.SortOrder,
+                    Regions = [],
+                    Products = [],
+                    Currencies = DefaultCurrencies,
+                    Results = []
+                };
+            query = query.Where(q => q.PlatformServiceId == request.PlatformServiceId);
+            request.PlatformInfoId = service.PlatformInfoId;
 
             var searchString = request.SearchText ?? request.CurrentFilter;
             if (!string.IsNullOrEmpty(searchString))
@@ -218,17 +227,18 @@ public static class PlatformRateFlow
                 .PaginatedListAsync(pageNumber, pageSize);
 
             var regions = await _dbcontext.Set<PlatformRegion>()
-                .Where(q => q.Id == service.PlatformInfoId)
+                .Where(q => q.PlatformInfoId == service.PlatformInfoId)
                 .OrderBy(o => o.Name)
                 .ToListAsync(cancellationToken: token);
 
             var products = await _dbcontext.Set<PlatformProduct>()
-                .Where(q => q.Id == service.PlatformInfoId)
+                .Where(q => q.PlatformInfoId == service.PlatformInfoId)
                 .OrderBy(o => o.Name)
                 .ToListAsync(cancellationToken: token);
 
             var model = new ListResult
             {
+                PlatformInfoId = request.PlatformInfoId,
                 PlatformServiceId = request.PlatformServiceId,
                 CurrentFilter = searchString,
                 SearchText = searchString,
@@ -247,14 +257,19 @@ public static class PlatformRateFlow
     // CREATE
     //
 
-    public static CreateCommand CreateNew(Ulid? platformServiceId) => new()
+    public static CreateCommand CreateNew(
+        Ulid platformInfoId,
+        Ulid platformServiceId) => new()
     {
         Id = Ulid.NewUlid(),
-        PlatformServiceId = platformServiceId ?? Ulid.Empty
+        PlatformInfoId = platformInfoId,
+        PlatformServiceId = platformServiceId
     };
 
     public sealed record CreateQuery : IRequest<Result<CreateResult>>
     {
+        public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
+
         public Ulid PlatformServiceId { get; set; } = Ulid.Empty;
     }
 
@@ -268,6 +283,10 @@ public static class PlatformRateFlow
 
     public record CreateResult
     {
+        public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
+
+        public Ulid PlatformServiceId { get; set; } = Ulid.Empty;
+
         public CreateCommand Item { get; set; } = new();
 
         public IList<PlatformRegion> Regions { get; set; } = [];
@@ -288,23 +307,26 @@ public static class PlatformRateFlow
 
         public async Task<Result<CreateResult>> Handle(CreateQuery request, CancellationToken token)
         {
-            var platformService = await _dbcontext.Set<PlatformService>().FindAsync([request.PlatformServiceId], cancellationToken: token);
-            if (platformService is null)
+            var service = await _dbcontext.Set<PlatformService>().FindAsync([request.PlatformServiceId], cancellationToken: token);
+            if (service is null)
                 return ServiceNotFound(request.PlatformServiceId);
 
             IList<PlatformRegion> regions = await _dbcontext.Set<PlatformRegion>()
-                .Where(q => q.Id == platformService.PlatformInfoId)
+                .Where(q => q.PlatformInfoId == service.PlatformInfoId)
                 .OrderBy(o => o.Name)
                 .ToListAsync(token);
 
             IList<PlatformProduct> products = await _dbcontext.Set<PlatformProduct>()
-                .Where(q => q.Id == platformService.PlatformInfoId)
+                .Where(q => q.PlatformInfoId == service.PlatformInfoId)
                 .OrderBy(o => o.Name)
                 .ToListAsync(token);
 
             return Result.Ok(new CreateResult()
             {
-                Item = CreateNew(request.PlatformServiceId),
+                PlatformInfoId = service.PlatformInfoId,
+                PlatformServiceId = service.Id,
+                Currencies = DefaultCurrencies,
+                Item = CreateNew(service.PlatformInfoId, service.Id),
                 Regions = regions,
                 Products = products
             });
@@ -422,21 +444,21 @@ public static class PlatformRateFlow
 
         public async Task<Result<UpdateCommand>> Handle(UpdateQuery request, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformService>()
+            var record = await _dbcontext.Set<PlatformRate>()
                 .Where(s => s.Id == request.Id)
-                .Include(i => i.PlatformInfo)
+                .Include(i => i.PlatformService)
                 .ProjectTo<UpdateCommand>(_configuration)
                 .SingleOrDefaultAsync(token);
             if (record == null) 
                 return RecordNotFound(request.Id);
 
             record.Regions = await _dbcontext.Set<PlatformRegion>()
-                .Where(q => q.Id == record.PlatformInfoId)
+                .Where(q => q.PlatformInfoId == record.PlatformInfoId)
                 .OrderBy(o => o.Name)
                 .ToListAsync(cancellationToken: token);
 
             record.Products = await _dbcontext.Set<PlatformProduct>()
-                .Where(q => q.Id == record.PlatformInfoId)
+                .Where(q => q.PlatformInfoId == record.PlatformInfoId)
                 .OrderBy(o => o.Name)
                 .ToListAsync(cancellationToken: token);
 
@@ -549,12 +571,12 @@ public static class PlatformRateFlow
                 return RecordNotFound(request.Id);
 
             record.Regions = await _dbcontext.Set<PlatformRegion>()
-                .Where(q => q.Id == record.PlatformInfoId)
+                .Where(q => q.PlatformInfoId == record.PlatformInfoId)
                 .OrderBy(o => o.Name)
                 .ToListAsync(cancellationToken: token);
 
             record.Products = await _dbcontext.Set<PlatformProduct>()
-                .Where(q => q.Id == record.PlatformInfoId)
+                .Where(q => q.PlatformInfoId == record.PlatformInfoId)
                 .OrderBy(o => o.Name)
                 .ToListAsync(cancellationToken: token);
 
@@ -604,6 +626,7 @@ public static class PlatformRateFlow
         /// "tierMinimumUnits":0.0
         /// </summary>
         [Precision(12, 6)]
+        [DisplayFormat(DataFormatString = "{0:F6}", ApplyFormatInEditMode = true)]
         [Display(Name = nameof(TierMinimumUnits), ResourceType = typeof(Localization))]
         public decimal TierMinimumUnits { get; set; }
 
@@ -611,6 +634,7 @@ public static class PlatformRateFlow
         /// "retailPrice":0.29601
         /// </summary>
         [Precision(12, 6)]
+        [DisplayFormat(DataFormatString = "{0:F6}", ApplyFormatInEditMode = true)]
         [Display(Name = nameof(RetailPrice), ResourceType = typeof(Localization))]
         public decimal RetailPrice { get; set; }
 
@@ -618,6 +642,7 @@ public static class PlatformRateFlow
         /// "unitPrice":0.29601
         /// </summary>
         [Precision(12, 6)]
+        [DisplayFormat(DataFormatString = "{0:F6}", ApplyFormatInEditMode = true)]
         [Display(Name = nameof(UnitPrice), ResourceType = typeof(Localization))]
         public decimal UnitPrice { get; set; }
 
@@ -636,6 +661,7 @@ public static class PlatformRateFlow
         /// <summary>
         /// "":"2024-08-01T00:00:00Z"
         /// </summary>
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = nameof(EffectiveStartDate), ResourceType = typeof(Localization))]
         public DateTime? EffectiveStartDate { get; set; }
 

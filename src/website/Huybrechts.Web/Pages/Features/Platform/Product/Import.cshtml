@@ -66,6 +66,7 @@
                                         </td>
                                         <td>
                                             <input type="hidden" asp-for="@Model.Data.Results[idex].Name" />
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].Label" />
                                             @Html.DisplayFor(model => @Model.Data.Results[idex].Name)
                                         </td>
                                         <td>
@@ -82,8 +83,10 @@
                             <li class="page-item @prev">
                                 <a asp-page="Import"
                                    asp-route-platformInfoId="@Model.Data.PlatformInfoId"
-                                   asp-route-pageindex="@(Model.Data.Results.PageIndex - 1)"
                                    asp-route-currentFilter="@Model.Data.CurrentFilter"
+                                   asp-route-searchText="@Model.Data.CurrentFilter"
+                                   asp-route-sortOrder="@Model.Data.SortOrder"
+                                   asp-route-pageindex="@(Model.Data.Results.PageIndex - 1)"
                                    class="page-link" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                     <span class="sr-only">@SL["Previous"]</span>
@@ -94,8 +97,10 @@
                                 <li class="page-item @(Model.Data.Results.PageIndex == i ? "active" : string.Empty)" aria-current="page">
                                     <a asp-page="Import"
                                        asp-route-platformInfoId="@Model.Data.PlatformInfoId"
-                                       asp-route-pageindex="@i"
                                        asp-route-currentFilter="@Model.Data.CurrentFilter"
+                                       asp-route-searchText="@Model.Data.CurrentFilter"
+                                       asp-route-sortOrder="@Model.Data.SortOrder"
+                                       asp-route-pageindex="@i"
                                        class="page-link">
                                         @(i)
                                     </a>
@@ -104,8 +109,10 @@
                             <li class="page-item @next">
                                 <a asp-page="Import"
                                    asp-route-platformInfoId="@Model.Data.PlatformInfoId"
-                                   asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
                                    asp-route-currentFilter="@Model.Data.CurrentFilter"
+                                   asp-route-searchText="@Model.Data.CurrentFilter"
+                                   asp-route-sortOrder="@Model.Data.SortOrder"
+                                   asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
                                    class="page-link" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                     <span class="sr-only">@SL["Next"]</span>
@@ -120,6 +127,7 @@
 </div>
 
 @section Breadcrumb {
+    <li class="breadcrumb-item">@Model.Data.PlatformInfoName</li>
     <li class="breadcrumb-item"><a asp-page="/Features/Platform/Product/Index">@SL["Products"]</a></li>
 }
 

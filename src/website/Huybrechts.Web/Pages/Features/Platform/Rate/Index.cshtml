@@ -36,24 +36,27 @@
                                     Value = p.Id.ToString(),
                                     Text = p.Name
                                 }).ToList()"
-                            class="form-control"
-                            disabled></select>
+                            class="form-control">
+                            <option id="@Ulid.Empty">@SL["Select"]</option>
+                        </select>
                     <select asp-for="Data.PlatformProductId"
                             asp-items="Model.Data.Products?.Select(p => new SelectListItem
                                 {
                                     Value = p.Id.ToString(),
                                     Text = p.Name
                                 }).ToList()"
-                            class="form-control"
-                            disabled></select>
+                            class="form-control">
+                        <option id="@Ulid.Empty">@SL["Select"]</option>
+                        </select>
                     <select asp-for="Data.CurrencyCode"
                             asp-items="Model.Data.Currencies?.Select(p => new SelectListItem
                                 {
                                     Value = p,
                                     Text = p
                                 }).ToList()"
-                            class="form-control"
-                            disabled></select>
+                            class="form-control">
+                        <option id="">@SL["Select"]</option>
+                    </select>
                     <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="@SL["Search..."]" class="form-control" autocomplete="off" />
                     <input type="submit" value="@SL["Search"]" class="btn btn-primary" /> |
                     <a asp-page="Index" asp-route-platformServiceId="@Model.Data.PlatformServiceId" class="btn btn-secondary text-nowrap" type="button" role="button">@SL["Clear Filter"]</a>
@@ -65,11 +68,12 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].ProductName)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].SkuName)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].MeterName)</th>
-                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].RetailPrice)</th>
-                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].UnitOfMeasure)</th>
-                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].MininumUnits)</th>
+                                <th class="text-end">@Html.DisplayNameFor(model => model.Data.Results[0].RetailPrice)</th>
+                                <th class="text-center">@Html.DisplayNameFor(model => model.Data.Results[0].UnitOfMeasure)</th>
+                                <th class="text-end">@Html.DisplayNameFor(model => model.Data.Results[0].MininumUnits)</th>
                                 <th></th>
                             </tr>
                             
@@ -78,11 +82,12 @@
                             @foreach (var record in Model.Data.Results)
                             {
                                 <tr>
+                                    <td>@Html.DisplayFor(modelItem => record!.ProductName)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.SkuName)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.MeterName)</td>
-                                    <td>@Html.DisplayFor(modelItem => record!.RetailPrice)</td>
-                                    <td>@Html.DisplayFor(modelItem => record!.UnitOfMeasure)</td>
-                                    <td>@Html.DisplayFor(modelItem => record!.MininumUnits)</td>
+                                    <td class="text-end">@Html.DisplayFor(modelItem => record!.RetailPrice)</td>
+                                    <td class="text-cennter">@Html.DisplayFor(modelItem => record!.UnitOfMeasure)</td>
+                                    <td class="text-end">@Html.DisplayFor(modelItem => record!.MininumUnits)</td>
                                     <td>
                                         <a asp-page="Edit" asp-route-id="@record!.Id" class="btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i></a>
                                         <a asp-page="Delete" asp-route-id="@record!.Id" class="btn btn-icon btn-secondary"><i class="bi bi-trash2-fill"></i></a>
@@ -96,9 +101,11 @@
                     <ul class="pagination justify-content-center">
                         <li class="page-item @prev">
                             <a asp-page="Index"
+                               asp-route-platformInfoId="@Model.Data.PlatformInfoId"
                                asp-route-platformServiceId="@Model.Data.PlatformServiceId"
-                               asp-route-pageindex="@(Model.Data.Results.PageIndex - 1)"
                                asp-route-currentFilter="@Model.Data.CurrentFilter"
+                               asp-route-sortOrder="@Model.Data.CurrentFilter"
+                               asp-route-pageindex="@(Model.Data.Results.PageIndex - 1)"
                                class="page-link" aria-label="Previous">
                                <span aria-hidden="true">&laquo;</span>
                                <span class="sr-only">@SL["Previous"]</span>
@@ -108,9 +115,11 @@
                         {
                             <li class="page-item @(Model.Data.Results.PageIndex == i ? "active" : string.Empty)" aria-current="page">
                                 <a asp-page="Index"
+                                   asp-route-platformInfoId="@Model.Data.PlatformInfoId"
                                    asp-route-platformServiceId="@Model.Data.PlatformServiceId"
-                                   asp-route-pageindex="@i"
                                    asp-route-currentFilter="@Model.Data.CurrentFilter"
+                                   asp-route-sortOrder="@Model.Data.CurrentFilter"
+                                   asp-route-pageindex="@i"
                                    class="page-link">
                                    @(i)
                                 </a>
@@ -118,9 +127,11 @@
                         }
                         <li class="page-item @next">
                             <a asp-page="Index"
+                               asp-route-platformInfoId="@Model.Data.PlatformInfoId"
                                asp-route-platformServiceId="@Model.Data.PlatformServiceId"
-                               asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
                                asp-route-currentFilter="@Model.Data.CurrentFilter"
+                               asp-route-sortOrder="@Model.Data.CurrentFilter"
+                               asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
                                class="page-link" aria-label="Next">
                                <span aria-hidden="true">&raquo;</span>
                                <span class="sr-only">@SL["Next"]</span>
@@ -134,5 +145,6 @@
 </div>
 
 @section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Service/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Services"]</a></li>
     <li class="breadcrumb-item"><a asp-page="/Features/Platform/Rate/Index" asp-route-platformServiceId="@Model.Data.PlatformServiceId">@SL["Rates"]</a></li>
 }

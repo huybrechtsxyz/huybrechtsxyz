@@ -46,7 +46,7 @@ public class ImportModel : PageModel
 
         var result = await _mediator.Send(request: new Flow.ImportCommand
         {
-            PlatformInfoId = Data.PlatformInfoId ?? Ulid.Empty,
+            PlatformInfoId = Data.PlatformInfoId,
             Items = selection
         });
 

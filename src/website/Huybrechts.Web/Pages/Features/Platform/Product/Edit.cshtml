@@ -3,7 +3,7 @@
 @model Huybrechts.Web.Pages.Features.Platform.Product.EditModel
 @{
     ViewData["CardTitle"] = SL["ProductEditTitle"];
-    //ViewData["ActivePage"] = ManageNavPages.Info;
+    // ViewData["ActivePage"] = ManageNavPages.Info;
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
@@ -53,15 +53,27 @@
                 <span asp-validation-for="Data.Remark" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <a class="w-30 btn btn-lg btn-secondary" asp-page="Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId"><i class="bi bi-arrow-left-circle-fill"></i></a>
-                <button id="edit-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+                <a class="w-30 btn btn-lg btn-secondary" asp-page="Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">
+                    <i class="bi bi-arrow-left-circle-fill"></i>
+                </a>
+                <button id="edit-button" type="submit" class="w-70 btn btn-lg btn-primary">
+                    <i class="bi bi-floppy-fill"></i>
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 @section Breadcrumb {
-    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Products"]</a></li>
+        
+    <li class="breadcrumb-item">
+        @Model.Data.PlatformInfoName
+    </li>
+    <li class="breadcrumb-item">
+        <a asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">
+            @SL["Products"]
+        </a>
+    </li>
 }
 
 @section Scripts {

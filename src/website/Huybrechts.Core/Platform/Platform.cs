@@ -11,6 +11,7 @@ namespace Huybrechts.Core.Platform;
 /// </summary>
 [MultiTenant]
 [Table("Platform")]
+[Index(nameof(Name), IsUnique = true)]
 [Comment("Table storing information about platforms that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.")]
 public record PlatformInfo : Entity, IEntity
 {

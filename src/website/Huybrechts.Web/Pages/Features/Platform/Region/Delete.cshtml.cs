@@ -55,6 +55,6 @@ public class DeleteModel : PageModel
         {
             StatusMessage = result.Errors[0].Message;
         }
-        return this.RedirectToPage(nameof(Index));
+        return this.RedirectToPage(nameof(Index), new { platformInfoId = Data.PlatformInfoId });
     }
 }

@@ -60,6 +60,17 @@ public static class PlatformProductFlow
 
     private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMPRODUCT_ID.Replace("{0}", id.ToString()));
 
+    private static Result DuplicateRecordFound(string name) => Result.Fail(Messages.DUPLICATE_PLATFORMPRODUCT_NAME.Replace("{0}", name.ToString()));
+
+    public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid platformInfoId, Ulid? currentId = null)
+    {
+        name = name.ToLower().Trim();
+        return await context.Set<PlatformProduct>()
+            .AnyAsync(pr => pr.Name.ToLower() == name
+                         && pr.PlatformInfoId == platformInfoId
+                         && (!currentId.HasValue || pr.Id != currentId.Value));
+    }
+
     //
     // LIST
     //
@@ -85,6 +96,10 @@ public static class PlatformProductFlow
     public sealed class ListResult : EntityListFlow.Result<ListModel>
     {
         public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
+
+        public string PlatformInfoName { get; set; } = string.Empty;
+
+        public PlatformProvider PlatformInfoProvider { get; set; } = PlatformProvider.None;
 
         public IList<PlatformInfo>? Platforms = null;
     }
@@ -137,6 +152,8 @@ public static class PlatformProductFlow
             var model = new ListResult
             {
                 PlatformInfoId = request.PlatformInfoId,
+                PlatformInfoName = platforms.FirstOrDefault()?.Name ?? string.Empty,
+                PlatformInfoProvider = platforms.FirstOrDefault()?.Provider ?? PlatformProvider.None,
                 CurrentFilter = searchString,
                 SearchText = searchString,
                 SortOrder = request.SortOrder,
@@ -152,10 +169,13 @@ public static class PlatformProductFlow
     // CREATE
     //
 
-    public static CreateCommand CreateNew(Ulid? platformInfoId) => new()
+    public static CreateCommand CreateNew(
+        Ulid? platformInfoId,
+        string platformInfoName) => new()
     {
         Id = Ulid.NewUlid(),
-        PlatformInfoId = platformInfoId ?? Ulid.Empty
+        PlatformInfoId = platformInfoId ?? Ulid.Empty,
+        PlatformInfoName = platformInfoName
     };
 
     public sealed record CreateQuery : IRequest<Result<CreateResult>>
@@ -200,7 +220,7 @@ public static class PlatformProductFlow
 
             return Result.Ok(new CreateResult()
             {
-                Item = CreateNew(request.PlatformInfoId),
+                Item = CreateNew(platform.Id, platform.Name),
                 Platforms = platforms
             });
         }
@@ -232,15 +252,18 @@ public static class PlatformProductFlow
             if (platform is null)
                 return PlatformNotFound(request.PlatformInfoId);
 
+            if (await IsDuplicateNameAsync(_dbcontext, request.Name, request.PlatformInfoId))
+                return DuplicateRecordFound(request.Name);
+
             var record = new PlatformProduct
             {
                 Id = request.Id,
                 PlatformInfo = platform,
-                Name = request.Name,
-                Description = request.Description,
-                Label = request.Label,
-                Category = request.Category,
-                Remark = request.Remark,
+                Name = request.Name.Trim(),
+                Description = request.Description?.Trim(),
+                Label = request.Label.Trim(),
+                Category = request.Category.Trim(),
+                Remark = request.Remark?.Trim(),
                 CreatedDT = DateTime.UtcNow
             };
 
@@ -300,9 +323,10 @@ public static class PlatformProductFlow
                 .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<UpdateCommand>(_configuration)
-                .SingleOrDefaultAsync(token);
+                .FirstOrDefaultAsync(token);
             if (record == null) 
                 return RecordNotFound(request.Id);
+
             record.Platforms = await _dbcontext.Set<PlatformInfo>()
                 .Where(q => q.Id == record.PlatformInfoId)
                 .OrderBy(o => o.Name)
@@ -326,11 +350,14 @@ public static class PlatformProductFlow
             if (record is null)
                 return RecordNotFound(command.Id);
 
-            record.Name = command.Name;
-            record.Description = command.Description;
-            record.Label = command.Label;
-            record.Category = command.Category;
-            record.Remark = command.Remark;
+            if (await IsDuplicateNameAsync(_dbcontext, command.Name, command.PlatformInfoId))
+                return DuplicateRecordFound(command.Name);
+
+            record.Name = command.Name.Trim();
+            record.Description = command.Description?.Trim();
+            record.Label = command.Label.Trim();
+            record.Category = command.Category.Trim();
+            record.Remark = command.Remark?.Trim();
             record.ModifiedDT = DateTime.UtcNow;
 
             _dbcontext.Set<PlatformProduct>().Update(record);
@@ -396,10 +423,12 @@ public static class PlatformProductFlow
                 .SingleOrDefaultAsync(token);
             if (record == null)
                 return RecordNotFound(request.Id);
+
             record.Platforms = await _dbcontext.Set<PlatformInfo>()
                 .Where(q => q.Id == record.PlatformInfoId)
                 .OrderBy(o => o.Name)
                 .ToListAsync(cancellationToken: token);
+
             return Result.Ok(record);
         }
     }
@@ -454,7 +483,9 @@ public static class PlatformProductFlow
 
     public sealed class ImportResult : EntityListFlow.Result<ImportModel>
     {
-        public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
+        public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
+
+        public string PlatformInfoName { get; set; } = string.Empty;
 
         public IList<PlatformInfo>? Platforms = null;
     }
@@ -521,7 +552,8 @@ public static class PlatformProductFlow
 
             return new ImportResult()
             {
-                PlatformInfoId = request.PlatformInfoId,
+                PlatformInfoId = platform.Id,
+                PlatformInfoName = platform.Name,
                 CurrentFilter = searchString,
                 SearchText = searchString,
                 SortOrder = request.SortOrder,

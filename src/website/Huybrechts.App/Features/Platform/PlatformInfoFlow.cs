@@ -42,6 +42,16 @@ public static class PlatformInfoFlow
 
     private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORM_ID.Replace("{0}", id.ToString()));
 
+    private static Result DuplicateFound(string name) => Result.Fail(Messages.DUPLICATE_PLATFORM_NAME.Replace("{0}", name.ToString()));
+
+    public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid? currentId = null)
+    {
+        name = name.ToLower().Trim();
+        return await context.Set<PlatformInfo>()
+            .AnyAsync(pr => pr.Name.ToLower() == name
+                         && (!currentId.HasValue || pr.Id != currentId.Value));
+    }
+
     //
     // LIST
     //
@@ -141,13 +151,16 @@ public static class PlatformInfoFlow
 
         public async Task<Result<Ulid>> Handle(CreateCommand request, CancellationToken token)
         {
+            if (await IsDuplicateNameAsync(_dbcontext, request.Name))
+                return DuplicateFound(request.Name);
+            
             var record = new PlatformInfo
             {
                 Id = request.Id,
-                Name = request.Name,
-                Description = request.Description,
+                Name = request.Name.Trim(),
+                Description = request.Description?.Trim(),
                 Provider = request.Provider,
-                Remark = request.Remark,
+                Remark = request.Remark?.Trim(),
                 CreatedDT = DateTime.UtcNow
             };
             await _dbcontext.Set<PlatformInfo>().AddAsync(record, token);
@@ -221,10 +234,13 @@ public static class PlatformInfoFlow
             if (record is null)
                 return RecordNotFound(command.Id);
 
-            record.Name = command.Name;
-            record.Description = command.Description;
+            if (await IsDuplicateNameAsync(_dbcontext, command.Name, record.Id))
+                return DuplicateFound(command.Name);
+
+            record.Name = command.Name.Trim();
+            record.Description = command.Description?.Trim();
             record.Provider = command.Provider;
-            record.Remark = command.Remark;
+            record.Remark = command.Remark?.Trim();
             record.ModifiedDT = DateTime.UtcNow;
 
             _dbcontext.Set<PlatformInfo>().Update(record);

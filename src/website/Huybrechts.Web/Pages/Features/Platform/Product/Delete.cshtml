@@ -56,6 +56,7 @@
 </div>
 
 @section Breadcrumb {
+    <li class="breadcrumb-item">@Model.Data.PlatformInfoName</li>
     <li class="breadcrumb-item"><a asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Products"]</a></li>
 }
 
