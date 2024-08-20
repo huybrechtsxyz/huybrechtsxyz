@@ -1,5 +1,6 @@
+using FluentValidation;
+using FluentValidation.Results;
 using Huybrechts.App.Web;
-using Huybrechts.Core.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,8 @@ namespace Huybrechts.Web.Pages.Features.Platform;
 public class EditModel : PageModel
 {
     private readonly IMediator _mediator;
+    private readonly IValidator<Flow.UpdateQuery> _getValidator;
+    private readonly IValidator<Flow.UpdateCommand> _postValidator;
 
     [BindProperty]
     public Flow.UpdateCommand Data { get; set; } = new();
@@ -20,20 +23,38 @@ public class EditModel : PageModel
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    public EditModel(IMediator mediator) => _mediator = mediator;
+    public EditModel(IMediator mediator,
+        IValidator<Flow.UpdateQuery> getValidator,
+        IValidator<Flow.UpdateCommand> postValidator)
+    {
+        _mediator = mediator;
+        _getValidator = getValidator;
+        _postValidator = postValidator;
+    }
 
-    public async Task<IActionResult> OnGetAsync(Flow.UpdateQuery query)
+    public async Task<IActionResult> OnGetAsync(Ulid id)
     {
         try
         {
-            var result = await _mediator.Send(query) ?? new();
-            StatusMessage = result.ToStatusMessage();
+            Flow.UpdateQuery message = new() { Id = id };
+            
+            ValidationResult state = await _getValidator.ValidateAsync(message);
+            if (!state.IsValid)
+                return BadRequest(state);
+                        
+            var result = await _mediator.Send(message) ?? new();
+            if (result.HasStatusMessage())
+                StatusMessage = result.ToStatusMessage();
+
+            if (result.IsFailed)
+                return RedirectToPage(nameof(Index));
+
             Data = result.Value;
             return Page();
         }
         catch (Exception)
         {
-            return RedirectToPage("Error", StatusCodes.Status500InternalServerError);
+            return RedirectToPage("/Error", StatusCodes.Status500InternalServerError);
         }
     }
 
@@ -41,13 +62,28 @@ public class EditModel : PageModel
     {
         try
         {
+            ValidationResult state = await _postValidator.ValidateAsync(Data);
+            if (!state.IsValid)
+            {
+                state.AddToModelState(ModelState);
+                return Page();
+            }
+
             var result = await _mediator.Send(Data);
-            StatusMessage = result.ToStatusMessage();
+            if (result.IsFailed)
+            {
+                result.AddToModelState(ModelState);
+                return BadRequest(ModelState);
+            }
+
+            if (result.HasStatusMessage())
+                StatusMessage = result.ToStatusMessage();
+
             return RedirectToPage(nameof(Index));
         }
         catch (Exception)
         {
-            return RedirectToPage("Error", StatusCodes.Status500InternalServerError);
+            return RedirectToPage("/Error", StatusCodes.Status500InternalServerError);
         }
     }
 }

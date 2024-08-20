@@ -13,7 +13,7 @@ namespace Huybrechts.Core.Platform;
 [Table("PlatformProduct")]
 [Comment("Products or services offered by the platform, such as compute, storage, or networking resources.")]
 [Index(nameof(PlatformInfoId), nameof(Name), IsUnique = true)]
-public record PlatformProduct : Entity, IEntity
+public record _z_PlatformProduct : Entity, IEntity
 {
     /// <summary>
     /// Foreign key to the PlatformInfo entity.

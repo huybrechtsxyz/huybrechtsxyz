@@ -13,7 +13,7 @@ namespace Huybrechts.Core.Platform;
 /// </summary>
 [MultiTenant]
 [Table("PlatformRate")]
-public record PlatformRate : Entity, IEntity
+public record _z_PlatformRate : Entity, IEntity
 {
     /// <summary>
     /// Foreign key referencing the PlatformInfo table.

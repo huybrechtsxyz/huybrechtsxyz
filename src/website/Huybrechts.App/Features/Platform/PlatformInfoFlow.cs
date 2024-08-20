@@ -29,6 +29,8 @@ public static class PlatformInfoFlow
 
         [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
         public string? Remark { get; set; }
+
+        public string SearchIndex => (Name + "#" + Description ?? string.Empty).ToLowerInvariant();
     }
 
     public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -47,6 +49,7 @@ public static class PlatformInfoFlow
     public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid? currentId = null)
     {
         name = name.ToLower().Trim();
+
         return await context.Set<PlatformInfo>()
             .AnyAsync(pr => pr.Name.ToLower() == name
                          && (!currentId.HasValue || pr.Id != currentId.Value));
@@ -62,7 +65,7 @@ public static class PlatformInfoFlow
 
     public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
 
-    internal sealed class ListValidator : AbstractValidator<ListQuery> { public ListValidator() { } }
+    public sealed class ListValidator : AbstractValidator<ListQuery> { public ListValidator() { } }
 
     public sealed class ListResult : EntityListFlow.Result<ListModel> { }
 
@@ -82,9 +85,8 @@ public static class PlatformInfoFlow
             var searchString = message.SearchText ?? message.CurrentFilter;
             if (!string.IsNullOrEmpty(searchString))
             {
-                query = query.Where(q => 
-                    q.Name.Contains(searchString)
-                    || (q.Description.HasValue() && q.Description!.Contains(searchString)));
+                var searchFor = searchString.ToLower();
+                query = query.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor));
             }
 
             if (!string.IsNullOrEmpty(message.SortOrder))
@@ -119,7 +121,18 @@ public static class PlatformInfoFlow
 
     public sealed record CreateCommand : Model, IRequest<Result<Ulid>> { }
 
-    internal sealed class CreateValidator : ModelValidator<CreateCommand> { public CreateValidator() : base() { } }
+    public sealed class CreateValidator : ModelValidator<CreateCommand> 
+    {
+        public CreateValidator(PlatformContext dbContext) :
+            base()
+        {
+            RuleFor(x => x.Name).MustAsync(async (name, cancellation) =>
+            {
+                bool exists = await IsDuplicateNameAsync(dbContext, name);
+                return !exists;
+            }).WithMessage(x => Messages.DUPLICATE_PLATFORM_NAME.Replace("{0}", x.Name.ToString()));
+        }
+    }
 
     internal sealed class CreateHandler : IRequestHandler<CreateCommand, Result<Ulid>>
     {
@@ -132,9 +145,6 @@ public static class PlatformInfoFlow
 
         public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
         {
-            if (await IsDuplicateNameAsync(_dbcontext, message.Name))
-                return DuplicateFound(message.Name);
-            
             var record = new PlatformInfo
             {
                 Id = message.Id,
@@ -142,6 +152,7 @@ public static class PlatformInfoFlow
                 Description = message.Description?.Trim(),
                 Provider = message.Provider,
                 Remark = message.Remark?.Trim(),
+                SearchIndex = message.SearchIndex,
                 CreatedDT = DateTime.UtcNow
             };
             await _dbcontext.Set<PlatformInfo>().AddAsync(record, token);
@@ -156,7 +167,7 @@ public static class PlatformInfoFlow
 
     public sealed record UpdateQuery : IRequest<Result<UpdateCommand>> { public Ulid? Id { get; init; } }
 
-    internal sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
+    public sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
     {
         public UpdateQueryValidator()
         {
@@ -166,7 +177,17 @@ public static class PlatformInfoFlow
 
     public record UpdateCommand : Model, IRequest<Result> { }
 
-    internal class UpdateCommandValidator : ModelValidator<UpdateCommand> { }
+    public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
+    {
+        public UpdateCommandValidator(PlatformContext dbContext)
+        {
+            RuleFor(x => x).MustAsync(async (rec, cancellation) =>
+            {
+                bool exists = await IsDuplicateNameAsync(dbContext, rec.Name, rec.Id);
+                return !exists;
+            }).WithMessage(x => Messages.DUPLICATE_PLATFORM_NAME.Replace("{0}", x.Name.ToString()));
+        }
+    }
 
     internal class UpdateCommandMapping : Profile { public UpdateCommandMapping() => CreateProjection<PlatformInfo, UpdateCommand>(); }
 
@@ -185,7 +206,8 @@ public static class PlatformInfoFlow
         {
             var command = await _dbcontext.Set<PlatformInfo>()
                 .ProjectTo<UpdateCommand>(_configuration)
-                .FirstOrDefaultAsync(q => q.Id == message.Id);
+                .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
+
             if (command is null)
                 return RecordNotFound(message.Id ?? Ulid.Empty);
 
@@ -215,6 +237,7 @@ public static class PlatformInfoFlow
             record.Description = message.Description?.Trim();
             record.Provider = message.Provider;
             record.Remark = message.Remark?.Trim();
+            record.SearchIndex = message.SearchIndex;
             record.ModifiedDT = DateTime.UtcNow;
 
             _dbcontext.Set<PlatformInfo>().Update(record);
@@ -229,7 +252,7 @@ public static class PlatformInfoFlow
 
     public sealed record DeleteQuery : IRequest<Result<DeleteCommand>> { public Ulid? Id { get; init; } }
 
-    internal class DeleteQueryValidator : AbstractValidator<DeleteQuery>
+    public class DeleteQueryValidator : AbstractValidator<DeleteQuery>
     {
         public DeleteQueryValidator()
         {
@@ -239,7 +262,7 @@ public static class PlatformInfoFlow
 
     public sealed record DeleteCommand : Model, IRequest<Result> { }
 
-    internal sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
+    public sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
     {
         public DeleteCommandValidator()
         {
@@ -270,7 +293,7 @@ public static class PlatformInfoFlow
         {
             var command = await _dbcontext.Set<PlatformInfo>()
                 .ProjectTo<DeleteCommand>(_configuration)
-                .FirstOrDefaultAsync(q => q.Id == message.Id);
+                .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
             if (command is null)
                 return RecordNotFound(message.Id ?? Ulid.Empty);
             return Result.Ok(command);

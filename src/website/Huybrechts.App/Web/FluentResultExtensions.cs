@@ -1,32 +1,74 @@
 ﻿using FluentResults;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Huybrechts.App.Web;
 
+[Serializable]
 public class StatusResult
 {
+    public static StatusResult Deserialize(string json)
+    {
+        return System.Text.Json.JsonSerializer.Deserialize<StatusResult>(json) ?? new();
+    }
+
     public bool IsFailed { get; set; } = false;
 
     public bool IsSuccess { get; set; } = false;
 
-    public IEnumerable<string> Errors { get; set; } = [];
+    public string Message { get; set; } = string.Empty;
 
-    public IEnumerable<string> Successes { get; set; } = [];
-
-    public IEnumerable<string> Reasons { get; set; } = [];
+    public StatusResult() { }
 }
 
 public static class FluentResultExtensions
 {
+    public static void AddToModelState(this Result result, ModelStateDictionary modelState, string prefix = "")
+    {
+        foreach (var error in result.Errors)
+        {
+            modelState.AddModelError(prefix, error.Message);
+        }
+    }
+
+    public static void AddToModelState<T>(this Result<T> result, ModelStateDictionary modelState, string prefix = "")
+    {
+        foreach (var error in result.Errors)
+        {
+            modelState.AddModelError(prefix, error.Message);
+        }
+    }
+
+    public static bool HasStatusMessage(this Result result)
+    {
+        if (result.Reasons.Count > 0)
+            return true;
+        return false;
+    }
+
+    public static bool HasStatusMessage<T>(this Result<T> result)
+    {
+        if (result.Reasons.Count > 0)
+            return true;
+        return false;
+    }
+
     public static StatusResult ToStatusResult(this Result result)
     {
         return new StatusResult()
         {
             IsFailed = result.IsFailed,
             IsSuccess = result.IsSuccess,
-            Errors = result.Errors.Select(s => s.Message),
-            Successes = result.Successes.Select(s => s.Message),
-            Reasons = result.Reasons.Select(s => s.Message)
+            Message =
+                (result.IsFailed ? string.Join(Environment.NewLine, result.Errors.Select(s => s.Message)) :
+                result.IsSuccess ? string.Join(Environment.NewLine, result.Successes.Select(s => s.Message)) :
+                string.Join(Environment.NewLine, result.Reasons.Select(s => s.Message)))
         };
+    }
+
+    public static string ToStatusMessage(this Result result)
+    {
+        StatusResult value = result.ToStatusResult();
+        return System.Text.Json.JsonSerializer.Serialize(value);
     }
 
     public static StatusResult ToStatusResult<T>(this Result<T> result)
@@ -35,29 +77,17 @@ public static class FluentResultExtensions
         {
             IsFailed = result.IsFailed,
             IsSuccess = result.IsSuccess,
-            Errors = result.Errors.Select(s => s.Message),
-            Successes = result.Successes.Select(s => s.Message),
-            Reasons = result.Reasons.Select(s => s.Message)
+            Message =
+                (result.IsFailed ? string.Join(Environment.NewLine, result.Errors.Select(s => s.Message)) :
+                result.IsSuccess ? string.Join(Environment.NewLine, result.Successes.Select(s => s.Message)) :
+                string.Join(Environment.NewLine, result.Reasons.Select(s => s.Message)))
         };
-    }
-
-    public static string ToStatusMessage(this Result result)
-    {
-        if (result.IsFailed)
-            return "Error: " + string.Join(Environment.NewLine, result.Errors.Select(s => s.Message));
-        else if (result.IsSuccess)
-            return "Success: " + string.Join(Environment.NewLine, result.Successes.Select(s => s.Message));
-        else
-            return string.Join(Environment.NewLine, result.Reasons.Select(s => s.Message));
     }
 
     public static string ToStatusMessage<T>(this Result<T> result)
     {
-        if (result.IsFailed)
-            return "Error: " + string.Join(Environment.NewLine, result.Errors.Select(s => s.Message));
-        else if (result.IsSuccess)
-            return "Success: " + string.Join(Environment.NewLine, result.Successes.Select(s => s.Message));
-        else
-            return string.Join(Environment.NewLine, result.Reasons.Select(s => s.Message));
+        StatusResult value = result.ToStatusResult();
+        return System.Text.Json.JsonSerializer.Serialize(value);
     }
+
 }

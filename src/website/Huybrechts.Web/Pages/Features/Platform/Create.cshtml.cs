@@ -1,5 +1,6 @@
+using FluentValidation;
+using FluentValidation.Results;
 using Huybrechts.App.Web;
-using Huybrechts.Core.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ namespace Huybrechts.Web.Pages.Features.Platform;
 public class CreateModel : PageModel
 {
     private readonly IMediator _mediator;
+    private readonly IValidator<Flow.CreateCommand> _validator;
 
     [BindProperty]
     public Flow.CreateCommand Data { get; set; }
@@ -20,9 +22,10 @@ public class CreateModel : PageModel
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    public CreateModel(IMediator mediator)
+    public CreateModel(IMediator mediator, IValidator<Flow.CreateCommand> validator)
     {
         _mediator = mediator;
+        _validator = validator;
         Data = new();
     }
 
@@ -34,14 +37,23 @@ public class CreateModel : PageModel
     public async Task<IActionResult> OnPostAsync()
     {
         try
-        { 
+        {
+            ValidationResult state = await _validator.ValidateAsync(Data);
+            if (!state.IsValid)
+            {
+                state.AddToModelState(ModelState, nameof(Data) + ".");
+                return Page();
+            }
+
             var result = await _mediator.Send(Data);
-            StatusMessage = result.ToStatusMessage();
+            if (result.HasStatusMessage())
+                StatusMessage = result.ToStatusMessage();
+            
             return RedirectToPage(nameof(Index));
         }
         catch (Exception)
         {
-            return RedirectToPage("Error", StatusCodes.Status500InternalServerError);
+            return RedirectToPage("/Error", StatusCodes.Status500InternalServerError);
         }
     }
 }

@@ -5,11 +5,11 @@ namespace Huybrechts.App.Web;
 
 public static class FluentValidationExtensions
 {
-    public static void AddToModelState(this ValidationResult result, ModelStateDictionary modelState)
+    public static void AddToModelState(this ValidationResult result, ModelStateDictionary modelState, string prefix = "")
     {
         foreach (var error in result.Errors)
         {
-            modelState.AddModelError(error.PropertyName, error.ErrorMessage);
+            modelState.AddModelError(prefix + error.PropertyName, error.ErrorMessage);
         }
     }
 }

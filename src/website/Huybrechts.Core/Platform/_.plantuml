@@ -8,16 +8,20 @@ class Region {
 
 Platform "1" -- "0..*" Region
 
+
+
+
+
+
+
+
+
+
+
+
+
 class Product {
 }
-
-
-
-
-
-
-
-
 
 Platform "1" -- "0..*" Product
 

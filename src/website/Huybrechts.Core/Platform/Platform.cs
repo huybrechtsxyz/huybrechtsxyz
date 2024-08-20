@@ -12,6 +12,7 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("Platform")]
 [Index(nameof(Name), IsUnique = true)]
+[Index(nameof(SearchIndex))]
 [Comment("Table storing information about platforms that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.")]
 public record PlatformInfo : Entity, IEntity
 {
@@ -41,6 +42,12 @@ public record PlatformInfo : Entity, IEntity
     /// </summary>
     [Comment("Additional remarks or comments about the platform.")]
     public string? Remark { get; set; }
+
+    /// <summary>
+    /// This field will store the normalized, concatenated values for searching
+    /// </summary>
+    [Comment("This field will store the normalized, concatenated values for searching")]
+    public string? SearchIndex { get; set; }
 }
 
 /// <summary>

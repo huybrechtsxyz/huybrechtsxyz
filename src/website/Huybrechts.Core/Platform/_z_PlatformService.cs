@@ -13,7 +13,7 @@ namespace Huybrechts.Core.Platform;
 [Table("PlatformService")]
 [Comment("Represents a service offered on a specific platform, detailing attributes such as the service's name, description, and other relevant metadata.")]
 [Index(nameof(PlatformInfoId), nameof(Name), IsUnique = true)]
-public record PlatformService : Entity, IEntity
+public record _z_PlatformService : Entity, IEntity
 {
     /// <summary>
     /// Foreign key to the PlatformInfo entity.

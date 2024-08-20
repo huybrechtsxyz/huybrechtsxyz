@@ -8,26 +8,33 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Features\Platform\_z_PlatformProductFlow.cs" />
+    <Compile Remove="Features\Platform\_z_PlatformRateFlow.cs" />
+    <Compile Remove="Features\Platform\_z_PlatformServiceFlow.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
      <PackageReference Include="AutoMapper" Version="13.0.1" />
      <PackageReference Include="Azure.Identity" Version="1.12.0" />
-     <PackageReference Include="Finbuckle.MultiTenant.AspNetCore" Version="7.0.1" />
-     <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="7.0.1" />
-     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+     <PackageReference Include="Finbuckle.MultiTenant.AspNetCore" Version="7.0.2" />
+     <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="7.0.2" />
+     <PackageReference Include="FluentValidation" Version="11.9.2" />
+     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
      <PackageReference Include="Hangfire.AspNetCore" Version="1.8.14" />
      <PackageReference Include="Hangfire.InMemory" Version="0.10.3" />
      <PackageReference Include="Hangfire.PostgreSql" Version="1.20.9" />
      <PackageReference Include="Hangfire.SQLite" Version="1.4.2" />
      <PackageReference Include="Hangfire.SqlServer" Version="1.8.14" />
-     <PackageReference Include="MailKit" Version="4.7.1" />
-     <PackageReference Include="MediatR" Version="12.3.0" />
-     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.7" />
-     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.7" />
-     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
-     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
+     <PackageReference Include="MailKit" Version="4.7.1.1" />
+     <PackageReference Include="MediatR" Version="12.4.0" />
+     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.8" />
+     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.8" />
+     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
+     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
      <PackageReference Include="Microsoft.EntityFrameworkCore.DynamicLinq" Version="8.4.4" />
-     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.7" />
-     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
-     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7">
+     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.8" />
+     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
+     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
      </PackageReference>
@@ -37,7 +44,7 @@
      <PackageReference Include="MiniProfiler.EntityFrameworkCore" Version="4.3.8" />
      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
-     <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
+     <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
   </ItemGroup>
    
   <ItemGroup>
