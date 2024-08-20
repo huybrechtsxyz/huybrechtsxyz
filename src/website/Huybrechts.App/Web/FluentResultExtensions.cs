@@ -1,6 +1,6 @@
 ﻿using FluentResults;
 
-namespace Huybrechts.Core.Extensions;
+namespace Huybrechts.App.Web;
 
 public class StatusResult
 {

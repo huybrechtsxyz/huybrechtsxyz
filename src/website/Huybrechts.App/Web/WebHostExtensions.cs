@@ -1,6 +1,5 @@
 ﻿using Finbuckle.MultiTenant;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Hangfire.SQLite;
@@ -199,14 +198,12 @@ public static class WebHostExtensions
 
         builder.Services.AddSingleton<IAuthorizationHandler, MultiTenantRoleAuthorizationHandler>();
 
-        builder.Services.AddAuthorization(options =>
-        {
-            options.AddPolicy(TenantPolicies.IsOwner, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Owner)));
-            options.AddPolicy(TenantPolicies.IsManager, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Manager)));
-            options.AddPolicy(TenantPolicies.IsContributor, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Contributor)));
-            options.AddPolicy(TenantPolicies.IsMember, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Member)));
-            options.AddPolicy(TenantPolicies.IsGuest, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Guest)));
-        });
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(TenantPolicies.IsOwner, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Owner)))
+            .AddPolicy(TenantPolicies.IsManager, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Manager)))
+            .AddPolicy(TenantPolicies.IsContributor, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Contributor)))
+            .AddPolicy(TenantPolicies.IsMember, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Member)))
+            .AddPolicy(TenantPolicies.IsGuest, policy => policy.Requirements.Add(new HasTenantRoleRequirement(ApplicationTenantRole.Guest)));
 
         builder.Services.TryAddScoped<ApplicationTenantManager>();
 
@@ -294,8 +291,6 @@ public static class WebHostExtensions
             config.AutoRegisterRequestProcessors = true;
         });
 
-        builder.Services.AddFluentValidationAutoValidation();
-        builder.Services.AddFluentValidationClientsideAdapters();
         builder.Services.AddValidatorsFromAssemblyContaining<ApplicationContext>();
 
         return builder;
