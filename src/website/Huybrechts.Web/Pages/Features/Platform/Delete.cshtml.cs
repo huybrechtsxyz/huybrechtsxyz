@@ -1,4 +1,5 @@
 using Huybrechts.App.Web;
+using Huybrechts.Core.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,23 +22,32 @@ public class DeleteModel : PageModel
 
     public DeleteModel(IMediator mediator) => _mediator = mediator;
 
-    public async Task OnGetAsync(Flow.DeleteQuery query)
+    public async Task<IActionResult> OnGetAsync(Flow.DeleteQuery query)
     {
-        var result = await _mediator.Send(query);
-        if (result.IsFailed)
+        try
         {
-            StatusMessage = result.Errors[0].Message;
+            var result = await _mediator.Send(query);
+            StatusMessage = result.ToStatusMessage();
+            Data = result.Value;
+            return Page();
         }
-        Data = result.Value;
+        catch (Exception)
+        {
+            return RedirectToPage("Error", StatusCodes.Status500InternalServerError);
+        }
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var result = await _mediator.Send(Data);
-        if (result.IsFailed)
+        try
         {
-            StatusMessage = result.Errors[0].Message;
+            var result = await _mediator.Send(Data);
+            StatusMessage = result.ToStatusMessage();
+            return RedirectToPage(nameof(Index));
         }
-        return RedirectToPage(nameof(Index));
+        catch (Exception)
+        {
+            return RedirectToPage("Error", StatusCodes.Status500InternalServerError);
+        }
     }
 }

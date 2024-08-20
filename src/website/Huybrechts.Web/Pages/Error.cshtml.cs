@@ -32,5 +32,12 @@ namespace Huybrechts.Web.Pages
             ErrorCode = status.ToString();
             ErrorText = Microsoft.AspNetCore.WebUtilities.ReasonPhrases.GetReasonPhrase(status);
         }
+
+        public void OnGet(int status, string message)
+        {
+            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+            ErrorCode = status.ToString();
+            ErrorText = message;
+        }
     }
 }

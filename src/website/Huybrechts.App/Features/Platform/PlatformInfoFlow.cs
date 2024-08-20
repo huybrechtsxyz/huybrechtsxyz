@@ -202,19 +202,19 @@ public static class PlatformInfoFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result> Handle(UpdateCommand command, CancellationToken token)
+        public async Task<Result> Handle(UpdateCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformInfo>().FindAsync([command.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<PlatformInfo>().FindAsync([message.Id], cancellationToken: token);
             if (record is null)
-                return RecordNotFound(command.Id);
+                return RecordNotFound(message.Id);
 
-            if (await IsDuplicateNameAsync(_dbcontext, command.Name, record.Id))
-                return DuplicateFound(command.Name);
+            if (await IsDuplicateNameAsync(_dbcontext, message.Name, record.Id))
+                return DuplicateFound(message.Name);
 
-            record.Name = command.Name.Trim();
-            record.Description = command.Description?.Trim();
-            record.Provider = command.Provider;
-            record.Remark = command.Remark?.Trim();
+            record.Name = message.Name.Trim();
+            record.Description = message.Description?.Trim();
+            record.Provider = message.Provider;
+            record.Remark = message.Remark?.Trim();
             record.ModifiedDT = DateTime.UtcNow;
 
             _dbcontext.Set<PlatformInfo>().Update(record);
@@ -286,11 +286,11 @@ public static class PlatformInfoFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result> Handle(DeleteCommand command, CancellationToken token)
+        public async Task<Result> Handle(DeleteCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformInfo>().FindAsync([command.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<PlatformInfo>().FindAsync([message.Id], cancellationToken: token);
             if(record is null)
-                return RecordNotFound(command.Id);
+                return RecordNotFound(message.Id);
 
             _dbcontext.Set<PlatformInfo>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);

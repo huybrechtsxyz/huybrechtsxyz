@@ -1,4 +1,6 @@
+using FluentResults;
 using Huybrechts.App.Web;
+using Huybrechts.Core.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,23 +25,28 @@ public class IndexModel : PageModel
         _mediator = mediator;
     }
 
-    public async Task OnGetAsync(
-            string currentFilter,
-            string searchText,
-            string sortOrder,
-            int? pageIndex)
+    public async Task<IActionResult> OnGetAsync(
+        string currentFilter,
+        string searchText,
+        string sortOrder,
+        int? pageIndex)
     {
-        var result = await _mediator.Send(request: new Flow.ListQuery
-        { 
-            CurrentFilter = currentFilter,
-            SearchText = searchText,
-            SortOrder = sortOrder,
-            Page = pageIndex
-        });
-        if (result.IsFailed)
+        try
         {
-            StatusMessage = result.Errors[0].Message;
+            var result = await _mediator.Send(request: new Flow.ListQuery
+            {
+                CurrentFilter = currentFilter,
+                SearchText = searchText,
+                SortOrder = sortOrder,
+                Page = pageIndex
+            });
+            StatusMessage = result.ToStatusMessage();
+            Data = result.Value;
+            return Page();
         }
-        Data = result.Value;
+        catch(Exception)
+        {
+            return RedirectToPage("Error", StatusCodes.Status500InternalServerError);
+        }
     }
 }

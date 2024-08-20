@@ -1,4 +1,5 @@
 using Huybrechts.App.Web;
+using Huybrechts.Core.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,11 +33,15 @@ public class CreateModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var result = await _mediator.Send(Data);
-        if (result.IsFailed)
-        {
-            StatusMessage = result.Errors[0].Message;
+        try
+        { 
+            var result = await _mediator.Send(Data);
+            StatusMessage = result.ToStatusMessage();
+            return RedirectToPage(nameof(Index));
         }
-        return this.RedirectToPage(nameof(Index));
+        catch (Exception)
+        {
+            return RedirectToPage("Error", StatusCodes.Status500InternalServerError);
+        }
     }
 }
