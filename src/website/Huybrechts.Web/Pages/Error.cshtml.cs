@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Diagnostics;
 
@@ -26,18 +27,14 @@ namespace Huybrechts.Web.Pages
             ErrorText = Microsoft.AspNetCore.WebUtilities.ReasonPhrases.GetReasonPhrase(400);
         }
 
-        public void OnGet(int status)
+        public void OnGet(int status, string message = "")
         {
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
             ErrorCode = status.ToString();
-            ErrorText = Microsoft.AspNetCore.WebUtilities.ReasonPhrases.GetReasonPhrase(status);
-        }
-
-        public void OnGet(int status, string message)
-        {
-            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
-            ErrorCode = status.ToString();
-            ErrorText = message;
+            if (string.IsNullOrEmpty(message))
+                ErrorText = Microsoft.AspNetCore.WebUtilities.ReasonPhrases.GetReasonPhrase(status); 
+            else
+                ErrorText = message;
         }
     }
 }

@@ -5,8 +5,6 @@
 @model Huybrechts.Web.Pages.IndexModel
 @{
     Layout = null;
-    var workPage = "/abc/Features/Platform/Region";
-    var workId = "01J4PBB0SM8CS4N89S0V0HBJ1T";
     var applicationUser = await UserManager.GetUserAsync(User);
     var imageSource = "/img/community.png";
     if (SignInManager.IsSignedIn(User))
