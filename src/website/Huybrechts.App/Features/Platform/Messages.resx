@@ -129,19 +129,19 @@
   <data name="DUPLICATE_PLATFORM_NAME" xml:space="preserve">
     <value>Duplicate platform for {0}</value>
   </data>
-  <data name="NOT_FOUND_PLATFORMPRODUCT_ID" xml:space="preserve">
+  <data name="INVALID_PLATFORMPRODUCT_ID" xml:space="preserve">
     <value>Unable to find product with ID {0}</value>
   </data>
-  <data name="NOT_FOUND_PLATFORMRATE_ID" xml:space="preserve">
+  <data name="INVALID_PLATFORMRATE_ID" xml:space="preserve">
     <value>Unable to find rate with ID {0}</value>
   </data>
-  <data name="NOT_FOUND_PLATFORMREGION_ID" xml:space="preserve">
+  <data name="INVALID_PLATFORMREGION_ID" xml:space="preserve">
     <value>Unable to find region with ID {0}</value>
   </data>
-  <data name="NOT_FOUND_PLATFORMSERVICE_ID" xml:space="preserve">
+  <data name="INVALID_PLATFORMSERVICE_ID" xml:space="preserve">
     <value>Unable to find service with ID {0}</value>
   </data>
-  <data name="NOT_FOUND_PLATFORM_ID" xml:space="preserve">
+  <data name="INVALID_PLATFORM_ID" xml:space="preserve">
     <value>Unable to find platform with ID {0}</value>
   </data>
 </root>

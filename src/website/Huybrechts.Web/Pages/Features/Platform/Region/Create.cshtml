@@ -3,9 +3,8 @@
 @model Huybrechts.Web.Pages.Features.Platform.Region.CreateModel
 @{
     ViewData["CardTitle"] = SL["RegionCreateTitle"];
-    //ViewData["ActivePage"] = ManageNavPages.Info;
 }
-<partial name="_StatusMessage" for="StatusMessage" />
+<partial name="_StatusResult" for="StatusMessage" />
 <p class="text-info">
     @SL["RegionCreateInfo"]
 </p>
@@ -18,6 +17,7 @@
             <div class="form-floating mb-3">
                 <input type="hidden" asp-for="Data.PlatformInfoId" />
                 <input asp-for="Data.PlatformInfoName" class="form-control" disabled />
+                <input type="hidden" asp-for="Data.PlatformInfoName" />
                 <label asp-for="Data.Name" class="form-label"></label>
                 <span asp-validation-for="Data.PlatformInfoName" class="text-danger"></span>
             </div>
@@ -51,7 +51,7 @@
 
 
 @section Breadcrumb {
-    <li class="breadcrumb-item">@Model.Data.Platform.Name</li>
+    <li class="breadcrumb-item">@Model.Data.PlatformInfoName</li>
     <li class="breadcrumb-item"><a asp-page="/Features/Platform/Region/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Regions"]</a></li>
 }
 

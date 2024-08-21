@@ -53,7 +53,7 @@ public class CreateModel : PageModel
         }
         catch (Exception)
         {
-            return RedirectToPage("/Error", StatusCodes.Status500InternalServerError);
+            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
         }
     }
 }

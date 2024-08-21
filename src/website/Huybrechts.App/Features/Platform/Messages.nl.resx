@@ -129,19 +129,19 @@
   <data name="DUPLICATE_PLATFORM_NAME" xml:space="preserve">
     <value>Platform met naam {0} bestaat al</value>
   </data>
-  <data name="NOT_FOUND_PLATFORMPRODUCT_ID" xml:space="preserve">
+  <data name="INVALID_PLATFORMPRODUCT_ID" xml:space="preserve">
     <value>Kan platform product met ID {0} niet vinden</value>
   </data>
-  <data name="NOT_FOUND_PLATFORMRATE_ID" xml:space="preserve">
+  <data name="INVALID_PLATFORMRATE_ID" xml:space="preserve">
     <value>Kan platform rate met ID {0} niet vinden</value>
   </data>
-  <data name="NOT_FOUND_PLATFORMREGION_ID" xml:space="preserve">
+  <data name="INVALID_PLATFORMREGION_ID" xml:space="preserve">
     <value>Kan platform regio met ID {0} niet vinden</value>
   </data>
-  <data name="NOT_FOUND_PLATFORMSERVICE_ID" xml:space="preserve">
+  <data name="INVALID_PLATFORMSERVICE_ID" xml:space="preserve">
     <value>Kan platform service met ID {0} niet vinden</value>
   </data>
-  <data name="NOT_FOUND_PLATFORM_ID" xml:space="preserve">
+  <data name="INVALID_PLATFORM_ID" xml:space="preserve">
     <value>Kan platform met ID {0} niet vinden</value>
   </data>
 </root>

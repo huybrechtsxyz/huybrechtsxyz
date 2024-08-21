@@ -54,7 +54,7 @@ public class EditModel : PageModel
         }
         catch (Exception)
         {
-            return RedirectToPage("/Error", StatusCodes.Status500InternalServerError);
+            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
         }
     }
 
@@ -83,7 +83,7 @@ public class EditModel : PageModel
         }
         catch (Exception)
         {
-            return RedirectToPage("/Error", StatusCodes.Status500InternalServerError);
+            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
         }
     }
 }

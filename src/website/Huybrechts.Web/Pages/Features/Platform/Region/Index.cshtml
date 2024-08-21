@@ -3,11 +3,10 @@
 @model Huybrechts.Web.Pages.Features.Platform.Region.IndexModel
 @{
     ViewData["CardTitle"] = SL["RegionIndexTitle"];
-    //ViewData["ActivePage"] = ManageNavPages.Info;
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
-<partial name="_StatusMessage" for="StatusMessage" />
+<partial name="_StatusResult" for="StatusMessage" />
 <p class="text-info">
     @SL["RegionIndexInfo"]
 </p>
@@ -32,7 +31,7 @@
                     }
                 </div>
                 <div class="col-md-9 d-flex gap-1 align-items-center justify-content-md-end mb-3">
-                    <input type="text" name="platformInfoName" value="@Model.Data.Platform.Name" disabled />
+                    <input type="text" name="platformInfoName" value="@Model.Data.Platform.Name" class="form-control" disabled />
                     <input type="hidden" name="platformInfoId" value="@Model.Data.Platform.Id" />
                     <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="@SL["Search..."]" class="form-control" autocomplete="off" />
                     <input type="submit" value="@SL["Search"]" class="btn btn-primary" /> |

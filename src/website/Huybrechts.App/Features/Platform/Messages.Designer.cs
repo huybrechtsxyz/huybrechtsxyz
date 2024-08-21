@@ -99,45 +99,45 @@ namespace Huybrechts.App.Features.Platform {
         /// <summary>
         ///   Looks up a localized string similar to Unable to find platform with ID {0}.
         /// </summary>
-        public static string NOT_FOUND_PLATFORM_ID {
+        public static string INVALID_PLATFORM_ID {
             get {
-                return ResourceManager.GetString("NOT_FOUND_PLATFORM_ID", resourceCulture);
+                return ResourceManager.GetString("INVALID_PLATFORM_ID", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Unable to find product with ID {0}.
         /// </summary>
-        public static string NOT_FOUND_PLATFORMPRODUCT_ID {
+        public static string INVALID_PLATFORMPRODUCT_ID {
             get {
-                return ResourceManager.GetString("NOT_FOUND_PLATFORMPRODUCT_ID", resourceCulture);
+                return ResourceManager.GetString("INVALID_PLATFORMPRODUCT_ID", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Unable to find rate with ID {0}.
         /// </summary>
-        public static string NOT_FOUND_PLATFORMRATE_ID {
+        public static string INVALID_PLATFORMRATE_ID {
             get {
-                return ResourceManager.GetString("NOT_FOUND_PLATFORMRATE_ID", resourceCulture);
+                return ResourceManager.GetString("INVALID_PLATFORMRATE_ID", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Unable to find region with ID {0}.
         /// </summary>
-        public static string NOT_FOUND_PLATFORMREGION_ID {
+        public static string INVALID_PLATFORMREGION_ID {
             get {
-                return ResourceManager.GetString("NOT_FOUND_PLATFORMREGION_ID", resourceCulture);
+                return ResourceManager.GetString("INVALID_PLATFORMREGION_ID", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Unable to find service with ID {0}.
         /// </summary>
-        public static string NOT_FOUND_PLATFORMSERVICE_ID {
+        public static string INVALID_PLATFORMSERVICE_ID {
             get {
-                return ResourceManager.GetString("NOT_FOUND_PLATFORMSERVICE_ID", resourceCulture);
+                return ResourceManager.GetString("INVALID_PLATFORMSERVICE_ID", resourceCulture);
             }
         }
     }

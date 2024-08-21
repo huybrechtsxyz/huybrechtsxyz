@@ -6,7 +6,6 @@ using Huybrechts.App.Data;
 using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using StackExchange.Profiling.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
 
@@ -30,7 +29,7 @@ public static class PlatformInfoFlow
         [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
         public string? Remark { get; set; }
 
-        public string SearchIndex => (Name + "#" + Description ?? string.Empty).ToLowerInvariant();
+        public string SearchIndex => $"{Name}~{Description}".ToLowerInvariant();
     }
 
     public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -42,7 +41,7 @@ public static class PlatformInfoFlow
         }
     }
 
-    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORM_ID.Replace("{0}", id.ToString()));
+    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORM_ID.Replace("{0}", id.ToString()));
 
     private static Result DuplicateFound(string name) => Result.Fail(Messages.DUPLICATE_PLATFORM_NAME.Replace("{0}", name.ToString()));
 
@@ -145,6 +144,9 @@ public static class PlatformInfoFlow
 
         public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
         {
+            if (await IsDuplicateNameAsync(_dbcontext, message.Name))
+                return DuplicateFound(message.Name);
+
             var record = new PlatformInfo
             {
                 Id = message.Id,
@@ -171,7 +173,7 @@ public static class PlatformInfoFlow
     {
         public UpdateQueryValidator()
         {
-            RuleFor(m => m.Id).NotNull();
+            RuleFor(m => m.Id).NotNull().NotEqual(Ulid.Empty);
         }
     }
 
@@ -189,7 +191,10 @@ public static class PlatformInfoFlow
         }
     }
 
-    internal class UpdateCommandMapping : Profile { public UpdateCommandMapping() => CreateProjection<PlatformInfo, UpdateCommand>(); }
+    internal class UpdateCommandMapping : Profile 
+    { 
+        public UpdateCommandMapping() => CreateProjection<PlatformInfo, UpdateCommand>(); 
+    }
 
     internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
     {
@@ -256,7 +261,7 @@ public static class PlatformInfoFlow
     {
         public DeleteQueryValidator()
         {
-            RuleFor(m => m.Id).NotNull();
+            RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
@@ -266,7 +271,7 @@ public static class PlatformInfoFlow
     {
         public DeleteCommandValidator()
         {
-            RuleFor(m => m.Id).NotNull();
+            RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
@@ -294,8 +299,10 @@ public static class PlatformInfoFlow
             var command = await _dbcontext.Set<PlatformInfo>()
                 .ProjectTo<DeleteCommand>(_configuration)
                 .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
+
             if (command is null)
                 return RecordNotFound(message.Id ?? Ulid.Empty);
+
             return Result.Ok(command);
         }
     }

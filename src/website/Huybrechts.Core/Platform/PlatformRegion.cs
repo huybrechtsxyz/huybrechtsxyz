@@ -14,6 +14,7 @@ namespace Huybrechts.Core.Platform;
 [Table("PlatformRegion")]
 [Comment("Regions supported by the platform, representing data center locations.")]
 [Index(nameof(PlatformInfoId), nameof(Name), IsUnique = true)]
+[Index(nameof(SearchIndex))]
 public record PlatformRegion : Entity, IEntity
 {
     /// <summary>
@@ -56,4 +57,10 @@ public record PlatformRegion : Entity, IEntity
     /// </summary>
     [Comment("Additional remarks or notes regarding the region.")]
     public string? Remark { get; set; }
+
+    /// <summary>
+    /// This field will store the normalized, concatenated values for searching
+    /// </summary>
+    [Comment("This field will store the normalized, concatenated values for searching")]
+    public string? SearchIndex { get; set; }
 }
