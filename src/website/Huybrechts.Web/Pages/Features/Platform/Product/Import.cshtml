@@ -3,11 +3,10 @@
 @model Huybrechts.Web.Pages.Features.Platform.Product.ImportModel
 @{
     ViewData["CardTitle"] = SL["ProductImportTitle"];
-    //ViewData["ActivePage"] = ManageNavPages.Info;
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
-<partial name="_StatusMessage" for="StatusMessage" />
+<partial name="_StatusResult" for="StatusMessage" />
 <p class="text-info">
     @SL["ProductImportInfo"]
 </p>
@@ -21,36 +20,30 @@
                         <span class="vr"></span>
                         @SL["Add Selection"]
                     </button>
-                    <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">
+                    <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="Index" asp-route-platformInfoId="@Model.Data.Platform.Id">
                         <i class="bi-arrow-left-circle-fill"></i>
                         <span class="vr"></span>
                         @SL["Cancel"]
                     </a>
                 </div>
                 <div class="col-md-9 d-flex gap-1 align-items-center justify-content-md-end mb-3">
-                    <select asp-for="Data.PlatformInfoId"
-                            asp-items="Model.Data.Platforms?.Select(p => new SelectListItem
-                                {
-                                    Value = p.Id.ToString(),
-                                    Text = p.Name
-                                }).ToList()"
-                            class="form-control" disabled></select>
-                    <input type="hidden" name="platformInfoId" value="@Model.Data.PlatformInfoId"/>
+                    <input type="hidden" name="platformInfoId" value="@Model.Data.Platform.Id"/>
+                    <input type="text" name="platformInfoName" value="@Model.Data.Platform.Name" class="form-control" disabled />
                     <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="@SL["Search..."]" class="form-control" autocomplete="off" />
                     <input type="submit" value="@SL["Search"]" class="btn btn-primary" /> |
-                    <a asp-page="Import" asp-route-platformInfoId="@Model.Data.PlatformInfoId" class="btn btn-secondary text-nowrap" type="button" role="button">@SL["Clear Filter"]</a>
+                    <a asp-page="Import" asp-route-platformInfoId="@Model.Data.Platform.Id" class="btn btn-secondary text-nowrap" type="button" role="button">@SL["Clear Filter"]</a>
                 </div>
             </form>
             
             @if (Model.Data.Results.Count > 0)
             {
                 <form id="import-form" method="post">
-                    <input type="hidden" asp-for="@Model.Data.PlatformInfoId" />
+                    <input type="hidden" asp-for="@Model.Data.Platform.Id" />
                     <div class="table-responsove">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th class="text-center">@SL["Select"]</th>
+                                    <th>@SL["Select"]</th>
                                     <th>@Html.DisplayNameFor(model => model.Data.Results[0].Name)</th>
                                     <th>@Html.DisplayNameFor(model => model.Data.Results[0].Category)</th>
                                 </tr>
@@ -59,7 +52,7 @@
                                 @for(int idex = 0; idex<Model.Data.Results.Count; idex++)
                                 {
                                     <tr>
-                                        <td class="text-center">
+                                        <td>
                                             <input type="hidden" asp-for="@Model.Data.Results[idex].Id" />
                                             <input type="hidden" asp-for="@Model.Data.Results[idex].PlatformInfoId" />
                                             <input type="checkbox" asp-for="@Model.Data.Results[idex].IsSelected" />
@@ -82,7 +75,7 @@
                         <ul class="pagination justify-content-center">
                             <li class="page-item @prev">
                                 <a asp-page="Import"
-                                   asp-route-platformInfoId="@Model.Data.PlatformInfoId"
+                                   asp-route-platformInfoId="@Model.Data.Platform.Id"
                                    asp-route-currentFilter="@Model.Data.CurrentFilter"
                                    asp-route-searchText="@Model.Data.CurrentFilter"
                                    asp-route-sortOrder="@Model.Data.SortOrder"
@@ -96,7 +89,7 @@
                             {
                                 <li class="page-item @(Model.Data.Results.PageIndex == i ? "active" : string.Empty)" aria-current="page">
                                     <a asp-page="Import"
-                                       asp-route-platformInfoId="@Model.Data.PlatformInfoId"
+                                       asp-route-platformInfoId="@Model.Data.Platform.Id"
                                        asp-route-currentFilter="@Model.Data.CurrentFilter"
                                        asp-route-searchText="@Model.Data.CurrentFilter"
                                        asp-route-sortOrder="@Model.Data.SortOrder"
@@ -108,7 +101,7 @@
                             }
                             <li class="page-item @next">
                                 <a asp-page="Import"
-                                   asp-route-platformInfoId="@Model.Data.PlatformInfoId"
+                                   asp-route-platformInfoId="@Model.Data.Platform.Id"
                                    asp-route-currentFilter="@Model.Data.CurrentFilter"
                                    asp-route-searchText="@Model.Data.CurrentFilter"
                                    asp-route-sortOrder="@Model.Data.SortOrder"
@@ -127,7 +120,7 @@
 </div>
 
 @section Breadcrumb {
-    <li class="breadcrumb-item">@Model.Data.PlatformInfoName</li>
+    <li class="breadcrumb-item">@Model.Data.Platform.Name</li>
     <li class="breadcrumb-item"><a asp-page="/Features/Platform/Product/Index">@SL["Products"]</a></li>
 }
 

@@ -3,9 +3,8 @@
 @model Huybrechts.Web.Pages.Features.Platform.Product.CreateModel
 @{
     ViewData["CardTitle"] = SL["ProductCreateTitle"];
-    //ViewData["ActivePage"] = ManageNavPages.Info;
 }
-<partial name="_StatusMessage" for="StatusMessage" />
+<partial name="_StatusResult" for="StatusMessage" />
 <p class="text-info">
     @SL["ProductCreateInfo"]
 </p>
@@ -16,8 +15,11 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <input type="hidden" asp-for="Data.Id" />
             <div class="form-floating mb-3">
+                <input type="hidden" asp-for="Data.PlatformInfoId" />
                 <input asp-for="Data.PlatformInfoName" class="form-control" disabled />
-                <label asp-for="Data.PlatformInfoName" class="form-label"></label>
+                <input type="hidden" asp-for="Data.PlatformInfoName" />
+                <label asp-for="Data.Name" class="form-label"></label>
+                <span asp-validation-for="Data.PlatformInfoName" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Name" class="form-control" />
@@ -38,6 +40,36 @@
                 <input asp-for="Data.Description" class="form-control" />
                 <label asp-for="Data.Description" class="form-label"></label>
                 <span asp-validation-for="Data.Description" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.CostDriver" class="form-control" />
+                <label asp-for="Data.CostDriver" class="form-label"></label>
+                <span asp-validation-for="Data.CostDriver" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.CostBasedOn" class="form-control" />
+                <label asp-for="Data.CostBasedOn" class="form-label"></label>
+                <span asp-validation-for="Data.CostBasedOn" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Limitations" class="form-control" />
+                <label asp-for="Data.Limitations" class="form-label"></label>
+                <span asp-validation-for="Data.Limitations" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.AboutURL" class="form-control" />
+                <label asp-for="Data.AboutURL" class="form-label"></label>
+                <span asp-validation-for="Data.AboutURL" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.PricingURL" class="form-control" />
+                <label asp-for="Data.PricingURL" class="form-label"></label>
+                <span asp-validation-for="Data.PricingURL" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.PricingTier" class="form-control" />
+                <label asp-for="Data.PricingTier" class="form-label"></label>
+                <span asp-validation-for="Data.PricingTier" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Remark" class="form-control" />

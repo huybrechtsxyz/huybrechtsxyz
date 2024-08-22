@@ -8,29 +8,19 @@ class Region {
 
 Platform "1" -- "0..*" Region
 
+class Service {
+}
 
-
-
-
-
-
-
-
-
-
-
+Platform "1" -- "0..*" Service
 
 class Product {
 }
 
 Platform "1" -- "0..*" Product
 
-class Service {
-}
-
-Platform "1" -- "0..*" Service
 
 
-
+Region "1" -- "0..*" Rate
+Service "1" -- "0..*" Rate
 
 @enduml

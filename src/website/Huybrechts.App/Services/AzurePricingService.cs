@@ -10,8 +10,8 @@ public class AzurePricingService
     {
         All = 0,
         Regions = 1,
-        Products = 2,
-        Services = 3,
+        Services = 2,
+        Products = 3,
         Rates = 4
     }
 
@@ -39,17 +39,17 @@ public class AzurePricingService
             if (!string.IsNullOrEmpty(searchString))
                 requestUrl += request.RegionSearch.Replace("{0}", searchString);
         }
-        else if (ServiceType.Products == type)
-        {
-            requestUrl = request.ProductUrl;
-            if (!string.IsNullOrEmpty(searchString))
-                requestUrl += request.ProductSearch.Replace("{0}", searchString);
-        }
         else if (ServiceType.Services == type)
         {
             requestUrl = request.ServiceUrl;
             if (!string.IsNullOrEmpty(searchString))
                 requestUrl += request.ServiceSearch.Replace("{0}", searchString);
+        }
+        else if (ServiceType.Products == type)
+        {
+            requestUrl = request.ProductUrl;
+            if (!string.IsNullOrEmpty(searchString))
+                requestUrl += request.ProductSearch.Replace("{0}", searchString);
         }
         else
         {
@@ -87,7 +87,7 @@ public class AzurePricingService
                                 }
                             }
                         }
-                        else if (ServiceType.Products == type)
+                        else if (ServiceType.Services == type)
                         {
                             foreach (var item in pricingResponse.Items ?? [])
                             {
@@ -98,11 +98,11 @@ public class AzurePricingService
                                 }
                             }
                         }
-                        else if (ServiceType.Services == type)
+                        else if (ServiceType.Products == type)
                         {
                             foreach (var item in pricingResponse.Items ?? [])
                             {
-                                if (!string.IsNullOrEmpty(item.ServiceName) && uniqueset.Add(item.ServiceName))
+                                if (!string.IsNullOrEmpty(item.ProductName) && uniqueset.Add(item.ProductName))
                                 {
                                     pricingResult.Items!.Add(item);
                                     pricingResult.Count += 1;
@@ -283,22 +283,22 @@ public class AzurePricingService
             searchString);
     }
 
-    public async Task<PricingResponse?> GetProductsAsync(string currency, string service, string location, string searchString)
+    public async Task<PricingResponse?> GetServicesAsync(string currency, string service, string location, string searchString)
     {
         return await GetPricingItemsAsync(
             _options.Platforms["Azure"],
-            ServiceType.Products,
+            ServiceType.Services,
             currency,
             service,
             location,
             searchString);
     }
 
-    public async Task<PricingResponse?> GetServicesAsync(string currency, string service, string location, string searchString)
+    public async Task<PricingResponse?> GetProductsAsync(string currency, string service, string location, string searchString)
     {
         return await GetPricingItemsAsync(
             _options.Platforms["Azure"],
-            ServiceType.Services,
+            ServiceType.Products,
             currency,
             service,
             location,

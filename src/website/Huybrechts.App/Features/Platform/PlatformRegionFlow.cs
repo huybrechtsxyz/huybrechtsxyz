@@ -205,7 +205,7 @@ public static class PlatformRegionFlow
                 bool exists = await IsDuplicateNameAsync(dbContext, model.Name, model.PlatformInfoId);
                 return !exists;
             })
-            .WithMessage(x => Messages.DUPLICATE_PLATFORM_NAME.Replace("{0}", x.Name.ToString()))
+            .WithMessage(x => Messages.DUPLICATE_PLATFORMREGION_NAME.Replace("{0}", x.Name.ToString()))
             .WithName(nameof(CreateCommand.Name));
         }
     }
@@ -302,7 +302,7 @@ public static class PlatformRegionFlow
                 bool exists = await IsDuplicateNameAsync(dbContext, model.Name, model.PlatformInfoId, model.Id);
                 return !exists;
             })
-            .WithMessage(x => Messages.DUPLICATE_PLATFORM_NAME.Replace("{0}", x.Name.ToString()))
+            .WithMessage(x => Messages.DUPLICATE_PLATFORMREGION_NAME.Replace("{0}", x.Name.ToString()))
             .WithName(nameof(CreateCommand.Name));
         }
     }

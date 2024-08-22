@@ -8,10 +8,10 @@ using Huybrechts.App.Services;
 using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using StackExchange.Profiling.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Huybrechts.App.Features.Platform;
 
@@ -32,15 +32,37 @@ public static class PlatformProductFlow
 
         [Display(Name = nameof(Label), ResourceType = typeof(Localization))]
         public string Label { get; set; } = string.Empty;
-
+        
         [Display(Name = nameof(Category), ResourceType = typeof(Localization))]
         public string Category { get; set; } = string.Empty;
 
         [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
         public string? Description { get; set; }
 
+        [Display(Name = nameof(CostDriver), ResourceType = typeof(Localization))]
+        public string? CostDriver { get; set; }
+
+        [Display(Name = nameof(CostBasedOn), ResourceType = typeof(Localization))]
+        public string? CostBasedOn { get; set; }
+
+        [Display(Name = nameof(Limitations), ResourceType = typeof(Localization))]
+        public string? Limitations { get; set; }
+
+        [DataType(DataType.Url)]
+        [Display(Name = nameof(AboutURL), ResourceType = typeof(Localization))]
+        public string? AboutURL { get; set; }
+
+        [DataType(DataType.Url)]
+        [Display(Name = nameof(PricingURL), ResourceType = typeof(Localization))]
+        public string? PricingURL { get; set; }
+
+        [Display(Name = nameof(PricingTier), ResourceType = typeof(Localization))]
+        public string? PricingTier { get; set; }
+
         [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
         public string? Remark { get; set; }
+
+        public string SearchIndex => $"{Name}~{Label}~{Category}~{Description}".ToLowerInvariant();
     }
 
     public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -51,14 +73,21 @@ public static class PlatformProductFlow
             RuleFor(m => m.PlatformInfoId).NotNull().NotEmpty();
             RuleFor(m => m.Name).NotNull().Length(1, 128);
             RuleFor(m => m.Label).Length(1, 128);
-            RuleFor(m => m.Category).Length(1, 128);
+            RuleFor(m => m.Category).Length(0, 128);
             RuleFor(m => m.Description).Length(1, 256);
+
+            RuleFor(m => m.CostDriver).Length(0, 256);
+            RuleFor(m => m.CostBasedOn).Length(0, 128);
+            RuleFor(m => m.Limitations).Length(0, 512);
+            RuleFor(m => m.AboutURL).Length(0, 512);
+            RuleFor(m => m.PricingURL).Length(0, 512);
+            RuleFor(m => m.PricingTier).Length(0, 128);
         }
     }
 
-    private static Result PlatformNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORM_ID.Replace("{0}", id.ToString()));
+    private static Result PlatformNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORM_ID.Replace("{0}", id.ToString()));
 
-    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMPRODUCT_ID.Replace("{0}", id.ToString()));
+    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORMPRODUCT_ID.Replace("{0}", id.ToString()));
 
     private static Result DuplicateRecordFound(string name) => Result.Fail(Messages.DUPLICATE_PLATFORMPRODUCT_NAME.Replace("{0}", name.ToString()));
 
@@ -84,43 +113,54 @@ public static class PlatformProductFlow
             .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
     }
 
-    public sealed class ListQuery : EntityListFlow.Query, IRequest<ListResult>
+    public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
     {
         public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
     }
 
-    internal sealed class ListValidator : AbstractValidator<ListQuery> { public ListValidator() { } }
+    public sealed class ListValidator : AbstractValidator<ListQuery> 
+    {
+        public ListValidator() 
+        { 
+            RuleFor(x => x.PlatformInfoId).NotEmpty().NotEqual(Ulid.Empty); 
+        } 
+    }
 
     public sealed class ListResult : EntityListFlow.Result<ListModel>
     {
+        public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
+
         public PlatformInfo Platform = new();
     }
 
     internal sealed class ListHandler :
         EntityListFlow.Handler<PlatformProduct, ListModel>,
-        IRequestHandler<ListQuery, ListResult>
+        IRequestHandler<ListQuery, Result<ListResult>>
     {
         public ListHandler(PlatformContext dbcontext, IConfigurationProvider configuration)
             : base(dbcontext, configuration)
         {
         }
 
-        public async Task<ListResult> Handle(ListQuery message, CancellationToken token)
+        public async Task<Result<ListResult>> Handle(ListQuery message, CancellationToken token)
         {
-            IQueryable<PlatformProduct> query = _dbcontext.Set<PlatformProduct>();
+            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(q => q.Id == message.PlatformInfoId, cancellationToken: token);
+            if (platform == null)
+                return PlatformNotFound(message.PlatformInfoId ?? Ulid.Empty);
 
-            if (message.PlatformInfoId.HasValue)
-            {
-                query = query.Where(q => q.PlatformInfoId == message.PlatformInfoId);
-            }
+            IQueryable<PlatformProduct> query = _dbcontext.Set<PlatformProduct>();
 
             var searchString = message.SearchText ?? message.CurrentFilter;
             if (!string.IsNullOrEmpty(searchString))
             {
+                string searchFor = searchString.ToLowerInvariant();
                 query = query.Where(q =>
-                    q.Name.Contains(searchString)
-                    || (q.Category.HasValue() && q.Category!.Contains(searchString))
-                    || (q.Description.HasValue() && q.Description!.Contains(searchString)));
+                    q.PlatformInfoId == message.PlatformInfoId
+                    && (q.SearchIndex != null && q.SearchIndex.Contains(searchFor)));
+            }
+            else
+            {
+                query = query.Where(q => q.PlatformInfoId == message.PlatformInfoId);
             }
 
             if (!string.IsNullOrEmpty(message.SortOrder))
@@ -136,14 +176,13 @@ public static class PlatformProductFlow
                 .ProjectTo<ListModel>(_configuration)
                 .PaginatedListAsync(pageNumber, pageSize);
 
-            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(q => q.Id == message.PlatformInfoId, cancellationToken: token);
-
             var model = new ListResult
             {
+                PlatformInfoId = message.PlatformInfoId,
                 CurrentFilter = searchString,
                 SearchText = searchString,
                 SortOrder = message.SortOrder,
-                Platform = platform ?? new(),
+                Platform = platform,
                 Results = results ?? []
             };
 
@@ -167,7 +206,7 @@ public static class PlatformProductFlow
         public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
     }
 
-    internal sealed class CreateQueryValidator : AbstractValidator<CreateQuery>
+    public sealed class CreateQueryValidator : AbstractValidator<CreateQuery>
     {
         public CreateQueryValidator()
         {
@@ -175,15 +214,26 @@ public static class PlatformProductFlow
         }
     }
 
-    public sealed record CreateCommand : Model, IRequest<Result<Ulid>>
-    {
-        public PlatformInfo Platform { get; set; } = new();
-    }
+    public sealed record CreateCommand : Model, IRequest<Result<Ulid>> { }
 
-    internal sealed class CreateCommandValidator : ModelValidator<CreateCommand>
+    public sealed class CreateCommandValidator : ModelValidator<CreateCommand>
     {
-        public CreateCommandValidator() : base()
+        public CreateCommandValidator(PlatformContext dbContext) : base()
         {
+            RuleFor(x => x.PlatformInfoId).MustAsync(async (id, cancellation) =>
+            {
+                bool exists = await dbContext.Set<PlatformInfo>().AnyAsync(x => x.Id == id, cancellation);
+                return exists;
+            })
+            .WithMessage(m => Messages.INVALID_PLATFORM_ID.Replace("{0}", m.PlatformInfoId.ToString()));
+
+            RuleFor(x => x).MustAsync(async (model, cancellation) =>
+            {
+                bool exists = await IsDuplicateNameAsync(dbContext, model.Name, model.PlatformInfoId);
+                return !exists;
+            })
+            .WithMessage(x => Messages.DUPLICATE_PLATFORMPRODUCT_NAME.Replace("{0}", x.Name.ToString()))
+            .WithName(nameof(CreateCommand.Name));
         }
     }
 
@@ -203,6 +253,7 @@ public static class PlatformProductFlow
                 return PlatformNotFound(message.PlatformInfoId);
 
             var record = CreateNew(platform);
+
             return Result.Ok(record);
         }
     }
@@ -232,9 +283,17 @@ public static class PlatformProductFlow
                 Name = message.Name.Trim(),
                 Description = message.Description?.Trim(),
                 Label = message.Label.Trim(),
-                Category = message.Category.Trim(),
+                Category = message.Category?.Trim(),
                 Remark = message.Remark?.Trim(),
-                CreatedDT = DateTime.UtcNow
+                SearchIndex = message.SearchIndex,
+                CreatedDT = DateTime.UtcNow,
+
+                CostBasedOn = message.CostBasedOn?.Trim(),
+                CostDriver = message.CostDriver?.Trim(),
+                Limitations = message.Limitations?.Trim(),
+                AboutURL = message.AboutURL?.Trim(),
+                PricingURL = message.PricingURL?.Trim(),
+                PricingTier = message.PricingTier?.Trim(),
             };
 
             await _dbcontext.Set<PlatformProduct>().AddAsync(record, token);
@@ -247,12 +306,9 @@ public static class PlatformProductFlow
     // UPDATE
     //
 
-    public sealed record UpdateQuery : IRequest<Result<UpdateCommand>>
-    {
-        public Ulid Id { get; init; }
-    }
+    public sealed record UpdateQuery : IRequest<Result<UpdateCommand>> { public Ulid Id { get; init; } }
 
-    internal sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
+    public sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
     {
         public UpdateQueryValidator()
         {
@@ -260,12 +316,28 @@ public static class PlatformProductFlow
         }
     }
 
-    public record UpdateCommand : Model, IRequest<Result>
-    {
-        public PlatformInfo Platform { get; set; } = new();
-    }
+    public record UpdateCommand : Model, IRequest<Result> { }
 
-    internal class UpdateCommandValidator : ModelValidator<UpdateCommand> { }
+    public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
+    {
+        public UpdateCommandValidator(PlatformContext dbContext)
+        {
+            RuleFor(x => x.PlatformInfoId).MustAsync(async (id, cancellation) =>
+            {
+                bool exists = await dbContext.Set<PlatformInfo>().AnyAsync(x => x.Id == id, cancellation);
+                return exists;
+            })
+            .WithMessage(m => Messages.INVALID_PLATFORM_ID.Replace("{0}", m.PlatformInfoId.ToString()));
+
+            RuleFor(x => x).MustAsync(async (model, cancellation) =>
+            {
+                bool exists = await IsDuplicateNameAsync(dbContext, model.Name, model.PlatformInfoId, model.Id);
+                return !exists;
+            })
+            .WithMessage(x => Messages.DUPLICATE_PLATFORMPRODUCT_NAME.Replace("{0}", x.Name.ToString()))
+            .WithName(nameof(CreateCommand.Name));
+        }
+    }
 
     internal class UpdateCommandMapping : Profile
     {
@@ -291,13 +363,15 @@ public static class PlatformProductFlow
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<UpdateCommand>(_configuration)
                 .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
-            if (record == null)
+
+            if (record == null) 
                 return RecordNotFound(message.Id);
 
             var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([record.PlatformInfoId], cancellationToken: token);
             if (platform is null)
                 return PlatformNotFound(record.PlatformInfoId);
-            record.Platform = platform;
+            //else
+            //    record.Platform = platform;
 
             return Result.Ok(record);
         }
@@ -318,15 +392,23 @@ public static class PlatformProductFlow
             if (record is null)
                 return RecordNotFound(message.Id);
 
-            if (await IsDuplicateNameAsync(_dbcontext, message.Name, message.PlatformInfoId))
+            if (await IsDuplicateNameAsync(_dbcontext, message.Name, message.PlatformInfoId, record.Id))
                 return DuplicateRecordFound(message.Name);
 
             record.Name = message.Name.Trim();
             record.Description = message.Description?.Trim();
             record.Label = message.Label.Trim();
-            record.Category = message.Category.Trim();
+            record.Category = message.Category?.Trim();
             record.Remark = message.Remark?.Trim();
+            record.SearchIndex = message.SearchIndex;
             record.ModifiedDT = DateTime.UtcNow;
+
+            record.CostBasedOn = message.CostBasedOn?.Trim();
+            record.CostDriver = message.CostDriver?.Trim();
+            record.Limitations = message.Limitations?.Trim();
+            record.AboutURL = message.AboutURL?.Trim();
+            record.PricingURL = message.PricingURL?.Trim();
+            record.PricingTier = message.PricingTier?.Trim();
 
             _dbcontext.Set<PlatformProduct>().Update(record);
             await _dbcontext.SaveChangesAsync(token);
@@ -338,12 +420,9 @@ public static class PlatformProductFlow
     // DELETE
     //
 
-    public sealed record DeleteQuery : IRequest<Result<DeleteCommand>>
-    {
-        public Ulid Id { get; init; }
-    }
+    public sealed record DeleteQuery : IRequest<Result<DeleteCommand>> { public Ulid Id { get; init; } }
 
-    internal class DeleteQueryValidator : AbstractValidator<DeleteQuery>
+    public class DeleteQueryValidator : AbstractValidator<DeleteQuery>
     {
         public DeleteQueryValidator()
         {
@@ -351,16 +430,13 @@ public static class PlatformProductFlow
         }
     }
 
-    public sealed record DeleteCommand : Model, IRequest<Result>
-    {
-        public PlatformInfo Platform { get; set; } = new();
-    }
+    public sealed record DeleteCommand : Model, IRequest<Result> { }
 
-    internal sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
+    public sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
     {
         public DeleteCommandValidator()
         {
-            RuleFor(m => m.Id).NotNull();
+            RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
@@ -385,16 +461,18 @@ public static class PlatformProductFlow
         public async Task<Result<DeleteCommand>> Handle(DeleteQuery message, CancellationToken token)
         {
             var record = await _dbcontext.Set<PlatformProduct>()
-               .Include(i => i.PlatformInfo)
-               .ProjectTo<DeleteCommand>(_configuration)
-               .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
+                .Include(i => i.PlatformInfo)
+                .ProjectTo<DeleteCommand>(_configuration)
+                .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
+
             if (record == null)
                 return RecordNotFound(message.Id);
 
             var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([record.PlatformInfoId], cancellationToken: token);
             if (platform is null)
                 return PlatformNotFound(record.PlatformInfoId);
-            record.Platform = platform;
+            //else
+            //    record.Platform = platform;
 
             return Result.Ok(record);
         }
@@ -437,11 +515,11 @@ public static class PlatformProductFlow
         public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
     }
 
-    internal sealed class ImportQueryValidator : AbstractValidator<ImportQuery>
+    public sealed class ImportQueryValidator : AbstractValidator<ImportQuery>
     {
         public ImportQueryValidator()
         {
-            RuleFor(m => m.PlatformInfoId).NotNull().NotEmpty();
+            RuleFor(m => m.PlatformInfoId).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
@@ -457,11 +535,11 @@ public static class PlatformProductFlow
         public List<ImportModel> Items { get; set; } = [];
     }
 
-    internal sealed class ImportCommandValidator : AbstractValidator<ImportCommand>
+    public sealed class ImportCommandValidator : AbstractValidator<ImportCommand>
     {
         public ImportCommandValidator()
         {
-            RuleFor(m => m.PlatformInfoId).NotNull();
+            RuleFor(m => m.PlatformInfoId).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
@@ -484,38 +562,36 @@ public static class PlatformProductFlow
                 return PlatformNotFound(message.PlatformInfoId);
 
             var searchString = message.SearchText ?? message.CurrentFilter;
-            List<ImportModel> Services = await GetAzureServicesAsync(platform.Provider.ToString(), message.PlatformInfoId, searchString);
+            List<ImportModel> regions = await GetAzureProductsAsync(platform.Provider.ToString(), message.PlatformInfoId, searchString);
             
             if (!string.IsNullOrEmpty(searchString))
             {
-                Services = Services.Where(q =>
-                    q.Name.Contains(searchString, StringComparison.InvariantCultureIgnoreCase)
-                    || q.Label.Contains(searchString, StringComparison.InvariantCultureIgnoreCase)
-                    ).ToList();
+                var searchFor = searchString.ToLowerInvariant();
+                regions = regions.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor)).ToList();
             }
 
-            Services = [.. Services.OrderBy(o => o.Name)];
+            regions = [.. regions.OrderBy(o => o.Name)];
             int pageSize = EntityListFlow.PageSize;
             int pageNumber = message.Page ?? 1;
 
             return new ImportResult()
             {
+                Platform = platform,
                 CurrentFilter = searchString,
                 SearchText = searchString,
                 SortOrder = message.SortOrder,
-                Platform = platform,
                 Results = new PaginatedList<ImportModel>(
-                    Services.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
-                    Services.Count,
+                    regions.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
+                    regions.Count,
                     pageNumber,
                     pageSize)
             };
         }
 
-        private async Task<List<ImportModel>> GetAzureServicesAsync(string platform, Ulid platformInfoId, string searchString)
+        private async Task<List<ImportModel>> GetAzureProductsAsync(string platform, Ulid platformInfoId, string searchString)
         {
             List<ImportModel> result = [];
-
+            
             var service = new AzurePricingService(_options);
             var pricing = await service.GetProductsAsync("", "", "", searchString);
 
@@ -524,16 +600,16 @@ public static class PlatformProductFlow
 
             foreach (var item in pricing.Items ?? [])
             {
-                if (item is null || string.IsNullOrEmpty(item.ServiceName))
+                if (item is null || string.IsNullOrEmpty(item.ProductName))
                     continue;
 
                 result.Add(new ImportModel()
                 {
                     Id = Ulid.NewUlid(),
                     PlatformInfoId = platformInfoId,
-                    Name = item.ServiceName,
-                    Label = item.ServiceName,
-                    Category = item.ServiceFamily ?? string.Empty
+                    Name = item.ProductName,
+                    Label = item.ProductName,
+                    Category = item.ServiceFamily ?? string.Empty,
                 });
             }
 
@@ -569,12 +645,19 @@ public static class PlatformProductFlow
                     {
                         Id = Ulid.NewUlid(),
                         PlatformInfo = platform,
-                        Name = item.Name,
-                        Label = item.Label,
-                        Category = item.Category,
-                        Description = item.Description,
-                        Remark = item.Remark,
-                        CreatedDT = DateTime.UtcNow
+                        Name = item.Name.Trim(),
+                        Label = item.Label.Trim(),
+                        Category = item.Category.Trim(),
+                        Description = item.Description?.Trim(),
+                        Remark = item.Remark?.Trim(),
+                        CreatedDT = DateTime.UtcNow,
+
+                        CostBasedOn = item.CostBasedOn,
+                        CostDriver = item.CostDriver,
+                        Limitations = item.Limitations,
+                        AboutURL = item.AboutURL,
+                        PricingURL = item.PricingURL,
+                        PricingTier = item.PricingTier
                     };
                     await _dbcontext.Set<PlatformProduct>().AddAsync(record, token);
                     changes = true;
