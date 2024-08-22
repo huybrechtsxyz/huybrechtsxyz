@@ -37,9 +37,9 @@ public class PlatformContext : FeatureContext
 
     public DbSet<PlatformRegion> Regions { get; set; }
 
-    //public DbSet<PlatformProduct> Products { get; set; }
+    public DbSet<PlatformService> Services { get; set; }
 
-    //public DbSet<PlatformService> Services { get; set; }
+    //public DbSet<PlatformProduct> Products { get; set; }
 
     //public DbSet<PlatformRate> Rates { get; set; }
 

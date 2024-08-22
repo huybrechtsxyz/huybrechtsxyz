@@ -1,5 +1,6 @@
+using FluentValidation;
+using FluentValidation.Results;
 using Huybrechts.App.Web;
-using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,49 +14,71 @@ namespace Huybrechts.Web.Pages.Features.Platform.Service;
 public class CreateModel : PageModel
 {
     private readonly IMediator _mediator;
+    private readonly IValidator<Flow.CreateQuery> _getValidator;
+    private readonly IValidator<Flow.CreateCommand> _postValidator;
 
     [BindProperty]
     public Flow.CreateCommand Data { get; set; }
 
-    public PlatformInfo Platform { get; set; } = new();
-
-    public IList<PlatformRegion> Regions { get; set; } = [];
-
-    public IList<PlatformProduct> Products { get; set; } = [];
-
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    public CreateModel(IMediator mediator)
+    public CreateModel(IMediator mediator, 
+        IValidator<Flow.CreateQuery> getValidator, 
+        IValidator<Flow.CreateCommand> postValidator)
     {
         _mediator = mediator;
         Data = new();
+        _getValidator = getValidator;
+        _postValidator = postValidator;
     }
 
     public async Task<IActionResult> OnGetAsync(Ulid PlatformInfoId)
     {
-        var result = await _mediator.Send(request: new Flow.CreateQuery
+        try
         {
-            PlatformInfoId = PlatformInfoId
-        });
-        if (result.IsFailed)
-        {
-            StatusMessage = result.Errors[0].Message;
-            return this.RedirectToPage(nameof(Index));
-        }
+            Flow.CreateQuery message = new() { PlatformInfoId = PlatformInfoId };
 
-        Platform = result.Value.Platform;
-        Data = result.Value.Item;
-        return Page();
+            ValidationResult state = await _getValidator.ValidateAsync(message);
+            if (!state.IsValid)
+                return BadRequest(state);
+
+            var result = await _mediator.Send(message) ?? new();
+            if (result.HasStatusMessage())
+                StatusMessage = result.ToStatusMessage();
+
+            if (result.IsFailed)
+                return RedirectToPage(nameof(Index), new { platformInfoId = PlatformInfoId });
+
+            Data = result.Value;
+            return Page();
+        }
+        catch (Exception)
+        {
+            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
+        }
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var result = await _mediator.Send(Data);
-        if (result.IsFailed)
+        try
         {
-            StatusMessage = result.Errors[0].Message;
+            ValidationResult state = await _postValidator.ValidateAsync(Data);
+            if (!state.IsValid)
+            {
+                state.AddToModelState(ModelState, nameof(Data) + ".");
+                return Page();
+            }
+
+            var result = await _mediator.Send(Data);
+            if (result.HasStatusMessage())
+                StatusMessage = result.ToStatusMessage();
+
+            return RedirectToPage(nameof(Index), new { platformInfoId = Data.PlatformInfoId });
         }
-        return this.RedirectToPage(nameof(Index));
+        catch (Exception)
+        {
+            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
+        }
     }
 }

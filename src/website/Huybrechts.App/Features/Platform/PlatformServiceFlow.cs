@@ -8,11 +8,9 @@ using Huybrechts.App.Services;
 using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using StackExchange.Profiling.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
-using static Huybrechts.App.Services.AzurePricingService;
 
 namespace Huybrechts.App.Features.Platform;
 
@@ -33,35 +31,17 @@ public static class PlatformServiceFlow
 
         [Display(Name = nameof(Label), ResourceType = typeof(Localization))]
         public string Label { get; set; } = string.Empty;
-
+        
         [Display(Name = nameof(Category), ResourceType = typeof(Localization))]
         public string Category { get; set; } = string.Empty;
 
         [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
         public string? Description { get; set; }
 
-        [Display(Name = nameof(CostDriver), ResourceType = typeof(Localization))]
-        public string? CostDriver { get; set; }
-
-        [Display(Name = nameof(CostBasedOn), ResourceType = typeof(Localization))]
-        public string? CostBasedOn { get; set; }
-
-        [Display(Name = nameof(Limitations), ResourceType = typeof(Localization))]
-        public string? Limitations { get; set; }
-
-        [DataType(DataType.Url)]
-        [Display(Name = nameof(AboutURL), ResourceType = typeof(Localization))]
-        public string? AboutURL { get; set; }
-
-        [DataType(DataType.Url)]
-        [Display(Name = nameof(PricingURL), ResourceType = typeof(Localization))]
-        public string? PricingURL { get; set; }
-
-        [Display(Name = nameof(PricingTier), ResourceType = typeof(Localization))]
-        public string? PricingTier { get; set; }
-
         [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
         public string? Remark { get; set; }
+
+        public string SearchIndex => $"{Name}~{Label}~{Category}~{Description}".ToLowerInvariant();
     }
 
     public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -72,28 +52,21 @@ public static class PlatformServiceFlow
             RuleFor(m => m.PlatformInfoId).NotNull().NotEmpty();
             RuleFor(m => m.Name).NotNull().Length(1, 128);
             RuleFor(m => m.Label).Length(1, 128);
-            RuleFor(m => m.Category).Length(1, 128);
+            RuleFor(m => m.Category).Length(0, 128);
             RuleFor(m => m.Description).Length(1, 256);
-
-            RuleFor(m => m.CostDriver).Length(1, 256);
-            RuleFor(m => m.CostBasedOn).Length(1, 128);
-            RuleFor(m => m.Limitations).Length(1, 512);
-            RuleFor(m => m.AboutURL).Length(1, 512);
-            RuleFor(m => m.PricingURL).Length(1, 512);
-            RuleFor(m => m.PricingTier).Length(1, 128);
         }
     }
 
-    private static Result PlatformNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORM_ID.Replace("{0}", id.ToString()));
+    private static Result PlatformNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORM_ID.Replace("{0}", id.ToString()));
 
-    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMSERVICE_ID.Replace("{0}", id.ToString()));
+    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORMSERVICE_ID.Replace("{0}", id.ToString()));
 
     private static Result DuplicateRecordFound(string name) => Result.Fail(Messages.DUPLICATE_PLATFORMSERVICE_NAME.Replace("{0}", name.ToString()));
 
     public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid platformInfoId, Ulid? currentId = null)
     {
         name = name.ToLower().Trim();
-        return await context.Set<PlatformRegion>()
+        return await context.Set<PlatformService>()
             .AnyAsync(pr => pr.Name.ToLower() == name
                          && pr.PlatformInfoId == platformInfoId
                          && (!currentId.HasValue || pr.Id != currentId.Value));
@@ -103,9 +76,7 @@ public static class PlatformServiceFlow
     // LIST
     //
 
-    public sealed record ListModel : Model
-    {
-    }
+    public sealed record ListModel : Model { }
 
     internal sealed class ListMapping : Profile
     {
@@ -114,12 +85,18 @@ public static class PlatformServiceFlow
             .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
     }
 
-    public sealed class ListQuery : EntityListFlow.Query, IRequest<ListResult>
+    public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
     {
         public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
     }
 
-    internal sealed class ListValidator : AbstractValidator<ListQuery> { public ListValidator() { } }
+    public sealed class ListValidator : AbstractValidator<ListQuery> 
+    {
+        public ListValidator() 
+        { 
+            RuleFor(x => x.PlatformInfoId).NotEmpty().NotEqual(Ulid.Empty); 
+        } 
+    }
 
     public sealed class ListResult : EntityListFlow.Result<ListModel>
     {
@@ -130,56 +107,54 @@ public static class PlatformServiceFlow
 
     internal sealed class ListHandler :
         EntityListFlow.Handler<PlatformService, ListModel>,
-        IRequestHandler<ListQuery, ListResult>
+        IRequestHandler<ListQuery, Result<ListResult>>
     {
         public ListHandler(PlatformContext dbcontext, IConfigurationProvider configuration)
             : base(dbcontext, configuration)
         {
         }
 
-        public async Task<ListResult> Handle(ListQuery request, CancellationToken token)
+        public async Task<Result<ListResult>> Handle(ListQuery message, CancellationToken token)
         {
+            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(q => q.Id == message.PlatformInfoId, cancellationToken: token);
+            if (platform == null)
+                return PlatformNotFound(message.PlatformInfoId ?? Ulid.Empty);
+
             IQueryable<PlatformService> query = _dbcontext.Set<PlatformService>();
 
-            if (request.PlatformInfoId.HasValue)
-            {
-                query = query.Where(q => q.PlatformInfoId == request.PlatformInfoId);
-            }
-
-            var searchString = request.SearchText ?? request.CurrentFilter;
+            var searchString = message.SearchText ?? message.CurrentFilter;
             if (!string.IsNullOrEmpty(searchString))
             {
+                string searchFor = searchString.ToLowerInvariant();
                 query = query.Where(q =>
-                    q.Name.Contains(searchString)
-                    || (q.Category.HasValue() && q.Category!.Contains(searchString))
-                    || (q.Description.HasValue() && q.Description!.Contains(searchString)));
+                    q.PlatformInfoId == message.PlatformInfoId
+                    && (q.SearchIndex != null && q.SearchIndex.Contains(searchFor)));
+            }
+            else
+            {
+                query = query.Where(q => q.PlatformInfoId == message.PlatformInfoId);
             }
 
-            if (!string.IsNullOrEmpty(request.SortOrder))
+            if (!string.IsNullOrEmpty(message.SortOrder))
             {
-                query = query.OrderBy(request.SortOrder);
+                query = query.OrderBy(message.SortOrder);
             }
             else query = query.OrderBy(o => o.Name);
 
             int pageSize = EntityListFlow.PageSize;
-            int pageNumber = request.Page ?? 1;
+            int pageNumber = message.Page ?? 1;
             var results = await query
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<ListModel>(_configuration)
                 .PaginatedListAsync(pageNumber, pageSize);
 
-            var platform = await _dbcontext.Set<PlatformInfo>()
-                .Where(q => q.Id == request.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .FirstOrDefaultAsync(cancellationToken: token);
-
             var model = new ListResult
             {
-                PlatformInfoId = request.PlatformInfoId,
+                PlatformInfoId = message.PlatformInfoId,
                 CurrentFilter = searchString,
                 SearchText = searchString,
-                SortOrder = request.SortOrder,
-                Platform = platform ?? new(),
+                SortOrder = message.SortOrder,
+                Platform = platform,
                 Results = results ?? []
             };
 
@@ -191,18 +166,19 @@ public static class PlatformServiceFlow
     // CREATE
     //
 
-    public static CreateCommand CreateNew(Ulid? platformInfoId) => new()
+    public static CreateCommand CreateNew(PlatformInfo platform) => new()
     {
         Id = Ulid.NewUlid(),
-        PlatformInfoId = platformInfoId ?? Ulid.Empty
+        PlatformInfoId = platform.Id,
+        PlatformInfoName = platform.Name,
     };
 
-    public sealed record CreateQuery : IRequest<Result<CreateResult>>
+    public sealed record CreateQuery : IRequest<Result<CreateCommand>>
     {
         public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
     }
 
-    internal sealed class CreateQueryValidator : AbstractValidator<CreateQuery>
+    public sealed class CreateQueryValidator : AbstractValidator<CreateQuery>
     {
         public CreateQueryValidator()
         {
@@ -210,14 +186,30 @@ public static class PlatformServiceFlow
         }
     }
 
-    public record CreateResult
-    {
-        public CreateCommand Item { get; set; } = new();
+    public sealed record CreateCommand : Model, IRequest<Result<Ulid>> { }
 
-        public PlatformInfo Platform { get; set; } = new();
+    public sealed class CreateCommandValidator : ModelValidator<CreateCommand>
+    {
+        public CreateCommandValidator(PlatformContext dbContext) : base()
+        {
+            RuleFor(x => x.PlatformInfoId).MustAsync(async (id, cancellation) =>
+            {
+                bool exists = await dbContext.Set<PlatformInfo>().AnyAsync(x => x.Id == id, cancellation);
+                return exists;
+            })
+            .WithMessage(m => Messages.INVALID_PLATFORM_ID.Replace("{0}", m.PlatformInfoId.ToString()));
+
+            RuleFor(x => x).MustAsync(async (model, cancellation) =>
+            {
+                bool exists = await IsDuplicateNameAsync(dbContext, model.Name, model.PlatformInfoId);
+                return !exists;
+            })
+            .WithMessage(x => Messages.DUPLICATE_PLATFORM_NAME.Replace("{0}", x.Name.ToString()))
+            .WithName(nameof(CreateCommand.Name));
+        }
     }
 
-    internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateResult>>
+    internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCommand>>
     {
         private readonly PlatformContext _dbcontext;
 
@@ -226,31 +218,15 @@ public static class PlatformServiceFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result<CreateResult>> Handle(CreateQuery request, CancellationToken token)
+        public async Task<Result<CreateCommand>> Handle(CreateQuery message, CancellationToken token)
         {
-            PlatformInfo? platform = await _dbcontext.Set<PlatformInfo>()
-                .Where(q => q.Id == request.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .FirstOrDefaultAsync(token);
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([message.PlatformInfoId], cancellationToken: token);
             if (platform is null)
-                return PlatformNotFound(request.PlatformInfoId);
+                return PlatformNotFound(message.PlatformInfoId);
 
-            return Result.Ok(new CreateResult()
-            {
-                Item = CreateNew(request.PlatformInfoId),
-                Platform = platform
-            });
-        }
-    }
+            var record = CreateNew(platform);
 
-    public sealed record CreateCommand : Model, IRequest<Result<Ulid>>
-    {
-    }
-
-    internal sealed class CreateCommandValidator : ModelValidator<CreateCommand>
-    {
-        public CreateCommandValidator() : base()
-        {
+            return Result.Ok(record);
         }
     }
 
@@ -263,32 +239,26 @@ public static class PlatformServiceFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result<Ulid>> Handle(CreateCommand request, CancellationToken token)
+        public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
         {
-            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([request.PlatformInfoId], cancellationToken: token);
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([message.PlatformInfoId], cancellationToken: token);
             if (platform is null)
-                return PlatformNotFound(request.PlatformInfoId);
+                return PlatformNotFound(message.PlatformInfoId);
 
-            if (await IsDuplicateNameAsync(_dbcontext, request.Name, request.PlatformInfoId))
-                return DuplicateRecordFound(request.Name);
+            if (await IsDuplicateNameAsync(_dbcontext, message.Name, message.PlatformInfoId))
+                return DuplicateRecordFound(message.Name);
 
             var record = new PlatformService
             {
-                Id = request.Id,
+                Id = message.Id,
                 PlatformInfo = platform,
-                Name = request.Name.Trim(),
-                Description = request.Description?.Trim(),
-                Label = request.Label.Trim(),
-                Category = request.Category.Trim(),
-                Remark = request.Remark?.Trim(),
-                CreatedDT = DateTime.UtcNow,
-
-                CostBasedOn = request.CostBasedOn?.Trim(),
-                CostDriver = request.CostDriver?.Trim(),
-                Limitations = request.Limitations?.Trim(),
-                AboutURL = request.AboutURL?.Trim(),
-                PricingURL = request.PricingURL?.Trim(),
-                PricingTier = request.PricingTier?.Trim(),
+                Name = message.Name.Trim(),
+                Description = message.Description?.Trim(),
+                Label = message.Label.Trim(),
+                Category = message.Category?.Trim(),
+                Remark = message.Remark?.Trim(),
+                SearchIndex = message.SearchIndex,
+                CreatedDT = DateTime.UtcNow
             };
 
             await _dbcontext.Set<PlatformService>().AddAsync(record, token);
@@ -301,12 +271,9 @@ public static class PlatformServiceFlow
     // UPDATE
     //
 
-    public sealed record UpdateQuery : IRequest<Result<UpdateCommand>>
-    {
-        public Ulid Id { get; init; }
-    }
+    public sealed record UpdateQuery : IRequest<Result<UpdateCommand>> { public Ulid Id { get; init; } }
 
-    internal sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
+    public sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
     {
         public UpdateQueryValidator()
         {
@@ -314,13 +281,27 @@ public static class PlatformServiceFlow
         }
     }
 
-    public record UpdateCommand : Model, IRequest<Result>
-    {
-        public PlatformInfo Platform { get; set; } = new();
-    }
+    public record UpdateCommand : Model, IRequest<Result> { }
 
-    internal class UpdateCommandValidator : ModelValidator<UpdateCommand>
+    public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
     {
+        public UpdateCommandValidator(PlatformContext dbContext)
+        {
+            RuleFor(x => x.PlatformInfoId).MustAsync(async (id, cancellation) =>
+            {
+                bool exists = await dbContext.Set<PlatformInfo>().AnyAsync(x => x.Id == id, cancellation);
+                return exists;
+            })
+            .WithMessage(m => Messages.INVALID_PLATFORM_ID.Replace("{0}", m.PlatformInfoId.ToString()));
+
+            RuleFor(x => x).MustAsync(async (model, cancellation) =>
+            {
+                bool exists = await IsDuplicateNameAsync(dbContext, model.Name, model.PlatformInfoId, model.Id);
+                return !exists;
+            })
+            .WithMessage(x => Messages.DUPLICATE_PLATFORM_NAME.Replace("{0}", x.Name.ToString()))
+            .WithName(nameof(CreateCommand.Name));
+        }
     }
 
     internal class UpdateCommandMapping : Profile
@@ -341,21 +322,22 @@ public static class PlatformServiceFlow
             _configuration = configuration;
         }
 
-        public async Task<Result<UpdateCommand>> Handle(UpdateQuery request, CancellationToken token)
+        public async Task<Result<UpdateCommand>> Handle(UpdateQuery message, CancellationToken token)
         {
             var record = await _dbcontext.Set<PlatformService>()
-                .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<UpdateCommand>(_configuration)
-                .SingleOrDefaultAsync(token);
-            if (record == null) 
-                return RecordNotFound(request.Id);
+                .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
 
-            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(q => q.Id == record.PlatformInfoId, cancellationToken: token);
+            if (record == null) 
+                return RecordNotFound(message.Id);
+
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([record.PlatformInfoId], cancellationToken: token);
             if (platform is null)
                 return PlatformNotFound(record.PlatformInfoId);
+            //else
+            //    record.Platform = platform;
 
-            record.Platform = platform;
             return Result.Ok(record);
         }
     }
@@ -369,28 +351,22 @@ public static class PlatformServiceFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result> Handle(UpdateCommand command, CancellationToken token)
+        public async Task<Result> Handle(UpdateCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformService>().FindAsync([command.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<PlatformService>().FindAsync([message.Id], cancellationToken: token);
             if (record is null)
-                return RecordNotFound(command.Id);
+                return RecordNotFound(message.Id);
 
-            if (await IsDuplicateNameAsync(_dbcontext, command.Name, command.PlatformInfoId))
-                return DuplicateRecordFound(command.Name);
+            if (await IsDuplicateNameAsync(_dbcontext, message.Name, message.PlatformInfoId, record.Id))
+                return DuplicateRecordFound(message.Name);
 
-            record.Name = command.Name.Trim();
-            record.Description = command.Description?.Trim();
-            record.Label = command.Label.Trim();
-            record.Category = command.Category.Trim();
-            record.Remark = command.Remark?.Trim();
+            record.Name = message.Name.Trim();
+            record.Description = message.Description?.Trim();
+            record.Label = message.Label.Trim();
+            record.Category = message.Category?.Trim();
+            record.Remark = message.Remark?.Trim();
+            record.SearchIndex = message.SearchIndex;
             record.ModifiedDT = DateTime.UtcNow;
-
-            record.CostBasedOn = command.CostBasedOn?.Trim();
-            record.CostDriver = command.CostDriver?.Trim();
-            record.Limitations = command.Limitations?.Trim();
-            record.AboutURL = command.AboutURL?.Trim();
-            record.PricingURL = command.PricingURL?.Trim();
-            record.PricingTier = command.PricingTier?.Trim();
 
             _dbcontext.Set<PlatformService>().Update(record);
             await _dbcontext.SaveChangesAsync(token);
@@ -402,12 +378,9 @@ public static class PlatformServiceFlow
     // DELETE
     //
 
-    public sealed record DeleteQuery : IRequest<Result<DeleteCommand>>
-    {
-        public Ulid Id { get; init; }
-    }
+    public sealed record DeleteQuery : IRequest<Result<DeleteCommand>> { public Ulid Id { get; init; } }
 
-    internal class DeleteQueryValidator : AbstractValidator<DeleteQuery>
+    public class DeleteQueryValidator : AbstractValidator<DeleteQuery>
     {
         public DeleteQueryValidator()
         {
@@ -415,16 +388,13 @@ public static class PlatformServiceFlow
         }
     }
 
-    public sealed record DeleteCommand : Model, IRequest<Result>
-    {
-        public PlatformInfo Platform { get; set; } = new();
-    }
+    public sealed record DeleteCommand : Model, IRequest<Result> { }
 
-    internal sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
+    public sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
     {
         public DeleteCommandValidator()
         {
-            RuleFor(m => m.Id).NotNull();
+            RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
@@ -446,21 +416,22 @@ public static class PlatformServiceFlow
             _configuration = configuration;
         }
 
-        public async Task<Result<DeleteCommand>> Handle(DeleteQuery request, CancellationToken token)
+        public async Task<Result<DeleteCommand>> Handle(DeleteQuery message, CancellationToken token)
         {
             var record = await _dbcontext.Set<PlatformService>()
-                .Where(s => s.Id == request.Id)
                 .Include(i => i.PlatformInfo)
                 .ProjectTo<DeleteCommand>(_configuration)
-                .FirstOrDefaultAsync(token);
-            if (record == null)
-                return RecordNotFound(request.Id);
+                .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
 
-            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(q => q.Id == record.PlatformInfoId, cancellationToken: token);
+            if (record == null)
+                return RecordNotFound(message.Id);
+
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([record.PlatformInfoId], cancellationToken: token);
             if (platform is null)
                 return PlatformNotFound(record.PlatformInfoId);
+            //else
+            //    record.Platform = platform;
 
-            record.Platform = platform;
             return Result.Ok(record);
         }
     }
@@ -474,11 +445,11 @@ public static class PlatformServiceFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result> Handle(DeleteCommand command, CancellationToken token)
+        public async Task<Result> Handle(DeleteCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformService>().FindAsync([command.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<PlatformService>().FindAsync([message.Id], cancellationToken: token);
             if (record is null)
-                return RecordNotFound(command.Id);
+                return RecordNotFound(message.Id);
 
             _dbcontext.Set<PlatformService>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);
@@ -497,22 +468,22 @@ public static class PlatformServiceFlow
         public bool IsSelected { get; set; }
     }
 
-    public sealed class ImportQuery : EntityListFlow.Query, IRequest<ImportResult>
+    public sealed class ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
     {
         public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
     }
 
-    internal sealed class ImportQueryValidator : AbstractValidator<ImportQuery>
+    public sealed class ImportQueryValidator : AbstractValidator<ImportQuery>
     {
         public ImportQueryValidator()
         {
-            RuleFor(m => m.PlatformInfoId).NotNull().NotEmpty();
+            RuleFor(m => m.PlatformInfoId).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
     public sealed class ImportResult : EntityListFlow.Result<ImportModel>
     {
-        public PlatformInfo Platform = new();
+        public PlatformInfo Platform { get; set; } = new();
     }
 
     public sealed record ImportCommand : IRequest<Result>
@@ -522,17 +493,17 @@ public static class PlatformServiceFlow
         public List<ImportModel> Items { get; set; } = [];
     }
 
-    internal sealed class ImportCommandValidator : AbstractValidator<ImportCommand>
+    public sealed class ImportCommandValidator : AbstractValidator<ImportCommand>
     {
         public ImportCommandValidator()
         {
-            RuleFor(m => m.PlatformInfoId).NotNull();
+            RuleFor(m => m.PlatformInfoId).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
     internal sealed class ImportQueryHandler :
        EntityListFlow.Handler<PlatformService, ImportModel>,
-       IRequestHandler<ImportQuery, ImportResult>
+       IRequestHandler<ImportQuery, Result<ImportResult>>
     {
         private readonly PlatformImportOptions _options;
 
@@ -542,44 +513,34 @@ public static class PlatformServiceFlow
             _options = options;
         }
 
-        public async Task<ImportResult> Handle(ImportQuery request, CancellationToken token)
+        public async Task<Result<ImportResult>> Handle(ImportQuery message, CancellationToken token)
         {
-            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(f => f.Id == request.PlatformInfoId, cancellationToken: token);
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([message.PlatformInfoId], cancellationToken: token);
             if (platform is null)
-                return new ImportResult()
-                {
-                    Platform = new(),
-                    CurrentFilter = request.CurrentFilter,
-                    SearchText = request.SearchText,
-                    SortOrder = request.SortOrder,
-                    Results = []
-                };
+                return PlatformNotFound(message.PlatformInfoId);
 
-            var searchString = request.SearchText ?? request.CurrentFilter;
-            List<ImportModel> Services = await GetAzureServicesAsync(platform.Provider.ToString(), request.PlatformInfoId, searchString);
+            var searchString = message.SearchText ?? message.CurrentFilter;
+            List<ImportModel> regions = await GetAzureServicesAsync(platform.Provider.ToString(), message.PlatformInfoId, searchString);
             
             if (!string.IsNullOrEmpty(searchString))
             {
-                Services = Services.Where(q =>
-                    q.Name.Contains(searchString, StringComparison.InvariantCultureIgnoreCase)
-                    || q.Label.Contains(searchString, StringComparison.InvariantCultureIgnoreCase)
-                    || (q.Category.HasValue() && q.Category!.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
-                    ).ToList();
+                var searchFor = searchString.ToLowerInvariant();
+                regions = regions.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor)).ToList();
             }
 
-            Services = [.. Services.OrderBy(o => o.Name)];
+            regions = [.. regions.OrderBy(o => o.Name)];
             int pageSize = EntityListFlow.PageSize;
-            int pageNumber = request.Page ?? 1;
+            int pageNumber = message.Page ?? 1;
 
             return new ImportResult()
             {
                 Platform = platform,
                 CurrentFilter = searchString,
                 SearchText = searchString,
-                SortOrder = request.SortOrder,
+                SortOrder = message.SortOrder,
                 Results = new PaginatedList<ImportModel>(
-                    Services.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
-                    Services.Count,
+                    regions.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
+                    regions.Count,
                     pageNumber,
                     pageSize)
             };
@@ -588,7 +549,7 @@ public static class PlatformServiceFlow
         private async Task<List<ImportModel>> GetAzureServicesAsync(string platform, Ulid platformInfoId, string searchString)
         {
             List<ImportModel> result = [];
-
+            
             var service = new AzurePricingService(_options);
             var pricing = await service.GetServicesAsync("", "", "", searchString);
 
@@ -606,14 +567,8 @@ public static class PlatformServiceFlow
                     PlatformInfoId = platformInfoId,
                     Name = item.ServiceName,
                     Label = item.ServiceName,
-                    Category = item.ServiceFamily ?? string.Empty,
-                    //CostBasedOn = ,
-                    //CostDriver = ,
-                    //Limitations = ,
-                    //AboutURL =
-                    //PricingURL = ,
-                    //PricingTier = item.SkuName
-                }); ;
+                    Category = item.ServiceFamily ?? string.Empty
+                });
             }
 
             return result;
@@ -629,17 +584,17 @@ public static class PlatformServiceFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result> Handle(ImportCommand command, CancellationToken token)
+        public async Task<Result> Handle(ImportCommand message, CancellationToken token)
         {
-            if (command is null || command.Items is null || command.Items.Count < 0)
+            if (message is null || message.Items is null || message.Items.Count < 0)
                 return Result.Ok();
 
-            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([command.PlatformInfoId], cancellationToken: token);
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([message.PlatformInfoId], cancellationToken: token);
             if (platform is null)
-                return PlatformNotFound(command.PlatformInfoId);
+                return PlatformNotFound(message.PlatformInfoId);
 
             bool changes = false;
-            foreach (var item in command.Items)
+            foreach (var item in message.Items)
             {
                 var query = await _dbcontext.Set<PlatformService>().FirstOrDefaultAsync(q => q.PlatformInfoId == platform.Id && q.Name == item.Name, cancellationToken: token);
                 if (query is null)
@@ -648,19 +603,12 @@ public static class PlatformServiceFlow
                     {
                         Id = Ulid.NewUlid(),
                         PlatformInfo = platform,
-                        Name = item.Name,
-                        Label = item.Label,
-                        Category = item.Category,
-                        Description = item.Description,
-                        Remark = item.Remark,
-                        CreatedDT = DateTime.UtcNow,
-
-                        CostBasedOn = item.CostBasedOn,
-                        CostDriver = item.CostDriver,
-                        Limitations = item.Limitations,
-                        AboutURL = item.AboutURL,
-                        PricingURL = item.PricingURL,
-                        PricingTier = item.PricingTier
+                        Name = item.Name.Trim(),
+                        Label = item.Label.Trim(),
+                        Category = item.Category.Trim(),
+                        Description = item.Description?.Trim(),
+                        Remark = item.Remark?.Trim(),
+                        CreatedDT = DateTime.UtcNow
                     };
                     await _dbcontext.Set<PlatformService>().AddAsync(record, token);
                     changes = true;

@@ -29,7 +29,7 @@
                 </div>
                 <div class="col-md-9 d-flex gap-1 align-items-center justify-content-md-end mb-3">
                     <input type="hidden" name="platformInfoId" value="@Model.Data.Platform.Id"/>
-                    <input type="text" name="platformInfoName" value="@Model.Data.Platform.Name" disabled />
+                    <input type="text" name="platformInfoName" value="@Model.Data.Platform.Name" class="form-control" disabled />
                     <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="@SL["Search..."]" class="form-control" autocomplete="off" />
                     <input type="submit" value="@SL["Search"]" class="btn btn-primary" /> |
                     <a asp-page="Import" asp-route-platformInfoId="@Model.Data.Platform.Id" class="btn btn-secondary text-nowrap" type="button" role="button">@SL["Clear Filter"]</a>
