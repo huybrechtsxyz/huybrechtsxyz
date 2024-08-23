@@ -2,7 +2,7 @@
 @inject IStringLocalizer<Localization> SL
 @model Huybrechts.Web.Pages.Features.Platform.Service.IndexModel
 @{
-    ViewData["CardTitle"] = SL["ServiceIndexTitle"];
+    ViewData["CardTitle"] = Model.Data.Platform.Name + " | " + SL["ServiceIndexTitle"];
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
@@ -16,6 +16,9 @@
         <div class="row">
             <form class="row row-cols-md-auto g-3 align-items-center">
                 <div class="col-md-3 d-flex gap-1 align-items-center mb-3">
+                    <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="/Features/Platform/Index" asp-route-platformInfoId="@Model.Data.Platform.Id">
+                        <i class="bi bi-arrow-up-circle-fill fs-5"></i>
+                    </a>
                     <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Create" asp-route-platformInfoId="@Model.Data.Platform.Id">
                         <i class="bi bi-plus-circle fs-5"></i>
                         <span class="vr"></span>

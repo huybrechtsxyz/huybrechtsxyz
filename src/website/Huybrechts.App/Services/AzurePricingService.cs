@@ -258,7 +258,7 @@ public class AzurePricingService
         /// "isPrimaryMeterRegion": true
         /// </summary>
         [JsonPropertyName("isPrimaryMeterRegion")]
-        public bool IsPrimaryRegion { get; set; }
+        public bool IsPrimaryMeterRegion { get; set; }
 
         /// <summary>
         /// "armSkuName":"Standard_D14"

@@ -207,9 +207,9 @@ namespace Huybrechts.App.Features.Platform {
         /// <summary>
         ///   Looks up a localized string similar to Mininum units.
         /// </summary>
-        public static string MininumUnits {
+        public static string MinimumUnits {
             get {
-                return ResourceManager.GetString("MininumUnits", resourceCulture);
+                return ResourceManager.GetString("MinimumUnits", resourceCulture);
             }
         }
         

@@ -71,8 +71,8 @@ public static class PlatformProductFlow
         {
             RuleFor(m => m.Id).NotNull().NotEmpty();
             RuleFor(m => m.PlatformInfoId).NotNull().NotEmpty();
-            RuleFor(m => m.Name).NotNull().Length(1, 128);
-            RuleFor(m => m.Label).Length(1, 128);
+            RuleFor(m => m.Name).NotEmpty().Length(1, 128);
+            RuleFor(m => m.Label).NotEmpty().Length(1, 128);
             RuleFor(m => m.Category).Length(0, 128);
             RuleFor(m => m.Description).Length(1, 256);
 
@@ -562,15 +562,15 @@ public static class PlatformProductFlow
                 return PlatformNotFound(message.PlatformInfoId);
 
             var searchString = message.SearchText ?? message.CurrentFilter;
-            List<ImportModel> regions = await GetAzureProductsAsync(platform.Provider.ToString(), message.PlatformInfoId, searchString);
+            List<ImportModel> records = await GetAzureProductsAsync(platform.Provider.ToString(), message.PlatformInfoId, searchString);
             
             if (!string.IsNullOrEmpty(searchString))
             {
                 var searchFor = searchString.ToLowerInvariant();
-                regions = regions.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor)).ToList();
+                records = records.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor)).ToList();
             }
 
-            regions = [.. regions.OrderBy(o => o.Name)];
+            records = [.. records.OrderBy(o => o.Name)];
             int pageSize = EntityListFlow.PageSize;
             int pageNumber = message.Page ?? 1;
 
@@ -581,8 +581,8 @@ public static class PlatformProductFlow
                 SearchText = searchString,
                 SortOrder = message.SortOrder,
                 Results = new PaginatedList<ImportModel>(
-                    regions.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
-                    regions.Count,
+                    records.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
+                    records.Count,
                     pageNumber,
                     pageSize)
             };

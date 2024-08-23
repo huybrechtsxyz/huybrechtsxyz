@@ -2,10 +2,9 @@
 @inject IStringLocalizer<Localization> SL
 @model Huybrechts.Web.Pages.Features.Platform.Rate.CreateModel
 @{
-    ViewData["CardTitle"] = SL["RateCreateTitle"];
-    //ViewData["ActivePage"] = ManageNavPages.Service;
+    ViewData["CardTitle"] = Model.Data.Product.Name + " | " + SL["RateCreateTitle"];
 }
-<partial name="_StatusMessage" for="StatusMessage" />
+<partial name="_StatusResult" for="StatusMessage" />
 <p class="text-info">
     @SL["RateCreateInfo"]
 </p>
@@ -14,36 +13,44 @@
     <div class="col-md-6">
         <form id="create-form" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input type="hidden" asp-for="Data.PlatformInfoId" />
+            <input type="hidden" asp-for="Data.PlatformProductId" />
+            <input type="hidden" asp-for="Data.PlatformProductLabel" />
             <input type="hidden" asp-for="Data.Id" />
             <div class="form-floating mb-3">
-                <input type="hidden" asp-for="Data.PlatformServiceId" />
                 <select asp-for="Data.PlatformRegionId"
-                        asp-items="Model.Regions?.Select(p => new SelectListItem
+                        asp-items="Model.Data.Regions?.Select(p => new SelectListItem
                                 {
                                     Value = p.Id.ToString(),
-                                    Text = p.Name
+                                    Text = p.Label
                                 }).ToList()"
-                        class="form-select" ></select>
+                        class="form-select" >
+                    <option id="@Ulid.Empty">@SL["Select"]</option>
+                </select>
                 <label asp-for="Data.PlatformRegionId" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <select asp-for="Data.PlatformProductId"
-                        asp-items="Model.Products?.Select(p => new SelectListItem
+                <select asp-for="Data.PlatformServiceId"
+                        asp-items="Model.Data.Services?.Select(p => new SelectListItem
                                 {
                                     Value = p.Id.ToString(),
-                                    Text = p.Name
+                                    Text = p.Label
                                 }).ToList()"
-                        class="form-select" ></select>
-                <label asp-for="Data.PlatformProductId" class="form-label"></label>
+                        class="form-select" >
+                    <option id="@Ulid.Empty">@SL["Select"]</option>
+                </select>
+                <label asp-for="Data.PlatformServiceId" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
                 <select asp-for="Data.CurrencyCode"
-                        asp-items="Model.Currencies?.Select(p => new SelectListItem
+                        asp-items="Model.Data.Currencies?.Select(p => new SelectListItem
                                 {
                                     Value = p,
                                     Text = p
                                 }).ToList()"
-                        class="form-select" ></select>
+                        class="form-select" >
+                    <option id="">@SL["Select"]</option>
+                </select>
                 <label asp-for="Data.CurrencyCode" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
@@ -92,9 +99,9 @@
                 <span asp-validation-for="Data.UnitPrice" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.MininumUnits" class="form-control" />
-                <label asp-for="Data.MininumUnits" class="form-label"></label>
-                <span asp-validation-for="Data.MininumUnits" class="text-danger"></span>
+                <input asp-for="Data.MinimumUnits" class="form-control" />
+                <label asp-for="Data.MinimumUnits" class="form-label"></label>
+                <span asp-validation-for="Data.MinimumUnits" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.UnitOfMeasure" class="form-control" />
@@ -112,7 +119,7 @@
                 <span asp-validation-for="Data.Remark" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <a class="w-30 btn btn-lg btn-secondary" asp-page="Index" asp-route-platformServiceId="@Model.Data.PlatformServiceId"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                <a class="w-30 btn btn-lg btn-secondary" asp-page="Index" asp-route-platformProductId="@Model.Data.PlatformProductId"><i class="bi bi-arrow-left-circle-fill"></i></a>
                 <button id="create-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
             </div>
         </form>
@@ -120,8 +127,10 @@
 </div>
 
 @section Breadcrumb {
-    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Service/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Services"]</a></li>
-    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Rate/Index" asp-route-platformServiceId="@Model.Data.PlatformServiceId">@SL["Rates"]</a></li>
+    <li class="breadcrumb-item">@Model.Data.Platform.Name</li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@Model.Data.Platform.Id">@SL["Products"]</a></li>
+    <li class="breadcrumb-item">@Model.Data.Product.Label</li>
+    <li class="breadcrumb-item">@SL["Rates"]</li>
 }
 
 @section Scripts {

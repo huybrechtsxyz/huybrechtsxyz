@@ -2,12 +2,11 @@
 @inject IStringLocalizer<Localization> SL
 @model Huybrechts.Web.Pages.Features.Platform.Rate.IndexModel
 @{
-    ViewData["CardTitle"] = SL["RateIndexTitle"];
-    //ViewData["ActivePage"] = ManageNavPages.Service;
+    ViewData["CardTitle"] = Model.Data.Product.Name + " | " + SL["RateIndexTitle"];
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
-<partial name="_StatusMessage" for="StatusMessage" />
+<partial name="_StatusResult" for="StatusMessage" />
 <p class="text-info">
     @SL["RateIndexInfo"]
 </p>
@@ -17,49 +16,73 @@
         <div class="row">
             <form class="row row-cols-md-auto g-3 align-items-center">
                 <div class="col-md-3 d-flex gap-1 align-items-center mb-3">
-                    <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Create" asp-route-platformServiceId="@Model.Data.PlatformServiceId">
+                    <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@Model.Data.Platform.Id">
+                        <i class="bi bi-arrow-up-circle-fill fs-5"></i>
+                    </a>
+                    <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Create" asp-route-platformProductId="@Model.Data.PlatformProductId">
                         <i class="bi bi-plus-circle fs-5"></i>
                         <span class="vr"></span>
                         @SL["Add New"]
                     </a>
-                    <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Import" asp-route-platformServiceId="@Model.Data.PlatformServiceId">
-                        <i class="bi bi-cloud-arrow-down-fill fs-5"></i>
-                        <span class="vr"></span>
-                        @SL["Import"]
-                    </a>
+                    @if (Model.Data.Platform.Provider != Core.Platform.PlatformProvider.None)
+                    {
+                        <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Import" asp-route-platformProductId="@Model.Data.PlatformProductId">
+                            <i class="bi bi-cloud-arrow-down-fill fs-5"></i>
+                            <span class="vr"></span>
+                            @SL["Import"]
+                        </a>
+                    }
                 </div>
                 <div class="col-md-9 d-flex gap-1 align-items-center justify-content-md-end mb-3">
-                    <input type="hidden" name="platformServiceId" value="@Model.Data.PlatformServiceId" />
-                    <select asp-for="Data.PlatformRegionId"
-                            asp-items="Model.Data.Regions?.Select(p => new SelectListItem
-                                {
-                                    Value = p.Id.ToString(),
-                                    Text = p.Name
-                                }).ToList()"
-                            class="form-control">
-                            <option id="@Ulid.Empty">@SL["Select"]</option>
-                        </select>
-                    <select asp-for="Data.PlatformProductId"
-                            asp-items="Model.Data.Products?.Select(p => new SelectListItem
-                                {
-                                    Value = p.Id.ToString(),
-                                    Text = p.Name
-                                }).ToList()"
-                            class="form-control">
-                        <option id="@Ulid.Empty">@SL["Select"]</option>
-                        </select>
-                    <select asp-for="Data.CurrencyCode"
-                            asp-items="Model.Data.Currencies?.Select(p => new SelectListItem
-                                {
-                                    Value = p,
-                                    Text = p
-                                }).ToList()"
-                            class="form-control">
-                        <option id="">@SL["Select"]</option>
+                    <input type="hidden" name="platformProductId" value="@Model.Data.PlatformProductId" />
+
+                    <select name="platformRegionId" class="form-control">
+                        <option value="@Ulid.Empty">@SL["Select"]</option>
+                        @foreach (var region in Model.Data.Regions)
+                        {
+                            if (region.Id == Model.Data.PlatformRegionId)
+                            {
+                                <option value="@region.Id.ToString()" selected>@region.Label</option>
+                            }
+                            else
+                            {
+                                <option value="@region.Id.ToString()">@region.Label</option>
+                            }
+                        }
                     </select>
-                    <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="@SL["Search..."]" class="form-control" autocomplete="off" />
+
+                    <select name="platformServiceId" class="form-control">
+                        <option value="@Ulid.Empty">@SL["Select"]</option>
+                        @foreach (var service in Model.Data.Services)
+                        {
+                            if (service.Id == Model.Data.PlatformServiceId)
+                            {
+                                <option value="@service.Id.ToString()" selected>@service.Label</option>
+                            }
+                            else
+                            {
+                                <option value="@service.Id.ToString()">@service.Label</option>
+                            }
+                        }
+                    </select>
+
+                    <select name="currencyCode" class="form-control">
+                        <option value="">@SL["Select"]</option>
+                        @foreach (var currency in Model.Data.Currencies)
+                        {
+                            if (currency == Model.Data.CurrencyCode)
+                            {
+                                <option value="@currency" selected>@currency</option>
+                            }
+                            else
+                            {
+                                <option value="@currency">@currency</option>
+                            }
+                        }
+                    </select>
+                    <input type="text" name="searchText" value="@Model.Data.CurrentFilter" placeholder="@SL["Search..."]" class="form-control" autocomplete="off" />
                     <input type="submit" value="@SL["Search"]" class="btn btn-primary" /> |
-                    <a asp-page="Index" asp-route-platformServiceId="@Model.Data.PlatformServiceId" class="btn btn-secondary text-nowrap" type="button" role="button">@SL["Clear Filter"]</a>
+                    <a asp-page="Index" asp-route-platformProductId="@Model.Data.PlatformProductId" class="btn btn-secondary text-nowrap" type="button" role="button">@SL["Clear Filter"]</a>
                 </div>
             </form>
             @if (Model.Data.Results.Count > 0)
@@ -68,12 +91,15 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].ServiceName)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].ProductName)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].SkuName)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].MeterName)</th>
                                 <th class="text-end">@Html.DisplayNameFor(model => model.Data.Results[0].RetailPrice)</th>
                                 <th class="text-center">@Html.DisplayNameFor(model => model.Data.Results[0].UnitOfMeasure)</th>
-                                <th class="text-end">@Html.DisplayNameFor(model => model.Data.Results[0].MininumUnits)</th>
+                                <th class="text-end">@Html.DisplayNameFor(model => model.Data.Results[0].MinimumUnits)</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].CurrencyCode)</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].PlatformRegionLabel)</th>
                                 <th></th>
                             </tr>
                             
@@ -82,12 +108,15 @@
                             @foreach (var record in Model.Data.Results)
                             {
                                 <tr>
+                                    <td>@Html.DisplayFor(modelItem => record!.ServiceName)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.ProductName)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.SkuName)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.MeterName)</td>
                                     <td class="text-end">@Html.DisplayFor(modelItem => record!.RetailPrice)</td>
                                     <td class="text-cennter">@Html.DisplayFor(modelItem => record!.UnitOfMeasure)</td>
-                                    <td class="text-end">@Html.DisplayFor(modelItem => record!.MininumUnits)</td>
+                                    <td class="text-end">@Html.DisplayFor(modelItem => record!.MinimumUnits)</td>
+                                    <td>@Html.DisplayFor(modelItem => record!.CurrencyCode)</td>
+                                    <td>@Html.DisplayFor(modelItem => record!.PlatformRegionLabel)</td>
                                     <td>
                                         <a asp-page="Edit" asp-route-id="@record!.Id" class="btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i></a>
                                         <a asp-page="Delete" asp-route-id="@record!.Id" class="btn btn-icon btn-secondary"><i class="bi bi-trash2-fill"></i></a>
@@ -101,8 +130,7 @@
                     <ul class="pagination justify-content-center">
                         <li class="page-item @prev">
                             <a asp-page="Index"
-                               asp-route-platformInfoId="@Model.Data.PlatformInfoId"
-                               asp-route-platformServiceId="@Model.Data.PlatformServiceId"
+                               asp-route-platformProductId="@Model.Data.PlatformProductId"
                                asp-route-currentFilter="@Model.Data.CurrentFilter"
                                asp-route-sortOrder="@Model.Data.CurrentFilter"
                                asp-route-pageindex="@(Model.Data.Results.PageIndex - 1)"
@@ -115,8 +143,7 @@
                         {
                             <li class="page-item @(Model.Data.Results.PageIndex == i ? "active" : string.Empty)" aria-current="page">
                                 <a asp-page="Index"
-                                   asp-route-platformInfoId="@Model.Data.PlatformInfoId"
-                                   asp-route-platformServiceId="@Model.Data.PlatformServiceId"
+                                   asp-route-platformProductId="@Model.Data.PlatformProductId"
                                    asp-route-currentFilter="@Model.Data.CurrentFilter"
                                    asp-route-sortOrder="@Model.Data.CurrentFilter"
                                    asp-route-pageindex="@i"
@@ -127,8 +154,7 @@
                         }
                         <li class="page-item @next">
                             <a asp-page="Index"
-                               asp-route-platformInfoId="@Model.Data.PlatformInfoId"
-                               asp-route-platformServiceId="@Model.Data.PlatformServiceId"
+                               asp-route-platformProductId="@Model.Data.PlatformProductId"
                                asp-route-currentFilter="@Model.Data.CurrentFilter"
                                asp-route-sortOrder="@Model.Data.CurrentFilter"
                                asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
@@ -145,6 +171,8 @@
 </div>
 
 @section Breadcrumb {
-    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Service/Index" asp-route-platformInfoId="@Model.Data.PlatformInfoId">@SL["Services"]</a></li>
-    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Rate/Index" asp-route-platformServiceId="@Model.Data.PlatformServiceId">@SL["Rates"]</a></li>
+    <li class="breadcrumb-item">@Model.Data.Platform.Name</li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@Model.Data.Platform.Id">@SL["Products"]</a></li>
+    <li class="breadcrumb-item">@Model.Data.Product.Label</li>
+    <li class="breadcrumb-item">@SL["Rates"]</li>
 }

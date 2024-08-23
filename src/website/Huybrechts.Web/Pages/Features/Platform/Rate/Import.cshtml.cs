@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.Results;
 using Huybrechts.App.Web;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +13,7 @@ namespace Huybrechts.Web.Pages.Features.Platform.Rate;
 public class ImportModel : PageModel
 {
     private readonly IMediator _mediator;
+    private readonly IValidator<Flow.ImportQuery> _validator;
 
     [BindProperty]
     public Flow.ImportResult Data { get; set; } = new();
@@ -18,44 +21,77 @@ public class ImportModel : PageModel
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    public ImportModel(IMediator mediator)
+    public ImportModel(IMediator mediator, IValidator<Flow.ImportQuery> validator)
     {
         _mediator = mediator;
+        _validator = validator;
     }
 
-    public async Task OnGetAsync(
+    public async Task<IActionResult> OnGetAsync(
+        Ulid? platformProductId,
+        Ulid? platformRegionId,
         Ulid? platformServiceId,
+        string currencyCode,
         string currentFilter,
         string searchText,
         string sortOrder,
-        int? pageIndex,
-        string currencyCode,
-        Ulid? platformRegionId,
-        Ulid? platformProductId)
+        int? pageIndex)
     {
-        Data = await _mediator.Send(request: new Flow.ImportQuery
+        try 
+        { 
+            Flow.ImportQuery message = new()
+            {
+                PlatformProductId = platformProductId,
+                PlatformRegionId = platformRegionId,
+                PlatformServiceId = platformServiceId,
+                CurrencyCode = currencyCode,
+                CurrentFilter = currentFilter,
+                SearchText = searchText,
+                SortOrder = sortOrder,
+                Page = pageIndex
+            };
+         
+            ValidationResult state = await _validator.ValidateAsync(message);
+            if (!state.IsValid)
+                return BadRequest(state);
+
+            var result = await _mediator.Send(message);
+            if (result.HasStatusMessage())
+                StatusMessage = result.ToStatusMessage();
+
+            if (result.IsFailed)
+                return BadRequest();
+
+            Data = result.Value;
+            return Page();
+        }
+        catch (Exception)
         {
-            PlatformServiceId = platformServiceId ?? Ulid.Empty,
-            PlatformRegionId = platformRegionId,
-            PlatformProductId = platformProductId,
-            Currency = currencyCode,
-            CurrentFilter = currentFilter,
-            SearchText = searchText,
-            SortOrder = sortOrder,
-            Page = pageIndex
-        });
+            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
+        }
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var selection = Data.Results.Where(q => q.IsSelected == true).ToList();
-
-        var result = await _mediator.Send(request: new Flow.ImportCommand
+        try
         {
-            PlatformServiceId = Data.PlatformServiceId ?? Ulid.Empty,
-            Items = selection
-        });
+            Flow.ImportCommand command = new()
+            {
+                PlatformProductId = Data.PlatformProductId ?? Ulid.Empty,
+                PlatformRegionId = Data.PlatformRegionId ?? Ulid.Empty,
+                PlatformServiceId = Data.PlatformServiceId ?? Ulid.Empty,
+                Items = Data.Results.Where(q => q.IsSelected == true).ToList()
+            };
 
-        return this.RedirectToPage(nameof(Index), new { platformServiceId = Data.PlatformServiceId });
+            var result = await _mediator.Send(command);
+            if (result.HasStatusMessage())
+                StatusMessage = result.ToStatusMessage();
+
+            return RedirectToPage(nameof(Index), new { platformProductId = Data.PlatformProductId });
+        }
+        catch (Exception)
+        {
+            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
+        }
     }
 }

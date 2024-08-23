@@ -2,7 +2,7 @@
 @inject IStringLocalizer<Localization> SL
 @model Huybrechts.Web.Pages.Features.Platform.Product.DeleteModel
 @{
-    ViewData["CardTitle"] = SL["ProductDeleteTitle"];
+    ViewData["CardTitle"] = Model.Data.PlatformInfoName + " | " + SL["ProductDeleteTitle"];
 }
 
 <partial name="_StatusResult" for="StatusMessage" />

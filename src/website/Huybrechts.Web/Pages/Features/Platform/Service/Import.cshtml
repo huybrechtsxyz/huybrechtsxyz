@@ -2,7 +2,7 @@
 @inject IStringLocalizer<Localization> SL
 @model Huybrechts.Web.Pages.Features.Platform.Service.ImportModel
 @{
-    ViewData["CardTitle"] = SL["ServiceImportTitle"];
+    ViewData["CardTitle"] = Model.Data.Platform.Name + " | " + SL["ServiceImportTitle"];
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }

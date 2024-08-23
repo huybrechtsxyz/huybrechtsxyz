@@ -2,7 +2,7 @@
 @inject IStringLocalizer<Localization> SL
 @model Huybrechts.Web.Pages.Features.Platform.Region.CreateModel
 @{
-    ViewData["CardTitle"] = SL["RegionCreateTitle"];
+    ViewData["CardTitle"] = Model.Data.PlatformInfoName + " | " + SL["RegionCreateTitle"];
 }
 <partial name="_StatusResult" for="StatusMessage" />
 <p class="text-info">

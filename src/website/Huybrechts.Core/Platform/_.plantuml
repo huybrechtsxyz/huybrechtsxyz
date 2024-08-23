@@ -18,8 +18,10 @@ class Product {
 
 Platform "1" -- "0..*" Product
 
+class Rate {
+}
 
-
+Product "1" -- "0..*" Rate
 Region "1" -- "0..*" Rate
 Service "1" -- "0..*" Rate
 

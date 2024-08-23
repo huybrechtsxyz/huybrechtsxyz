@@ -2,7 +2,7 @@
 @inject IStringLocalizer<Localization> SL
 @model Huybrechts.Web.Pages.Features.Platform.Product.IndexModel
 @{
-    ViewData["CardTitle"] = SL["ProductIndexTitle"];
+    ViewData["CardTitle"] = Model.Data.Platform.Name + " | " + SL["ProductIndexTitle"];
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
@@ -16,6 +16,9 @@
         <div class="row">
             <form class="row row-cols-md-auto g-3 align-items-center">
                 <div class="col-md-3 d-flex gap-1 align-items-center mb-3">
+                    <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="/Features/Platform/Index" asp-route-platformInfoId="@Model.Data.Platform.Id">
+                        <i class="bi bi-arrow-up-circle-fill fs-5"></i>
+                    </a>
                     <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Create" asp-route-platformInfoId="@Model.Data.Platform.Id">
                         <i class="bi bi-plus-circle fs-5"></i>
                         <span class="vr"></span>
@@ -80,6 +83,7 @@
                                         }
                                         <a asp-page="Edit" asp-route-id="@record!.Id" class="btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i></a>
                                         <a asp-page="Delete" asp-route-id="@record!.Id" class="btn btn-icon btn-secondary"><i class="bi bi-trash2-fill"></i></a>
+                                        <a asp-page="/Features/Platform/Rate/Index" asp-route-platformProductId="@record!.Id" class="btn btn-icon btn-info"><i class="bi bi-cash-stack"></i></a>
                                     </td>
                                 </tr>
                             }

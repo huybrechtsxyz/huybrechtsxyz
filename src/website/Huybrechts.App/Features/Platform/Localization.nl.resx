@@ -165,7 +165,7 @@
   <data name="MeterName" xml:space="preserve">
     <value>Meter name</value>
   </data>
-  <data name="MininumUnits" xml:space="preserve">
+  <data name="MinimumUnits" xml:space="preserve">
     <value>Mininum eenheden</value>
   </data>
   <data name="Name" xml:space="preserve">

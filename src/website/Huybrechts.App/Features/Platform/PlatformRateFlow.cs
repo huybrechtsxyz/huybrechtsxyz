@@ -9,6 +9,7 @@ using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
 using static Huybrechts.App.Services.AzurePricingService;
 
@@ -16,9 +17,23 @@ namespace Huybrechts.App.Features.Platform;
 
 public static class PlatformRateFlow
 {
-    private static List<string> defaultCurrencies = ["EUR", "USD"];
+    public static List<string> DefaultCurrencies { get; } = ["EUR", "USD"];
 
-    public static List<string> DefaultCurrencies { get => defaultCurrencies; set => defaultCurrencies = value; }
+    public static async Task<List<PlatformRegion>> GetRegionsAsync(FeatureContext dbcontext, Ulid platformInfoId, CancellationToken token)
+    {
+        return await dbcontext.Set<PlatformRegion>()
+            .Where(q => q.PlatformInfoId == platformInfoId)
+            .OrderBy(o => o.Label)
+            .ToListAsync(cancellationToken: token);
+    }
+
+    public static async Task<List<PlatformService>> GetServicesAsync(FeatureContext dbcontext, Ulid platformInfoId, CancellationToken token)
+    {
+        return await dbcontext.Set<PlatformService>()
+            .Where(q => q.PlatformInfoId == platformInfoId)
+            .OrderBy(o => o.Label)
+            .ToListAsync(cancellationToken: token);
+    }
 
     public record Model
     {
@@ -26,17 +41,23 @@ public static class PlatformRateFlow
 
         public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
 
-        [Display(Name = "Service", ResourceType = typeof(Localization))]
-        public Ulid PlatformServiceId { get; set; } = Ulid.Empty;
-
-        [Display(Name = "Service", ResourceType = typeof(Localization))]
-        public string PlatformServiceName { get; set; } = string.Empty;
-
-        [Display(Name = "Region", ResourceType = typeof(Localization))]
-        public Ulid? PlatformRegionId { get; set; }
+        [Display(Name = "Product", ResourceType = typeof(Localization))]
+        public Ulid PlatformProductId { get; set; } = Ulid.Empty;
 
         [Display(Name = "Product", ResourceType = typeof(Localization))]
-        public Ulid? PlatformProductId { get; set; }
+        public string PlatformProductLabel { get; set; } = string.Empty;
+
+        [Display(Name = "Region", ResourceType = typeof(Localization))]
+        public Ulid PlatformRegionId { get; set; }
+
+        [Display(Name = "Region", ResourceType = typeof(Localization))]
+        public string PlatformRegionLabel { get; set; } = string.Empty;
+
+        [Display(Name = "Service", ResourceType = typeof(Localization))]
+        public Ulid PlatformServiceId { get; set; }
+
+        [Display(Name = "Service", ResourceType = typeof(Localization))]
+        public string PlatformServiceLabel { get; set; } = string.Empty;
 
         [Display(Name = nameof(ServiceName), ResourceType = typeof(Localization))]
         public string ServiceName { get; set; } = string.Empty;
@@ -73,8 +94,8 @@ public static class PlatformRateFlow
 
         [Precision(12, 6)]
         [DisplayFormat(DataFormatString = "{0:F6}", ApplyFormatInEditMode = true)]
-        [Display(Name = nameof(MininumUnits), ResourceType = typeof(Localization))]
-        public decimal MininumUnits { get; set; } = 0;
+        [Display(Name = nameof(MinimumUnits), ResourceType = typeof(Localization))]
+        public decimal MinimumUnits { get; set; } = 0;
 
         [Display(Name = nameof(UnitOfMeasure), ResourceType = typeof(Localization))]
         public string UnitOfMeasure { get; set; } = string.Empty;
@@ -87,165 +108,181 @@ public static class PlatformRateFlow
 
         [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
         public string? Remark { get; set; }
+
+        public string SearchIndex => $"{ServiceName}~{ServiceFamily}~{ProductName}~{SkuName}~{MeterName}".ToLowerInvariant();
     }
 
     public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
     {
         public ModelValidator()
         {
-            RuleFor(m => m.Id).NotNull().NotEmpty();
-            RuleFor(m => m.PlatformInfoId).NotNull().NotEmpty();
-            RuleFor(m => m.PlatformServiceId).NotNull().NotEmpty();
-            RuleFor(m => m.PlatformRegionId).NotNull().NotEmpty();
-            RuleFor(m => m.PlatformProductId).NotNull().NotEmpty();
+            RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
+            RuleFor(m => m.PlatformInfoId).NotEmpty().NotEqual(Ulid.Empty);
+            RuleFor(m => m.PlatformProductId).NotEmpty().NotEqual(Ulid.Empty);
+            RuleFor(m => m.PlatformRegionId).NotEmpty().NotEqual(Ulid.Empty);
+            RuleFor(m => m.PlatformServiceId).NotEmpty().NotEqual(Ulid.Empty);
 
-            RuleFor(m => m.ServiceName).NotNull().NotEmpty().Length(1, 128);
-            RuleFor(m => m.ServiceFamily).NotNull().Length(1, 128);
-            RuleFor(m => m.ProductName).NotNull().NotEmpty().Length(1, 128);
-            RuleFor(m => m.SkuName).NotNull().NotEmpty().Length(1, 128);
-            RuleFor(m => m.MeterName).NotNull().NotEmpty().Length(1, 128);
-            RuleFor(m => m.RateType).NotNull().NotEmpty().Length(1, 128);
-            RuleFor(m => m.CurrencyCode).NotNull().NotEmpty().Length(1, 10);
-            RuleFor(m => m.ValidFrom).NotNull().NotEmpty();
+            RuleFor(m => m.ServiceName).NotEmpty().Length(1, 128);
+            RuleFor(m => m.ServiceFamily).NotEmpty().Length(1, 128);
+            RuleFor(m => m.ProductName).NotEmpty().Length(1, 128);
+            RuleFor(m => m.SkuName).NotEmpty().Length(1, 128);
+            RuleFor(m => m.MeterName).NotEmpty().Length(1, 128);
+            RuleFor(m => m.RateType).NotEmpty().Length(1, 128);
+            RuleFor(m => m.CurrencyCode).NotEmpty().Length(1, 10);
+            RuleFor(m => m.ValidFrom).NotEmpty();
             RuleFor(m => m.RetailPrice).NotNull();
             RuleFor(m => m.UnitPrice).NotNull();
-            RuleFor(m => m.MininumUnits).NotNull();
-            RuleFor(m => m.ServiceFamily).Length(1, 128);
-
+            RuleFor(m => m.MinimumUnits).NotNull();
         }
     }
 
-    private static Result PlatformNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORM_ID.Replace("{0}", id.ToString()));
+    private static Result PlatformNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORM_ID.Replace("{0}", id.ToString()));
 
-    private static Result ServiceNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMSERVICE_ID.Replace("{0}", id.ToString()));
+    private static Result ProductNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORMPRODUCT_ID.Replace("{0}", id.ToString()));
 
-    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.NOT_FOUND_PLATFORMRATE_ID.Replace("{0}", id.ToString()));
+    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORMRATE_ID.Replace("{0}", id.ToString()));
 
     //
     // LIST
     //
 
-    public sealed record ListModel : Model
-    {
-    }
+    public sealed record ListModel : Model { }
 
     internal sealed class ListMapping : Profile
     {
         public ListMapping() =>
             CreateProjection<PlatformRate, ListModel>()
-            .ForMember(dest => dest.PlatformServiceName, opt => opt.MapFrom(src => src.PlatformService.Name));
+            .ForMember(dest => dest.PlatformProductLabel, opt => opt.MapFrom(src => src.PlatformProduct.Label));
     }
 
-    public sealed class ListQuery : EntityListFlow.Query, IRequest<ListResult>
+    public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
     {
-        public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
-
-        public Ulid? PlatformServiceId { get; set; } = Ulid.Empty;
-    }
-
-    internal sealed class ListValidator : AbstractValidator<ListQuery> { public ListValidator() { } }
-
-    public sealed class ListResult : EntityListFlow.Result<ListModel>
-    {
-        public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
-
-        public Ulid? PlatformServiceId { get; set; } = Ulid.Empty;
+        public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
 
         public Ulid? PlatformRegionId { get; set; } = Ulid.Empty;
 
+        public Ulid? PlatformServiceId { get; set; } = Ulid.Empty;
+
+        public string CurrencyCode { get; set; } = string.Empty;
+    }
+
+    public sealed class ListValidator : AbstractValidator<ListQuery> 
+    {
+        public ListValidator() 
+        { 
+            RuleFor(x => x.PlatformProductId).NotEmpty().NotEqual(Ulid.Empty); 
+        } 
+    }
+
+    public sealed class ListResult : EntityListFlow.Result<ListModel>
+    {
         public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
+
+        public Ulid? PlatformRegionId { get; set; } = Ulid.Empty;
+
+        public Ulid? PlatformServiceId { get; set; } = Ulid.Empty;
 
         public string CurrencyCode { get; set; } = string.Empty;
 
-        public IList<PlatformRegion>? Regions = null;
+        public PlatformInfo Platform { get; set; } = new();
 
-        public IList<PlatformProduct>? Products = null;
+        public PlatformProduct Product { get; set; } = new();
 
-        public IList<string> Currencies = DefaultCurrencies;
+        public IList<PlatformRegion> Regions { get; set; } = [];
+
+        public IList<PlatformService> Services { get; set; } = [];
+
+        public IList<string> Currencies { get; set; } = DefaultCurrencies;
     }
 
     internal sealed class ListHandler :
-        EntityListFlow.Handler<PlatformService, ListModel>,
-        IRequestHandler<ListQuery, ListResult>
+        EntityListFlow.Handler<PlatformRate, ListModel>,
+        IRequestHandler<ListQuery, Result<ListResult>>
     {
         public ListHandler(PlatformContext dbcontext, IConfigurationProvider configuration)
             : base(dbcontext, configuration)
         {
         }
 
-        public async Task<ListResult> Handle(ListQuery request, CancellationToken token)
+        public async Task<Result<ListResult>> Handle(ListQuery message, CancellationToken token)
         {
+            var product = await _dbcontext.Set<PlatformProduct>().FirstOrDefaultAsync(q => q.Id == message.PlatformProductId, cancellationToken: token);
+            if (product == null)
+                return ProductNotFound(message.PlatformProductId ?? Ulid.Empty);
+
+            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(q => q.Id == product.PlatformInfoId, cancellationToken: token);
+            if (platform == null)
+                return PlatformNotFound(message.PlatformProductId ?? Ulid.Empty);
+
             IQueryable<PlatformRate> query = _dbcontext.Set<PlatformRate>();
-            PlatformService? service = null!;
 
-            service = await _dbcontext.Set<PlatformService>().FindAsync([request.PlatformServiceId], cancellationToken: token);
-            if (service is null)
-                return new ListResult()
-                {
-                    PlatformInfoId = request.PlatformInfoId,
-                    PlatformServiceId = request.PlatformServiceId,
-                    CurrentFilter = request.CurrentFilter,
-                    SearchText = request.SearchText,
-                    SortOrder = request.SortOrder,
-                    Regions = [],
-                    Products = [],
-                    Currencies = DefaultCurrencies,
-                    Results = []
-                };
-            query = query.Where(q => q.PlatformServiceId == request.PlatformServiceId);
-            request.PlatformInfoId = service.PlatformInfoId;
+            if (message.PlatformRegionId.HasValue && message.PlatformRegionId != Ulid.Empty)
+                query = query.Where(q => q.PlatformRegionId == message.PlatformRegionId);
 
-            var searchString = request.SearchText ?? request.CurrentFilter;
+            if (message.PlatformServiceId.HasValue && message.PlatformServiceId != Ulid.Empty)
+                query = query.Where(q => q.PlatformServiceId == message.PlatformServiceId);
+
+            if (!string.IsNullOrEmpty(message.CurrencyCode))
+                query = query.Where(q => q.CurrencyCode == message.CurrencyCode);
+
+            var searchString = message.SearchText ?? message.CurrentFilter;
             if (!string.IsNullOrEmpty(searchString))
             {
+                string searchFor = searchString.ToLowerInvariant();
                 query = query.Where(q =>
-                    q.ServiceName.Contains(searchString)
-                    || q.ServiceFamily.Contains(searchString)
-                    || q.ProductName.Contains(searchString)
-                    || q.SkuName.Contains(searchString)
-                    || q.MeterName.Contains(searchString));
+                    q.PlatformProductId == message.PlatformProductId
+                    && (q.SearchIndex != null && q.SearchIndex.Contains(searchFor)));
+            }
+            else
+            {
+                query = query.Where(q => q.PlatformProductId == message.PlatformProductId);
             }
 
-            if (!string.IsNullOrEmpty(request.SortOrder))
+            if (!string.IsNullOrEmpty(message.SortOrder))
             {
-                query = query.OrderBy(request.SortOrder);
+                query = query.OrderBy(message.SortOrder);
             }
             else query = query
-                    .OrderBy(o => o.ServiceName)
-                    .ThenBy(o => o.ProductName)
-                    .ThenBy(o => o.SkuName)
-                    .ThenBy(o => o.MeterName)
-                    .ThenBy(o => o.RateType)
-                    .ThenBy(o => o.CurrencyCode)
-                    .ThenBy(o => o.ValidFrom);
+                .OrderBy(o => o.ServiceName)
+                .ThenBy(o => o.ProductName)
+                .ThenBy(o => o.SkuName)
+                .ThenBy(o => o.MeterName)
+                .ThenBy(o => o.RateType)
+                .ThenBy(o => o.CurrencyCode)
+                .ThenBy(o => o.ValidFrom);
+
+            var regions = await GetRegionsAsync(_dbcontext, platform.Id, token);
+            var services = await GetServicesAsync(_dbcontext, platform.Id, token);
 
             int pageSize = EntityListFlow.PageSize;
-            int pageNumber = request.Page ?? 1;
+            int pageNumber = message.Page ?? 1;
             var results = await query
-                .Include(i => i.PlatformService)
+                .Include(i => i.PlatformProduct)
                 .ProjectTo<ListModel>(_configuration)
                 .PaginatedListAsync(pageNumber, pageSize);
 
-            var regions = await _dbcontext.Set<PlatformRegion>()
-                .Where(q => q.PlatformInfoId == service.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: token);
-
-            var products = await _dbcontext.Set<PlatformProduct>()
-                .Where(q => q.PlatformInfoId == service.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: token);
+            // Get names of regions/services. convert to dictionary for performance
+            var regionDict = regions.ToDictionary(r => r.Id, r => r.Label);
+            var serviceDict = services.ToDictionary(s => s.Id, s => s.Label);
+            results.ForEach(q => 
+            {
+                q.PlatformRegionLabel = regionDict.TryGetValue(q.PlatformRegionId, out string? value1) ? value1 : string.Empty;
+                q.PlatformServiceLabel = serviceDict.TryGetValue(q.PlatformServiceId, out string? value2) ? value2 : string.Empty;
+            });
 
             var model = new ListResult
             {
-                PlatformInfoId = request.PlatformInfoId,
-                PlatformServiceId = request.PlatformServiceId,
+                PlatformProductId = message.PlatformProductId,
+                PlatformRegionId = message.PlatformRegionId,
+                PlatformServiceId = message.PlatformServiceId,
+                CurrencyCode = message.CurrencyCode,
                 CurrentFilter = searchString,
                 SearchText = searchString,
-                SortOrder = request.SortOrder,
-                Regions = regions,
-                Products = products,
-                Currencies = DefaultCurrencies,
+                SortOrder = message.SortOrder,
+                Platform = platform,
+                Product = product,
+                Regions = regions.ToList(),
+                Services = services.ToList(),
                 Results = results ?? []
             };
 
@@ -258,45 +295,62 @@ public static class PlatformRateFlow
     //
 
     public static CreateCommand CreateNew(
-        Ulid platformInfoId,
-        Ulid platformServiceId) => new()
+        PlatformProduct product,
+        Ulid? platformRegionId,
+        Ulid? platformServiceId,
+        string currencyCode
+        ) => new()
     {
         Id = Ulid.NewUlid(),
-        PlatformInfoId = platformInfoId,
-        PlatformServiceId = platformServiceId
+        PlatformInfoId = product.PlatformInfoId,
+        PlatformProductId = product.Id,
+        PlatformProductLabel = product.Name,
+        PlatformRegionId = platformRegionId ?? Ulid.Empty,
+        PlatformServiceId = platformServiceId ?? Ulid.Empty,
+        CurrencyCode = currencyCode,
+        ValidFrom = DateTime.Today
     };
 
-    public sealed record CreateQuery : IRequest<Result<CreateResult>>
+    public sealed record CreateQuery : IRequest<Result<CreateCommand>>
     {
-        public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
-
-        public Ulid PlatformServiceId { get; set; } = Ulid.Empty;
+        public Ulid PlatformProductId { get; set; } = Ulid.Empty;
     }
 
-    internal sealed class CreateQueryValidator : AbstractValidator<CreateQuery>
+    public sealed class CreateQueryValidator : AbstractValidator<CreateQuery>
     {
         public CreateQueryValidator()
         {
-            RuleFor(m => m.PlatformServiceId).NotEmpty().NotEqual(Ulid.Empty);
+            RuleFor(m => m.PlatformProductId).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
-    public record CreateResult
+    public sealed record CreateCommand : Model, IRequest<Result<Ulid>> 
     {
-        public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
+        public PlatformInfo Platform { get; set; } = new();
 
-        public Ulid PlatformServiceId { get; set; } = Ulid.Empty;
-
-        public CreateCommand Item { get; set; } = new();
+        public PlatformProduct Product { get; set; } = new();
 
         public IList<PlatformRegion> Regions { get; set; } = [];
 
-        public IList<PlatformProduct> Products { get; set; } = [];
+        public IList<PlatformService> Services { get; set; } = [];
 
-        public IList<string> Currencies = DefaultCurrencies;
+        public IList<string> Currencies { get; set; } = DefaultCurrencies;
     }
 
-    internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateResult>>
+    public sealed class CreateCommandValidator : ModelValidator<CreateCommand>
+    {
+        public CreateCommandValidator(PlatformContext dbContext) : base()
+        {
+            RuleFor(x => x.PlatformProductId).MustAsync(async (id, cancellation) =>
+            {
+                bool exists = await dbContext.Set<PlatformProduct>().AnyAsync(x => x.Id == id, cancellation);
+                return exists;
+            })
+            .WithMessage(m => Messages.INVALID_PLATFORMPRODUCT_ID.Replace("{0}", m.PlatformProductId.ToString()));
+        }
+    }
+
+    internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCommand>>
     {
         private readonly PlatformContext _dbcontext;
 
@@ -305,42 +359,31 @@ public static class PlatformRateFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result<CreateResult>> Handle(CreateQuery request, CancellationToken token)
+        public async Task<Result<CreateCommand>> Handle(CreateQuery message, CancellationToken token)
         {
-            var service = await _dbcontext.Set<PlatformService>().FindAsync([request.PlatformServiceId], cancellationToken: token);
-            if (service is null)
-                return ServiceNotFound(request.PlatformServiceId);
+            var product = await _dbcontext.Set<PlatformProduct>().FindAsync([message.PlatformProductId], cancellationToken: token);
+            if (product is null)
+                return ProductNotFound(message.PlatformProductId);
 
-            IList<PlatformRegion> regions = await _dbcontext.Set<PlatformRegion>()
-                .Where(q => q.PlatformInfoId == service.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(token);
+            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(q => q.Id == product.PlatformInfoId, cancellationToken: token);
+            if (platform == null)
+                return PlatformNotFound(product.PlatformInfoId);
 
-            IList<PlatformProduct> products = await _dbcontext.Set<PlatformProduct>()
-                .Where(q => q.PlatformInfoId == service.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(token);
+            var regions = await GetRegionsAsync(_dbcontext, platform.Id, token);
+            var services = await GetServicesAsync(_dbcontext, platform.Id, token);
+            var currencies = DefaultCurrencies;
 
-            return Result.Ok(new CreateResult()
-            {
-                PlatformInfoId = service.PlatformInfoId,
-                PlatformServiceId = service.Id,
-                Currencies = DefaultCurrencies,
-                Item = CreateNew(service.PlatformInfoId, service.Id),
-                Regions = regions,
-                Products = products
-            });
-        }
-    }
+            var record = CreateNew(product,
+                Ulid.Empty,
+                Ulid.Empty, 
+                string.Empty);
+            record.Platform = platform;
+            record.Product = product;
+            record.Regions = regions;
+            record.Services = services;
+            record.Currencies = currencies;
 
-    public sealed record CreateCommand : Model, IRequest<Result<Ulid>>
-    {
-    }
-
-    internal sealed class CreateCommandValidator : ModelValidator<CreateCommand>
-    {
-        public CreateCommandValidator() : base()
-        {
+            return Result.Ok(record);
         }
     }
 
@@ -353,39 +396,36 @@ public static class PlatformRateFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result<Ulid>> Handle(CreateCommand request, CancellationToken token)
+        public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
         {
-            var service = await _dbcontext.Set<PlatformService>().FindAsync([request.PlatformServiceId], cancellationToken: token);
-            if (service is null)
-                return ServiceNotFound(request.PlatformServiceId);
+            var product = await _dbcontext.Set<PlatformProduct>().FindAsync([message.PlatformProductId], cancellationToken: token);
+            if (product is null)
+                return PlatformNotFound(message.PlatformProductId);
 
-            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([service.PlatformInfoId], cancellationToken: token);
-            if (platform is null)
-                return PlatformNotFound(service.PlatformInfoId);
-
-            PlatformRate record = new()
+            var record = new PlatformRate
             {
-                Id = request.Id,
-                PlatformInfoId = platform.Id,
-                PlatformService = service,
-                PlatformRegionId = request.PlatformRegionId,
-                PlatformProductId = request.PlatformProductId,
-                Remark = request.Remark,
+                Id = message.Id,
+                PlatformInfoId = product.PlatformInfoId,
+                PlatformProduct = product,
+                PlatformRegionId = message.PlatformRegionId,
+                PlatformProductId = message.PlatformProductId,
+                Remark = message.Remark?.Trim(),
+                SearchIndex = message.SearchIndex?.Trim(),
                 CreatedDT = DateTime.UtcNow,
 
-                ServiceName = request.ServiceName,
-                ServiceFamily = request.ServiceFamily,
-                ProductName = request.ProductName,
-                SkuName = request.SkuName,
-                MeterName = request.MeterName,
-                RateType = request.RateType,
-                CurrencyCode = request.CurrencyCode,
-                ValidFrom = request.ValidFrom,
-                RetailPrice = request.RetailPrice,
-                UnitPrice = request.UnitPrice,
-                MininumUnits = request.MininumUnits,
-                UnitOfMeasure = request.UnitOfMeasure,
-                IsPrimaryRegion = request.IsPrimaryRegion
+                ServiceName = message.ServiceName.Trim(),
+                ServiceFamily = message.ServiceFamily.Trim(),
+                ProductName = message.ProductName.Trim(),
+                SkuName = message.SkuName.Trim(),
+                MeterName = message.MeterName.Trim(),
+                RateType = message.RateType.Trim(),
+                CurrencyCode = message.CurrencyCode.Trim(),
+                ValidFrom = message.ValidFrom,
+                RetailPrice = decimal.Round(message.RetailPrice, 6, MidpointRounding.ToEven),
+                UnitPrice = decimal.Round(message.UnitPrice, 6, MidpointRounding.ToEven),
+                MininumUnits = decimal.Round(message.MinimumUnits, 6, MidpointRounding.ToEven),
+                UnitOfMeasure = message.UnitOfMeasure.Trim(),
+                IsPrimaryRegion = message.IsPrimaryRegion
             };
 
             await _dbcontext.Set<PlatformRate>().AddAsync(record, token);
@@ -398,37 +438,47 @@ public static class PlatformRateFlow
     // UPDATE
     //
 
-    public sealed record UpdateQuery : IRequest<Result<UpdateCommand>>
-    {
-        public Ulid Id { get; init; }
-    }
+    public sealed record UpdateQuery : IRequest<Result<UpdateCommand>> { public Ulid Id { get; init; } }
 
-    internal sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
+    public sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
     {
         public UpdateQueryValidator()
         {
-            RuleFor(m => m.Id).NotNull().NotEqual(Ulid.Empty);
+            RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
-    public record UpdateCommand : Model, IRequest<Result>
+    public record UpdateCommand : Model, IRequest<Result> 
     {
+        public PlatformInfo Platform { get; set; } = new();
+
+        public PlatformProduct Product { get; set; } = new();
+
         public IList<PlatformRegion> Regions { get; set; } = [];
 
-        public IList<PlatformProduct> Products { get; set; } = [];
+        public IList<PlatformService> Services { get; set; } = [];
 
-        public IList<string> Currencies = DefaultCurrencies;
+        public IList<string> Currencies { get; set; } = DefaultCurrencies;
     }
 
-    internal class UpdateCommandValidator : ModelValidator<UpdateCommand>
+    public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
     {
+        public UpdateCommandValidator(PlatformContext dbContext)
+        {
+            RuleFor(x => x.PlatformProductId).MustAsync(async (id, cancellation) =>
+            {
+                bool exists = await dbContext.Set<PlatformProduct>().AnyAsync(x => x.Id == id, cancellation);
+                return exists;
+            })
+            .WithMessage(m => Messages.INVALID_PLATFORMPRODUCT_ID.Replace("{0}", m.PlatformProductId.ToString()));
+        }
     }
 
     internal class UpdateCommandMapping : Profile
     {
         public UpdateCommandMapping() => 
             CreateProjection<PlatformRate, UpdateCommand>()
-            .ForMember(dest => dest.PlatformServiceName, opt => opt.MapFrom(src => src.PlatformService.Name));
+            .ForMember(dest => dest.PlatformProductLabel, opt => opt.MapFrom(src => src.PlatformProduct.Name));
     }
 
     internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
@@ -442,26 +492,28 @@ public static class PlatformRateFlow
             _configuration = configuration;
         }
 
-        public async Task<Result<UpdateCommand>> Handle(UpdateQuery request, CancellationToken token)
+        public async Task<Result<UpdateCommand>> Handle(UpdateQuery message, CancellationToken token)
         {
             var record = await _dbcontext.Set<PlatformRate>()
-                .Where(s => s.Id == request.Id)
-                .Include(i => i.PlatformService)
+                .Include(i => i.PlatformProduct)
                 .ProjectTo<UpdateCommand>(_configuration)
-                .SingleOrDefaultAsync(token);
+                .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
+
             if (record == null) 
-                return RecordNotFound(request.Id);
+                return RecordNotFound(message.Id);
 
-            record.Regions = await _dbcontext.Set<PlatformRegion>()
-                .Where(q => q.PlatformInfoId == record.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: token);
+            var product = await _dbcontext.Set<PlatformProduct>().FindAsync([record.PlatformProductId], cancellationToken: token);
+            if (product is null)
+                return ProductNotFound(record.PlatformProductId);
 
-            record.Products = await _dbcontext.Set<PlatformProduct>()
-                .Where(q => q.PlatformInfoId == record.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: token);
+            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(q => q.Id == product.PlatformInfoId, cancellationToken: token);
+            if (platform == null)
+                return PlatformNotFound(product.PlatformInfoId);
 
+            record.Platform = platform;
+            record.Product = product;
+            record.Regions = await GetRegionsAsync(_dbcontext, record.PlatformInfoId, token);
+            record.Services = await GetServicesAsync(_dbcontext, record.PlatformInfoId, token);
             record.Currencies = DefaultCurrencies;
 
             return Result.Ok(record);
@@ -477,30 +529,31 @@ public static class PlatformRateFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result> Handle(UpdateCommand command, CancellationToken token)
+        public async Task<Result> Handle(UpdateCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformRate>().FindAsync([command.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<PlatformRate>().FindAsync([message.Id], cancellationToken: token);
             if (record is null)
-                return RecordNotFound(command.Id);
+                return RecordNotFound(message.Id);
 
-            record.Remark = command.Remark;
+            record.PlatformRegionId = message.PlatformRegionId;
+            record.PlatformServiceId = message.PlatformServiceId;
+            record.Remark = message.Remark?.Trim();
+            record.SearchIndex = message.SearchIndex?.Trim();
             record.ModifiedDT = DateTime.UtcNow;
 
-            record.ServiceName = command.ServiceName;
-            record.ServiceFamily = command.ServiceFamily;
-            record.ProductName = command.ProductName;
-            record.SkuName = command.SkuName;
-            record.MeterName = command.MeterName;
-            record.RateType = command.RateType;
-            record.CurrencyCode = command.CurrencyCode;
-            record.ValidFrom = command.ValidFrom;
-            record.RetailPrice = command.RetailPrice;
-            record.UnitPrice = command.UnitPrice;
-            record.MininumUnits = command.MininumUnits;
-            record.UnitOfMeasure = command.UnitOfMeasure;
-            record.IsPrimaryRegion = command.IsPrimaryRegion;
-            record.PlatformProductId = command.PlatformProductId;
-            record.PlatformRegionId = command.PlatformRegionId;
+            record.ServiceName = message.ServiceName.Trim();
+            record.ServiceFamily = message.ServiceFamily.Trim();
+            record.ProductName = message.ProductName.Trim();
+            record.SkuName = message.SkuName.Trim();
+            record.MeterName = message.MeterName.Trim();
+            record.RateType = message.RateType.Trim();
+            record.CurrencyCode = message.CurrencyCode.Trim();
+            record.ValidFrom = message.ValidFrom;
+            record.RetailPrice = decimal.Round(message.RetailPrice, 6, MidpointRounding.ToEven);
+            record.UnitPrice = decimal.Round(message.UnitPrice, 6, MidpointRounding.ToEven);
+            record.MininumUnits = decimal.Round(message.MinimumUnits, 6, MidpointRounding.ToEven);
+            record.UnitOfMeasure = message.UnitOfMeasure.Trim();
+            record.IsPrimaryRegion = message.IsPrimaryRegion;
 
             _dbcontext.Set<PlatformRate>().Update(record);
             await _dbcontext.SaveChangesAsync(token);
@@ -512,33 +565,34 @@ public static class PlatformRateFlow
     // DELETE
     //
 
-    public sealed record DeleteQuery : IRequest<Result<DeleteCommand>>
-    {
-        public Ulid Id { get; init; }
-    }
+    public sealed record DeleteQuery : IRequest<Result<DeleteCommand>> { public Ulid Id { get; init; } }
 
-    internal class DeleteQueryValidator : AbstractValidator<DeleteQuery>
+    public class DeleteQueryValidator : AbstractValidator<DeleteQuery>
     {
         public DeleteQueryValidator()
         {
-            RuleFor(m => m.Id).NotNull().NotEmpty().NotEqual(Ulid.Empty);
+            RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
     public sealed record DeleteCommand : Model, IRequest<Result>
     {
+        public PlatformInfo Platform { get; set; } = new();
+
+        public PlatformProduct Product { get; set; } = new();
+
         public IList<PlatformRegion> Regions { get; set; } = [];
 
-        public IList<PlatformProduct> Products { get; set; } = [];
+        public IList<PlatformService> Services { get; set; } = [];
 
-        public IList<string> Currencies = DefaultCurrencies;
+        public IList<string> Currencies { get; set; } = DefaultCurrencies;
     }
 
-    internal sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
+    public sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
     {
         public DeleteCommandValidator()
         {
-            RuleFor(m => m.Id).NotNull();
+            RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
@@ -546,7 +600,7 @@ public static class PlatformRateFlow
     {
         public DeleteCommandMapping() => 
             CreateProjection<PlatformRate, DeleteCommand>()
-            .ForMember(dest => dest.PlatformServiceName, opt => opt.MapFrom(src => src.PlatformService.Name));
+            .ForMember(dest => dest.PlatformProductLabel, opt => opt.MapFrom(src => src.PlatformProduct.Name));
     }
 
     internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<DeleteCommand>>
@@ -560,26 +614,28 @@ public static class PlatformRateFlow
             _configuration = configuration;
         }
 
-        public async Task<Result<DeleteCommand>> Handle(DeleteQuery request, CancellationToken token)
+        public async Task<Result<DeleteCommand>> Handle(DeleteQuery message, CancellationToken token)
         {
             var record = await _dbcontext.Set<PlatformRate>()
-                .Where(s => s.Id == request.Id)
-                .Include(i => i.PlatformService)
+                .Include(i => i.PlatformProduct)
                 .ProjectTo<DeleteCommand>(_configuration)
-                .SingleOrDefaultAsync(token);
+                .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
+
             if (record == null)
-                return RecordNotFound(request.Id);
+                return RecordNotFound(message.Id);
 
-            record.Regions = await _dbcontext.Set<PlatformRegion>()
-                .Where(q => q.PlatformInfoId == record.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: token);
+            var product = await _dbcontext.Set<PlatformProduct>().FindAsync([record.PlatformProductId], cancellationToken: token);
+            if (product is null)
+                return ProductNotFound(record.PlatformProductId);
 
-            record.Products = await _dbcontext.Set<PlatformProduct>()
-                .Where(q => q.PlatformInfoId == record.PlatformInfoId)
-                .OrderBy(o => o.Name)
-                .ToListAsync(cancellationToken: token);
+            var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(q => q.Id == product.PlatformInfoId, cancellationToken: token);
+            if (platform == null)
+                return PlatformNotFound(product.PlatformInfoId);
 
+            record.Platform = platform;
+            record.Product = product;
+            record.Regions = await GetRegionsAsync(_dbcontext, record.PlatformInfoId, token);
+            record.Services = await GetServicesAsync(_dbcontext, record.PlatformInfoId, token);
             record.Currencies = DefaultCurrencies;
 
             return Result.Ok(record);
@@ -595,11 +651,11 @@ public static class PlatformRateFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result> Handle(DeleteCommand command, CancellationToken token)
+        public async Task<Result> Handle(DeleteCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<PlatformRate>().FindAsync([command.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<PlatformRate>().FindAsync([message.Id], cancellationToken: token);
             if (record is null)
-                return RecordNotFound(command.Id);
+                return RecordNotFound(message.Id);
 
             _dbcontext.Set<PlatformRate>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);
@@ -611,205 +667,87 @@ public static class PlatformRateFlow
     // IMPORT
     //
 
-    public sealed record ImportModel
+    public sealed record ImportModel : Model
     {
+        [NotMapped]
         [Display(Name = nameof(IsSelected), ResourceType = typeof(Localization))]
         public bool IsSelected { get; set; }
-
-        /// <summary>
-        /// "currencyCode":"USD"
-        /// </summary>
-        [Display(Name = nameof(CurrencyCode), ResourceType = typeof(Localization))]
-        public string CurrencyCode { get; set; } = string.Empty;
-
-        /// <summary>
-        /// "tierMinimumUnits":0.0
-        /// </summary>
-        [Precision(12, 6)]
-        [DisplayFormat(DataFormatString = "{0:F6}", ApplyFormatInEditMode = true)]
-        [Display(Name = nameof(TierMinimumUnits), ResourceType = typeof(Localization))]
-        public decimal TierMinimumUnits { get; set; }
-
-        /// <summary>
-        /// "retailPrice":0.29601
-        /// </summary>
-        [Precision(12, 6)]
-        [DisplayFormat(DataFormatString = "{0:F6}", ApplyFormatInEditMode = true)]
-        [Display(Name = nameof(RetailPrice), ResourceType = typeof(Localization))]
-        public decimal RetailPrice { get; set; }
-
-        /// <summary>
-        /// "unitPrice":0.29601
-        /// </summary>
-        [Precision(12, 6)]
-        [DisplayFormat(DataFormatString = "{0:F6}", ApplyFormatInEditMode = true)]
-        [Display(Name = nameof(UnitPrice), ResourceType = typeof(Localization))]
-        public decimal UnitPrice { get; set; }
-
-        /// <summary>
-        /// "armRegionName":"southindia"
-        /// </summary>
-        [Display(Name = nameof(ArmRegionName), ResourceType = typeof(Localization))]
-        public string? ArmRegionName { get; set; }
-
-        /// <summary>
-        /// "location":"IN South"
-        /// </summary>
-        [Display(Name = nameof(Location), ResourceType = typeof(Localization))]
-        public string? Location { get; set; }
-
-        /// <summary>
-        /// "":"2024-08-01T00:00:00Z"
-        /// </summary>
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        [Display(Name = nameof(EffectiveStartDate), ResourceType = typeof(Localization))]
-        public DateTime? EffectiveStartDate { get; set; }
-
-        /// <summary>
-        /// "meterId":"000009d0-057f-5f2b-b7e9-9e26add324a8"
-        /// </summary>
-        [Display(Name = nameof(MeterId), ResourceType = typeof(Localization))]
-        public string? MeterId { get; set; }
-
-        /// <summary>
-        /// "meterName":"D14/DS14 Spot"
-        /// </summary>
-        [Display(Name = nameof(MeterName), ResourceType = typeof(Localization))]
-        public string? MeterName { get; set; }
-
-        /// <summary>
-        /// "productId":"DZH318Z0BPVW"
-        /// </summary>
-        [Display(Name = nameof(ProductId), ResourceType = typeof(Localization))]
-        public string? ProductId { get; set; }
-
-        /// <summary>
-        /// "productName":"Virtual Machines D Series Windows"
-        /// </summary>
-        [Display(Name = nameof(ProductName), ResourceType = typeof(Localization))]
-        public string? ProductName { get; set; }
-
-        /// <summary>
-        /// "skuId":"DZH318Z0BPVW/00QZ"
-        /// </summary>
-        [Display(Name = nameof(SkuId), ResourceType = typeof(Localization))]
-        public string? SkuId { get; set; }
-
-        /// <summary>
-        /// "skuName":"D14 Spot"
-        /// </summary>
-        [Display(Name = nameof(SkuName), ResourceType = typeof(Localization))]
-        public string? SkuName { get; set; }
-
-        /// <summary>
-        /// "armSkuName":"Standard_D14"
-        /// </summary>
-        [Display(Name = nameof(ArmSkuName), ResourceType = typeof(Localization))]
-        public string? ArmSkuName { get; set; }
-
-        /// <summary>
-        /// "serviceId":"DZH313Z7MMC8"
-        /// </summary>
-        [Display(Name = nameof(ServiceId), ResourceType = typeof(Localization))]
-        public string? ServiceId { get; set; }
-
-        /// <summary>
-        /// "serviceFamily":"Compute"
-        /// </summary>
-        [Display(Name = nameof(ServiceFamily), ResourceType = typeof(Localization))]
-        public string? ServiceFamily { get; set; }
-
-        /// <summary>
-        /// "serviceName":"Virtual Machines"
-        /// </summary>
-        [Display(Name = nameof(ServiceName), ResourceType = typeof(Localization))]
-        public string? ServiceName { get; set; }
-
-        /// <summary>
-        /// "unitOfMeasure":"1 Hour"
-        /// </summary>
-        [Display(Name = nameof(UnitOfMeasure), ResourceType = typeof(Localization))]
-        public string? UnitOfMeasure { get; set; }
-
-        /// <summary>
-        /// "type":"Consumption"
-        /// </summary>
-        [Display(Name = nameof(RateType), ResourceType = typeof(Localization))]
-        public string? RateType { get; set; }
-
-        /// <summary>
-        /// "isPrimaryMeterRegion": true
-        /// </summary>
-        [Display(Name = nameof(IsPrimaryRegion), ResourceType = typeof(Localization))]
-        public bool IsPrimaryRegion { get; set; }
     }
 
-    public sealed class ImportQuery : EntityListFlow.Query, IRequest<ImportResult>
+    internal sealed class ImportModelMapping : Profile
     {
-        public Ulid PlatformServiceId { get; set; } = Ulid.Empty;
+        public ImportModelMapping() => CreateMap<PricingItem, ImportModel>()
+            .ForMember(dest => dest.IsPrimaryRegion, opt => opt.MapFrom(src => src.IsPrimaryMeterRegion))
+            .ForMember(dest => dest.MinimumUnits, opt => opt.MapFrom(src => src.TierMinimumUnits))
+            .ForMember(dest => dest.RateType, opt => opt.MapFrom(src => src.Type))
+            .ForMember(dest => dest.ValidFrom, opt => opt.MapFrom(src => src.EffectiveStartDate))
+            ;
+    }
+
+    public sealed class ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
+    {
+        public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
 
         public Ulid? PlatformRegionId { get; set; } = Ulid.Empty;
 
-        public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
+        public Ulid? PlatformServiceId { get; set; } = Ulid.Empty;
 
-        public string Currency { get; set; } = string.Empty;
+        public string CurrencyCode { get; set; } = string.Empty;
     }
 
-    internal sealed class ImportQueryValidator : AbstractValidator<ImportQuery>
+    public sealed class ImportQueryValidator : AbstractValidator<ImportQuery>
     {
         public ImportQueryValidator()
         {
-            RuleFor(m => m.PlatformServiceId).NotNull().NotEmpty();
+            RuleFor(m => m.PlatformProductId).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
     public sealed class ImportResult : EntityListFlow.Result<ImportModel>
     {
-        public Ulid? PlatformServiceId { get; set; } = Ulid.Empty;
+        public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
 
         public Ulid? PlatformRegionId { get; set; } = Ulid.Empty;
 
-        public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
+        public Ulid? PlatformServiceId { get; set; } = Ulid.Empty;
 
-        public string Currency { get; set; } = string.Empty;
+        public string CurrencyCode { get; set; } = string.Empty;
+
+        public PlatformInfo Platform { get; set; } = new();
+
+        public PlatformProduct Product { get; set; } = new();
 
         public IList<PlatformRegion> Regions { get; set; } = [];
 
-        public IList<PlatformProduct> Products { get; set; } = [];
+        public IList<PlatformService> Services { get; set; } = [];
 
-        public IList<string> Currencies = DefaultCurrencies;
-    }
-
-    internal sealed class ImportResultMapping : Profile
-    {
-        public ImportResultMapping() =>
-            CreateMap<PricingItem, ImportModel>();
+        public IList<string> Currencies { get; set; } = DefaultCurrencies;
     }
 
     public sealed record ImportCommand : IRequest<Result>
     {
-        public Ulid PlatformServiceId { get; set; }
+        public Ulid PlatformProductId { get; set; }
 
         public Ulid PlatformRegionId { get; set; }
 
-        public Ulid PlatformProductId { get; set; }
-
-        public string Currency { get; set; } = string.Empty;
+        public Ulid PlatformServiceId { get; set; }
 
         public List<ImportModel> Items { get; set; } = [];
     }
 
-    internal sealed class ImportCommandValidator : AbstractValidator<ImportCommand>
+    public sealed class ImportCommandValidator : AbstractValidator<ImportCommand>
     {
         public ImportCommandValidator()
         {
-            RuleFor(m => m.PlatformServiceId).NotNull();
+            RuleFor(m => m.PlatformProductId).NotEmpty().NotEqual(Ulid.Empty);
+            RuleFor(m => m.PlatformRegionId).NotEmpty().NotEqual(Ulid.Empty);
+            RuleFor(m => m.PlatformServiceId).NotEmpty().NotEqual(Ulid.Empty);
         }
     }
 
     internal sealed class ImportQueryHandler :
        EntityListFlow.Handler<PlatformRate, ImportModel>,
-       IRequestHandler<ImportQuery, ImportResult>
+       IRequestHandler<ImportQuery, Result<ImportResult>>
     {
         private readonly PlatformImportOptions _options;
         private readonly IMapper _mapper;
@@ -821,100 +759,96 @@ public static class PlatformRateFlow
             _mapper = mapper;
         }
 
-        public async Task<ImportResult> Handle(ImportQuery request, CancellationToken token)
+        public async Task<Result<ImportResult>> Handle(ImportQuery message, CancellationToken token)
         {
-            var service = await _dbcontext.Set<PlatformService>().FindAsync([request.PlatformServiceId], cancellationToken: token);
-            if (service is null)
-                return new ImportResult()
-                {
-                    PlatformServiceId = request.PlatformServiceId,
-                    PlatformRegionId = request.PlatformRegionId,
-                    PlatformProductId = request.PlatformProductId,
-                    CurrentFilter = request.CurrentFilter,
-                    SearchText = request.SearchText,
-                    SortOrder = request.SortOrder,
-                    Regions = [],
-                    Products = [],
-                    Currencies = DefaultCurrencies,
-                    Results = []
-                };
+            var product = await _dbcontext.Set<PlatformProduct>().FindAsync([message.PlatformProductId], cancellationToken: token);
+            if (product is null)
+                return ProductNotFound(message.PlatformProductId ?? Ulid.Empty);
 
-            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([service.PlatformInfoId], cancellationToken: token);
+            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([product.PlatformInfoId], cancellationToken: token);
             if (platform is null)
-                return new ImportResult()
+                return PlatformNotFound(product.PlatformInfoId);
+
+            var regions = await GetRegionsAsync(_dbcontext, platform.Id, token);
+            var services = await GetServicesAsync(_dbcontext, platform.Id, token);
+
+            if (!message.PlatformRegionId.HasValue || message.PlatformRegionId == Ulid.Empty
+                || !message.PlatformServiceId.HasValue || message.PlatformServiceId == Ulid.Empty
+                || string.IsNullOrEmpty(message.CurrencyCode))
+                return Result.Ok(new ImportResult
                 {
-                    PlatformServiceId = request.PlatformServiceId,
-                    PlatformRegionId = request.PlatformRegionId,
-                    PlatformProductId = request.PlatformProductId,
-                    CurrentFilter = request.CurrentFilter,
-                    SearchText = request.SearchText,
-                    SortOrder = request.SortOrder,
-                    Regions = [],
-                    Products = [],
-                    Currencies = DefaultCurrencies,
+                    PlatformProductId = message.PlatformProductId,
+                    PlatformRegionId = message.PlatformRegionId,
+                    PlatformServiceId = message.PlatformServiceId,
+                    CurrencyCode = message.CurrencyCode,
+                    CurrentFilter = message.CurrentFilter,
+                    SearchText = message.SearchText,
+                    SortOrder = message.SortOrder,
+                    Platform = platform,
+                    Product = product,
+                    Regions = regions.ToList(),
+                    Services = services.ToList(),
                     Results = []
-                };
+                });
+            
+            var region = regions.First(f => f.Id == message.PlatformRegionId).Name;
+            var service = services.First(f => f.Id == message.PlatformServiceId).Name;
+            var currency = message.CurrencyCode;
 
-            var regions = _dbcontext.Set<PlatformRegion>().Where(q => q.PlatformInfoId == platform.Id).OrderBy(o => o.Name).ToList();
-            var regionName = (regions.FirstOrDefault(f => f.Id == request.PlatformRegionId) ?? new()).Name;
+            var searchString = message.SearchText ?? message.CurrentFilter;
+            List<ImportModel> records = await GetAzureRatesAsync(platform.Provider, message.PlatformProductId!.Value, region, service, currency, searchString);
 
-            var products = _dbcontext.Set<PlatformProduct>().Where(q => q.PlatformInfoId == platform.Id).OrderBy(o => o.Name).ToList();
-            var productName = (products.FirstOrDefault(f => f.Id == request.PlatformProductId) ?? new()).Name;
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                var searchFor = searchString.ToLowerInvariant();
+                records = records.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor)).ToList();
+            }
 
-            var searchString = request.SearchText ?? request.CurrentFilter;
-            List<ImportModel> rates = await GetAzureRatesAsync(
-                platform.Provider.ToString(),
-                service.PlatformInfoId,
-                "EUR", //currency
-                productName, //service
-                regionName, //location
-                searchString);
-
-            rates = [.. rates
+            records = [.. records
                 .OrderBy(o => o.ProductName)
                 .ThenBy(o => o.SkuName)
                 .ThenBy(o => o.RateType)
                 .ThenBy(o => o.MeterName)
-                .ThenBy(o => o.Location)
                 .ThenBy(o => o.CurrencyCode)
-                .ThenBy(o => o.TierMinimumUnits)
+                .ThenBy(o => o.MinimumUnits)
                 ];
             int pageSize = EntityListFlow.PageSize;
-            int pageNumber = request.Page ?? 1;
+            int pageNumber = message.Page ?? 1;
 
-            var result = new ImportResult()
+            return new ImportResult()
             {
-                PlatformServiceId = request.PlatformServiceId,
-                PlatformRegionId = request.PlatformRegionId,
-                PlatformProductId = request.PlatformProductId,
-                Currency = request.Currency,
+                PlatformProductId = product.Id,
+                PlatformRegionId = message.PlatformRegionId,
+                PlatformServiceId = message.PlatformServiceId,
+                CurrencyCode = currency,
+                Platform = platform,
+                Product = product,
+                Regions = regions,
+                Services = services,
+                Currencies = DefaultCurrencies,
                 CurrentFilter = searchString,
                 SearchText = searchString,
-                SortOrder = request.SortOrder,
-                Regions = regions,
-                Products = products,
-                Currencies = DefaultCurrencies,
+                SortOrder = message.SortOrder,
                 Results = new PaginatedList<ImportModel>(
-                    rates.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
-                    rates.Count,
+                    records.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
+                    records.Count,
                     pageNumber,
                     pageSize)
             };
-            return result;
         }
 
         private async Task<List<ImportModel>> GetAzureRatesAsync(
-            string platform,
-            Ulid platformInfoId,
-            string currency,
+            PlatformProvider platform,
+            Ulid platformProductId,
+            string regionName,
             string serviceName,
-            string location,
+            string currencyCode,
             string searchString)
         {
             List<ImportModel> result = [];
-
+            
             var service = new AzurePricingService(_options);
-            var pricing = await service.GetRatesAsync(currency, serviceName, location, searchString);
+            var pricing = await service.GetRatesAsync(currencyCode, serviceName, regionName, searchString);
 
             if (pricing is null)
                 return [];
@@ -934,47 +868,43 @@ public static class PlatformRateFlow
             _dbcontext = dbcontext;
         }
 
-        public async Task<Result> Handle(ImportCommand command, CancellationToken token)
+        public async Task<Result> Handle(ImportCommand message, CancellationToken token)
         {
-            if (command is null || command.Items is null || command.Items.Count < 0)
+            if (message is null || message.Items is null || message.Items.Count < 0)
                 return Result.Ok();
 
-            var service = await _dbcontext.Set<PlatformService>().FindAsync([command.PlatformServiceId], cancellationToken: token);
-            if (service is null)
-                return ServiceNotFound(command.PlatformServiceId);
-
-            var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([service.PlatformInfoId], cancellationToken: token);
-            if (platform is null)
-                return PlatformNotFound(service.PlatformInfoId);
+            var product = await _dbcontext.Set<PlatformProduct>().FindAsync([message.PlatformProductId], cancellationToken: token);
+            if (product is null)
+                return PlatformNotFound(message.PlatformProductId);
 
             bool changes = false;
-            foreach (var item in command.Items)
+            foreach (var item in message.Items)
             {
                 PlatformRate record = new()
                 {
                     Id = Ulid.NewUlid(),
-                    PlatformInfoId = platform.Id,
-                    PlatformService = service,
-                    PlatformRegionId = command.PlatformRegionId,
-                    PlatformProductId = command.PlatformProductId,
-                    Remark = null,
-                    CreatedDT = DateTime.UtcNow,
+                    PlatformInfoId = product.PlatformInfoId,
+                    PlatformProduct = product,
+                    PlatformRegionId = message.PlatformRegionId,
+                    PlatformServiceId = message.PlatformServiceId,
+                    Remark = item.Remark,
+                    SearchIndex = item.SearchIndex,
+                    CreatedDT = DateTime.Today,
 
-                    ServiceName = item.ServiceName ?? string.Empty,
-                    ServiceFamily = item.ServiceFamily ?? string.Empty,
-                    ProductName = item.ProductName ?? string.Empty,
-                    SkuName = item.SkuName ?? string.Empty,
-                    MeterName = item.MeterName ?? string.Empty,
-                    RateType = item.RateType ?? string.Empty,
+                    ServiceName = item.ServiceName,
+                    ServiceFamily = item.ServiceFamily,
+                    ProductName = item.ProductName,
+                    SkuName = item.SkuName,
+                    MeterName = item.MeterName,
+                    RateType = item.RateType,
                     CurrencyCode = item.CurrencyCode,
-                    ValidFrom = item.EffectiveStartDate ?? DateTime.Today,
+                    ValidFrom = item.ValidFrom,
                     RetailPrice = item.RetailPrice,
                     UnitPrice = item.UnitPrice,
-                    MininumUnits = item.TierMinimumUnits,
-                    UnitOfMeasure = item.UnitOfMeasure ?? string.Empty,
+                    MininumUnits = item.MinimumUnits,
+                    UnitOfMeasure = item.UnitOfMeasure,
                     IsPrimaryRegion = item.IsPrimaryRegion
                 };
-
                 await _dbcontext.Set<PlatformRate>().AddAsync(record, token);
                 changes = true;
             }

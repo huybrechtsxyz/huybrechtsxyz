@@ -36,8 +36,9 @@ public static class PlatformInfoFlow
     {
         public ModelValidator()
         {
+            RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
             RuleFor(m => m.Name).NotNull().Length(1, 128);
-            RuleFor(m => m.Description).Length(1, 256);
+            RuleFor(m => m.Description).Length(0, 256);
         }
     }
 
