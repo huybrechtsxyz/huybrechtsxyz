@@ -1,0 +1,1874 @@
+[
+  {
+    "Code": "AF",
+    "ShortName": "Afghanistan",
+    "TranslatedName": "افغانستان (Afġānistān)",
+    "Description": "A country located in South Asia and Central Asia, known for its rugged terrain and rich history.",
+    "CurrencyCode": "AFN",
+    "LanguageCode": "PS"
+  },
+  {
+    "Code": "AL",
+    "ShortName": "Albania",
+    "TranslatedName": "Shqipëri",
+    "Description": "A country in Southeastern Europe, known for its scenic landscapes and historical sites.",
+    "CurrencyCode": "ALL",
+    "LanguageCode": "SQ"
+  },
+  {
+    "Code": "DZ",
+    "ShortName": "Algeria",
+    "TranslatedName": "الجزائر (Al-Jazā'ir)",
+    "Description": "A large country in North Africa, known for its rich history and diverse culture.",
+    "CurrencyCode": "DZD",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "AS",
+    "ShortName": "American Samoa",
+    "TranslatedName": "American Samoa",
+    "Description": "An unincorporated territory of the United States located in the South Pacific Ocean.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "AD",
+    "ShortName": "Andorra",
+    "TranslatedName": "Andorra",
+    "Description": "A small landlocked country in the Pyrenees mountains between France and Spain.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "CA"
+  },
+  {
+    "Code": "AO",
+    "ShortName": "Angola",
+    "TranslatedName": "Angola",
+    "Description": "A country in Southern Africa, known for its rich natural resources and cultural diversity.",
+    "CurrencyCode": "AOA",
+    "LanguageCode": "PT"
+  },
+  {
+    "Code": "AI",
+    "ShortName": "Anguilla",
+    "TranslatedName": "Anguilla",
+    "Description": "A British Overseas Territory in the Caribbean, known for its beautiful beaches.",
+    "CurrencyCode": "XCD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "AG",
+    "ShortName": "Antigua and Barbuda",
+    "TranslatedName": "Antigua and Barbuda",
+    "Description": "A country in the West Indies, known for its Caribbean beaches and vibrant culture.",
+    "CurrencyCode": "XCD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "AR",
+    "ShortName": "Argentina",
+    "TranslatedName": "Argentina",
+    "Description": "A large country in South America known for its diverse geography and rich cultural heritage.",
+    "CurrencyCode": "ARS",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "AM",
+    "ShortName": "Armenia",
+    "TranslatedName": "Հայաստան (Hayastan)",
+    "Description": "A country in the South Caucasus region of Eurasia, known for its ancient history and culture.",
+    "CurrencyCode": "AMD",
+    "LanguageCode": "HY"
+  },
+  {
+    "Code": "AU",
+    "ShortName": "Australia",
+    "TranslatedName": "Australia",
+    "Description": "A country and continent surrounded by the Indian and Pacific oceans, known for its natural wonders and unique wildlife.",
+    "CurrencyCode": "AUD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "AT",
+    "ShortName": "Austria",
+    "TranslatedName": "Österreich",
+    "Description": "A country in Central Europe known for its classical music heritage and beautiful landscapes.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "DE"
+  },
+  {
+    "Code": "AZ",
+    "ShortName": "Azerbaijan",
+    "TranslatedName": "Azərbaycan",
+    "Description": "A country in the South Caucasus region known for its rich culture and natural beauty.",
+    "CurrencyCode": "AZN",
+    "LanguageCode": "AZ"
+  },
+  {
+    "Code": "BS",
+    "ShortName": "Bahamas",
+    "TranslatedName": "Bahamas",
+    "Description": "An island country in the Atlantic Ocean known for its clear waters and tropical climate.",
+    "CurrencyCode": "BSD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "BH",
+    "ShortName": "Bahrain",
+    "TranslatedName": "البحرين (Al-Baḥrayn)",
+    "Description": "An island country in the Persian Gulf known for its modern architecture and rich history.",
+    "CurrencyCode": "BHD",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "BD",
+    "ShortName": "Bangladesh",
+    "TranslatedName": "বাংলাদেশ (Bānglādeś)",
+    "Description": "A country in South Asia known for its rich culture and significant population density.",
+    "CurrencyCode": "BDT",
+    "LanguageCode": "BN"
+  },
+  {
+    "Code": "BB",
+    "ShortName": "Barbados",
+    "TranslatedName": "Barbados",
+    "Description": "An island country in the Caribbean known for its vibrant culture and beautiful beaches.",
+    "CurrencyCode": "BBD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "BY",
+    "ShortName": "Belarus",
+    "TranslatedName": "Беларусь (Belarus')",
+    "Description": "A landlocked country in Eastern Europe known for its cultural heritage and historical sites.",
+    "CurrencyCode": "BYN",
+    "LanguageCode": "BE"
+  },
+  {
+    "Code": "BE",
+    "ShortName": "Belgium",
+    "TranslatedName": "België / Belgique / Belgien",
+    "Description": "A country in Western Europe known for its medieval towns and Renaissance architecture.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "NL"
+  },
+  {
+    "Code": "BZ",
+    "ShortName": "Belize",
+    "TranslatedName": "Belize",
+    "Description": "A country in Central America known for its rich biodiversity and Caribbean coast.",
+    "CurrencyCode": "BZD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "BJ",
+    "ShortName": "Benin",
+    "TranslatedName": "Bénin",
+    "Description": "A country in West Africa known for its history and cultural diversity.",
+    "CurrencyCode": "XOF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "BT",
+    "ShortName": "Bhutan",
+    "TranslatedName": "འབྲུག (Druk)",
+    "Description": "A landlocked country in South Asia known for its unique culture and stunning landscapes.",
+    "CurrencyCode": "INR",
+    "LanguageCode": "Dz"
+  },
+  {
+    "Code": "BO",
+    "ShortName": "Bolivia",
+    "TranslatedName": "Bolivia",
+    "Description": "A country in South America known for its diverse geography and indigenous cultures.",
+    "CurrencyCode": "BOB",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "BA",
+    "ShortName": "Bosnia and Herzegovina",
+    "TranslatedName": "Bosna i Hercegovina",
+    "Description": "A country in Southeast Europe known for its rich history and cultural diversity.",
+    "CurrencyCode": "BAM",
+    "LanguageCode": "BS"
+  },
+  {
+    "Code": "BW",
+    "ShortName": "Botswana",
+    "TranslatedName": "Botswana",
+    "Description": "A country in Southern Africa known for its wildlife and stable economy.",
+    "CurrencyCode": "BWP",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "BR",
+    "ShortName": "Brazil",
+    "TranslatedName": "Brasil",
+    "Description": "The largest country in South America known for its diverse culture and natural beauty.",
+    "CurrencyCode": "BRL",
+    "LanguageCode": "PT"
+  },
+  {
+    "Code": "BN",
+    "ShortName": "Brunei",
+    "TranslatedName": "Brunei",
+    "Description": "A small, wealthy country on the island of Borneo known for its petroleum industry.",
+    "CurrencyCode": "BND",
+    "LanguageCode": "MS"
+  },
+  {
+    "Code": "BG",
+    "ShortName": "Bulgaria",
+    "TranslatedName": "България (Bǎlgariya)",
+    "Description": "A country in Southeast Europe known for its rich cultural heritage and history.",
+    "CurrencyCode": "BGN",
+    "LanguageCode": "BG"
+  },
+  {
+    "Code": "BF",
+    "ShortName": "Burkina Faso",
+    "TranslatedName": "Burkina Faso",
+    "Description": "A landlocked country in West Africa known for its cultural diversity and history.",
+    "CurrencyCode": "XOF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "BI",
+    "ShortName": "Burundi",
+    "TranslatedName": "Burundi",
+    "Description": "A small, landlocked country in East Africa known for its mountainous terrain.",
+    "CurrencyCode": "BIF",
+    "LanguageCode": "RN"
+  },
+  {
+    "Code": "CV",
+    "ShortName": "Cabo Verde",
+    "TranslatedName": "Cabo Verde",
+    "Description": "An island country in the central Atlantic Ocean known for its Creole culture and volcanic landscapes.",
+    "CurrencyCode": "CVE",
+    "LanguageCode": "PT"
+  },
+  {
+    "Code": "KH",
+    "ShortName": "Cambodia",
+    "TranslatedName": "កម្ពុជា (Kampuchea)",
+    "Description": "A country in Southeast Asia known for its ancient temples and rich cultural history.",
+    "CurrencyCode": "KHR",
+    "LanguageCode": "KM"
+  },
+  {
+    "Code": "CM",
+    "ShortName": "Cameroon",
+    "TranslatedName": "Cameroun",
+    "Description": "A country in Central Africa known for its diverse geography and ethnic groups.",
+    "CurrencyCode": "XAF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "CA",
+    "ShortName": "Canada",
+    "TranslatedName": "Canada",
+    "Description": "A large country in North America known for its natural beauty and multicultural population.",
+    "CurrencyCode": "CAD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "KY",
+    "ShortName": "Cayman Islands",
+    "TranslatedName": "Cayman Islands",
+    "Description": "A British Overseas Territory in the Caribbean known for its financial services industry.",
+    "CurrencyCode": "KYD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "CF",
+    "ShortName": "Central African Republic",
+    "TranslatedName": "République Centrafricaine",
+    "Description": "A landlocked country in Central Africa known for its diverse wildlife and natural resources.",
+    "CurrencyCode": "XAF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "TD",
+    "ShortName": "Chad",
+    "TranslatedName": "Tchad",
+    "Description": "A landlocked country in Central Africa known for its diverse cultures and landscapes.",
+    "CurrencyCode": "XAF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "CL",
+    "ShortName": "Chile",
+    "TranslatedName": "Chile",
+    "Description": "A long, narrow country along the western coast of South America known for its diverse geography.",
+    "CurrencyCode": "CLP",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "CN",
+    "ShortName": "China",
+    "TranslatedName": "中国 (Zhōngguó)",
+    "Description": "A vast country in East Asia known for its ancient civilization and rapid economic growth.",
+    "CurrencyCode": "CNY",
+    "LanguageCode": "ZH"
+  },
+  {
+    "Code": "CO",
+    "ShortName": "Colombia",
+    "TranslatedName": "Colombia",
+    "Description": "A country in South America known for its coffee production and cultural heritage.",
+    "CurrencyCode": "COP",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "KM",
+    "ShortName": "Comoros",
+    "TranslatedName": "Comores",
+    "Description": "An island country in the Indian Ocean known for its volcanic landscapes and diverse culture.",
+    "CurrencyCode": "KMF",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "CG",
+    "ShortName": "Congo, Republic of the",
+    "TranslatedName": "Congo-Brazzaville",
+    "Description": "A country in Central Africa known for its rich biodiversity and cultural heritage.",
+    "CurrencyCode": "XAF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "CD",
+    "ShortName": "Congo, Democratic Republic of the",
+    "TranslatedName": "Congo-Kinshasa",
+    "Description": "A large country in Central Africa known for its natural resources and diverse cultures.",
+    "CurrencyCode": "CDF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "CK",
+    "ShortName": "Cook Islands",
+    "TranslatedName": "Cook Islands",
+    "Description": "A self-governing territory in free association with New Zealand, known for its Polynesian culture.",
+    "CurrencyCode": "NZD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "CR",
+    "ShortName": "Costa Rica",
+    "TranslatedName": "Costa Rica",
+    "Description": "A country in Central America known for its biodiversity and eco-tourism.",
+    "CurrencyCode": "CRC",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "HR",
+    "ShortName": "Croatia",
+    "TranslatedName": "Hrvatska",
+    "Description": "A country in Southeast Europe known for its medieval architecture and Adriatic coastline.",
+    "CurrencyCode": "HRK",
+    "LanguageCode": "HR"
+  },
+  {
+    "Code": "CU",
+    "ShortName": "Cuba",
+    "TranslatedName": "Cuba",
+    "Description": "An island country in the Caribbean known for its rich culture and historical significance.",
+    "CurrencyCode": "CUP",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "CW",
+    "ShortName": "Curaçao",
+    "TranslatedName": "Curaçao",
+    "Description": "A Dutch Caribbean island known for its vibrant culture and beautiful beaches.",
+    "CurrencyCode": "ANG",
+    "LanguageCode": "NL"
+  },
+  {
+    "Code": "CY",
+    "ShortName": "Cyprus",
+    "TranslatedName": "Κύπρος (Kýpros)",
+    "Description": "An island country in the Eastern Mediterranean known for its rich history and cultural heritage.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "EL"
+  },
+  {
+    "Code": "CZ",
+    "ShortName": "Czech Republic",
+    "TranslatedName": "Česká republika",
+    "Description": "A country in Central Europe known for its historical towns and beautiful landscapes.",
+    "CurrencyCode": "CZK",
+    "LanguageCode": "CS"
+  },
+  {
+    "Code": "DK",
+    "ShortName": "Denmark",
+    "TranslatedName": "Danmark",
+    "Description": "A country in Northern Europe known for its modern design and high quality of life.",
+    "CurrencyCode": "DKK",
+    "LanguageCode": "DA"
+  },
+  {
+    "Code": "DJ",
+    "ShortName": "Djibouti",
+    "TranslatedName": "Djibouti",
+    "Description": "A country in the Horn of Africa known for its strategic location and diverse cultures.",
+    "CurrencyCode": "DJF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "DM",
+    "ShortName": "Dominica",
+    "TranslatedName": "Dominica",
+    "Description": "An island country in the Caribbean known for its natural beauty and vibrant culture.",
+    "CurrencyCode": "XCD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "DO",
+    "ShortName": "Dominican Republic",
+    "TranslatedName": "República Dominicana",
+    "Description": "A country in the Caribbean known for its beautiful beaches and rich history.",
+    "CurrencyCode": "DOP",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "EC",
+    "ShortName": "Ecuador",
+    "TranslatedName": "Ecuador",
+    "Description": "A country in South America known for its diverse ecosystems and rich cultural heritage.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "EG",
+    "ShortName": "Egypt",
+    "TranslatedName": "مصر (Misr)",
+    "Description": "A country in North Africa known for its ancient civilization and cultural landmarks.",
+    "CurrencyCode": "EGP",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "SV",
+    "ShortName": "El Salvador",
+    "TranslatedName": "El Salvador",
+    "Description": "A country in Central America known for its beaches and volcanic landscapes.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "GQ",
+    "ShortName": "Equatorial Guinea",
+    "TranslatedName": "Guinea Ecuatorial",
+    "Description": "A country in Central Africa known for its diverse culture and natural resources.",
+    "CurrencyCode": "XAF",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "ER",
+    "ShortName": "Eritrea",
+    "TranslatedName": "ኤርትራ (Eritrea)",
+    "Description": "A country in the Horn of Africa known for its historical sites and diverse culture.",
+    "CurrencyCode": "ERN",
+    "LanguageCode": "TIG"
+  },
+  {
+    "Code": "EE",
+    "ShortName": "Estonia",
+    "TranslatedName": "Eesti",
+    "Description": "A country in Northern Europe known for its medieval architecture and digital innovation.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "ET"
+  },
+  {
+    "Code": "SZ",
+    "ShortName": "Eswatini",
+    "TranslatedName": "eSwatini",
+    "Description": "A landlocked country in Southern Africa known for its rich cultural heritage.",
+    "CurrencyCode": "SZL",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "ET",
+    "ShortName": "Ethiopia",
+    "TranslatedName": "ኢትዮጵያ (Ityop'iya)",
+    "Description": "A country in the Horn of Africa known for its ancient history and diverse cultures.",
+    "CurrencyCode": "ETB",
+    "LanguageCode": "AM"
+  },
+  {
+    "Code": "FJ",
+    "ShortName": "Fiji",
+    "TranslatedName": "Fiji",
+    "Description": "An island country in the South Pacific Ocean known for its tropical climate and diverse culture.",
+    "CurrencyCode": "FJD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "FI",
+    "ShortName": "Finland",
+    "TranslatedName": "Suomi",
+    "Description": "A country in Northern Europe known for its beautiful landscapes and high quality of life.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "FI"
+  },
+  {
+    "Code": "FR",
+    "ShortName": "France",
+    "TranslatedName": "France",
+    "Description": "A country in Western Europe known for its rich history, culture, and influence.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "GF",
+    "ShortName": "French Guiana",
+    "TranslatedName": "Guyane française",
+    "Description": "An overseas department of France located in South America, known for its biodiversity.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "PF",
+    "ShortName": "French Polynesia",
+    "TranslatedName": "Polynésie française",
+    "Description": "An overseas collectivity of France located in the South Pacific Ocean.",
+    "CurrencyCode": "XPF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "GA",
+    "ShortName": "Gabon",
+    "TranslatedName": "Gabon",
+    "Description": "A country in Central Africa known for its rainforests and rich wildlife.",
+    "CurrencyCode": "XAF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "GM",
+    "ShortName": "Gambia",
+    "TranslatedName": "Gambia",
+    "Description": "A small country in West Africa known for its diverse cultures and natural beauty.",
+    "CurrencyCode": "GMD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "GE",
+    "ShortName": "Georgia",
+    "TranslatedName": "საქართველო (Sak'art'velo)",
+    "Description": "A country at the intersection of Eastern Europe and Western Asia known for its diverse culture.",
+    "CurrencyCode": "GEL",
+    "LanguageCode": "KA"
+  },
+  {
+    "Code": "DE",
+    "ShortName": "Germany",
+    "TranslatedName": "Deutschland",
+    "Description": "A country in Central Europe known for its influential history and economic strength.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "DE"
+  },
+  {
+    "Code": "GH",
+    "ShortName": "Ghana",
+    "TranslatedName": "Ghana",
+    "Description": "A country in West Africa known for its rich culture and historical significance.",
+    "CurrencyCode": "GHS",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "GI",
+    "ShortName": "Gibraltar",
+    "TranslatedName": "Gibraltar",
+    "Description": "A British Overseas Territory located on the southern tip of the Iberian Peninsula.",
+    "CurrencyCode": "GIP",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "GR",
+    "ShortName": "Greece",
+    "TranslatedName": "Ελλάδα (Elláda)",
+    "Description": "A country in Southeastern Europe known for its ancient history and contributions to Western civilization.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "EL"
+  },
+  {
+    "Code": "GL",
+    "ShortName": "Greenland",
+    "TranslatedName": "Kalaallit Nunaat",
+    "Description": "An autonomous territory within the Kingdom of Denmark known for its ice-covered landscapes.",
+    "CurrencyCode": "DKK",
+    "LanguageCode": "KL"
+  },
+  {
+    "Code": "GD",
+    "ShortName": "Grenada",
+    "TranslatedName": "Grenada",
+    "Description": "An island country in the Caribbean known for its spice production and beautiful landscapes.",
+    "CurrencyCode": "XCD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "GP",
+    "ShortName": "Guadeloupe",
+    "TranslatedName": "Guadeloupe",
+    "Description": "An overseas department of France located in the Caribbean, known for its natural beauty.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "GU",
+    "ShortName": "Guam",
+    "TranslatedName": "Guam",
+    "Description": "An unincorporated territory of the United States located in the western Pacific Ocean.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "GT",
+    "ShortName": "Guatemala",
+    "TranslatedName": "Guatemala",
+    "Description": "A country in Central America known for its Mayan history and natural beauty.",
+    "CurrencyCode": "GTQ",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "GN",
+    "ShortName": "Guinea",
+    "TranslatedName": "Guinée",
+    "Description": "A country in West Africa known for its mineral resources and cultural diversity.",
+    "CurrencyCode": "GNF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "GW",
+    "ShortName": "Guinea-Bissau",
+    "TranslatedName": "Guiné-Bissau",
+    "Description": "A country in West Africa known for its diverse culture and colonial history.",
+    "CurrencyCode": "XOF",
+    "LanguageCode": "PT"
+  },
+  {
+    "Code": "GY",
+    "ShortName": "Guyana",
+    "TranslatedName": "Guyana",
+    "Description": "A country in South America known for its diverse ecology and multicultural society.",
+    "CurrencyCode": "GYD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "HT",
+    "ShortName": "Haiti",
+    "TranslatedName": "Haïti",
+    "Description": "A country in the Caribbean known for its rich cultural heritage and history.",
+    "CurrencyCode": "HTG",
+    "LanguageCode": "HT"
+  },
+  {
+    "Code": "HN",
+    "ShortName": "Honduras",
+    "TranslatedName": "Honduras",
+    "Description": "A country in Central America known for its rich natural resources and cultural heritage.",
+    "CurrencyCode": "HNL",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "HK",
+    "ShortName": "Hong Kong",
+    "TranslatedName": "香港 (Heung Gong)",
+    "Description": "A Special Administrative Region of China known for its global financial center and vibrant culture.",
+    "CurrencyCode": "HKD",
+    "LanguageCode": "ZH"
+  },
+  {
+    "Code": "HU",
+    "ShortName": "Hungary",
+    "TranslatedName": "Magyarország",
+    "Description": "A country in Central Europe known for its historical architecture and cultural contributions.",
+    "CurrencyCode": "HUF",
+    "LanguageCode": "HU"
+  },
+  {
+    "Code": "IS",
+    "ShortName": "Iceland",
+    "TranslatedName": "Ísland",
+    "Description": "An island country in the North Atlantic known for its volcanic landscapes and geothermal energy.",
+    "CurrencyCode": "ISK",
+    "LanguageCode": "IS"
+  },
+  {
+    "Code": "IN",
+    "ShortName": "India",
+    "TranslatedName": "भारत (Bhārat)",
+    "Description": "A large country in South Asia known for its diverse culture and history.",
+    "CurrencyCode": "INR",
+    "LanguageCode": "HI"
+  },
+  {
+    "Code": "ID",
+    "ShortName": "Indonesia",
+    "TranslatedName": "Indonesia",
+    "Description": "A country in Southeast Asia and Oceania.",
+    "CurrencyCode": "IDR",
+    "LanguageCode": "ID"
+  },
+  {
+    "Code": "IR",
+    "ShortName": "Iran",
+    "TranslatedName": "ایران",
+    "Description": "A country in Western Asia.",
+    "CurrencyCode": "IRR",
+    "LanguageCode": "FA"
+  },
+  {
+    "Code": "IQ",
+    "ShortName": "Iraq",
+    "TranslatedName": "العراق",
+    "Description": "A country in Western Asia.",
+    "CurrencyCode": "IQD",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "IE",
+    "ShortName": "Ireland",
+    "TranslatedName": "Éire",
+    "Description": "A country in Western Europe.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "IL",
+    "ShortName": "Israel",
+    "TranslatedName": "ישראל",
+    "Description": "A country in Western Asia.",
+    "CurrencyCode": "ILS",
+    "LanguageCode": "HE"
+  },
+  {
+    "Code": "IT",
+    "ShortName": "Italy",
+    "TranslatedName": "Italia",
+    "Description": "A country in Southern Europe.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "IT"
+  },
+  {
+    "Code": "JE",
+    "ShortName": "Jersey",
+    "TranslatedName": "Jersey",
+    "Description": "A British Crown dependency.",
+    "CurrencyCode": "GBP",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "JO",
+    "ShortName": "Jordan",
+    "TranslatedName": "الأردن",
+    "Description": "A country in Western Asia.",
+    "CurrencyCode": "JOD",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "KZ",
+    "ShortName": "Kazakhstan",
+    "TranslatedName": "Қазақстан",
+    "Description": "A country in Central Asia.",
+    "CurrencyCode": "KZT",
+    "LanguageCode": "KK"
+  },
+  {
+    "Code": "KE",
+    "ShortName": "Kenya",
+    "TranslatedName": "Kenya",
+    "Description": "A country in East Africa.",
+    "CurrencyCode": "KES",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "KI",
+    "ShortName": "Kiribati",
+    "TranslatedName": "Kiribati",
+    "Description": "A country in the central Pacific Ocean.",
+    "CurrencyCode": "AUD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "KP",
+    "ShortName": "North Korea",
+    "TranslatedName": "조선 민주주의 인민 공화국",
+    "Description": "A country in East Asia.",
+    "CurrencyCode": "KPW",
+    "LanguageCode": "KO"
+  },
+  {
+    "Code": "KR",
+    "ShortName": "South Korea",
+    "TranslatedName": "대한민국",
+    "Description": "A country in East Asia.",
+    "CurrencyCode": "KRW",
+    "LanguageCode": "KO"
+  },
+  {
+    "Code": "KW",
+    "ShortName": "Kuwait",
+    "TranslatedName": "الكويت",
+    "Description": "A country in Western Asia.",
+    "CurrencyCode": "KWD",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "KG",
+    "ShortName": "Kyrgyzstan",
+    "TranslatedName": "Кыргызстан",
+    "Description": "A country in Central Asia.",
+    "CurrencyCode": "KGS",
+    "LanguageCode": "KY"
+  },
+  {
+    "Code": "LA",
+    "ShortName": "Laos",
+    "TranslatedName": "ສປ ລາວ",
+    "Description": "A country in Southeast Asia.",
+    "CurrencyCode": "LAK",
+    "LanguageCode": "LO"
+  },
+  {
+    "Code": "LV",
+    "ShortName": "Latvia",
+    "TranslatedName": "Latvija",
+    "Description": "A country in Northern Europe.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "LV"
+  },
+  {
+    "Code": "LB",
+    "ShortName": "Lebanon",
+    "TranslatedName": "لبنان",
+    "Description": "A country in Western Asia.",
+    "CurrencyCode": "LBP",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "LS",
+    "ShortName": "Lesotho",
+    "TranslatedName": "Lesotho",
+    "Description": "A landlocked country in Southern Africa.",
+    "CurrencyCode": "LSL",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "LR",
+    "ShortName": "Liberia",
+    "TranslatedName": "Liberia",
+    "Description": "A country in West Africa.",
+    "CurrencyCode": "LRD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "LY",
+    "ShortName": "Libya",
+    "TranslatedName": "ليبيا",
+    "Description": "A country in North Africa.",
+    "CurrencyCode": "LYD",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "LI",
+    "ShortName": "Liechtenstein",
+    "TranslatedName": "Liechtenstein",
+    "Description": "A small principality in Central Europe.",
+    "CurrencyCode": "CHF",
+    "LanguageCode": "DE"
+  },
+  {
+    "Code": "LT",
+    "ShortName": "Lithuania",
+    "TranslatedName": "Lietuva",
+    "Description": "A country in the Baltic region of Europe.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "LT"
+  },
+  {
+    "Code": "LU",
+    "ShortName": "Luxembourg",
+    "TranslatedName": "Luxembourg",
+    "Description": "A small landlocked country in Western Europe.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "LB"
+  },
+  {
+    "Code": "MO",
+    "ShortName": "Macao",
+    "TranslatedName": "澳門",
+    "Description": "A Special Administrative Region of China.",
+    "CurrencyCode": "MOP",
+    "LanguageCode": "ZH"
+  },
+  {
+    "Code": "MK",
+    "ShortName": "North Macedonia",
+    "TranslatedName": "Северна Македонија",
+    "Description": "A country in Southeast Europe.",
+    "CurrencyCode": "MKD",
+    "LanguageCode": "MK"
+  },
+  {
+    "Code": "MG",
+    "ShortName": "Madagascar",
+    "TranslatedName": "Madagasikara",
+    "Description": "An island country in the Indian Ocean.",
+    "CurrencyCode": "MGA",
+    "LanguageCode": "MG"
+  },
+  {
+    "Code": "MW",
+    "ShortName": "Malawi",
+    "TranslatedName": "Malawi",
+    "Description": "A country in southeastern Africa.",
+    "CurrencyCode": "MWK",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "MY",
+    "ShortName": "Malaysia",
+    "TranslatedName": "Malaysia",
+    "Description": "A country in Southeast Asia.",
+    "CurrencyCode": "MYR",
+    "LanguageCode": "MS"
+  },
+  {
+    "Code": "MV",
+    "ShortName": "Maldives",
+    "TranslatedName": "Maldives",
+    "Description": "An island country in the Indian Ocean.",
+    "CurrencyCode": "MVR",
+    "LanguageCode": "DV"
+  },
+  {
+    "Code": "ML",
+    "ShortName": "Mali",
+    "TranslatedName": "Mali",
+    "Description": "A landlocked country in West Africa.",
+    "CurrencyCode": "XOF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "MT",
+    "ShortName": "Malta",
+    "TranslatedName": "Malta",
+    "Description": "An island country in the Mediterranean Sea.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "MT"
+  },
+  {
+    "Code": "MH",
+    "ShortName": "Marshall Islands",
+    "TranslatedName": "M̧ajeļ",
+    "Description": "A country in the central Pacific Ocean.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "MR",
+    "ShortName": "Mauritania",
+    "TranslatedName": "موريتانيا",
+    "Description": "A country in West Africa.",
+    "CurrencyCode": "MRU",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "MU",
+    "ShortName": "Mauritius",
+    "TranslatedName": "Maurice",
+    "Description": "An island nation in the Indian Ocean.",
+    "CurrencyCode": "MUR",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "YT",
+    "ShortName": "Mayotte",
+    "TranslatedName": "Mayotte",
+    "Description": "An overseas department and region of France.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "MX",
+    "ShortName": "Mexico",
+    "TranslatedName": "México",
+    "Description": "A country in North America.",
+    "CurrencyCode": "MXN",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "FM",
+    "ShortName": "Micronesia",
+    "TranslatedName": "Micronesia",
+    "Description": "A country in Oceania.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "MD",
+    "ShortName": "Moldova",
+    "TranslatedName": "Moldova",
+    "Description": "A country in Eastern Europe.",
+    "CurrencyCode": "MDL",
+    "LanguageCode": "RO"
+  },
+  {
+    "Code": "MC",
+    "ShortName": "Monaco",
+    "TranslatedName": "Monaco",
+    "Description": "A small sovereign city-state on the French Riviera.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "MN",
+    "ShortName": "Mongolia",
+    "TranslatedName": "Монгол Улс",
+    "Description": "A country in East Asia.",
+    "CurrencyCode": "MNT",
+    "LanguageCode": "MN"
+  },
+  {
+    "Code": "ME",
+    "ShortName": "Montenegro",
+    "TranslatedName": "Crna Gora",
+    "Description": "A country in Southeast Europe.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "SR"
+  },
+  {
+    "Code": "MS",
+    "ShortName": "Montserrat",
+    "TranslatedName": "Montserrat",
+    "Description": "A British Overseas Territory in the Caribbean.",
+    "CurrencyCode": "XCD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "MA",
+    "ShortName": "Morocco",
+    "TranslatedName": "المغرب",
+    "Description": "A country in North Africa.",
+    "CurrencyCode": "MAD",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "MZ",
+    "ShortName": "Mozambique",
+    "TranslatedName": "Moçambique",
+    "Description": "A country in Southeast Africa.",
+    "CurrencyCode": "MZN",
+    "LanguageCode": "PT"
+  },
+  {
+    "Code": "NA",
+    "ShortName": "Namibia",
+    "TranslatedName": "Namibië",
+    "Description": "A country in southern Africa.",
+    "CurrencyCode": "NAD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "NR",
+    "ShortName": "Nauru",
+    "TranslatedName": "Nauru",
+    "Description": "A small island country in Micronesia.",
+    "CurrencyCode": "AUD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "NP",
+    "ShortName": "Nepal",
+    "TranslatedName": "नेपाल",
+    "Description": "A country in South Asia.",
+    "CurrencyCode": "NPR",
+    "LanguageCode": "NE"
+  },
+  {
+    "Code": "NL",
+    "ShortName": "Netherlands",
+    "TranslatedName": "Nederland",
+    "Description": "A country in Western Europe.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "NL"
+  },
+  {
+    "Code": "NC",
+    "ShortName": "New Caledonia",
+    "TranslatedName": "Nouvelle-Calédonie",
+    "Description": "An overseas territory of France in the southwest Pacific Ocean.",
+    "CurrencyCode": "XPF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "NZ",
+    "ShortName": "New Zealand",
+    "TranslatedName": "New Zealand",
+    "Description": "A country in the southwestern Pacific Ocean.",
+    "CurrencyCode": "NZD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "NI",
+    "ShortName": "Nicaragua",
+    "TranslatedName": "Nicaragua",
+    "Description": "A country in Central America.",
+    "CurrencyCode": "NIO",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "NE",
+    "ShortName": "Niger",
+    "TranslatedName": "Niger",
+    "Description": "A landlocked country in West Africa.",
+    "CurrencyCode": "XOF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "NG",
+    "ShortName": "Nigeria",
+    "TranslatedName": "Nigeria",
+    "Description": "A country in West Africa.",
+    "CurrencyCode": "NGN",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "NU",
+    "ShortName": "Niue",
+    "TranslatedName": "Niue",
+    "Description": "A small island country in the South Pacific Ocean.",
+    "CurrencyCode": "NZD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "NF",
+    "ShortName": "Norfolk Island",
+    "TranslatedName": "Norfolk Island",
+    "Description": "An Australian external territory in the Pacific Ocean.",
+    "CurrencyCode": "AUD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "MP",
+    "ShortName": "Northern Mariana Islands",
+    "TranslatedName": "Northern Mariana Islands",
+    "Description": "A commonwealth in the Pacific Ocean and a territory of the United States.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "NO",
+    "ShortName": "Norway",
+    "TranslatedName": "Norge",
+    "Description": "A country in Northern Europe.",
+    "CurrencyCode": "NOK",
+    "LanguageCode": "NO"
+  },
+  {
+    "Code": "OM",
+    "ShortName": "Oman",
+    "TranslatedName": "عمان",
+    "Description": "A country in Western Asia.",
+    "CurrencyCode": "OMR",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "PK",
+    "ShortName": "Pakistan",
+    "TranslatedName": "پاکستان",
+    "Description": "A country in South Asia.",
+    "CurrencyCode": "PKR",
+    "LanguageCode": "UR"
+  },
+  {
+    "Code": "PW",
+    "ShortName": "Palau",
+    "TranslatedName": "Palau",
+    "Description": "An island country in the western Pacific Ocean.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "PS",
+    "ShortName": "Palestine",
+    "TranslatedName": "فلسطين",
+    "Description": "A de jure sovereign state in Western Asia.",
+    "CurrencyCode": "ILS",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "PA",
+    "ShortName": "Panama",
+    "TranslatedName": "Panamá",
+    "Description": "A country in Central America.",
+    "CurrencyCode": "PAB",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "PG",
+    "ShortName": "Papua New Guinea",
+    "TranslatedName": "Papua New Guinea",
+    "Description": "A country in Oceania.",
+    "CurrencyCode": "PGK",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "PY",
+    "ShortName": "Paraguay",
+    "TranslatedName": "Paraguay",
+    "Description": "A country in South America.",
+    "CurrencyCode": "PYG",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "PE",
+    "ShortName": "Peru",
+    "TranslatedName": "Perú",
+    "Description": "A country in South America.",
+    "CurrencyCode": "PEN",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "PH",
+    "ShortName": "Philippines",
+    "TranslatedName": "Pilipinas",
+    "Description": "A country in Southeast Asia.",
+    "CurrencyCode": "PHP",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "PN",
+    "ShortName": "Pitcairn Islands",
+    "TranslatedName": "Pitcairn Islands",
+    "Description": "A British Overseas Territory in the Pacific Ocean.",
+    "CurrencyCode": "NZD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "PL",
+    "ShortName": "Poland",
+    "TranslatedName": "Polska",
+    "Description": "A country in Central Europe.",
+    "CurrencyCode": "PLN",
+    "LanguageCode": "PL"
+  },
+  {
+    "Code": "PT",
+    "ShortName": "Portugal",
+    "TranslatedName": "Portugal",
+    "Description": "A country in Southern Europe.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "PT"
+  },
+  {
+    "Code": "PR",
+    "ShortName": "Puerto Rico",
+    "TranslatedName": "Puerto Rico",
+    "Description": "An unincorporated territory of the United States in the Caribbean.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "QA",
+    "ShortName": "Qatar",
+    "TranslatedName": "قطر",
+    "Description": "A country in Western Asia.",
+    "CurrencyCode": "QAR",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "RE",
+    "ShortName": "Réunion",
+    "TranslatedName": "Réunion",
+    "Description": "An overseas department and region of France.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "RO",
+    "ShortName": "Romania",
+    "TranslatedName": "România",
+    "Description": "A country in Southeastern Europe.",
+    "CurrencyCode": "RON",
+    "LanguageCode": "RO"
+  },
+  {
+    "Code": "RU",
+    "ShortName": "Russia",
+    "TranslatedName": "Россия",
+    "Description": "A country extending over Eastern Europe and northern Asia.",
+    "CurrencyCode": "RUB",
+    "LanguageCode": "RU"
+  },
+  {
+    "Code": "RW",
+    "ShortName": "Rwanda",
+    "TranslatedName": "Rwanda",
+    "Description": "A country in East-Central Africa.",
+    "CurrencyCode": "RWF",
+    "LanguageCode": "RW"
+  },
+  {
+    "Code": "SH",
+    "ShortName": "Saint Helena",
+    "TranslatedName": "Saint Helena",
+    "Description": "A British Overseas Territory in the South Atlantic Ocean.",
+    "CurrencyCode": "SHP",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "KN",
+    "ShortName": "Saint Kitts and Nevis",
+    "TranslatedName": "Saint Kitts and Nevis",
+    "Description": "A country in the West Indies.",
+    "CurrencyCode": "XCD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "LC",
+    "ShortName": "Saint Lucia",
+    "TranslatedName": "Saint Lucia",
+    "Description": "A country in the West Indies.",
+    "CurrencyCode": "XCD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "PM",
+    "ShortName": "Saint Pierre and Miquelon",
+    "TranslatedName": "Saint Pierre and Miquelon",
+    "Description": "An overseas collectivity of France in the North Atlantic Ocean.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "VC",
+    "ShortName": "Saint Vincent and the Grenadines",
+    "TranslatedName": "Saint Vincent and the Grenadines",
+    "Description": "A country in the West Indies.",
+    "CurrencyCode": "XCD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "WS",
+    "ShortName": "Samoa",
+    "TranslatedName": "Samoa",
+    "Description": "A country in Polynesia in the South Pacific Ocean.",
+    "CurrencyCode": "WST",
+    "LanguageCode": "SM"
+  },
+  {
+    "Code": "SM",
+    "ShortName": "San Marino",
+    "TranslatedName": "San Marino",
+    "Description": "A small landlocked country surrounded by Italy.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "IT"
+  },
+  {
+    "Code": "ST",
+    "ShortName": "São Tomé and Príncipe",
+    "TranslatedName": "São Tomé e Príncipe",
+    "Description": "A country in Central Africa.",
+    "CurrencyCode": "STN",
+    "LanguageCode": "PT"
+  },
+  {
+    "Code": "SA",
+    "ShortName": "Saudi Arabia",
+    "TranslatedName": "المملكة العربية السعودية",
+    "Description": "A country in Western Asia.",
+    "CurrencyCode": "SAR",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "SN",
+    "ShortName": "Senegal",
+    "TranslatedName": "Sénégal",
+    "Description": "A country in West Africa.",
+    "CurrencyCode": "XOF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "RS",
+    "ShortName": "Serbia",
+    "TranslatedName": "Србија",
+    "Description": "A country in Southeast Europe.",
+    "CurrencyCode": "RSD",
+    "LanguageCode": "SR"
+  },
+  {
+    "Code": "SC",
+    "ShortName": "Seychelles",
+    "TranslatedName": "Seychelles",
+    "Description": "An archipelago country in the Indian Ocean.",
+    "CurrencyCode": "SCR",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "SL",
+    "ShortName": "Sierra Leone",
+    "TranslatedName": "Sierra Leone",
+    "Description": "A country in West Africa.",
+    "CurrencyCode": "SLL",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "SG",
+    "ShortName": "Singapore",
+    "TranslatedName": "Singapore",
+    "Description": "A city-state in Southeast Asia.",
+    "CurrencyCode": "SGD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "SX",
+    "ShortName": "Sint Maarten",
+    "TranslatedName": "Sint Maarten",
+    "Description": "A country within the Kingdom of the Netherlands in the Caribbean.",
+    "CurrencyCode": "ANG",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "SK",
+    "ShortName": "Slovakia",
+    "TranslatedName": "Slovensko",
+    "Description": "A country in Central Europe.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "SK"
+  },
+  {
+    "Code": "SI",
+    "ShortName": "Slovenia",
+    "TranslatedName": "Slovenija",
+    "Description": "A country in Southern Central Europe.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "SL"
+  },
+  {
+    "Code": "SB",
+    "ShortName": "Solomon Islands",
+    "TranslatedName": "Solomon Islands",
+    "Description": "A country in Oceania.",
+    "CurrencyCode": "SBD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "SO",
+    "ShortName": "Somalia",
+    "TranslatedName": "Soomaaliya",
+    "Description": "A country in the Horn of Africa.",
+    "CurrencyCode": "SOS",
+    "LanguageCode": "SO"
+  },
+  {
+    "Code": "ZA",
+    "ShortName": "South Africa",
+    "TranslatedName": "South Africa",
+    "Description": "A country at the southern tip of Africa.",
+    "CurrencyCode": "ZAR",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "GS",
+    "ShortName": "South Georgia and the South Sandwich Islands",
+    "TranslatedName": "South Georgia and the South Sandwich Islands",
+    "Description": "A British Overseas Territory in the southern Atlantic Ocean.",
+    "CurrencyCode": "GBP",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "SS",
+    "ShortName": "South Sudan",
+    "TranslatedName": "South Sudan",
+    "Description": "A country in East-Central Africa.",
+    "CurrencyCode": "SSP",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "ES",
+    "ShortName": "Spain",
+    "TranslatedName": "España",
+    "Description": "A country in Southwestern Europe.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "LK",
+    "ShortName": "Sri Lanka",
+    "TranslatedName": "ශ්‍රී ලංකාව",
+    "Description": "A country in South Asia.",
+    "CurrencyCode": "LKR",
+    "LanguageCode": "SI"
+  },
+  {
+    "Code": "SD",
+    "ShortName": "Sudan",
+    "TranslatedName": "السودان",
+    "Description": "A country in northeastern Africa.",
+    "CurrencyCode": "SDG",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "SR",
+    "ShortName": "Suriname",
+    "TranslatedName": "Suriname",
+    "Description": "A country in South America.",
+    "CurrencyCode": "SRD",
+    "LanguageCode": "NL"
+  },
+  {
+    "Code": "SJ",
+    "ShortName": "Svalbard and Jan Mayen",
+    "TranslatedName": "Svalbard og Jan Mayen",
+    "Description": "An unincorporated territory of Norway.",
+    "CurrencyCode": "NOK",
+    "LanguageCode": "NO"
+  },
+  {
+    "Code": "SO",
+    "ShortName": "Somalia",
+    "TranslatedName": "Soomaaliya",
+    "Description": "A country in the Horn of Africa.",
+    "CurrencyCode": "SOS",
+    "LanguageCode": "SO"
+  },
+  {
+    "Code": "ZA",
+    "ShortName": "South Africa",
+    "TranslatedName": "Suid-Afrika",
+    "Description": "A country at the southern tip of Africa.",
+    "CurrencyCode": "ZAR",
+    "LanguageCode": "AF"
+  },
+  {
+    "Code": "SS",
+    "ShortName": "South Sudan",
+    "TranslatedName": "South Sudan",
+    "Description": "A country in East-Central Africa.",
+    "CurrencyCode": "SSP",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "ES",
+    "ShortName": "Spain",
+    "TranslatedName": "España",
+    "Description": "A country in Southwestern Europe.",
+    "CurrencyCode": "EUR",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "LK",
+    "ShortName": "Sri Lanka",
+    "TranslatedName": "ශ්‍රී ලංකාව",
+    "Description": "An island country in South Asia.",
+    "CurrencyCode": "LKR",
+    "LanguageCode": "SI"
+  },
+  {
+    "Code": "SD",
+    "ShortName": "Sudan",
+    "TranslatedName": "السودان",
+    "Description": "A country in Northeast Africa.",
+    "CurrencyCode": "SDG",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "SR",
+    "ShortName": "Suriname",
+    "TranslatedName": "Suriname",
+    "Description": "A country on the northeastern coast of South America.",
+    "CurrencyCode": "SRD",
+    "LanguageCode": "NL"
+  },
+  {
+    "Code": "SZ",
+    "ShortName": "Eswatini",
+    "TranslatedName": "eSwatini",
+    "Description": "A landlocked country in Southern Africa.",
+    "CurrencyCode": "SZL",
+    "LanguageCode": "SS"
+  },
+  {
+    "Code": "SE",
+    "ShortName": "Sweden",
+    "TranslatedName": "Sverige",
+    "Description": "A country in Northern Europe.",
+    "CurrencyCode": "SEK",
+    "LanguageCode": "SV"
+  },
+  {
+    "Code": "CH",
+    "ShortName": "Switzerland",
+    "TranslatedName": "Schweiz",
+    "Description": "A landlocked country in Central Europe.",
+    "CurrencyCode": "CHF",
+    "LanguageCode": "DE"
+  },
+  {
+    "Code": "SY",
+    "ShortName": "Syria",
+    "TranslatedName": "سوريا",
+    "Description": "A country in Western Asia.",
+    "CurrencyCode": "SYP",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "TW",
+    "ShortName": "Taiwan",
+    "TranslatedName": "台灣",
+    "Description": "A country in East Asia.",
+    "CurrencyCode": "TWD",
+    "LanguageCode": "ZH"
+  },
+  {
+    "Code": "TJ",
+    "ShortName": "Tajikistan",
+    "TranslatedName": "Тоҷикистон",
+    "Description": "A country in Central Asia.",
+    "CurrencyCode": "TJS",
+    "LanguageCode": "TJ"
+  },
+  {
+    "Code": "TZ",
+    "ShortName": "Tanzania",
+    "TranslatedName": "Tanzania",
+    "Description": "A country in East Africa.",
+    "CurrencyCode": "TZS",
+    "LanguageCode": "SW"
+  },
+  {
+    "Code": "TH",
+    "ShortName": "Thailand",
+    "TranslatedName": "ประเทศไทย",
+    "Description": "A country in Southeast Asia.",
+    "CurrencyCode": "THB",
+    "LanguageCode": "TH"
+  },
+  {
+    "Code": "TL",
+    "ShortName": "Timor-Leste",
+    "TranslatedName": "Timor-Leste",
+    "Description": "A country in Southeast Asia.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "PT"
+  },
+  {
+    "Code": "TG",
+    "ShortName": "Togo",
+    "TranslatedName": "Togo",
+    "Description": "A country in West Africa.",
+    "CurrencyCode": "XOF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "TK",
+    "ShortName": "Tokelau",
+    "TranslatedName": "Tokelau",
+    "Description": "A territory of New Zealand.",
+    "CurrencyCode": "NZD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "TO",
+    "ShortName": "Tonga",
+    "TranslatedName": "Tonga",
+    "Description": "A country in the South Pacific Ocean.",
+    "CurrencyCode": "TOP",
+    "LanguageCode": "TO"
+  },
+  {
+    "Code": "TT",
+    "ShortName": "Trinidad and Tobago",
+    "TranslatedName": "Trinidad and Tobago",
+    "Description": "A country in the Caribbean.",
+    "CurrencyCode": "TTD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "TN",
+    "ShortName": "Tunisia",
+    "TranslatedName": "تونس",
+    "Description": "A country in North Africa.",
+    "CurrencyCode": "TND",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "TR",
+    "ShortName": "Turkey",
+    "TranslatedName": "Türkiye",
+    "Description": "A country in Western Asia and Southeastern Europe.",
+    "CurrencyCode": "TRY",
+    "LanguageCode": "TR"
+  },
+  {
+    "Code": "TM",
+    "ShortName": "Turkmenistan",
+    "TranslatedName": "Türkmenistan",
+    "Description": "A country in Central Asia.",
+    "CurrencyCode": "TMT",
+    "LanguageCode": "TK"
+  },
+  {
+    "Code": "TC",
+    "ShortName": "Turks and Caicos Islands",
+    "TranslatedName": "Turks and Caicos Islands",
+    "Description": "A British Overseas Territory.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "TV",
+    "ShortName": "Tuvalu",
+    "TranslatedName": "Tuvalu",
+    "Description": "A country in the Pacific Ocean.",
+    "CurrencyCode": "AUD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "UG",
+    "ShortName": "Uganda",
+    "TranslatedName": "Uganda",
+    "Description": "A country in East Africa.",
+    "CurrencyCode": "UGX",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "UA",
+    "ShortName": "Ukraine",
+    "TranslatedName": "Україна",
+    "Description": "A country in Eastern Europe.",
+    "CurrencyCode": "UAH",
+    "LanguageCode": "UK"
+  },
+  {
+    "Code": "AE",
+    "ShortName": "United Arab Emirates",
+    "TranslatedName": "الإمارات العربية المتحدة",
+    "Description": "A country in Western Asia.",
+    "CurrencyCode": "AED",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "GB",
+    "ShortName": "United Kingdom",
+    "TranslatedName": "United Kingdom",
+    "Description": "A country in Northern Europe.",
+    "CurrencyCode": "GBP",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "US",
+    "ShortName": "United States",
+    "TranslatedName": "United States",
+    "Description": "A country in North America.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "UM",
+    "ShortName": "United States Minor Outlying Islands",
+    "TranslatedName": "United States Minor Outlying Islands",
+    "Description": "A group of small islands and atolls in the Pacific Ocean.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "UY",
+    "ShortName": "Uruguay",
+    "TranslatedName": "Uruguay",
+    "Description": "A country in South America.",
+    "CurrencyCode": "UYU",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "UZ",
+    "ShortName": "Uzbekistan",
+    "TranslatedName": "O‘zbekiston",
+    "Description": "A country in Central Asia.",
+    "CurrencyCode": "UZS",
+    "LanguageCode": "UZ"
+  },
+  {
+    "Code": "VU",
+    "ShortName": "Vanuatu",
+    "TranslatedName": "Vanuatu",
+    "Description": "A country in the South Pacific Ocean.",
+    "CurrencyCode": "VUV",
+    "LanguageCode": "BI"
+  },
+  {
+    "Code": "VE",
+    "ShortName": "Venezuela",
+    "TranslatedName": "Venezuela",
+    "Description": "A country in South America.",
+    "CurrencyCode": "VES",
+    "LanguageCode": "ES"
+  },
+  {
+    "Code": "VN",
+    "ShortName": "Vietnam",
+    "TranslatedName": "Việt Nam",
+    "Description": "A country in Southeast Asia.",
+    "CurrencyCode": "VND",
+    "LanguageCode": "VI"
+  },
+  {
+    "Code": "VG",
+    "ShortName": "British Virgin Islands",
+    "TranslatedName": "British Virgin Islands",
+    "Description": "A British Overseas Territory.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "VI",
+    "ShortName": "U.S. Virgin Islands",
+    "TranslatedName": "U.S. Virgin Islands",
+    "Description": "An unincorporated territory of the United States.",
+    "CurrencyCode": "USD",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "WF",
+    "ShortName": "Wallis and Futuna",
+    "TranslatedName": "Wallis et Futuna",
+    "Description": "An overseas collectivity of France.",
+    "CurrencyCode": "XPF",
+    "LanguageCode": "FR"
+  },
+  {
+    "Code": "EH",
+    "ShortName": "Western Sahara",
+    "TranslatedName": "الصحراء الغربية",
+    "Description": "A disputed territory in North Africa.",
+    "CurrencyCode": "MAD",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "YE",
+    "ShortName": "Yemen",
+    "TranslatedName": "اليمن",
+    "Description": "A country in Western Asia.",
+    "CurrencyCode": "YER",
+    "LanguageCode": "AR"
+  },
+  {
+    "Code": "ZM",
+    "ShortName": "Zambia",
+    "TranslatedName": "Zambia",
+    "Description": "A country in Southern Africa.",
+    "CurrencyCode": "ZMW",
+    "LanguageCode": "EN"
+  },
+  {
+    "Code": "ZW",
+    "ShortName": "Zimbabwe",
+    "TranslatedName": "Zimbabwe",
+    "Description": "A country in Southern Africa.",
+    "CurrencyCode": "ZWL",
+    "LanguageCode": "EN"
+  }
+]

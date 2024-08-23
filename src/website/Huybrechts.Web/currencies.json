@@ -1,0 +1,62 @@
+[
+  {
+    "Code": "USD",
+    "Name": "United States Dollar",
+    "Description": "Currency of the United States",
+    "CountryCode": "US"
+  },
+  {
+    "Code": "EUR",
+    "Name": "Euro",
+    "Description": "Currency of the Eurozone",
+    "CountryCode": "EU"
+  },
+  {
+    "Code": "JPY",
+    "Name": "Japanese Yen",
+    "Description": "Currency of Japan",
+    "CountryCode": "JP"
+  },
+  {
+    "Code": "GBP",
+    "Name": "British Pound Sterling",
+    "Description": "Currency of the United Kingdom",
+    "CountryCode": "GB"
+  },
+  {
+    "Code": "AUD",
+    "Name": "Australian Dollar",
+    "Description": "Currency of Australia",
+    "CountryCode": "AU"
+  },
+  {
+    "Code": "CAD",
+    "Name": "Canadian Dollar",
+    "Description": "Currency of Canada",
+    "CountryCode": "CA"
+  },
+  {
+    "Code": "CHF",
+    "Name": "Swiss Franc",
+    "Description": "Currency of Switzerland",
+    "CountryCode": "CH"
+  },
+  {
+    "Code": "CNY",
+    "Name": "Chinese Yuan Renminbi",
+    "Description": "Currency of China",
+    "CountryCode": "CN"
+  },
+  {
+    "Code": "SEK",
+    "Name": "Swedish Krona",
+    "Description": "Currency of Sweden",
+    "CountryCode": "SE"
+  },
+  {
+    "Code": "NZD",
+    "Name": "New Zealand Dollar",
+    "Description": "Currency of New Zealand",
+    "CountryCode": "NZ"
+  }
+]

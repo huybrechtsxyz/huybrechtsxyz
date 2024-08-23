@@ -1,0 +1,15 @@
+@startuml Platform CD
+
+class Currency {
+}
+
+class Language {
+}
+
+class Country {
+}
+
+Currency "1" -- "0..*" Country
+Language "1" -- "0..*" Country
+
+@enduml
