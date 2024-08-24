@@ -1,0 +1,222 @@
+[
+  {
+    "Type": "Length",
+    "Code": "METER",
+    "Name": "Meter",
+    "Description": "The base unit of length in the International System of Units (SI).",
+    "IsBase": true,
+    "Precision": 2,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "Length",
+    "Code": "KILOMETER",
+    "Name": "Kilometer",
+    "Description": "A unit of length equal to 1,000 meters.",
+    "IsBase": false,
+    "Precision": 3,
+    "PrecisionType": "ToEven",
+    "Factor": 1000
+  },
+  {
+    "Type": "Length",
+    "Code": "CENTIMETER",
+    "Name": "Centimeter",
+    "Description": "A unit of length equal to one hundredth of a meter.",
+    "IsBase": false,
+    "Precision": 1,
+    "PrecisionType": "ToEven",
+    "Factor": 0.01
+  },
+  {
+    "Type": "Mass",
+    "Code": "KILOGRAM",
+    "Name": "Kilogram",
+    "Description": "The base unit of mass in the International System of Units (SI).",
+    "IsBase": true,
+    "Precision": 3,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "Mass",
+    "Code": "GRAM",
+    "Name": "Gram",
+    "Description": "A unit of mass equal to one thousandth of a kilogram.",
+    "IsBase": false,
+    "Precision": 1,
+    "PrecisionType": "ToEven",
+    "Factor": 0.001
+  },
+  {
+    "Type": "Mass",
+    "Code": "TON",
+    "Name": "Ton",
+    "Description": "A unit of mass equal to 1,000 kilograms.",
+    "IsBase": false,
+    "Precision": 0,
+    "PrecisionType": "ToEven",
+    "Factor": 1000
+  },
+  {
+    "Type": "Time",
+    "Code": "SECOND",
+    "Name": "Second",
+    "Description": "The base unit of time in the International System of Units (SI).",
+    "IsBase": true,
+    "Precision": 0,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "Time",
+    "Code": "MINUTE",
+    "Name": "Minute",
+    "Description": "A unit of time equal to 60 seconds.",
+    "IsBase": false,
+    "Precision": 0,
+    "PrecisionType": "ToEven",
+    "Factor": 60
+  },
+  {
+    "Type": "Time",
+    "Code": "HOUR",
+    "Name": "Hour",
+    "Description": "A unit of time equal to 3,600 seconds or 60 minutes.",
+    "IsBase": false,
+    "Precision": 0,
+    "PrecisionType": "ToEven",
+    "Factor": 3600
+  },
+  {
+    "Type": "Temperature",
+    "Code": "KELVIN",
+    "Name": "Kelvin",
+    "Description": "The base unit of temperature in the International System of Units (SI).",
+    "IsBase": true,
+    "Precision": 2,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "Temperature",
+    "Code": "CELSIUS",
+    "Name": "Celsius",
+    "Description": "A scale and unit of measurement for temperature.",
+    "IsBase": false,
+    "Precision": 2,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "Volume",
+    "Code": "LITER",
+    "Name": "Liter",
+    "Description": "A unit of volume equal to 1 cubic decimeter.",
+    "IsBase": true,
+    "Precision": 2,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "Volume",
+    "Code": "MILLILITER",
+    "Name": "Milliliter",
+    "Description": "A unit of volume equal to one thousandth of a liter.",
+    "IsBase": false,
+    "Precision": 2,
+    "PrecisionType": "ToEven",
+    "Factor": 0.001
+  },
+  {
+    "Type": "Area",
+    "Code": "SQUARE_METER",
+    "Name": "Square Meter",
+    "Description": "The base unit of area in the International System of Units (SI).",
+    "IsBase": true,
+    "Precision": 2,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "Area",
+    "Code": "SQUARE_KILOMETER",
+    "Name": "Square Kilometer",
+    "Description": "A unit of area equal to 1,000,000 square meters.",
+    "IsBase": false,
+    "Precision": 2,
+    "PrecisionType": "ToEven",
+    "Factor": 1000000
+  },
+  {
+    "Type": "Speed",
+    "Code": "METER_PER_SECOND",
+    "Name": "Meter per Second",
+    "Description": "The base unit of speed in the International System of Units (SI).",
+    "IsBase": true,
+    "Precision": 2,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "Frequency",
+    "Code": "HERTZ",
+    "Name": "Hertz",
+    "Description": "The base unit of frequency in the International System of Units (SI).",
+    "IsBase": true,
+    "Precision": 0,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "Pressure",
+    "Code": "PASCAL",
+    "Name": "Pascal",
+    "Description": "The base unit of pressure in the International System of Units (SI).",
+    "IsBase": true,
+    "Precision": 2,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "Energy",
+    "Code": "JOULE",
+    "Name": "Joule",
+    "Description": "The base unit of energy in the International System of Units (SI).",
+    "IsBase": true,
+    "Precision": 2,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "Power",
+    "Code": "WATT",
+    "Name": "Watt",
+    "Description": "The base unit of power in the International System of Units (SI).",
+    "IsBase": true,
+    "Precision": 2,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "DataSize",
+    "Code": "BYTE",
+    "Name": "Byte",
+    "Description": "The base unit of digital information.",
+    "IsBase": true,
+    "Precision": 0,
+    "PrecisionType": "ToEven",
+    "Factor": 1
+  },
+  {
+    "Type": "DataSize",
+    "Code": "KILOBYTE",
+    "Name": "Kilobyte",
+    "Description": "A unit of digital information equal to 1,024 bytes.",
+    "IsBase": false,
+    "Precision": 0,
+    "PrecisionType": "ToEven",
+    "Factor": 1024
+  }
+]
