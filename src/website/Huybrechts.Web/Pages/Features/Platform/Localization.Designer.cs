@@ -196,6 +196,15 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string NoResults {
+            get {
+                return ResourceManager.GetString("NoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage you cloud and on premise computer platforms.
         /// </summary>
         public static string PageInfo {
@@ -322,6 +331,15 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string ProductNoResults {
+            get {
+                return ResourceManager.GetString("ProductNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Products.
         /// </summary>
         public static string Products {
@@ -421,6 +439,15 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string RateNoResults {
+            get {
+                return ResourceManager.GetString("RateNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add a new region to a platform by specifying its name, label, and description. Use this page to define a new data center region for a cloud platform or on-premise solution..
         /// </summary>
         public static string RegionCreateInfo {
@@ -507,6 +534,15 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         public static string RegionIndexTitle {
             get {
                 return ResourceManager.GetString("RegionIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string RegionNoResults {
+            get {
+                return ResourceManager.GetString("RegionNoResults", resourceCulture);
             }
         }
         
@@ -633,6 +669,15 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         public static string ServiceIndexTitle {
             get {
                 return ResourceManager.GetString("ServiceIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string ServiceNoResults {
+            get {
+                return ResourceManager.GetString("ServiceNoResults", resourceCulture);
             }
         }
     }

@@ -162,6 +162,9 @@
   <data name="Next" xml:space="preserve">
     <value>Volgende</value>
   </data>
+  <data name="NoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
+  </data>
   <data name="PageInfo" xml:space="preserve">
     <value>Beheer uw cloud- en lokale computerplatforms</value>
   </data>
@@ -204,8 +207,14 @@
   <data name="ProductIndexTitle" xml:space="preserve">
     <value>Producten</value>
   </data>
+  <data name="ProductNoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
+  </data>
   <data name="Products" xml:space="preserve">
     <value>Producten</value>
+  </data>
+  <data name="RateNoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
   </data>
   <data name="RegionCreateInfo" xml:space="preserve">
     <value>Voeg een nieuwe regio toe aan een platform door de naam, het label en de beschrijving in te vullen. Gebruik deze pagina om een nieuwe datacenterregio voor een cloudplatform of on-premise oplossing te definiëren.</value>
@@ -236,6 +245,9 @@
   </data>
   <data name="RegionIndexTitle" xml:space="preserve">
     <value>Regio's</value>
+  </data>
+  <data name="RegionNoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
   </data>
   <data name="Regions" xml:space="preserve">
     <value>Regio's</value>
@@ -278,6 +290,9 @@
   </data>
   <data name="ServiceIndexTitle" xml:space="preserve">
     <value>Diensten</value>
+  </data>
+  <data name="ServiceNoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
   </data>
   <data name="Services" xml:space="preserve">
     <value>Diensten</value>

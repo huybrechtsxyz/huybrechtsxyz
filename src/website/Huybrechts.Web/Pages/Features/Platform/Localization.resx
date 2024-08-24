@@ -162,6 +162,9 @@
   <data name="Next" xml:space="preserve">
     <value>Next</value>
   </data>
+  <data name="NoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
   <data name="PageInfo" xml:space="preserve">
     <value>Manage you cloud and on premise computer platforms</value>
   </data>
@@ -204,6 +207,9 @@
   <data name="ProductIndexTitle" xml:space="preserve">
     <value>Products</value>
   </data>
+  <data name="ProductNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
   <data name="Products" xml:space="preserve">
     <value>Products</value>
   </data>
@@ -237,6 +243,9 @@
   <data name="RateIndexTitle" xml:space="preserve">
     <value>Platform Rates</value>
   </data>
+  <data name="RateNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
   <data name="RegionCreateInfo" xml:space="preserve">
     <value>Add a new region to a platform by specifying its name, label, and description. Use this page to define a new data center region for a cloud platform or on-premise solution.</value>
   </data>
@@ -266,6 +275,9 @@
   </data>
   <data name="RegionIndexTitle" xml:space="preserve">
     <value>Regions</value>
+  </data>
+  <data name="RegionNoResults" xml:space="preserve">
+    <value>No results found</value>
   </data>
   <data name="Regions" xml:space="preserve">
     <value>Regions</value>
@@ -308,5 +320,8 @@
   </data>
   <data name="ServiceIndexTitle" xml:space="preserve">
     <value>Services</value>
+  </data>
+  <data name="ServiceNoResults" xml:space="preserve">
+    <value>No results found</value>
   </data>
 </root>
