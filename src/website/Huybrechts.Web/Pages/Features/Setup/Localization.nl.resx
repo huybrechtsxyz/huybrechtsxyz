@@ -117,100 +117,55 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="SetupUnitType_AmountOfSubstance" xml:space="preserve">
-    <value>Stof</value>
+  <data name="Add New" xml:space="preserve">
+    <value>Toevoegen</value>
   </data>
-  <data name="SetupUnitType_AmountOfSubstance_d" xml:space="preserve">
-    <value>Eenheden voor het meten van stof</value>
+  <data name="Clear Filter" xml:space="preserve">
+    <value>Wis filter</value>
   </data>
-  <data name="SetupUnitType_Area" xml:space="preserve">
-    <value>Oppervlakte</value>
+  <data name="MainInfo" xml:space="preserve">
+    <value>Gelieve een van de opties te kiezen</value>
   </data>
-  <data name="SetupUnitType_Area_d" xml:space="preserve">
-    <value>Eenheden voor het meten van oppervlakte</value>
+  <data name="MainTitle" xml:space="preserve">
+    <value>Instellingen</value>
   </data>
-  <data name="SetupUnitType_DataSize" xml:space="preserve">
-    <value>Datahoeveelheid</value>
+  <data name="Next" xml:space="preserve">
+    <value>Volgende</value>
   </data>
-  <data name="SetupUnitType_DataSize_d" xml:space="preserve">
-    <value>Eenheden voor het meten van datahoeveelheid</value>
+  <data name="Previous" xml:space="preserve">
+    <value>Vorige</value>
   </data>
-  <data name="SetupUnitType_ElectricCurrent" xml:space="preserve">
-    <value>Stroom</value>
+  <data name="Search" xml:space="preserve">
+    <value>Zoek</value>
   </data>
-  <data name="SetupUnitType_ElectricCurrent_d" xml:space="preserve">
-    <value>Eenheden voor het meten van stroom</value>
+  <data name="Search..." xml:space="preserve">
+    <value>Zoek...</value>
   </data>
-  <data name="SetupUnitType_Energy" xml:space="preserve">
-    <value>Energie</value>
+  <data name="Setup" xml:space="preserve">
+    <value>Instellingen</value>
   </data>
-  <data name="SetupUnitType_Energy_d" xml:space="preserve">
-    <value>Eenheden voor het meten van energie</value>
+  <data name="UnitCreateInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om een nieuwe meeteenheid te maken. Zorg ervoor dat alle velden correct zijn ingevuld om de attributen van de eenheid te definiëren, inclusief het type, de naam en de omrekenfactor.</value>
   </data>
-  <data name="SetupUnitType_Frequency" xml:space="preserve">
-    <value>Druk</value>
+  <data name="UnitCreateTitle" xml:space="preserve">
+    <value>Systeemeenheden maken</value>
   </data>
-  <data name="SetupUnitType_Frequency_d" xml:space="preserve">
-    <value>Eenheden voor het meten van frequentie druk</value>
+  <data name="UnitDeleteInfo" xml:space="preserve">
+    <value>Weet u zeker dat u deze meeteenheid wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt. Zorg ervoor dat deze eenheid niet in gebruik is voordat u doorgaat.</value>
   </data>
-  <data name="SetupUnitType_Length" xml:space="preserve">
-    <value>Lengte</value>
+  <data name="UnitDeleteTitle" xml:space="preserve">
+    <value>Systeemeenheid verwijderen</value>
   </data>
-  <data name="SetupUnitType_Length_d" xml:space="preserve">
-    <value>Eenheden voor het meten van lengte</value>
+  <data name="UnitEditInfo" xml:space="preserve">
+    <value>Wijzig de details van deze meeteenheid. Zorg ervoor dat de wijzigingen nauwkeurig de beoogde attributen van de eenheid weerspiegelen, inclusief het type, de naam en de omrekenfactor.</value>
   </data>
-  <data name="SetupUnitType_LuminousIntensity" xml:space="preserve">
-    <value>Lichtsterkte</value>
+  <data name="UnitEditTitle" xml:space="preserve">
+    <value>Systeemeenheid bewerken</value>
   </data>
-  <data name="SetupUnitType_LuminousIntensity_d" xml:space="preserve">
-    <value>Eenheden voor het meten van lichtsterkte</value>
+  <data name="UnitIndexInfo" xml:space="preserve">
+    <value>Deze pagina toont alle momenteel beschikbare meeteenheden. U kunt details bekijken, nieuwe eenheden aanmaken of bestaande eenheden bewerken en verwijderen.</value>
   </data>
-  <data name="SetupUnitType_Mass" xml:space="preserve">
-    <value>Massa</value>
-  </data>
-  <data name="SetupUnitType_Mass_d" xml:space="preserve">
-    <value>Eenheden voor het meten van massa</value>
-  </data>
-  <data name="SetupUnitType_Power" xml:space="preserve">
-    <value>Vermogen</value>
-  </data>
-  <data name="SetupUnitType_Power_d" xml:space="preserve">
-    <value>Eenheden voor het meten van vermogen</value>
-  </data>
-  <data name="SetupUnitType_Pressure" xml:space="preserve">
-    <value>Pressure</value>
-  </data>
-  <data name="SetupUnitType_Pressure_d" xml:space="preserve">
-    <value>Eenheden voor het meten van</value>
-  </data>
-  <data name="SetupUnitType_Speed" xml:space="preserve">
-    <value>Snelheid</value>
-  </data>
-  <data name="SetupUnitType_Speed_d" xml:space="preserve">
-    <value>Eenheden voor het meten van snelheid</value>
-  </data>
-  <data name="SetupUnitType_System" xml:space="preserve">
-    <value>Systeem</value>
-  </data>
-  <data name="SetupUnitType_System_d" xml:space="preserve">
-    <value>Generieke systeem eenheden</value>
-  </data>
-  <data name="SetupUnitType_Temperature" xml:space="preserve">
-    <value>Temperatuur</value>
-  </data>
-  <data name="SetupUnitType_Temperature_d" xml:space="preserve">
-    <value>Eenheden voor het meten van temperatuur</value>
-  </data>
-  <data name="SetupUnitType_Time" xml:space="preserve">
-    <value>Tijd</value>
-  </data>
-  <data name="SetupUnitType_Time_d" xml:space="preserve">
-    <value>Eenheden voor het meten van tijd</value>
-  </data>
-  <data name="SetupUnitType_Volume" xml:space="preserve">
-    <value>Volume</value>
-  </data>
-  <data name="SetupUnitType_Volume_d" xml:space="preserve">
-    <value>Eenheden voor het meten van volume</value>
+  <data name="UnitIndexTitle" xml:space="preserve">
+    <value>Systeemeenheden</value>
   </data>
 </root>

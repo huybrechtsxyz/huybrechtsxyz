@@ -10,7 +10,7 @@ using Flow = Huybrechts.App.Features.Platform.PlatformProductFlow;
 
 namespace Huybrechts.Web.Pages.Features.Platform.Product;
 
-[Authorize(Policy = TenantPolicies.IsMember)]
+[Authorize(Policy = TenantPolicies.IsManager)]
 public class ImportModel : PageModel
 {
     private readonly IMediator _mediator;

@@ -9,7 +9,7 @@ using Flow = Huybrechts.App.Features.Platform.PlatformRateFlow;
 
 namespace Huybrechts.Web.Pages.Features.Platform.Rate;
 
-[Authorize(Policy = TenantPolicies.IsMember)]
+[Authorize(Policy = TenantPolicies.IsManager)]
 public class ImportModel : PageModel
 {
     private readonly IMediator _mediator;

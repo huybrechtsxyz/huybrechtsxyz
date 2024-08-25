@@ -1,0 +1,39 @@
+﻿@inject IViewLocalizer Localizer
+
+@{
+    Layout = "/Pages/Shared/_Layout.cshtml";
+
+    ViewData["MetaTitle"] = "Setup";
+    ViewData["MetaInfo"] = "The setup management pages allows a user to manage the tenant configuration.";
+    ViewData["PageTitle"] = Localizer["Manage your setup"];
+    ViewData["PageInfo"] = Localizer["Change your settings"];
+}
+
+<div class="content__boxed">
+    <div class="content__wrap">
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <partial name="_ManageNav" />
+                    </div>
+                    <div class="col-md-9">
+                        <h5 class="card-header">@ViewData["CardTitle"]</h5>
+                        <p></p>
+                        @RenderBody()
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Breadcrumb {
+    <li class="breadcrumb-item">@Localizer["Setup"]</li>
+}
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

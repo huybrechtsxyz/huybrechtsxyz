@@ -59,5 +59,293 @@ namespace Huybrechts.Core.Setup {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Substance.
+        /// </summary>
+        public static string SetupUnitType_AmountOfSubstance {
+            get {
+                return ResourceManager.GetString("SetupUnitType_AmountOfSubstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for substance.
+        /// </summary>
+        public static string SetupUnitType_AmountOfSubstance_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_AmountOfSubstance_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Area.
+        /// </summary>
+        public static string SetupUnitType_Area {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Area", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for area.
+        /// </summary>
+        public static string SetupUnitType_Area_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Area_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data size.
+        /// </summary>
+        public static string SetupUnitType_DataSize {
+            get {
+                return ResourceManager.GetString("SetupUnitType_DataSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for data size.
+        /// </summary>
+        public static string SetupUnitType_DataSize_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_DataSize_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current.
+        /// </summary>
+        public static string SetupUnitType_ElectricCurrent {
+            get {
+                return ResourceManager.GetString("SetupUnitType_ElectricCurrent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for current.
+        /// </summary>
+        public static string SetupUnitType_ElectricCurrent_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_ElectricCurrent_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Energy.
+        /// </summary>
+        public static string SetupUnitType_Energy {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Energy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for energy.
+        /// </summary>
+        public static string SetupUnitType_Energy_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Energy_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Frequency.
+        /// </summary>
+        public static string SetupUnitType_Frequency {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Frequency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for frequency.
+        /// </summary>
+        public static string SetupUnitType_Frequency_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Frequency_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Length.
+        /// </summary>
+        public static string SetupUnitType_Length {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Length", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for length.
+        /// </summary>
+        public static string SetupUnitType_Length_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Length_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Luminousity.
+        /// </summary>
+        public static string SetupUnitType_LuminousIntensity {
+            get {
+                return ResourceManager.GetString("SetupUnitType_LuminousIntensity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for luninousity.
+        /// </summary>
+        public static string SetupUnitType_LuminousIntensity_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_LuminousIntensity_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mass.
+        /// </summary>
+        public static string SetupUnitType_Mass {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Mass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for mass.
+        /// </summary>
+        public static string SetupUnitType_Mass_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Mass_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Power.
+        /// </summary>
+        public static string SetupUnitType_Power {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Power", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for power.
+        /// </summary>
+        public static string SetupUnitType_Power_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Power_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pressure.
+        /// </summary>
+        public static string SetupUnitType_Pressure {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Pressure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for pressure.
+        /// </summary>
+        public static string SetupUnitType_Pressure_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Pressure_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Speed.
+        /// </summary>
+        public static string SetupUnitType_Speed {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Speed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for speed.
+        /// </summary>
+        public static string SetupUnitType_Speed_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Speed_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System.
+        /// </summary>
+        public static string SetupUnitType_System {
+            get {
+                return ResourceManager.GetString("SetupUnitType_System", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Generic units of measurement.
+        /// </summary>
+        public static string SetupUnitType_System_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_System_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Temperature.
+        /// </summary>
+        public static string SetupUnitType_Temperature {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Temperature", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for temperature.
+        /// </summary>
+        public static string SetupUnitType_Temperature_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Temperature_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time.
+        /// </summary>
+        public static string SetupUnitType_Time {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Time", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for time.
+        /// </summary>
+        public static string SetupUnitType_Time_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Time_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Volume.
+        /// </summary>
+        public static string SetupUnitType_Volume {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Volume", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units of measurement for volume.
+        /// </summary>
+        public static string SetupUnitType_Volume_d {
+            get {
+                return ResourceManager.GetString("SetupUnitType_Volume_d", resourceCulture);
+            }
+        }
     }
 }

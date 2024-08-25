@@ -117,100 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="SetupUnitType_AmountOfSubstance" xml:space="preserve">
-    <value>Stof</value>
+  <data name="Code" xml:space="preserve">
+    <value>Code</value>
   </data>
-  <data name="SetupUnitType_AmountOfSubstance_d" xml:space="preserve">
-    <value>Eenheden voor het meten van stof</value>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
   </data>
-  <data name="SetupUnitType_Area" xml:space="preserve">
-    <value>Oppervlakte</value>
+  <data name="Factor" xml:space="preserve">
+    <value>Factor</value>
   </data>
-  <data name="SetupUnitType_Area_d" xml:space="preserve">
-    <value>Eenheden voor het meten van oppervlakte</value>
+  <data name="IsBase" xml:space="preserve">
+    <value>Base?</value>
   </data>
-  <data name="SetupUnitType_DataSize" xml:space="preserve">
-    <value>Datahoeveelheid</value>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
   </data>
-  <data name="SetupUnitType_DataSize_d" xml:space="preserve">
-    <value>Eenheden voor het meten van datahoeveelheid</value>
+  <data name="Precision" xml:space="preserve">
+    <value>Precision</value>
   </data>
-  <data name="SetupUnitType_ElectricCurrent" xml:space="preserve">
-    <value>Stroom</value>
+  <data name="PrecisionType" xml:space="preserve">
+    <value>Precision type</value>
   </data>
-  <data name="SetupUnitType_ElectricCurrent_d" xml:space="preserve">
-    <value>Eenheden voor het meten van stroom</value>
+  <data name="Remark" xml:space="preserve">
+    <value>Remark</value>
   </data>
-  <data name="SetupUnitType_Energy" xml:space="preserve">
-    <value>Energie</value>
-  </data>
-  <data name="SetupUnitType_Energy_d" xml:space="preserve">
-    <value>Eenheden voor het meten van energie</value>
-  </data>
-  <data name="SetupUnitType_Frequency" xml:space="preserve">
-    <value>Druk</value>
-  </data>
-  <data name="SetupUnitType_Frequency_d" xml:space="preserve">
-    <value>Eenheden voor het meten van frequentie druk</value>
-  </data>
-  <data name="SetupUnitType_Length" xml:space="preserve">
-    <value>Lengte</value>
-  </data>
-  <data name="SetupUnitType_Length_d" xml:space="preserve">
-    <value>Eenheden voor het meten van lengte</value>
-  </data>
-  <data name="SetupUnitType_LuminousIntensity" xml:space="preserve">
-    <value>Lichtsterkte</value>
-  </data>
-  <data name="SetupUnitType_LuminousIntensity_d" xml:space="preserve">
-    <value>Eenheden voor het meten van lichtsterkte</value>
-  </data>
-  <data name="SetupUnitType_Mass" xml:space="preserve">
-    <value>Massa</value>
-  </data>
-  <data name="SetupUnitType_Mass_d" xml:space="preserve">
-    <value>Eenheden voor het meten van massa</value>
-  </data>
-  <data name="SetupUnitType_Power" xml:space="preserve">
-    <value>Vermogen</value>
-  </data>
-  <data name="SetupUnitType_Power_d" xml:space="preserve">
-    <value>Eenheden voor het meten van vermogen</value>
-  </data>
-  <data name="SetupUnitType_Pressure" xml:space="preserve">
-    <value>Pressure</value>
-  </data>
-  <data name="SetupUnitType_Pressure_d" xml:space="preserve">
-    <value>Eenheden voor het meten van</value>
-  </data>
-  <data name="SetupUnitType_Speed" xml:space="preserve">
-    <value>Snelheid</value>
-  </data>
-  <data name="SetupUnitType_Speed_d" xml:space="preserve">
-    <value>Eenheden voor het meten van snelheid</value>
-  </data>
-  <data name="SetupUnitType_System" xml:space="preserve">
-    <value>Systeem</value>
-  </data>
-  <data name="SetupUnitType_System_d" xml:space="preserve">
-    <value>Generieke systeem eenheden</value>
-  </data>
-  <data name="SetupUnitType_Temperature" xml:space="preserve">
-    <value>Temperatuur</value>
-  </data>
-  <data name="SetupUnitType_Temperature_d" xml:space="preserve">
-    <value>Eenheden voor het meten van temperatuur</value>
-  </data>
-  <data name="SetupUnitType_Time" xml:space="preserve">
-    <value>Tijd</value>
-  </data>
-  <data name="SetupUnitType_Time_d" xml:space="preserve">
-    <value>Eenheden voor het meten van tijd</value>
-  </data>
-  <data name="SetupUnitType_Volume" xml:space="preserve">
-    <value>Volume</value>
-  </data>
-  <data name="SetupUnitType_Volume_d" xml:space="preserve">
-    <value>Eenheden voor het meten van volume</value>
+  <data name="UnitType" xml:space="preserve">
+    <value>Type</value>
   </data>
 </root>

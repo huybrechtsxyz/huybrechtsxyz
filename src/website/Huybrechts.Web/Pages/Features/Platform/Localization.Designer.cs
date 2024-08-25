@@ -160,7 +160,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Importeer.
+        ///   Looks up a localized string similar to Import.
         /// </summary>
         public static string Import {
             get {
@@ -205,7 +205,7 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Manage you cloud and on premise computer platforms.
+        ///   Looks up a localized string similar to Manage your cloud and on premise computer platforms.
         /// </summary>
         public static string PageInfo {
             get {

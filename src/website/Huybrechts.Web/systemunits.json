@@ -1,6 +1,6 @@
 [
   {
-    "Type": "Length",
+    "UnitType": "Length",
     "Code": "METER",
     "Name": "Meter",
     "Description": "The base unit of length in the International System of Units (SI).",
@@ -10,7 +10,7 @@
     "Factor": 1
   },
   {
-    "Type": "Length",
+    "UnitType": "Length",
     "Code": "KILOMETER",
     "Name": "Kilometer",
     "Description": "A unit of length equal to 1,000 meters.",
@@ -20,7 +20,7 @@
     "Factor": 1000
   },
   {
-    "Type": "Length",
+    "UnitType": "Length",
     "Code": "CENTIMETER",
     "Name": "Centimeter",
     "Description": "A unit of length equal to one hundredth of a meter.",
@@ -30,7 +30,7 @@
     "Factor": 0.01
   },
   {
-    "Type": "Mass",
+    "UnitType": "Mass",
     "Code": "KILOGRAM",
     "Name": "Kilogram",
     "Description": "The base unit of mass in the International System of Units (SI).",
@@ -40,7 +40,7 @@
     "Factor": 1
   },
   {
-    "Type": "Mass",
+    "UnitType": "Mass",
     "Code": "GRAM",
     "Name": "Gram",
     "Description": "A unit of mass equal to one thousandth of a kilogram.",
@@ -50,7 +50,7 @@
     "Factor": 0.001
   },
   {
-    "Type": "Mass",
+    "UnitType": "Mass",
     "Code": "TON",
     "Name": "Ton",
     "Description": "A unit of mass equal to 1,000 kilograms.",
@@ -60,7 +60,7 @@
     "Factor": 1000
   },
   {
-    "Type": "Time",
+    "UnitType": "Time",
     "Code": "SECOND",
     "Name": "Second",
     "Description": "The base unit of time in the International System of Units (SI).",
@@ -70,7 +70,7 @@
     "Factor": 1
   },
   {
-    "Type": "Time",
+    "UnitType": "Time",
     "Code": "MINUTE",
     "Name": "Minute",
     "Description": "A unit of time equal to 60 seconds.",
@@ -80,7 +80,7 @@
     "Factor": 60
   },
   {
-    "Type": "Time",
+    "UnitType": "Time",
     "Code": "HOUR",
     "Name": "Hour",
     "Description": "A unit of time equal to 3,600 seconds or 60 minutes.",
@@ -90,7 +90,7 @@
     "Factor": 3600
   },
   {
-    "Type": "Temperature",
+    "UnitType": "Temperature",
     "Code": "KELVIN",
     "Name": "Kelvin",
     "Description": "The base unit of temperature in the International System of Units (SI).",
@@ -100,7 +100,7 @@
     "Factor": 1
   },
   {
-    "Type": "Temperature",
+    "UnitType": "Temperature",
     "Code": "CELSIUS",
     "Name": "Celsius",
     "Description": "A scale and unit of measurement for temperature.",
@@ -110,7 +110,7 @@
     "Factor": 1
   },
   {
-    "Type": "Volume",
+    "UnitType": "Volume",
     "Code": "LITER",
     "Name": "Liter",
     "Description": "A unit of volume equal to 1 cubic decimeter.",
@@ -120,7 +120,7 @@
     "Factor": 1
   },
   {
-    "Type": "Volume",
+    "UnitType": "Volume",
     "Code": "MILLILITER",
     "Name": "Milliliter",
     "Description": "A unit of volume equal to one thousandth of a liter.",
@@ -130,7 +130,7 @@
     "Factor": 0.001
   },
   {
-    "Type": "Area",
+    "UnitType": "Area",
     "Code": "SQUARE_METER",
     "Name": "Square Meter",
     "Description": "The base unit of area in the International System of Units (SI).",
@@ -140,7 +140,7 @@
     "Factor": 1
   },
   {
-    "Type": "Area",
+    "UnitType": "Area",
     "Code": "SQUARE_KILOMETER",
     "Name": "Square Kilometer",
     "Description": "A unit of area equal to 1,000,000 square meters.",
@@ -150,7 +150,7 @@
     "Factor": 1000000
   },
   {
-    "Type": "Speed",
+    "UnitType": "Speed",
     "Code": "METER_PER_SECOND",
     "Name": "Meter per Second",
     "Description": "The base unit of speed in the International System of Units (SI).",
@@ -160,7 +160,7 @@
     "Factor": 1
   },
   {
-    "Type": "Frequency",
+    "UnitType": "Frequency",
     "Code": "HERTZ",
     "Name": "Hertz",
     "Description": "The base unit of frequency in the International System of Units (SI).",
@@ -170,7 +170,7 @@
     "Factor": 1
   },
   {
-    "Type": "Pressure",
+    "UnitType": "Pressure",
     "Code": "PASCAL",
     "Name": "Pascal",
     "Description": "The base unit of pressure in the International System of Units (SI).",
@@ -180,7 +180,7 @@
     "Factor": 1
   },
   {
-    "Type": "Energy",
+    "UnitType": "Energy",
     "Code": "JOULE",
     "Name": "Joule",
     "Description": "The base unit of energy in the International System of Units (SI).",
@@ -190,7 +190,7 @@
     "Factor": 1
   },
   {
-    "Type": "Power",
+    "UnitType": "Power",
     "Code": "WATT",
     "Name": "Watt",
     "Description": "The base unit of power in the International System of Units (SI).",
@@ -200,7 +200,7 @@
     "Factor": 1
   },
   {
-    "Type": "DataSize",
+    "UnitType": "DataSize",
     "Code": "BYTE",
     "Name": "Byte",
     "Description": "The base unit of digital information.",
@@ -210,7 +210,7 @@
     "Factor": 1
   },
   {
-    "Type": "DataSize",
+    "UnitType": "DataSize",
     "Code": "KILOBYTE",
     "Name": "Kilobyte",
     "Description": "A unit of digital information equal to 1,024 bytes.",

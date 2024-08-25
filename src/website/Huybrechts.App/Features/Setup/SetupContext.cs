@@ -1,14 +1,13 @@
 ﻿using Finbuckle.MultiTenant.Abstractions;
 using Huybrechts.App.Data;
-using Huybrechts.Core.Platform;
 using Huybrechts.Core.Setup;
 using Microsoft.EntityFrameworkCore;
 
 namespace Huybrechts.App.Features.Setup;
 
-public class SetupContext : FeatureContext
+public sealed class SetupContext : FeatureContext
 {
-    public SetupContext(IMultiTenantContextAccessor multiTenantContextAccessor, DbContextOptions options) 
+    public SetupContext(IMultiTenantContextAccessor multiTenantContextAccessor, DbContextOptions<SetupContext> options) 
         : base(multiTenantContextAccessor, options)
     {
     }

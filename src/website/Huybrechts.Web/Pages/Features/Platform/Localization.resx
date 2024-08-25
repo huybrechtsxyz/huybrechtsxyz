@@ -151,7 +151,7 @@
     <value>Edit platform</value>
   </data>
   <data name="Import" xml:space="preserve">
-    <value>Importeer</value>
+    <value>Import</value>
   </data>
   <data name="IndexInfo" xml:space="preserve">
     <value>Manage cloud platforms and on-premise solutions, including the creation, editing, and deletion of platforms. Easily navigate to configure associated regions, products, and services.</value>
@@ -166,7 +166,7 @@
     <value>No results found</value>
   </data>
   <data name="PageInfo" xml:space="preserve">
-    <value>Manage you cloud and on premise computer platforms</value>
+    <value>Manage your cloud and on premise computer platforms</value>
   </data>
   <data name="PageTitle" xml:space="preserve">
     <value>Platform</value>
