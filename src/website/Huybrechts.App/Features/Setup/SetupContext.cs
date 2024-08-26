@@ -33,5 +33,5 @@ public sealed class SetupContext : FeatureContext
             .HaveConversion<UlidToStringConverter>();
     }
 
-    public DbSet<SetupUnit> SystemUnits { get; set; }
+    public DbSet<SetupUnit> SetupUnits { get; set; }
 }

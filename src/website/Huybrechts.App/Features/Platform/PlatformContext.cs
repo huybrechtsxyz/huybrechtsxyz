@@ -23,12 +23,26 @@ public class PlatformContext : FeatureContext
             base.SetTimeStampForFieldsForSqlite(modelBuilder);
         }
 
+        // Ignore SetupUnit in PlatformContext to prevent it from creating a table
+        modelBuilder.Ignore<SetupUnit>();
+
         // call the base library implementation AFTER the above
         base.OnModelCreating(modelBuilder);
 
-        // Exclude SetupUnit from migration in PlatformContext
-        // specify the exact schema and name as in SetupContext
-        modelBuilder.Entity<SetupUnit>().ToTable("SetupUnit", "dbo");
+        // Ignore SetupUnit in PlatformContext to prevent it from creating a table
+        modelBuilder.Ignore<SetupUnit>();
+
+        // Configuration for PlatformRateUnit
+        modelBuilder.Entity<PlatformRateUnit>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            // Configure the foreign key to SetupUnit
+            entity.HasOne(e => e.SetupUnit)
+                  .WithMany() // No navigation property on SetupUnit
+                  .HasForeignKey(e => e.SetupUnitId)
+                  .HasConstraintName("FK_PlatformRateUnit_SetupUnit");
+        });
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
