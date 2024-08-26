@@ -110,6 +110,8 @@ public static class PlatformRateFlow
         public string? Remark { get; set; }
 
         public string SearchIndex => $"{ServiceName}~{ServiceFamily}~{ProductName}~{SkuName}~{MeterName}".ToLowerInvariant();
+
+        public ICollection<PlatformRateUnit> RateUnits { get; set; } = [];
     }
 
     public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -258,6 +260,8 @@ public static class PlatformRateFlow
             int pageNumber = message.Page ?? 1;
             var results = await query
                 .Include(i => i.PlatformProduct)
+                .Include(i => i.RateUnits)
+                .ThenInclude(j => j.SetupUnit)
                 .ProjectTo<ListModel>(_configuration)
                 .PaginatedListAsync(pageNumber, pageSize);
 
@@ -423,7 +427,7 @@ public static class PlatformRateFlow
                 ValidFrom = message.ValidFrom,
                 RetailPrice = decimal.Round(message.RetailPrice, 6, MidpointRounding.ToEven),
                 UnitPrice = decimal.Round(message.UnitPrice, 6, MidpointRounding.ToEven),
-                MininumUnits = decimal.Round(message.MinimumUnits, 6, MidpointRounding.ToEven),
+                MinimumUnits = decimal.Round(message.MinimumUnits, 6, MidpointRounding.ToEven),
                 UnitOfMeasure = message.UnitOfMeasure.Trim(),
                 IsPrimaryRegion = message.IsPrimaryRegion
             };
@@ -551,7 +555,7 @@ public static class PlatformRateFlow
             record.ValidFrom = message.ValidFrom;
             record.RetailPrice = decimal.Round(message.RetailPrice, 6, MidpointRounding.ToEven);
             record.UnitPrice = decimal.Round(message.UnitPrice, 6, MidpointRounding.ToEven);
-            record.MininumUnits = decimal.Round(message.MinimumUnits, 6, MidpointRounding.ToEven);
+            record.MinimumUnits = decimal.Round(message.MinimumUnits, 6, MidpointRounding.ToEven);
             record.UnitOfMeasure = message.UnitOfMeasure.Trim();
             record.IsPrimaryRegion = message.IsPrimaryRegion;
 
@@ -901,7 +905,7 @@ public static class PlatformRateFlow
                     ValidFrom = item.ValidFrom,
                     RetailPrice = item.RetailPrice,
                     UnitPrice = item.UnitPrice,
-                    MininumUnits = item.MinimumUnits,
+                    MinimumUnits = item.MinimumUnits,
                     UnitOfMeasure = item.UnitOfMeasure,
                     IsPrimaryRegion = item.IsPrimaryRegion
                 };

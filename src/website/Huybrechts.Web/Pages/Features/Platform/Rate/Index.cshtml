@@ -91,7 +91,6 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].ServiceName)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].ProductName)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].SkuName)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].MeterName)</th>
@@ -100,6 +99,7 @@
                                 <th class="text-end">@Html.DisplayNameFor(model => model.Data.Results[0].MinimumUnits)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].CurrencyCode)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].PlatformRegionLabel)</th>
+                                <th>@SL["RateUnits"]</th>
                                 <th></th>
                             </tr>
                             
@@ -108,7 +108,6 @@
                             @foreach (var record in Model.Data.Results)
                             {
                                 <tr>
-                                    <td>@Html.DisplayFor(modelItem => record!.ServiceName)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.ProductName)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.SkuName)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.MeterName)</td>
@@ -117,9 +116,11 @@
                                     <td class="text-end">@Html.DisplayFor(modelItem => record!.MinimumUnits)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.CurrencyCode)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.PlatformRegionLabel)</td>
+                                    <td>@string.Join(", ", record.RateUnits.Select(pru => pru.SetupUnit.Name))</td>
                                     <td>
                                         <a asp-page="Edit" asp-route-id="@record!.Id" class="btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i></a>
                                         <a asp-page="Delete" asp-route-id="@record!.Id" class="btn btn-icon btn-secondary"><i class="bi bi-trash2-fill"></i></a>
+                                        <a asp-page="/Features/Platform/Unit/Index" asp-route-platformRateId="@record!.Id" class="btn btn-icon btn-info"><i class="bi bi-rulers"></i></a>
                                     </td>
                                 </tr>
                             }

@@ -124,6 +124,15 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default value.
+        /// </summary>
+        public static string DefaultValue {
+            get {
+                return ResourceManager.GetString("DefaultValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Description.
         /// </summary>
         public static string Description {
@@ -286,6 +295,15 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rate.
+        /// </summary>
+        public static string Rate {
+            get {
+                return ResourceManager.GetString("Rate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rate type.
         /// </summary>
         public static string RateType {
@@ -358,6 +376,15 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to System unit.
+        /// </summary>
+        public static string SetupUnit {
+            get {
+                return ResourceManager.GetString("SetupUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sku identifier.
         /// </summary>
         public static string SkuId {
@@ -390,6 +417,15 @@ namespace Huybrechts.App.Features.Platform {
         public static string Type {
             get {
                 return ResourceManager.GetString("Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unit factor.
+        /// </summary>
+        public static string UnitFactor {
+            get {
+                return ResourceManager.GetString("UnitFactor", resourceCulture);
             }
         }
         

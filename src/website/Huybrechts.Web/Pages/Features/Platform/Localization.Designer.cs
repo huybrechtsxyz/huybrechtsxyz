@@ -349,6 +349,15 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rate.
+        /// </summary>
+        public static string Rate {
+            get {
+                return ResourceManager.GetString("Rate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Use this form to add a new pricing rate for a service on the platform. Be sure to provide all required fields, such as the service name, currency, and validity period..
         /// </summary>
         public static string RateCreateInfo {
@@ -444,6 +453,15 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         public static string RateNoResults {
             get {
                 return ResourceManager.GetString("RateNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units.
+        /// </summary>
+        public static string RateUnits {
+            get {
+                return ResourceManager.GetString("RateUnits", resourceCulture);
             }
         }
         
@@ -678,6 +696,96 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         public static string ServiceNoResults {
             get {
                 return ResourceManager.GetString("ServiceNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a new platform rate unit. Use this form to create a new rate unit for a specific platform, including details such as unit type, conversion factor, and description..
+        /// </summary>
+        public static string UnitCreateInfo {
+            get {
+                return ResourceManager.GetString("UnitCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Platform Rate Unit.
+        /// </summary>
+        public static string UnitCreateTitle {
+            get {
+                return ResourceManager.GetString("UnitCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove a platform rate unit. Confirm the deletion of a platform rate unit. This action is irreversible..
+        /// </summary>
+        public static string UnitDeleteInfo {
+            get {
+                return ResourceManager.GetString("UnitDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Platform Rate Unit.
+        /// </summary>
+        public static string UnitDeleteTitle {
+            get {
+                return ResourceManager.GetString("UnitDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify an existing platform rate unit. Update the details of a platform rate unit, including unit type, conversion factor, and description..
+        /// </summary>
+        public static string UnitEditInfo {
+            get {
+                return ResourceManager.GetString("UnitEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Platform Rate Unit.
+        /// </summary>
+        public static string UnitEditTitle {
+            get {
+                return ResourceManager.GetString("UnitEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View and manage all platform rate units. This page allows you to see all rate units associated with different platforms and manage them as needed..
+        /// </summary>
+        public static string UnitIndexInfo {
+            get {
+                return ResourceManager.GetString("UnitIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platform Rate Units.
+        /// </summary>
+        public static string UnitIndexTitle {
+            get {
+                return ResourceManager.GetString("UnitIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string UnitNoResults {
+            get {
+                return ResourceManager.GetString("UnitNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units.
+        /// </summary>
+        public static string Units {
+            get {
+                return ResourceManager.GetString("Units", resourceCulture);
             }
         }
     }

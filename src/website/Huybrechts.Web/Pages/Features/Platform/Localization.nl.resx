@@ -213,8 +213,14 @@
   <data name="Products" xml:space="preserve">
     <value>Producten</value>
   </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Rate</value>
+  </data>
   <data name="RateNoResults" xml:space="preserve">
     <value>Geen resultaten gevonden</value>
+  </data>
+  <data name="RateUnits" xml:space="preserve">
+    <value>Eenheden</value>
   </data>
   <data name="RegionCreateInfo" xml:space="preserve">
     <value>Voeg een nieuwe regio toe aan een platform door de naam, het label en de beschrijving in te vullen. Gebruik deze pagina om een nieuwe datacenterregio voor een cloudplatform of on-premise oplossing te definiëren.</value>
@@ -296,5 +302,32 @@
   </data>
   <data name="Services" xml:space="preserve">
     <value>Diensten</value>
+  </data>
+  <data name="UnitCreateInfo" xml:space="preserve">
+    <value>Voeg een nieuwe platform tarief eenheid toe. Gebruik dit formulier om een nieuwe tarief eenheid voor een specifiek platform aan te maken, inclusief details zoals eenheidstype, conversiefactor en beschrijving.</value>
+  </data>
+  <data name="UnitCreateTitle" xml:space="preserve">
+    <value>Platform Tarief Eenheid Aanmaken</value>
+  </data>
+  <data name="UnitDeleteInfo" xml:space="preserve">
+    <value>Verwijder een platform tarief eenheid. Bevestig de verwijdering van een platform tarief eenheid. Deze actie kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="UnitDeleteTitle" xml:space="preserve">
+    <value>Platform Tarief Eenheid Verwijderen</value>
+  </data>
+  <data name="UnitEditInfo" xml:space="preserve">
+    <value>Wijzig een bestaande platform tarief eenheid. Werk de details van een platform tarief eenheid bij, inclusief eenheidstype, conversiefactor en beschrijving.</value>
+  </data>
+  <data name="UnitEditTitle" xml:space="preserve">
+    <value>Platform Tarief Eenheid Bewerken</value>
+  </data>
+  <data name="UnitIndexInfo" xml:space="preserve">
+    <value>Bekijk en beheer alle platform tarief eenheden. Op deze pagina kunt u alle tarief eenheden die aan verschillende platforms zijn gekoppeld bekijken en beheren.</value>
+  </data>
+  <data name="UnitIndexTitle" xml:space="preserve">
+    <value>Platform Tarief Eenheden</value>
+  </data>
+  <data name="Units" xml:space="preserve">
+    <value>Units</value>
   </data>
 </root>

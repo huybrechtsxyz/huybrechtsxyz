@@ -140,7 +140,7 @@ public record PlatformRate : Entity, IEntity
     /// </summary>
     [Precision(12, 6)]
     [Comment("Tier minimum units.")]
-    public decimal MininumUnits { get; set; } = 0;
+    public decimal MinimumUnits { get; set; } = 0;
 
     /// <summary>
     /// The unit of measure for the rate (e.g., per hour, per GB).
@@ -170,4 +170,9 @@ public record PlatformRate : Entity, IEntity
     /// </summary>
     [Comment("This field will store the normalized, concatenated values for searching")]
     public string? SearchIndex { get; set; }
+
+    /// <summary>
+    /// Navigation property to the linked rate units
+    /// </summary>
+    public virtual ICollection<PlatformRateUnit> RateUnits { get; set; } = [];
 }

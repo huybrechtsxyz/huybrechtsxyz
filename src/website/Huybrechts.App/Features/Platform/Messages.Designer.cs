@@ -124,6 +124,15 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find rate unit with ID {0}.
+        /// </summary>
+        public static string INVALID_PLATFORMRATEUNIT_ID {
+            get {
+                return ResourceManager.GetString("INVALID_PLATFORMRATEUNIT_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find region with ID {0}.
         /// </summary>
         public static string INVALID_PLATFORMREGION_ID {
@@ -138,6 +147,15 @@ namespace Huybrechts.App.Features.Platform {
         public static string INVALID_PLATFORMSERVICE_ID {
             get {
                 return ResourceManager.GetString("INVALID_PLATFORMSERVICE_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find system unit with ID {0}.
+        /// </summary>
+        public static string INVALID_SETUPUNIT_ID {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPUNIT_ID", resourceCulture);
             }
         }
     }

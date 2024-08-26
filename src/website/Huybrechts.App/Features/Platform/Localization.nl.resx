@@ -138,6 +138,9 @@
   <data name="CurrencyCode" xml:space="preserve">
     <value>Munteenheid</value>
   </data>
+  <data name="DefaultValue" xml:space="preserve">
+    <value>Standaard waarde</value>
+  </data>
   <data name="Description" xml:space="preserve">
     <value>Omschrijving</value>
   </data>
@@ -192,6 +195,9 @@
   <data name="Provider" xml:space="preserve">
     <value>Ondersteunde leverancier</value>
   </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Prijs</value>
+  </data>
   <data name="RateType" xml:space="preserve">
     <value>Type prijs</value>
   </data>
@@ -216,6 +222,9 @@
   <data name="ServiceName" xml:space="preserve">
     <value>Service naam</value>
   </data>
+  <data name="SetupUnit" xml:space="preserve">
+    <value>Systeemeenheid</value>
+  </data>
   <data name="SkuId" xml:space="preserve">
     <value>Sku identificatie</value>
   </data>
@@ -227,6 +236,9 @@
   </data>
   <data name="Type" xml:space="preserve">
     <value>Type</value>
+  </data>
+  <data name="UnitFactor" xml:space="preserve">
+    <value>Eenheidsfactor</value>
   </data>
   <data name="UnitOfMeasure" xml:space="preserve">
     <value>Meeteenheid</value>

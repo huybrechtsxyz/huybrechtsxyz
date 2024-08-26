@@ -213,6 +213,9 @@
   <data name="Products" xml:space="preserve">
     <value>Products</value>
   </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Rate</value>
+  </data>
   <data name="RateCreateInfo" xml:space="preserve">
     <value>Use this form to add a new pricing rate for a service on the platform. Be sure to provide all required fields, such as the service name, currency, and validity period.</value>
   </data>
@@ -245,6 +248,9 @@
   </data>
   <data name="RateNoResults" xml:space="preserve">
     <value>No results found</value>
+  </data>
+  <data name="RateUnits" xml:space="preserve">
+    <value>Units</value>
   </data>
   <data name="RegionCreateInfo" xml:space="preserve">
     <value>Add a new region to a platform by specifying its name, label, and description. Use this page to define a new data center region for a cloud platform or on-premise solution.</value>
@@ -323,5 +329,35 @@
   </data>
   <data name="ServiceNoResults" xml:space="preserve">
     <value>No results found</value>
+  </data>
+  <data name="UnitCreateInfo" xml:space="preserve">
+    <value>Add a new platform rate unit. Use this form to create a new rate unit for a specific platform, including details such as unit type, conversion factor, and description.</value>
+  </data>
+  <data name="UnitCreateTitle" xml:space="preserve">
+    <value>Create Platform Rate Unit</value>
+  </data>
+  <data name="UnitDeleteInfo" xml:space="preserve">
+    <value>Remove a platform rate unit. Confirm the deletion of a platform rate unit. This action is irreversible.</value>
+  </data>
+  <data name="UnitDeleteTitle" xml:space="preserve">
+    <value>Delete Platform Rate Unit</value>
+  </data>
+  <data name="UnitEditInfo" xml:space="preserve">
+    <value>Modify an existing platform rate unit. Update the details of a platform rate unit, including unit type, conversion factor, and description.</value>
+  </data>
+  <data name="UnitEditTitle" xml:space="preserve">
+    <value>Edit Platform Rate Unit</value>
+  </data>
+  <data name="UnitIndexInfo" xml:space="preserve">
+    <value>View and manage all platform rate units. This page allows you to see all rate units associated with different platforms and manage them as needed.</value>
+  </data>
+  <data name="UnitIndexTitle" xml:space="preserve">
+    <value>Platform Rate Units</value>
+  </data>
+  <data name="UnitNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Units" xml:space="preserve">
+    <value>Units</value>
   </data>
 </root>

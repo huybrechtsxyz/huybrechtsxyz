@@ -26,7 +26,6 @@ public record SetupUnit: Entity, IEntity
     /// Type defines the category to which the unit belongs, allowing for better organization and lookup.
     /// </remarks>
     [Required]
-    [MaxLength(32)]
     [Comment("Gets or sets the type of the unit (e.g., Height, Weight, Volume, System, etc.).")]
     public SetupUnitType UnitType { get; set; } = SetupUnitType.System;
 
@@ -48,7 +47,7 @@ public record SetupUnit: Entity, IEntity
     /// Name provides a human-readable description of the unit, which is unique within its type.
     /// </remarks>
     [Required]
-    [MaxLength(100)]
+    [MaxLength(128)]
     [Comment("The unique name of the unit within its type.")]
     public string Name { get; set; } = string.Empty;
 

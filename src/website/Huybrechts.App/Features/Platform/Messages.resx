@@ -132,6 +132,9 @@
   <data name="INVALID_PLATFORMPRODUCT_ID" xml:space="preserve">
     <value>Unable to find product with ID {0}</value>
   </data>
+  <data name="INVALID_PLATFORMRATEUNIT_ID" xml:space="preserve">
+    <value>Unable to find rate unit with ID {0}</value>
+  </data>
   <data name="INVALID_PLATFORMRATE_ID" xml:space="preserve">
     <value>Unable to find rate with ID {0}</value>
   </data>
@@ -143,5 +146,8 @@
   </data>
   <data name="INVALID_PLATFORM_ID" xml:space="preserve">
     <value>Unable to find platform with ID {0}</value>
+  </data>
+  <data name="INVALID_SETUPUNIT_ID" xml:space="preserve">
+    <value>Unable to find system unit with ID {0}</value>
   </data>
 </root>

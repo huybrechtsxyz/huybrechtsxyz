@@ -144,4 +144,7 @@
   <data name="INVALID_PLATFORM_ID" xml:space="preserve">
     <value>Kan platform met ID {0} niet vinden</value>
   </data>
+  <data name="INVALID_SETUPUNIT_ID" xml:space="preserve">
+    <value>Kan systeem eenheid met ID {0} niet vinden</value>
+  </data>
 </root>
