@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 {
     [DbContext(typeof(PlatformContext))]
-    [Migration("20240825210246_CreatePlatformSchema")]
+    [Migration("20240826073253_CreatePlatformSchema")]
     partial class CreatePlatformSchema
     {
         /// <inheritdoc />
@@ -630,7 +630,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
                     b.HasIndex("SearchIndex");
 
-                    b.ToTable("SetupUnit", t =>
+                    b.ToTable("SetupUnit", "dbo", t =>
                         {
                             t.HasComment("Represents a measurement unit used for different types such as height, weight, volume, etc.");
                         });

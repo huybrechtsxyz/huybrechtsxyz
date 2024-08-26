@@ -11,6 +11,9 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "dbo");
+
             migrationBuilder.CreateTable(
                 name: "Platform",
                 columns: table => new
@@ -34,6 +37,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
             migrationBuilder.CreateTable(
                 name: "SetupUnit",
+                schema: "dbo",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
@@ -221,6 +225,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                     table.ForeignKey(
                         name: "FK_PlatformRateUnit_SetupUnit_SetupUnitId",
                         column: x => x.SetupUnitId,
+                        principalSchema: "dbo",
                         principalTable: "SetupUnit",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -293,18 +298,21 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
 
             migrationBuilder.CreateIndex(
                 name: "IX_SetupUnit_Code",
+                schema: "dbo",
                 table: "SetupUnit",
                 column: "Code",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SetupUnit_Name",
+                schema: "dbo",
                 table: "SetupUnit",
                 column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SetupUnit_SearchIndex",
+                schema: "dbo",
                 table: "SetupUnit",
                 column: "SearchIndex");
         }
@@ -325,7 +333,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Platform
                 name: "PlatformRate");
 
             migrationBuilder.DropTable(
-                name: "SetupUnit");
+                name: "SetupUnit",
+                schema: "dbo");
 
             migrationBuilder.DropTable(
                 name: "PlatformProduct");

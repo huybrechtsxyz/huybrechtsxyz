@@ -5,95 +5,91 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Huybrechts.Infra.Npgsql.Migrations.Setup
+namespace Huybrechts.Infra.Sqlite.Migrations.Setup
 {
     [DbContext(typeof(SetupContext))]
-    [Migration("20240825210224_CreateSetupUnit")]
+    [Migration("20240826073035_CreateSetupUnit")]
     partial class CreateSetupUnit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
 
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupUnit", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("character varying(26)")
+                        .HasColumnType("TEXT")
                         .HasComment("Primary Key");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
+                        .HasColumnType("TEXT")
                         .HasComment("A unique code representing the unit, standard across all instances.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("TEXT")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasColumnType("TEXT")
                         .HasComment("A detailed description of the unit.");
 
                     b.Property<decimal>("Factor")
                         .HasPrecision(18, 10)
-                        .HasColumnType("numeric(18,10)")
+                        .HasColumnType("TEXT")
                         .HasComment("A multiplication factor used to convert this unit to the base unit.");
 
                     b.Property<bool>("IsBase")
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasComment("Indicates whether this unit is the base unit for its type.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("TEXT")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("TEXT")
                         .HasComment("The unique name of the unit within its type.");
 
                     b.Property<int>("Precision")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasComment("Number of decimal places for the unit.");
 
                     b.Property<int>("PrecisionType")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasComment("Determines how values are rounded according to the System.Decimal Rounding enum.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("text")
+                        .HasColumnType("TEXT")
                         .HasComment("Additional remarks or comments about the unit.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("text")
+                        .HasColumnType("TEXT")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("TEXT");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
+                        .HasColumnType("BLOB")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("UnitType")
                         .HasMaxLength(32)
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasComment("Gets or sets the type of the unit (e.g., Height, Weight, Volume, System, etc.).");
 
                     b.HasKey("Id");

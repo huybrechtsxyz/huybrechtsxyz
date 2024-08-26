@@ -1,6 +1,7 @@
 ﻿using Finbuckle.MultiTenant.Abstractions;
 using Huybrechts.App.Data;
 using Huybrechts.Core.Platform;
+using Huybrechts.Core.Setup;
 using Microsoft.EntityFrameworkCore;
 
 namespace Huybrechts.App.Features.Platform;
@@ -24,6 +25,10 @@ public class PlatformContext : FeatureContext
 
         // call the base library implementation AFTER the above
         base.OnModelCreating(modelBuilder);
+
+        // Exclude SetupUnit from migration in PlatformContext
+        // specify the exact schema and name as in SetupContext
+        modelBuilder.Entity<SetupUnit>().ToTable("SetupUnit", "dbo");
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -55,10 +60,5 @@ public class PlatformContext : FeatureContext
 
     public DbSet<PlatformMeasureDefault> MeasureDefaults { get; set; }
 
-    public DbSet<PlatformRate> Rates { get; set; }
-
-    public DbSet<PlatformRateUnit> RateUnits { get; set; }
-
-    public DbSet<PlatformSearchRate> SearchRates { get; set; }
     */
 }

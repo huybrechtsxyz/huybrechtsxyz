@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 {
     [DbContext(typeof(PlatformContext))]
-    [Migration("20240825210207_CreatePlatformSchema")]
+    [Migration("20240826073209_CreatePlatformSchema")]
     partial class CreatePlatformSchema
     {
         /// <inheritdoc />
@@ -630,7 +630,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Platform
 
                     b.HasIndex("SearchIndex");
 
-                    b.ToTable("SetupUnit", t =>
+                    b.ToTable("SetupUnit", "dbo", t =>
                         {
                             t.HasComment("Represents a measurement unit used for different types such as height, weight, volume, etc.");
                         });

@@ -629,7 +629,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Platform
 
                     b.HasIndex("SearchIndex");
 
-                    b.ToTable("SetupUnit", t =>
+                    b.ToTable("SetupUnit", "dbo", t =>
                         {
                             t.HasComment("Represents a measurement unit used for different types such as height, weight, volume, etc.");
                         });

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.SqlServer.Migrations.Setup
 {
     [DbContext(typeof(SetupContext))]
-    [Migration("20240825210148_CreateSetupUnit")]
+    [Migration("20240826073148_CreateSetupUnit")]
     partial class CreateSetupUnit
     {
         /// <inheritdoc />
