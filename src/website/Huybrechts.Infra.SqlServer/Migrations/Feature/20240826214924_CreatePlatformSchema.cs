@@ -37,9 +37,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
-                    UnitType = table.Column<int>(type: "int", maxLength: 32, nullable: false, comment: "Gets or sets the type of the unit (e.g., Height, Weight, Volume, System, etc.)."),
+                    UnitType = table.Column<int>(type: "int", nullable: false, comment: "Gets or sets the type of the unit (e.g., Height, Weight, Volume, System, etc.)."),
                     Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, comment: "A unique code representing the unit, standard across all instances."),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "The unique name of the unit within its type."),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "The unique name of the unit within its type."),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true, comment: "A detailed description of the unit."),
                     IsBase = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates whether this unit is the base unit for its type."),
                     Precision = table.Column<int>(type: "int", nullable: false, comment: "Number of decimal places for the unit."),
@@ -169,7 +169,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     ValidFrom = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Rate is valid from."),
                     RetailPrice = table.Column<decimal>(type: "decimal(12,6)", precision: 12, scale: 6, nullable: false, comment: "Retail price."),
                     UnitPrice = table.Column<decimal>(type: "decimal(12,6)", precision: 12, scale: 6, nullable: false, comment: "Unit price."),
-                    MininumUnits = table.Column<decimal>(type: "decimal(12,6)", precision: 12, scale: 6, nullable: false, comment: "Tier minimum units."),
+                    MinimumUnits = table.Column<decimal>(type: "decimal(12,6)", precision: 12, scale: 6, nullable: false, comment: "Tier minimum units."),
                     UnitOfMeasure = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false, comment: "Unit of measure."),
                     IsPrimaryRegion = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates whether this is the primary rate for the region."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or comments about the rate."),

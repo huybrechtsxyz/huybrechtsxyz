@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 {
     [DbContext(typeof(FeatureContext))]
-    [Migration("20240826214425_UPdatePlatformRateMinUnit")]
-    partial class UPdatePlatformRateMinUnit
+    [Migration("20240826214924_CreatePlatformSchema")]
+    partial class CreatePlatformSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -214,7 +214,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasColumnType("character varying(128)")
                         .HasComment("Meter name.");
 
-                    b.Property<decimal>("MininumUnits")
+                    b.Property<decimal>("MinimumUnits")
                         .HasPrecision(12, 6)
                         .HasColumnType("numeric(12,6)")
                         .HasComment("Tier minimum units.");
@@ -582,8 +582,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
                         .HasComment("The unique name of the unit within its type.");
 
                     b.Property<int>("Precision")
@@ -613,7 +613,6 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasColumnType("bytea");
 
                     b.Property<int>("UnitType")
-                        .HasMaxLength(32)
                         .HasColumnType("integer")
                         .HasComment("Gets or sets the type of the unit (e.g., Height, Weight, Volume, System, etc.).");
 
@@ -660,7 +659,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRateUnit", b =>
                 {
                     b.HasOne("Huybrechts.Core.Platform.PlatformRate", "PlatformRate")
-                        .WithMany()
+                        .WithMany("RateUnits")
                         .HasForeignKey("PlatformRateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -696,6 +695,11 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .IsRequired();
 
                     b.Navigation("PlatformInfo");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>
+                {
+                    b.Navigation("RateUnits");
                 });
 #pragma warning restore 612, 618
         }

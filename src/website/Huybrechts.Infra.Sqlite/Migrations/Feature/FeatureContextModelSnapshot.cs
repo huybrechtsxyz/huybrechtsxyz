@@ -211,7 +211,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                         .HasColumnType("TEXT")
                         .HasComment("Meter name.");
 
-                    b.Property<decimal>("MininumUnits")
+                    b.Property<decimal>("MinimumUnits")
                         .HasPrecision(12, 6)
                         .HasColumnType("TEXT")
                         .HasComment("Tier minimum units.");
@@ -583,7 +583,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(128)
                         .HasColumnType("TEXT")
                         .HasComment("The unique name of the unit within its type.");
 
@@ -615,7 +615,6 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("UnitType")
-                        .HasMaxLength(32)
                         .HasColumnType("INTEGER")
                         .HasComment("Gets or sets the type of the unit (e.g., Height, Weight, Volume, System, etc.).");
 
@@ -662,7 +661,7 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRateUnit", b =>
                 {
                     b.HasOne("Huybrechts.Core.Platform.PlatformRate", "PlatformRate")
-                        .WithMany()
+                        .WithMany("RateUnits")
                         .HasForeignKey("PlatformRateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -698,6 +697,11 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                         .IsRequired();
 
                     b.Navigation("PlatformInfo");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>
+                {
+                    b.Navigation("RateUnits");
                 });
 #pragma warning restore 612, 618
         }
