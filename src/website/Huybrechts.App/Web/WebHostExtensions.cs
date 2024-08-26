@@ -7,8 +7,6 @@ using Hangfire.SqlServer;
 using Huybrechts.App.Application;
 using Huybrechts.App.Config;
 using Huybrechts.App.Data;
-using Huybrechts.App.Features.Platform;
-using Huybrechts.App.Features.Setup;
 using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -71,22 +69,19 @@ public static class WebHostExtensions
             case ContextProviderType.Sqlite:
                 {
                     builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite")));
-                    builder.Services.AddDbContextFactory<SetupContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite"))); 
-                    builder.Services.AddDbContextFactory<PlatformContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite")));
+                    builder.Services.AddDbContextFactory<FeatureContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite"))); 
                     break;
                 }
             case ContextProviderType.SqlServer:
                 {
                     builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.SqlServer")));
-                    builder.Services.AddDbContextFactory<SetupContext>(options => options.UseSqlServer(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.SqlServer")));
-                    builder.Services.AddDbContextFactory<PlatformContext>(options => options.UseSqlServer(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.SqlServer")));
+                    builder.Services.AddDbContextFactory<FeatureContext>(options => options.UseSqlServer(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.SqlServer")));
                     break;
                 }
             case ContextProviderType.Postgres:
                 {
                     builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Npgsql")));
-                    builder.Services.AddDbContextFactory<SetupContext>(options => options.UseNpgsql(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Npgsql")));
-                    builder.Services.AddDbContextFactory<PlatformContext>(options => options.UseNpgsql(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Npgsql")));
+                    builder.Services.AddDbContextFactory<FeatureContext>(options => options.UseNpgsql(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Npgsql")));
                     break;
                 }
             default: throw new ArgumentException($"Unsupported or invalid connection string format: {connectionString}.");

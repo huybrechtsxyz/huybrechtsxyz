@@ -92,7 +92,7 @@ public static class SetupUnitFlow
         EntityListFlow.Handler<SetupUnit, ListModel>,
         IRequestHandler<ListQuery, Result<ListResult>>
     {
-        public ListHandler(SetupContext dbcontext, IConfigurationProvider configuration)
+        public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
             : base(dbcontext, configuration)
         {
         }
@@ -142,7 +142,7 @@ public static class SetupUnitFlow
 
     public sealed class CreateValidator : ModelValidator<CreateCommand> 
     {
-        public CreateValidator(SetupContext dbContext) :
+        public CreateValidator(FeatureContext dbContext) :
             base()
         {
             RuleFor(x => x.Name).MustAsync(async (name, cancellation) =>
@@ -155,9 +155,9 @@ public static class SetupUnitFlow
 
     internal sealed class CreateHandler : IRequestHandler<CreateCommand, Result<Ulid>>
     {
-        private readonly SetupContext _dbcontext;
+        private readonly FeatureContext _dbcontext;
 
-        public CreateHandler(SetupContext dbcontext)
+        public CreateHandler(FeatureContext dbcontext)
         {
             _dbcontext = dbcontext;
         }
@@ -198,9 +198,9 @@ public static class SetupUnitFlow
 
     public sealed class CreateDefaultsHandler
     {
-        private readonly SetupContext _dbcontext;
+        private readonly FeatureContext _dbcontext;
 
-        public CreateDefaultsHandler(SetupContext dbcontext)
+        public CreateDefaultsHandler(FeatureContext dbcontext)
         {
             _dbcontext = dbcontext;
         }
@@ -263,7 +263,7 @@ public static class SetupUnitFlow
 
     public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
     {
-        public UpdateCommandValidator(SetupContext dbContext)
+        public UpdateCommandValidator(FeatureContext dbContext)
         {
             RuleFor(x => x).MustAsync(async (rec, cancellation) =>
             {
@@ -280,10 +280,10 @@ public static class SetupUnitFlow
 
     internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
     {
-        private readonly SetupContext _dbcontext;
+        private readonly FeatureContext _dbcontext;
         private readonly IConfigurationProvider _configuration;
 
-        public UpdateQueryHandler(SetupContext dbcontext, IConfigurationProvider configuration)
+        public UpdateQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
         {
             _dbcontext = dbcontext;
             _configuration = configuration;
@@ -304,9 +304,9 @@ public static class SetupUnitFlow
 
     internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
     {
-        private readonly SetupContext _dbcontext;
+        private readonly FeatureContext _dbcontext;
 
-        public UpdateCommandHandler(SetupContext dbcontext)
+        public UpdateCommandHandler(FeatureContext dbcontext)
         {
             _dbcontext = dbcontext;
         }
@@ -371,10 +371,10 @@ public static class SetupUnitFlow
 
     internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<DeleteCommand>>
     {
-        private readonly SetupContext _dbcontext;
+        private readonly FeatureContext _dbcontext;
         private readonly IConfigurationProvider _configuration;
 
-        public DeleteQueryHandler(SetupContext dbcontext, IConfigurationProvider configuration)
+        public DeleteQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
         {
             _dbcontext = dbcontext;
             _configuration = configuration;
@@ -395,9 +395,9 @@ public static class SetupUnitFlow
 
     internal class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
     {
-        private readonly SetupContext _dbcontext;
+        private readonly FeatureContext _dbcontext;
 
-        public DeleteCommandHandler(SetupContext dbcontext)
+        public DeleteCommandHandler(FeatureContext dbcontext)
         {
             _dbcontext = dbcontext;
         }

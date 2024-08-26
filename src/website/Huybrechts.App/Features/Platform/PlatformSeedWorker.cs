@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Huybrechts.App.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
@@ -12,7 +13,7 @@ public class PlatformSeedWorker : IHostedService
     //private readonly IConfiguration _configuration;
     private readonly ILogger _logger = Log.Logger.ForContext<PlatformSeedWorker>();
 
-    private PlatformContext _dbcontext = null!;
+    private FeatureContext _dbcontext = null!;
 
     public PlatformSeedWorker(IServiceProvider serviceProvider) //, IConfiguration configuration)
     {
@@ -27,8 +28,8 @@ public class PlatformSeedWorker : IHostedService
         //    throw new Exception("The WebHostEnvironment service was not registered as a service");
 
         using var scope = _serviceProvider.CreateScope();
-        _dbcontext = scope.ServiceProvider.GetRequiredService<PlatformContext>() ??
-            throw new Exception("The PlatformContext service was not registered as a service");
+        _dbcontext = scope.ServiceProvider.GetRequiredService<FeatureContext>() ??
+            throw new Exception("The FeatureContext service was not registered as a service");
 
         _logger.Information("Running platform initializer...applying database migrations");
         if (HealthStatus.Unhealthy == await MigrateAsync(5, 5, new CancellationToken()))

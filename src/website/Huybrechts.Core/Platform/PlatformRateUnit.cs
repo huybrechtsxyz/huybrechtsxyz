@@ -57,6 +57,7 @@ public record PlatformRateUnit : Entity, IEntity
     /// <summary>
     /// Navigation property for SetupUnit.
     /// </summary>
+    [ForeignKey(nameof(SetupUnitId))]
     public SetupUnit SetupUnit { get; set; } = null!;
 
     /// <summary>

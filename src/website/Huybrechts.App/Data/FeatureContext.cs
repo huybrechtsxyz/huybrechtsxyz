@@ -1,5 +1,7 @@
 ﻿using Finbuckle.MultiTenant.Abstractions;
 using Finbuckle.MultiTenant.EntityFrameworkCore;
+using Huybrechts.Core.Platform;
+using Huybrechts.Core.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.ComponentModel.DataAnnotations;
@@ -14,6 +16,26 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
 
     public FeatureContext(IMultiTenantContextAccessor multiTenantContextAccessor, DbContextOptions options) : base(multiTenantContextAccessor, options)
     {
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // set a global query filter, e.g. to support soft delete
+        //modelBuilder.Entity<Post>().HasQueryFilter(p => !p.IsDeleted);
+        if (Database.IsSqlite())
+        {
+            SetTimeStampForFieldsForSqlite(modelBuilder);
+        }
+
+        // call the base library implementation AFTER the above
+        base.OnModelCreating(modelBuilder);
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder
+            .Properties<Ulid>()
+            .HaveConversion<UlidToStringConverter>();
     }
 
     protected void SetTimeStampForFieldsForSqlite(ModelBuilder modelBuilder)
@@ -86,4 +108,26 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
             }
         }
     }
+
+    //
+    // SETUP
+    //
+
+    public DbSet<SetupUnit> SetupUnits { get; set; }
+
+    //
+    // PLATFORM
+    //
+
+    public DbSet<PlatformInfo> Platforms { get; set; }
+
+    public DbSet<PlatformRegion> PlatformRegions { get; set; }
+
+    public DbSet<PlatformService> PlatformServices { get; set; }
+
+    public DbSet<PlatformProduct> PlatformProducts { get; set; }
+
+    public DbSet<PlatformRate> PlatformRates { get; set; }
+
+    public DbSet<PlatformRateUnit> PlatformRateUnits { get; set; }
 }

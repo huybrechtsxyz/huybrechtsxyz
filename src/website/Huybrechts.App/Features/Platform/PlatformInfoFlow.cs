@@ -73,7 +73,7 @@ public static class PlatformInfoFlow
         EntityListFlow.Handler<PlatformInfo, ListModel>,
         IRequestHandler<ListQuery, Result<ListResult>>
     {
-        public ListHandler(PlatformContext dbcontext, IConfigurationProvider configuration)
+        public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
             : base(dbcontext, configuration)
         {
         }
@@ -123,7 +123,7 @@ public static class PlatformInfoFlow
 
     public sealed class CreateValidator : ModelValidator<CreateCommand> 
     {
-        public CreateValidator(PlatformContext dbContext) :
+        public CreateValidator(FeatureContext dbContext) :
             base()
         {
             RuleFor(x => x.Name).MustAsync(async (name, cancellation) =>
@@ -136,9 +136,9 @@ public static class PlatformInfoFlow
 
     internal sealed class CreateHandler : IRequestHandler<CreateCommand, Result<Ulid>>
     {
-        private readonly PlatformContext _dbcontext;
+        private readonly FeatureContext _dbcontext;
 
-        public CreateHandler(PlatformContext dbcontext)
+        public CreateHandler(FeatureContext dbcontext)
         {
             _dbcontext = dbcontext;
         }
@@ -182,7 +182,7 @@ public static class PlatformInfoFlow
 
     public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
     {
-        public UpdateCommandValidator(PlatformContext dbContext)
+        public UpdateCommandValidator(FeatureContext dbContext)
         {
             RuleFor(x => x).MustAsync(async (rec, cancellation) =>
             {
@@ -199,10 +199,10 @@ public static class PlatformInfoFlow
 
     internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
     {
-        private readonly PlatformContext _dbcontext;
+        private readonly FeatureContext _dbcontext;
         private readonly IConfigurationProvider _configuration;
 
-        public UpdateQueryHandler(PlatformContext dbcontext, IConfigurationProvider configuration)
+        public UpdateQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
         {
             _dbcontext = dbcontext;
             _configuration = configuration;
@@ -223,9 +223,9 @@ public static class PlatformInfoFlow
 
     internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
     {
-        private readonly PlatformContext _dbcontext;
+        private readonly FeatureContext _dbcontext;
 
-        public UpdateCommandHandler(PlatformContext dbcontext)
+        public UpdateCommandHandler(FeatureContext dbcontext)
         {
             _dbcontext = dbcontext;
         }
@@ -286,10 +286,10 @@ public static class PlatformInfoFlow
 
     internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<DeleteCommand>>
     {
-        private readonly PlatformContext _dbcontext;
+        private readonly FeatureContext _dbcontext;
         private readonly IConfigurationProvider _configuration;
 
-        public DeleteQueryHandler(PlatformContext dbcontext, IConfigurationProvider configuration)
+        public DeleteQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
         {
             _dbcontext = dbcontext;
             _configuration = configuration;
@@ -310,9 +310,9 @@ public static class PlatformInfoFlow
 
     internal class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
     {
-        private readonly PlatformContext _dbcontext;
+        private readonly FeatureContext _dbcontext;
 
-        public DeleteCommandHandler(PlatformContext dbcontext)
+        public DeleteCommandHandler(FeatureContext dbcontext)
         {
             _dbcontext = dbcontext;
         }

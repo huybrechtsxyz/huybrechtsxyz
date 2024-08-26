@@ -1,4 +1,4 @@
-﻿using Huybrechts.App.Features.Setup;
+﻿using Huybrechts.App.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -10,9 +10,9 @@ namespace Huybrechts.App.Features.Platform;
 public class SetupSeedWorker : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger _logger = Log.Logger.ForContext<SetupContext>();
+    private readonly ILogger _logger = Log.Logger.ForContext<FeatureContext>();
 
-    private SetupContext _dbcontext = null!;
+    private FeatureContext _dbcontext = null!;
 
     public SetupSeedWorker(IServiceProvider serviceProvider)
     {
@@ -26,8 +26,8 @@ public class SetupSeedWorker : IHostedService
         //    throw new Exception("The WebHostEnvironment service was not registered as a service");
 
         using var scope = _serviceProvider.CreateScope();
-        _dbcontext = scope.ServiceProvider.GetRequiredService<SetupContext>() ??
-            throw new Exception("The SetupContext service was not registered as a service");
+        _dbcontext = scope.ServiceProvider.GetRequiredService<FeatureContext>() ??
+            throw new Exception("The FeatureContext service was not registered as a service");
 
         _logger.Information("Running setup initializer...applying database migrations");
         if (HealthStatus.Unhealthy == await MigrateAsync(5, 5, new CancellationToken()))
