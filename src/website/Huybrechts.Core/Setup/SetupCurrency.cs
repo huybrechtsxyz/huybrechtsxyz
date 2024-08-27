@@ -22,18 +22,6 @@ public record SetupCurrency : Entity, IEntity
     public string Code { get; set; } = string.Empty;
 
     /// <summary>
-    /// Foreign key to the country entity.
-    /// </summary>
-    [Required]
-    [Comment("Foreign key referencing the SetupCountry.")]
-    public Ulid SetupCountryId { get; set; } = Ulid.Empty;
-
-    /// <summary>
-    /// Navigation property to the related SetupCountry.
-    /// </summary>
-    public virtual SetupCountry SetupCountry { get; set; } = new();
-
-    /// <summary>
     /// The name of the currency (e.g., "United States Dollar").
     /// This field is required.
     /// </summary>
