@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -29,12 +30,14 @@ public static class SetupUnitFlow
         [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
         public string? Description { get; set; }
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         [Display(Name = nameof(UnitType), ResourceType = typeof(Localization))]
         public SetupUnitType UnitType { get; set; }
 
         [Display(Name = nameof(Precision), ResourceType = typeof(Localization))]
         public int Precision { get; set; } = 2;
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         [Display(Name = nameof(PrecisionType), ResourceType = typeof(Localization))]
         public MidpointRounding PrecisionType { get; set; } = MidpointRounding.ToEven;
 
@@ -48,7 +51,7 @@ public static class SetupUnitFlow
         [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
         public string? Remark { get; set; }
 
-        public string SearchIndex => $"{Name}~{Description}".ToLowerInvariant();
+        public string SearchIndex => $"{Name}~{UnitType.ToString()}~{Description}".ToLowerInvariant();
     }
 
     public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -186,80 +189,6 @@ public static class SetupUnitFlow
             await _dbcontext.Set<SetupUnit>().AddAsync(record, token);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok(record.Id);
-        }
-    }
-
-    //
-    // DEFAULTS
-    //
-
-    public sealed record CreateDefaultsCommand : IRequest<Result>
-    {
-        public string? OverwriteTenantId { get; set; }
-    }
-
-    public sealed class CreateDefaultsHandler : IRequestHandler<CreateDefaultsCommand, Result>
-    {
-        private readonly FeatureContext _dbcontext;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-
-        public CreateDefaultsHandler(FeatureContext dbcontext, IWebHostEnvironment webHostEnvironment)
-        {
-            _dbcontext = dbcontext;
-            _webHostEnvironment = webHostEnvironment;
-        }
-
-        public async Task<Result> Handle(CreateDefaultsCommand message, CancellationToken token)
-        {
-            string wwwrootPath = _webHostEnvironment.WebRootPath;
-
-            var filePath = Path.Combine(wwwrootPath, "data", "systemunits.json");
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException("The systemunits.json file was not found.", filePath);
-            }
-
-            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            List<SetupUnit>? units = await JsonSerializer.DeserializeAsync<List<SetupUnit>>(stream, cancellationToken: token);
-            
-            foreach(var item in units ?? [])
-            {
-                if (await IsDuplicateNameAsync(_dbcontext, item.Name))
-                    continue;
-
-                var record = new SetupUnit
-                {
-                    Id = Ulid.NewUlid(),
-                    Code = item.Code.ToUpper().Trim(),
-                    Name = item.Name.Trim(),
-                    Description = item.Description?.Trim(),
-                    UnitType = item.UnitType,
-                    Factor = item.Factor,
-                    IsBase = item.IsBase,
-                    Precision = item.Precision,
-                    PrecisionType = item.PrecisionType,
-                    Remark = item.Remark?.Trim(),
-                    SearchIndex = item.SearchIndex,
-                    CreatedDT = DateTime.UtcNow
-                };
-
-                await _dbcontext.Set<SetupUnit>().AddAsync(record, token);
-            }
-
-            var mismatchMode = _dbcontext.TenantMismatchMode;
-            if (!string.IsNullOrEmpty(message.OverwriteTenantId))
-            {
-                _dbcontext.TenantMismatchMode = Finbuckle.MultiTenant.EntityFrameworkCore.TenantMismatchMode.Ignore;
-                var addedRows = _dbcontext.ChangeTracker.Entries().Where(e => e.State == EntityState.Added).ToList();
-                foreach (var row in addedRows)
-                {
-                    var property = row.Property("TenantId").CurrentValue = message.OverwriteTenantId;
-                }
-            }
-
-            await _dbcontext.SaveChangesAsync(token);
-            _dbcontext.TenantMismatchMode = mismatchMode;
-            return Result.Ok();
         }
     }
 
@@ -429,6 +358,132 @@ public static class SetupUnitFlow
 
             _dbcontext.Set<SetupUnit>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);
+            return Result.Ok();
+        }
+    }
+
+    //
+    // IMPORT
+    //
+
+    public sealed record ImportModel : Model
+    {
+        [NotMapped]
+        [Display(Name = nameof(IsSelected), ResourceType = typeof(Localization))]
+        public bool IsSelected { get; set; }
+    }
+
+    public sealed class ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
+    {
+    }
+
+    public sealed class ImportQueryValidator : AbstractValidator<ImportQuery> { public ImportQueryValidator() { } }
+
+    public sealed class ImportResult : EntityListFlow.Result<ImportModel>
+    {
+    }
+
+    public sealed record ImportCommand : IRequest<Result>
+    {
+        public List<ImportModel> Items { get; set; } = [];
+    }
+
+    public sealed class ImportCommandValidator : AbstractValidator<ImportCommand> { public ImportCommandValidator() { } }
+
+    internal sealed class ImportQueryHandler :
+       EntityListFlow.Handler<SetupUnit, ImportModel>,
+       IRequestHandler<ImportQuery, Result<ImportResult>>
+    {
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public ImportQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration, IWebHostEnvironment webHostEnvironment)
+            : base(dbcontext, configuration)
+        {
+            _webHostEnvironment = webHostEnvironment;
+        }
+
+        public async Task<Result<ImportResult>> Handle(ImportQuery message, CancellationToken token)
+        {
+            string wwwrootPath = _webHostEnvironment.WebRootPath;
+
+            var filePath = Path.Combine(wwwrootPath, "data", "systemunits.json");
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException("The systemunits.json file was not found.", filePath);
+            }
+
+            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            List<ImportModel>? records = await JsonSerializer.DeserializeAsync<List<ImportModel>>(stream, cancellationToken: token);
+            records ??= [];
+
+            var searchString = message.SearchText ?? message.CurrentFilter;
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                var searchFor = searchString.ToLowerInvariant();
+                records = records.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor)).ToList();
+            }
+
+            records = [.. records.OrderBy(o => o.Name)];
+            int pageSize = EntityListFlow.PageSize;
+            int pageNumber = message.Page ?? 1;
+
+            return new ImportResult()
+            {
+                CurrentFilter = searchString,
+                SearchText = searchString,
+                SortOrder = message.SortOrder,
+                Results = new PaginatedList<ImportModel>(
+                    records.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
+                    records.Count,
+                    pageNumber,
+                    pageSize)
+            };
+        }
+    }
+
+    internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
+    {
+        private readonly FeatureContext _dbcontext;
+
+        public ImportCommandHandler(FeatureContext dbcontext)
+        {
+            _dbcontext = dbcontext;
+        }
+
+        public async Task<Result> Handle(ImportCommand message, CancellationToken token)
+        {
+            if (message is null || message.Items is null || message.Items.Count < 0)
+                return Result.Ok();
+
+            bool changes = false;
+            foreach (var item in message.Items ?? [])
+            {
+                if (await IsDuplicateNameAsync(_dbcontext, item.Name))
+                    continue;
+
+                var record = new SetupUnit
+                {
+                    Id = Ulid.NewUlid(),
+                    Code = item.Code.ToUpper().Trim(),
+                    Name = item.Name.Trim(),
+                    Description = item.Description?.Trim(),
+                    UnitType = item.UnitType,
+                    Factor = item.Factor,
+                    IsBase = item.IsBase,
+                    Precision = item.Precision,
+                    PrecisionType = item.PrecisionType,
+                    Remark = item.Remark?.Trim(),
+                    SearchIndex = item.SearchIndex,
+                    CreatedDT = DateTime.UtcNow
+                };
+
+                await _dbcontext.Set<SetupUnit>().AddAsync(record, token);
+                changes = true;
+            }
+
+            if (changes)
+                await _dbcontext.SaveChangesAsync(token);
+
             return Result.Ok();
         }
     }

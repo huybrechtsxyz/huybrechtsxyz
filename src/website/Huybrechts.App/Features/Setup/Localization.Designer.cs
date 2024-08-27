@@ -97,6 +97,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select?.
+        /// </summary>
+        public static string IsSelected {
+            get {
+                return ResourceManager.GetString("IsSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Name {

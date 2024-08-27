@@ -150,11 +150,20 @@
   <data name="CountryEditTitle" xml:space="preserve">
     <value>Land Bewerken</value>
   </data>
+  <data name="CountryImportInfo" xml:space="preserve">
+    <value>Kies landen uit een bestaande lijst op basis van ISO-codes en importeer ze in het systeem. Dit zorgt voor het gebruik van gestandaardiseerde landcodes voor consistentie en nauwkeurigheid.</value>
+  </data>
+  <data name="CountryImportTitle" xml:space="preserve">
+    <value>Landen Importeren van ISO-lijst</value>
+  </data>
   <data name="CountryIndexInfo" xml:space="preserve">
     <value>Bekijk en beheer de lijst met landen die beschikbaar zijn in het systeem. U kunt landen toevoegen, bewerken of verwijderen om ervoor te zorgen dat de juiste opties beschikbaar zijn voor verschillende toepassingen.</value>
   </data>
   <data name="CountryIndexTitle" xml:space="preserve">
     <value>Beheer Landen</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Importeer</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>Taal</value>
@@ -176,6 +185,12 @@
   </data>
   <data name="LanguageEditTitle" xml:space="preserve">
     <value>Taal Bewerken</value>
+  </data>
+  <data name="LanguageImpiortInfo" xml:space="preserve">
+    <value>Selecteer talen uit een bestaande lijst op basis van ISO-codes en importeer ze in het systeem. Deze functie maakt eenvoudig en gestandaardiseerd taalbeheer mogelijk.</value>
+  </data>
+  <data name="LanguageImportTitle" xml:space="preserve">
+    <value>Talen Importeren van ISO-lijst</value>
   </data>
   <data name="LanguageIndexInfo" xml:space="preserve">
     <value>Bekijk en beheer de lijst met beschikbare talen voor selectie in verschillende contexten zoals landen, projecten en andere entiteiten. U kunt talen toevoegen, bewerken of verwijderen om ervoor te zorgen dat de juiste opties in het hele systeem beschikbaar zijn.</value>
@@ -224,6 +239,12 @@
   </data>
   <data name="UnitEditTitle" xml:space="preserve">
     <value>Systeemeenheid bewerken</value>
+  </data>
+  <data name="UnitImportInfo" xml:space="preserve">
+    <value>Selecteer en importeer eenheden uit een bestaande lijst op basis van ISO-codes. Hiermee kunt u snel en nauwkeurig gestandaardiseerde eenheden aan het systeem toevoegen.</value>
+  </data>
+  <data name="UnitImportTitle" xml:space="preserve">
+    <value>Eenheden Importeren van ISO-lijst</value>
   </data>
   <data name="UnitIndexInfo" xml:space="preserve">
     <value>Deze pagina toont alle momenteel beschikbare meeteenheden. U kunt details bekijken, nieuwe eenheden aanmaken of bestaande eenheden bewerken en verwijderen.</value>

@@ -150,11 +150,20 @@
   <data name="CountryEditTitle" xml:space="preserve">
     <value>Edit Country</value>
   </data>
+  <data name="CountryImportInfo" xml:space="preserve">
+    <value>Choose countries from a preexisting list based on ISO codes and import them into the system. This ensures the use of standardized country codes for consistency and accuracy.</value>
+  </data>
+  <data name="CountryImportTitle" xml:space="preserve">
+    <value>Import Countries from ISO List</value>
+  </data>
   <data name="CountryIndexInfo" xml:space="preserve">
     <value>View and manage the list of countries available in the system. You can add, edit, or delete countries to ensure the appropriate options are available for various applications.</value>
   </data>
   <data name="CountryIndexTitle" xml:space="preserve">
     <value>Manage Countries</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Import</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>Language</value>
@@ -176,6 +185,12 @@
   </data>
   <data name="LanguageEditTitle" xml:space="preserve">
     <value>Edit Language</value>
+  </data>
+  <data name="LanguageImpiortInfo" xml:space="preserve">
+    <value>Select languages from a preexisting list based on ISO codes and import them into the system. This feature allows for easy and standardized language management.</value>
+  </data>
+  <data name="LanguageImportTitle" xml:space="preserve">
+    <value>Import Languages from ISO List</value>
   </data>
   <data name="LanguageIndexInfo" xml:space="preserve">
     <value>Manage Languages</value>
@@ -224,6 +239,12 @@
   </data>
   <data name="UnitEditTitle" xml:space="preserve">
     <value>Edit system unit</value>
+  </data>
+  <data name="UnitImportInfo" xml:space="preserve">
+    <value>Select and import units from a preexisting list based on ISO codes. This allows you to quickly and accurately add standardized units to the system.</value>
+  </data>
+  <data name="UnitImportTitle" xml:space="preserve">
+    <value>Import Units from ISO List</value>
   </data>
   <data name="UnitIndexInfo" xml:space="preserve">
     <value>This page displays all the units of measurement currently available. You can view details, create new units, or edit and delete existing ones.</value>

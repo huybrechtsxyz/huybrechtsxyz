@@ -129,6 +129,9 @@
   <data name="IsBase" xml:space="preserve">
     <value>Basis?</value>
   </data>
+  <data name="IsSelected" xml:space="preserve">
+    <value>Geselecteerd?</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Naam</value>
   </data>

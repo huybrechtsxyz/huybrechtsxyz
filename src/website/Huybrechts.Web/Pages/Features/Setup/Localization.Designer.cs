@@ -160,6 +160,24 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose countries from a preexisting list based on ISO codes and import them into the system. This ensures the use of standardized country codes for consistency and accuracy..
+        /// </summary>
+        public static string CountryImportInfo {
+            get {
+                return ResourceManager.GetString("CountryImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Countries from ISO List.
+        /// </summary>
+        public static string CountryImportTitle {
+            get {
+                return ResourceManager.GetString("CountryImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View and manage the list of countries available in the system. You can add, edit, or delete countries to ensure the appropriate options are available for various applications..
         /// </summary>
         public static string CountryIndexInfo {
@@ -174,6 +192,15 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         public static string CountryIndexTitle {
             get {
                 return ResourceManager.GetString("CountryIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import.
+        /// </summary>
+        public static string Import {
+            get {
+                return ResourceManager.GetString("Import", resourceCulture);
             }
         }
         
@@ -237,6 +264,24 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         public static string LanguageEditTitle {
             get {
                 return ResourceManager.GetString("LanguageEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select languages from a preexisting list based on ISO codes and import them into the system. This feature allows for easy and standardized language management..
+        /// </summary>
+        public static string LanguageImpiortInfo {
+            get {
+                return ResourceManager.GetString("LanguageImpiortInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Languages from ISO List.
+        /// </summary>
+        public static string LanguageImportTitle {
+            get {
+                return ResourceManager.GetString("LanguageImportTitle", resourceCulture);
             }
         }
         
@@ -381,6 +426,24 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         public static string UnitEditTitle {
             get {
                 return ResourceManager.GetString("UnitEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select and import units from a preexisting list based on ISO codes. This allows you to quickly and accurately add standardized units to the system..
+        /// </summary>
+        public static string UnitImportInfo {
+            get {
+                return ResourceManager.GetString("UnitImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Units from ISO List.
+        /// </summary>
+        public static string UnitImportTitle {
+            get {
+                return ResourceManager.GetString("UnitImportTitle", resourceCulture);
             }
         }
         
