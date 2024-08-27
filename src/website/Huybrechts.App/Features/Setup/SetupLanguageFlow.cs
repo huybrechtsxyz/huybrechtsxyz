@@ -29,18 +29,10 @@ public static class SetupLanguageFlow
         [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
         public string? Description { get; set; }
 
-        
+        [Display(Name = nameof(TranslatedName), ResourceType = typeof(Localization))]
+        public string TranslatedName { get; set; } = string.Empty;
 
-        [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
-        public string? Remark { get; set; }
-
-        /// <summary>
-        /// Gets the concatenated search index used for optimized search operations.
-        /// </summary>
-        /// <remarks>
-        /// This property is not mapped to any database column and is used solely for in-memory search optimization.
-        /// </remarks>
-        public string SearchIndex => $"{Code}~{Name}".ToUpperInvariant();
+        public string SearchIndex => $"{Code}~{Name}~{TranslatedName}".ToUpperInvariant();
     }
 
     public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -51,6 +43,7 @@ public static class SetupLanguageFlow
             RuleFor(m => m.Code).NotEmpty().Length(1, 10);
             RuleFor(m => m.Name).NotEmpty().Length(1, 128);
             RuleFor(m => m.Description).Length(0, 256);
+            RuleFor(m => m.TranslatedName).NotEmpty().Length(1, 128);
         }
     }
 
@@ -166,9 +159,10 @@ public static class SetupLanguageFlow
                 Code = message.Code.ToUpper().Trim(),
                 Name = message.Name.Trim(),
                 Description = message.Description?.Trim(),
-                
                 SearchIndex = message.SearchIndex,
-                CreatedDT = DateTime.UtcNow
+                CreatedDT = DateTime.UtcNow,
+
+                TranslatedName = message.TranslatedName
             };
             await _dbcontext.Set<SetupLanguage>().AddAsync(record, token);
             await _dbcontext.SaveChangesAsync(token);
@@ -199,23 +193,14 @@ public static class SetupLanguageFlow
         {
             string wwwrootPath = _webHostEnvironment.WebRootPath;
 
-            var filePath = Path.Combine(wwwrootPath, "data", "systemunits.json");
+            var filePath = Path.Combine(wwwrootPath, "data", "languages.json");
             if (!File.Exists(filePath))
             {
-                throw new FileNotFoundException("The systemunits.json file was not found.", filePath);
+                throw new FileNotFoundException("The languages.json file was not found.", filePath);
             }
 
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                Converters =
-                {
-                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) 
-                    // Or JsonNamingPolicy.CamelCase if using camelCase
-                }
-            };
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            List<SetupLanguage>? units = await JsonSerializer.DeserializeAsync<List<SetupLanguage>>(stream, options, cancellationToken: token);
+            List<SetupLanguage>? units = await JsonSerializer.DeserializeAsync<List<SetupLanguage>>(stream, cancellationToken: token);
             
             foreach(var item in units ?? [])
             {
@@ -228,9 +213,10 @@ public static class SetupLanguageFlow
                     Code = item.Code.ToUpper().Trim(),
                     Name = item.Name.Trim(),
                     Description = item.Description?.Trim(),
-                    
                     SearchIndex = item.SearchIndex,
-                    CreatedDT = DateTime.UtcNow
+                    CreatedDT = DateTime.UtcNow,
+
+                    TranslatedName = item.TranslatedName
                 };
 
                 await _dbcontext.Set<SetupLanguage>().AddAsync(record, token);
@@ -319,9 +305,10 @@ public static class SetupLanguageFlow
             record.Code = message.Code.ToUpper().Trim();
             record.Name = message.Name.Trim();
             record.Description = message.Description?.Trim();
-           
             record.SearchIndex = message.SearchIndex;
             record.ModifiedDT = DateTime.UtcNow;
+
+            record.TranslatedName = message.TranslatedName;
 
             _dbcontext.Set<SetupLanguage>().Update(record);
             await _dbcontext.SaveChangesAsync(token);

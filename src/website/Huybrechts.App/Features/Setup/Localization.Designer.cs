@@ -133,6 +133,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Translated name.
+        /// </summary>
+        public static string TranslatedName {
+            get {
+                return ResourceManager.GetString("TranslatedName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type.
         /// </summary>
         public static string UnitType {

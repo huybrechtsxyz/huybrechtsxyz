@@ -20,6 +20,10 @@ namespace  Huybrechts.Web.Pages.Features.Setup
 
         public static string UnitNavClass(ViewContext viewContext) => PageNavClass(viewContext, Unit);
 
+        public static string Language => "Language";
+
+        public static string LanguageNavClass(ViewContext viewContext) => PageNavClass(viewContext, Language);
+
         public static string PageNavClass(ViewContext viewContext, string page)
         {
             var activePage = viewContext.ViewData["ActivePage"] as string

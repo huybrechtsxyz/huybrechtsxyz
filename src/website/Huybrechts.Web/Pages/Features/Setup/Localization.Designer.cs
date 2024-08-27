@@ -88,6 +88,96 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        public static string Language {
+            get {
+                return ResourceManager.GetString("Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a new language to the system by specifying its code, display name, and any other relevant settings. This allows for customized language options to be available across different contexts like countries and projects..
+        /// </summary>
+        public static string LanguageCreateInfo {
+            get {
+                return ResourceManager.GetString("LanguageCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New Language.
+        /// </summary>
+        public static string LanguageCreateTitle {
+            get {
+                return ResourceManager.GetString("LanguageCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update the details of an existing language to ensure it meets the current needs and preferences of your organization..
+        /// </summary>
+        public static string LanguageDeleteInfo {
+            get {
+                return ResourceManager.GetString("LanguageDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Language.
+        /// </summary>
+        public static string LanguageDeleteTitle {
+            get {
+                return ResourceManager.GetString("LanguageDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm the deletion of this language. Once deleted, the language will no longer be available for selection in any context..
+        /// </summary>
+        public static string LanguageEditInfo {
+            get {
+                return ResourceManager.GetString("LanguageEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Language.
+        /// </summary>
+        public static string LanguageEditTitle {
+            get {
+                return ResourceManager.GetString("LanguageEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage Languages.
+        /// </summary>
+        public static string LanguageIndexInfo {
+            get {
+                return ResourceManager.GetString("LanguageIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View and manage the list of available languages for selection in various contexts such as countries, projects, and other entities. You can add, edit, or remove languages to ensure the system meets your organization&apos;s language needs..
+        /// </summary>
+        public static string LanguageIndexTitle {
+            get {
+                return ResourceManager.GetString("LanguageIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Languages.
+        /// </summary>
+        public static string Languages {
+            get {
+                return ResourceManager.GetString("Languages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please select one of the options in the menu.
         /// </summary>
         public static string MainInfo {

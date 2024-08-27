@@ -126,6 +126,36 @@
   <data name="Clear Filter" xml:space="preserve">
     <value>Clear Filter</value>
   </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="LanguageCreateInfo" xml:space="preserve">
+    <value>Add a new language to the system by specifying its code, display name, and any other relevant settings. This allows for customized language options to be available across different contexts like countries and projects.</value>
+  </data>
+  <data name="LanguageCreateTitle" xml:space="preserve">
+    <value>Add New Language</value>
+  </data>
+  <data name="LanguageDeleteInfo" xml:space="preserve">
+    <value>Update the details of an existing language to ensure it meets the current needs and preferences of your organization.</value>
+  </data>
+  <data name="LanguageDeleteTitle" xml:space="preserve">
+    <value>Delete Language</value>
+  </data>
+  <data name="LanguageEditInfo" xml:space="preserve">
+    <value>Confirm the deletion of this language. Once deleted, the language will no longer be available for selection in any context.</value>
+  </data>
+  <data name="LanguageEditTitle" xml:space="preserve">
+    <value>Edit Language</value>
+  </data>
+  <data name="LanguageIndexInfo" xml:space="preserve">
+    <value>Manage Languages</value>
+  </data>
+  <data name="LanguageIndexTitle" xml:space="preserve">
+    <value>View and manage the list of available languages for selection in various contexts such as countries, projects, and other entities. You can add, edit, or remove languages to ensure the system meets your organization's language needs.</value>
+  </data>
+  <data name="Languages" xml:space="preserve">
+    <value>Languages</value>
+  </data>
   <data name="MainInfo" xml:space="preserve">
     <value>Please select one of the options in the menu</value>
   </data>

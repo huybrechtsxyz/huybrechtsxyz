@@ -126,6 +126,36 @@
   <data name="Clear Filter" xml:space="preserve">
     <value>Wis filter</value>
   </data>
+  <data name="Language" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="LanguageCreateInfo" xml:space="preserve">
+    <value>Voeg een nieuwe taal toe aan het systeem door de details op te geven. Dit zorgt ervoor dat de taal beschikbaar is voor selectie in verschillende contexten.</value>
+  </data>
+  <data name="LanguageCreateTitle" xml:space="preserve">
+    <value>Nieuwe Taal Toevoegen</value>
+  </data>
+  <data name="LanguageDeleteInfo" xml:space="preserve">
+    <value>Bevestig het verwijderen van deze taal. Na verwijdering is de taal niet langer beschikbaar voor selectie in enige context.</value>
+  </data>
+  <data name="LanguageDeleteTitle" xml:space="preserve">
+    <value>Taal Verwijderen</value>
+  </data>
+  <data name="LanguageEditInfo" xml:space="preserve">
+    <value>Werk de details van een bestaande taal bij om ervoor te zorgen dat deze voldoet aan de huidige behoeften en voorkeuren van uw team.</value>
+  </data>
+  <data name="LanguageEditTitle" xml:space="preserve">
+    <value>Taal Bewerken</value>
+  </data>
+  <data name="LanguageIndexInfo" xml:space="preserve">
+    <value>Bekijk en beheer de lijst met beschikbare talen voor selectie in verschillende contexten zoals landen, projecten en andere entiteiten. U kunt talen toevoegen, bewerken of verwijderen om ervoor te zorgen dat de juiste opties in het hele systeem beschikbaar zijn.</value>
+  </data>
+  <data name="LanguageIndexTitle" xml:space="preserve">
+    <value>Beheer taal instellingen</value>
+  </data>
+  <data name="Languages" xml:space="preserve">
+    <value>Talen</value>
+  </data>
   <data name="MainInfo" xml:space="preserve">
     <value>Gelieve een van de opties te kiezen</value>
   </data>

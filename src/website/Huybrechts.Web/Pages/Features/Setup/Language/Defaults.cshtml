@@ -2,10 +2,10 @@
 @using Huybrechts.Core.Setup
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<Huybrechts.Web.Pages.Features.Setup.Localization> SL
-@model Huybrechts.Web.Pages.Features.Setup.Unit.DefaultModel
+@model Huybrechts.Web.Pages.Features.Setup.Language.DefaultModel
 @{
     //ViewData["CardTitle"] = SL["UnitCreateTitle"];
-    ViewData["ActivePage"] = ManageNavPages.Unit;
+    ViewData["ActivePage"] = ManageNavPages.Language;
 }
 
 <partial name="_StatusResult" for="StatusMessage" />

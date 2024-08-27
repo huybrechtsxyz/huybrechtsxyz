@@ -219,17 +219,8 @@ public static class SetupUnitFlow
                 throw new FileNotFoundException("The systemunits.json file was not found.", filePath);
             }
 
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                Converters =
-                {
-                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) 
-                    // Or JsonNamingPolicy.CamelCase if using camelCase
-                }
-            };
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            List<SetupUnit>? units = await JsonSerializer.DeserializeAsync<List<SetupUnit>>(stream, options, cancellationToken: token);
+            List<SetupUnit>? units = await JsonSerializer.DeserializeAsync<List<SetupUnit>>(stream, cancellationToken: token);
             
             foreach(var item in units ?? [])
             {

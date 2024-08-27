@@ -141,6 +141,9 @@
   <data name="Remark" xml:space="preserve">
     <value>Opmerking</value>
   </data>
+  <data name="TranslatedName" xml:space="preserve">
+    <value>Originele naam</value>
+  </data>
   <data name="UnitType" xml:space="preserve">
     <value>Type</value>
   </data>

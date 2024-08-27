@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-using Flow = Huybrechts.App.Features.Setup.SetupUnitFlow;
+using Flow = Huybrechts.App.Features.Setup.SetupLanguageFlow;
 
-namespace Huybrechts.Web.Pages.Features.Setup.Unit;
+namespace Huybrechts.Web.Pages.Features.Setup.Language;
 
 [Authorize(Policy = TenantPolicies.IsManager)]
 public class DefaultModel : PageModel
