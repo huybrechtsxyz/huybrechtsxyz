@@ -5,11 +5,13 @@ using FluentValidation;
 using Huybrechts.App.Data;
 using Huybrechts.Core.Setup;
 using MediatR;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Linq.Dynamic.Core;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Huybrechts.App.Features.Setup;
 
@@ -170,7 +172,7 @@ public static class SetupUnitFlow
             var record = new SetupUnit
             {
                 Id = message.Id,
-                Code = message.Code.Trim(),
+                Code = message.Code.ToUpper().Trim(),
                 Name = message.Name.Trim(),
                 Description = message.Description?.Trim(),
                 UnitType = message.UnitType,
@@ -196,25 +198,38 @@ public static class SetupUnitFlow
     {
     }
 
-    public sealed class CreateDefaultsHandler
+    public sealed class CreateDefaultsHandler : IRequestHandler<CreateDefaultsCommand, Result>
     {
         private readonly FeatureContext _dbcontext;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public CreateDefaultsHandler(FeatureContext dbcontext)
+        public CreateDefaultsHandler(FeatureContext dbcontext, IWebHostEnvironment webHostEnvironment)
         {
             _dbcontext = dbcontext;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<Result> Handle(CreateDefaultsCommand message, CancellationToken token)
         {
-            var filePath = Path.Combine("./systemunits.json");
+            string wwwrootPath = _webHostEnvironment.WebRootPath;
+
+            var filePath = Path.Combine(wwwrootPath, "data", "systemunits.json");
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException("The systemunits.json file was not found.", filePath);
             }
 
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                Converters =
+                {
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) 
+                    // Or JsonNamingPolicy.CamelCase if using camelCase
+                }
+            };
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            List<SetupUnit>? units = await JsonSerializer.DeserializeAsync<List<SetupUnit>>(stream, cancellationToken: token);
+            List<SetupUnit>? units = await JsonSerializer.DeserializeAsync<List<SetupUnit>>(stream, options, cancellationToken: token);
             
             foreach(var item in units ?? [])
             {
@@ -223,8 +238,8 @@ public static class SetupUnitFlow
 
                 var record = new SetupUnit
                 {
-                    Id = item.Id,
-                    Code = item.Code.Trim(),
+                    Id = Ulid.NewUlid(),
+                    Code = item.Code.ToUpper().Trim(),
                     Name = item.Name.Trim(),
                     Description = item.Description?.Trim(),
                     UnitType = item.UnitType,
@@ -320,6 +335,7 @@ public static class SetupUnitFlow
             if (await IsDuplicateNameAsync(_dbcontext, message.Name, record.Id))
                 return DuplicateFound(message.Name);
 
+            record.Code = message.Code.ToUpper().Trim();
             record.Name = message.Name.Trim();
             record.Description = message.Description?.Trim();
             record.UnitType = message.UnitType;

@@ -1,0 +1,41 @@
+@startuml Platform CD
+
+class Project {
+}
+
+class Design {
+}
+
+Project "1" -- "0..*" Design
+
+class Component {
+}
+
+Design "1" -- "0..*" Component
+
+class Measure {
+}
+
+Component "1" -- "0..*" Measure
+
+class Scenario {
+}
+
+Project "1" -- "0..*" Scenario
+
+class Metric {
+}
+
+Scenario "1" -- "0..*" Metric
+
+class Simulation {
+}
+
+Project "1" -- "0..*" Simulation
+
+class Estimate {
+}
+
+Simulation "1" -- "0..*" Estimate
+
+@enduml

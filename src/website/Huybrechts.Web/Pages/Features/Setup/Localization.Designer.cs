@@ -61,6 +61,15 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Defaults.
+        /// </summary>
+        public static string Add_Defaults {
+            get {
+                return ResourceManager.GetString("Add Defaults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add New.
         /// </summary>
         public static string Add_New {

@@ -12,4 +12,7 @@ class Country {
 Currency "1" -- "0..*" Country
 Language "1" -- "0..*" Country
 
+class SetupUnit {
+}
+
 @enduml

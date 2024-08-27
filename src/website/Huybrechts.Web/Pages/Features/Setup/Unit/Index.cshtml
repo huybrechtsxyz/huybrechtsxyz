@@ -23,6 +23,11 @@
                         <span class="vr"></span>
                         @SL["Add New"]
                     </a>
+                    <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Defaults">
+                        <i class="bi bi-magic fs-5"></i>
+                        <span class="vr"></span>
+                        @SL["Add Defaults"]
+                    </a>
                 </div>
                 <div class="col-md-9 d-flex gap-1 align-items-center justify-content-md-end mb-3">
                     <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="@SL["Search..."]" class="form-control" autocomplete="off" />

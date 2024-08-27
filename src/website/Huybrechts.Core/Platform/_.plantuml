@@ -1,5 +1,8 @@
 @startuml Platform CD
 
+class SetupUnit {
+}
+
 class Platform {
 }
 
@@ -24,5 +27,11 @@ class Rate {
 Product "1" -- "0..*" Rate
 Region "1" -- "0..*" Rate
 Service "1" -- "0..*" Rate
+
+class RateUnit {
+}
+
+Rate "1" -- "0..*" RateUnit
+SetupUnit "1" -- "0..*" RateUnit
 
 @enduml

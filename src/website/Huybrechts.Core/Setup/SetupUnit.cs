@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Huybrechts.Core.Setup;
 
@@ -26,6 +27,7 @@ public record SetupUnit: Entity, IEntity
     /// Type defines the category to which the unit belongs, allowing for better organization and lookup.
     /// </remarks>
     [Required]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     [Comment("Gets or sets the type of the unit (e.g., Height, Weight, Volume, System, etc.).")]
     public SetupUnitType UnitType { get; set; } = SetupUnitType.System;
 
@@ -86,6 +88,7 @@ public record SetupUnit: Entity, IEntity
     /// <remarks>
     /// Uses the System.Decimal Rounding enum to define rounding behavior.
     /// </remarks>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     [Comment("Determines how values are rounded according to the System.Decimal Rounding enum.")]
     public MidpointRounding PrecisionType { get; set; } = MidpointRounding.ToEven;
 

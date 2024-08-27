@@ -67,6 +67,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\data\systemunits.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Update="Pages\Account\AccountViewModels.nl.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
