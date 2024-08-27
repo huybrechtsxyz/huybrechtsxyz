@@ -118,18 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Change your settings" xml:space="preserve">
-    <value>Change your settings</value>
-  </data>
-  <data name="MainInfo" xml:space="preserve">
-    <value>Please select something of the list</value>
-  </data>
-  <data name="MainTitle" xml:space="preserve">
-    <value>Setup</value>
+    <value>Beheren van uw instellingen</value>
   </data>
   <data name="Manage your setup" xml:space="preserve">
-    <value>Manage your setup</value>
+    <value>Beheer uw instellingen</value>
   </data>
   <data name="Setup" xml:space="preserve">
-    <value>Setup</value>
+    <value>Instellingen</value>
   </data>
 </root>
