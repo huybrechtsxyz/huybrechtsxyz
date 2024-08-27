@@ -33,6 +33,62 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                 comment: "Table storing information about platforms that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.");
 
             migrationBuilder.CreateTable(
+                name: "SetupCountries",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
+                    Code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    TranslatedName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    SearchIndex = table.Column<string>(type: "text", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    CreatedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SetupCountries", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SetupCurrencies",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
+                    Code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    SearchIndex = table.Column<string>(type: "text", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    CreatedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SetupCurrencies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SetupLanguages",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
+                    Code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    TranslatedName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    SearchIndex = table.Column<string>(type: "text", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    CreatedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SetupLanguages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SetupUnit",
                 columns: table => new
                 {
@@ -320,6 +376,15 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
             migrationBuilder.DropTable(
                 name: "PlatformService");
+
+            migrationBuilder.DropTable(
+                name: "SetupCountries");
+
+            migrationBuilder.DropTable(
+                name: "SetupCurrencies");
+
+            migrationBuilder.DropTable(
+                name: "SetupLanguages");
 
             migrationBuilder.DropTable(
                 name: "PlatformRate");

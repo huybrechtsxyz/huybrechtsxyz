@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 {
     [DbContext(typeof(FeatureContext))]
-    [Migration("20240827211002_CreateSetupCurrency")]
-    partial class CreateSetupCurrency
+    [Migration("20240827212948_CreatePlatformSchema")]
+    partial class CreatePlatformSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -627,19 +627,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(max)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
-                    b.Property<string>("SetupCountryId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(26)")
-                        .HasComment("Foreign key referencing the SetupCountry.");
-
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SetupCountryId");
 
                     b.ToTable("SetupCurrencies");
                 });
@@ -840,17 +833,6 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired();
 
                     b.Navigation("PlatformInfo");
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Setup.SetupCurrency", b =>
-                {
-                    b.HasOne("Huybrechts.Core.Setup.SetupCountry", "SetupCountry")
-                        .WithMany()
-                        .HasForeignKey("SetupCountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SetupCountry");
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>
