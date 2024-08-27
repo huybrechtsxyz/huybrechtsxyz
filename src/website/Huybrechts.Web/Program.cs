@@ -71,8 +71,7 @@ try
     // Database migrations
     Log.Information("Adding database initializer as hosted service");
     builder.Services.AddHostedService<ApplicationSeedWorker>();
-    builder.Services.AddHostedService<SetupSeedWorker>();
-    builder.Services.AddHostedService<PlatformSeedWorker>();
+    builder.Services.AddHostedService<FeatureSeedWorker>();
 
     Log.Information("Building the application and services");
     var app = builder.Build();

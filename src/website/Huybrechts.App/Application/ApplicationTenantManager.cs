@@ -210,7 +210,8 @@ public class ApplicationTenantManager
 
         var roleId = ApplicationRole.GetRoleName(appTenant.Id, ApplicationTenantRole.Owner);
         await _userManager.AddToRoleAsync(user, roleId);
-        return Result.Ok<ApplicationTenant>(appTenant);
+
+        return Result.Ok(appTenant);
     }
 
     public async Task<Result<ApplicationTenant>> UpdateTenantAsync(ApplicationUser user, ApplicationTenant tenant)
@@ -247,6 +248,24 @@ public class ApplicationTenantManager
         BackgroundJob.Enqueue<DeleteTenantWorker>(x => x.StartAsync(user.Id, appTenant.Id, default));
 
         return Result.Ok(appTenant);
+    }
+
+    public async Task<Result> CreateDefaultsForTenantAsync(ApplicationUser user, ApplicationTenant tenant)
+    {
+        if (!await _userManager.IsOwnerAsync(user, tenant.Id))
+            return ThrowUserNotOwner(user.NormalizedUserName!, tenant.Id);
+
+        var currentUser = await _userManager.FindByIdAsync(user.Id);
+        if (currentUser == null)
+            return ThrowUserNotFound(user.Id);
+
+        var appTenant = await _dbcontext.ApplicationTenants.FindAsync(tenant.Id);
+        if (appTenant is null)
+            return ThrowTenantNotFound(tenant.Id);
+
+        BackgroundJob.Enqueue<CreateTenantWorker>(x => x.StartAsync(currentUser.Id, appTenant.Id, default));
+
+        return Result.Ok();
     }
 
     public async Task<Result> EnableTenantAsync(ApplicationUser user, ApplicationTenant tenant)

@@ -16,6 +16,9 @@ namespace Huybrechts.Web.Pages.Account.Tenant
 
         public bool AllowDisablingTenant() => ApplicationTenantManager.AllowDisablingTenant(Input.State);
 
+        public bool AllowDefaultsTenant() => ApplicationTenantManager.AllowDisablingTenant(Input.State) 
+            || ApplicationTenantManager.AllowDisablingTenant(Input.State);
+
         [BindProperty]
         public TenantModel Input { get; set; } = new();
 
@@ -158,6 +161,28 @@ namespace Huybrechts.Web.Pages.Account.Tenant
             }
             else
                 StatusMessage = result.Errors?.FirstOrDefault()?.Message ?? string.Empty; 
+
+            return RedirectToPage("Index");
+        }
+
+        public async Task<IActionResult> OnPostDefaultsAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+
+            var item = await _tenantManager.GetTenantAsync(user, Input.Id);
+            if (item is null)
+                return NotFound($"Unable to load team with ID '{Input.Id}'.");
+
+            var result = await _tenantManager.CreateDefaultsForTenantAsync(user, item);
+            if (!result.IsFailed)
+            {
+                var message = _localizer["The team {0} is pending activation"];
+                StatusMessage = message.Value.Replace("{0}", Input.Id);
+            }
+            else
+                StatusMessage = result.Errors?.FirstOrDefault()?.Message ?? string.Empty;
 
             return RedirectToPage("Index");
         }

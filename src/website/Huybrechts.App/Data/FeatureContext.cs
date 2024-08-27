@@ -113,6 +113,8 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
     // SETUP
     //
 
+    public DbSet<SetupLanguage> SetupLanguages { get; set; }
+
     public DbSet<SetupUnit> SetupUnits { get; set; }
 
     //

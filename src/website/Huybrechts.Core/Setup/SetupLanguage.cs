@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Core.Setup;
 
@@ -9,7 +10,7 @@ namespace Huybrechts.Core.Setup;
 /// This class is used to define and manage the language settings, such as code, name, and description. 
 /// The Code property should always be stored in uppercase to maintain consistency across various data operations.
 /// </remarks>
-public class LanguageInfo
+public record SetupLanguage : Entity, IEntity
 {
     /// <summary>
     /// Gets or sets the code of the language.
@@ -56,10 +57,8 @@ public class LanguageInfo
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets the concatenated search index used for optimized search operations.
+    /// This field will store the normalized, concatenated values for searching
     /// </summary>
-    /// <remarks>
-    /// This property is not mapped to any database column and is used solely for in-memory search optimization.
-    /// </remarks>
-    public string SearchIndex => $"{Code}~{Name}".ToUpperInvariant();
+    [Comment("This field will store the normalized, concatenated values for searching")]
+    public string? SearchIndex { get; set; }
 }

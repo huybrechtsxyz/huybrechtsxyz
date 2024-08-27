@@ -54,9 +54,8 @@ public class IndexModel : PageModel
             Data = result.Value;
             return Page();
         }
-        catch(Exception ex)
+        catch(Exception)
         {
-            var message = ex.Message;
             return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
         }
     }

@@ -66,6 +66,13 @@
                 <button id="disable-tenant-button" type="submit" class="w-70 btn btn-lg btn-secondary">@Localizer["Disable"]</button>
             </form>
         }
+        @if (Model.AllowDefaultsTenant())
+        {
+            <form asp-page-handler="Defaults" method="post">
+                <input type="hidden" asp-for="Input.Id" />
+                <button id="defaults-tenant-button" type="submit" class="w-70 btn btn-lg btn-secondary">@Localizer["Add Defaults"]</button>
+            </form>
+        }
         <p></p>
     </div>
 </div>

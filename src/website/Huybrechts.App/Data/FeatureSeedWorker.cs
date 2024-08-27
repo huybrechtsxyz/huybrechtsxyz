@@ -1,21 +1,20 @@
-﻿using Huybrechts.App.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace Huybrechts.App.Features.Platform;
+namespace Huybrechts.App.Data;
 
-public class PlatformSeedWorker : IHostedService
+public class FeatureSeedWorker : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
     //private readonly IConfiguration _configuration;
-    private readonly ILogger _logger = Log.Logger.ForContext<PlatformSeedWorker>();
+    private readonly ILogger _logger = Log.Logger.ForContext<FeatureSeedWorker>();
 
     private FeatureContext _dbcontext = null!;
 
-    public PlatformSeedWorker(IServiceProvider serviceProvider) //, IConfiguration configuration)
+    public FeatureSeedWorker(IServiceProvider serviceProvider) //, IConfiguration configuration)
     {
         _serviceProvider = serviceProvider;
         //_configuration = configuration;

@@ -14,7 +14,7 @@ using System.Text.Json.Serialization;
 
 namespace Huybrechts.App.Features.Setup;
 
-public static class SetupUnitFlow
+public static class SetupLanguageFlow
 {
     public record Model
     {
@@ -29,26 +29,18 @@ public static class SetupUnitFlow
         [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
         public string? Description { get; set; }
 
-        [Display(Name = nameof(UnitType), ResourceType = typeof(Localization))]
-        public SetupUnitType UnitType { get; set; }
-
-        [Display(Name = nameof(Precision), ResourceType = typeof(Localization))]
-        public int Precision { get; set; } = 2;
-
-        [Display(Name = nameof(PrecisionType), ResourceType = typeof(Localization))]
-        public MidpointRounding PrecisionType { get; set; } = MidpointRounding.ToEven;
-
-        [Precision(18, 10)]
-        [Display(Name = nameof(Factor), ResourceType = typeof(Localization))]
-        public decimal Factor { get; set; } = 1.0m;
-
-        [Display(Name = nameof(IsBase), ResourceType = typeof(Localization))]
-        public bool IsBase { get; set; } = false;
+        
 
         [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
         public string? Remark { get; set; }
 
-        public string SearchIndex => $"{Name}~{Description}".ToLowerInvariant();
+        /// <summary>
+        /// Gets the concatenated search index used for optimized search operations.
+        /// </summary>
+        /// <remarks>
+        /// This property is not mapped to any database column and is used solely for in-memory search optimization.
+        /// </remarks>
+        public string SearchIndex => $"{Code}~{Name}".ToUpperInvariant();
     }
 
     public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -70,7 +62,7 @@ public static class SetupUnitFlow
     {
         name = name.ToLower().Trim();
 
-        return await context.Set<SetupUnit>()
+        return await context.Set<SetupLanguage>()
             .AnyAsync(pr => pr.Name.ToLower() == name
                          && (!currentId.HasValue || pr.Id != currentId.Value));
     }
@@ -81,7 +73,7 @@ public static class SetupUnitFlow
 
     public sealed record ListModel : Model { }
 
-    internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<SetupUnit, ListModel>(); }
+    internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<SetupLanguage, ListModel>(); }
 
     public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
 
@@ -90,7 +82,7 @@ public static class SetupUnitFlow
     public sealed class ListResult : EntityListFlow.Result<ListModel> { }
 
     internal sealed class ListHandler :
-        EntityListFlow.Handler<SetupUnit, ListModel>,
+        EntityListFlow.Handler<SetupLanguage, ListModel>,
         IRequestHandler<ListQuery, Result<ListResult>>
     {
         public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -100,7 +92,7 @@ public static class SetupUnitFlow
 
         public async Task<Result<ListResult>> Handle(ListQuery message, CancellationToken token)
         {
-            IQueryable<SetupUnit> query = _dbcontext.Set<SetupUnit>();
+            IQueryable<SetupLanguage> query = _dbcontext.Set<SetupLanguage>();
 
             var searchString = message.SearchText ?? message.CurrentFilter;
             if (!string.IsNullOrEmpty(searchString))
@@ -150,7 +142,7 @@ public static class SetupUnitFlow
             {
                 bool exists = await IsDuplicateNameAsync(dbContext, name);
                 return !exists;
-            }).WithMessage(x => Messages.DUPLICATE_SETUPUNIT_NAME.Replace("{0}", x.Name.ToString()));
+            }).WithMessage(x => Messages.DUPLICATE_SETUPLANGUAGE_NAME.Replace("{0}", x.Name.ToString()));
         }
     }
 
@@ -168,22 +160,17 @@ public static class SetupUnitFlow
             if (await IsDuplicateNameAsync(_dbcontext, message.Name))
                 return DuplicateFound(message.Name);
 
-            var record = new SetupUnit
+            var record = new SetupLanguage
             {
                 Id = message.Id,
                 Code = message.Code.ToUpper().Trim(),
                 Name = message.Name.Trim(),
                 Description = message.Description?.Trim(),
-                UnitType = message.UnitType,
-                Factor = message.Factor,
-                IsBase = message.IsBase,
-                Precision = message.Precision,
-                PrecisionType = message.PrecisionType,
-                Remark = message.Remark?.Trim(),
+                
                 SearchIndex = message.SearchIndex,
                 CreatedDT = DateTime.UtcNow
             };
-            await _dbcontext.Set<SetupUnit>().AddAsync(record, token);
+            await _dbcontext.Set<SetupLanguage>().AddAsync(record, token);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok(record.Id);
         }
@@ -195,7 +182,6 @@ public static class SetupUnitFlow
 
     public sealed record CreateDefaultsCommand : IRequest<Result>
     {
-        public string? OverwriteTenantId { get; set; }
     }
 
     public sealed class CreateDefaultsHandler : IRequestHandler<CreateDefaultsCommand, Result>
@@ -229,45 +215,28 @@ public static class SetupUnitFlow
                 }
             };
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            List<SetupUnit>? units = await JsonSerializer.DeserializeAsync<List<SetupUnit>>(stream, options, cancellationToken: token);
+            List<SetupLanguage>? units = await JsonSerializer.DeserializeAsync<List<SetupLanguage>>(stream, options, cancellationToken: token);
             
             foreach(var item in units ?? [])
             {
                 if (await IsDuplicateNameAsync(_dbcontext, item.Name))
                     continue;
 
-                var record = new SetupUnit
+                var record = new SetupLanguage
                 {
                     Id = Ulid.NewUlid(),
                     Code = item.Code.ToUpper().Trim(),
                     Name = item.Name.Trim(),
                     Description = item.Description?.Trim(),
-                    UnitType = item.UnitType,
-                    Factor = item.Factor,
-                    IsBase = item.IsBase,
-                    Precision = item.Precision,
-                    PrecisionType = item.PrecisionType,
-                    Remark = item.Remark?.Trim(),
+                    
                     SearchIndex = item.SearchIndex,
                     CreatedDT = DateTime.UtcNow
                 };
 
-                await _dbcontext.Set<SetupUnit>().AddAsync(record, token);
+                await _dbcontext.Set<SetupLanguage>().AddAsync(record, token);
             }
-
-            var mismatchMode = _dbcontext.TenantMismatchMode;
-            if (!string.IsNullOrEmpty(message.OverwriteTenantId))
-            {
-                _dbcontext.TenantMismatchMode = Finbuckle.MultiTenant.EntityFrameworkCore.TenantMismatchMode.Ignore;
-                var addedRows = _dbcontext.ChangeTracker.Entries().Where(e => e.State == EntityState.Added).ToList();
-                foreach (var row in addedRows)
-                {
-                    var property = row.Property("TenantId").CurrentValue = message.OverwriteTenantId;
-                }
-            }
-
+            
             await _dbcontext.SaveChangesAsync(token);
-            _dbcontext.TenantMismatchMode = mismatchMode;
             return Result.Ok();
         }
     }
@@ -296,13 +265,13 @@ public static class SetupUnitFlow
             {
                 bool exists = await IsDuplicateNameAsync(dbContext, rec.Name, rec.Id);
                 return !exists;
-            }).WithMessage(x => Messages.DUPLICATE_SETUPUNIT_NAME.Replace("{0}", x.Name.ToString()));
+            }).WithMessage(x => Messages.DUPLICATE_SETUPLANGUAGE_NAME.Replace("{0}", x.Name.ToString()));
         }
     }
 
     internal class UpdateCommandMapping : Profile 
     { 
-        public UpdateCommandMapping() => CreateProjection<SetupUnit, UpdateCommand>(); 
+        public UpdateCommandMapping() => CreateProjection<SetupLanguage, UpdateCommand>(); 
     }
 
     internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
@@ -318,7 +287,7 @@ public static class SetupUnitFlow
 
         public async Task<Result<UpdateCommand>> Handle(UpdateQuery message, CancellationToken token)
         {
-            var command = await _dbcontext.Set<SetupUnit>()
+            var command = await _dbcontext.Set<SetupLanguage>()
                 .ProjectTo<UpdateCommand>(_configuration)
                 .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
 
@@ -340,7 +309,7 @@ public static class SetupUnitFlow
 
         public async Task<Result> Handle(UpdateCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<SetupUnit>().FindAsync([message.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<SetupLanguage>().FindAsync([message.Id], cancellationToken: token);
             if (record is null)
                 return RecordNotFound(message.Id);
 
@@ -350,16 +319,11 @@ public static class SetupUnitFlow
             record.Code = message.Code.ToUpper().Trim();
             record.Name = message.Name.Trim();
             record.Description = message.Description?.Trim();
-            record.UnitType = message.UnitType;
-            record.Factor = message.Factor;
-            record.IsBase = message.IsBase;
-            record.Precision = message.Precision;
-            record.PrecisionType = message.PrecisionType;
-            record.Remark = message.Remark?.Trim();
+           
             record.SearchIndex = message.SearchIndex;
             record.ModifiedDT = DateTime.UtcNow;
 
-            _dbcontext.Set<SetupUnit>().Update(record);
+            _dbcontext.Set<SetupLanguage>().Update(record);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();
         }
@@ -393,7 +357,7 @@ public static class SetupUnitFlow
     {
         public DeleteCommandMapping()
         {
-            CreateProjection<SetupUnit, DeleteCommand>();
+            CreateProjection<SetupLanguage, DeleteCommand>();
         }
     }
 
@@ -410,7 +374,7 @@ public static class SetupUnitFlow
 
         public async Task<Result<DeleteCommand>> Handle(DeleteQuery message, CancellationToken token)
         {
-            var command = await _dbcontext.Set<SetupUnit>()
+            var command = await _dbcontext.Set<SetupLanguage>()
                 .ProjectTo<DeleteCommand>(_configuration)
                 .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
 
@@ -432,11 +396,11 @@ public static class SetupUnitFlow
 
         public async Task<Result> Handle(DeleteCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<SetupUnit>().FindAsync([message.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<SetupLanguage>().FindAsync([message.Id], cancellationToken: token);
             if(record is null)
                 return RecordNotFound(message.Id);
 
-            _dbcontext.Set<SetupUnit>().Remove(record);
+            _dbcontext.Set<SetupLanguage>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();
         }

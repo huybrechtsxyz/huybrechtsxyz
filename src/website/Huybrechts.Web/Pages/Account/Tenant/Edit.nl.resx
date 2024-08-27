@@ -120,6 +120,9 @@
   <data name="Activate" xml:space="preserve">
     <value>Activeren</value>
   </data>
+  <data name="Add Defaults" xml:space="preserve">
+    <value>Toevoegen standaard</value>
+  </data>
   <data name="Disable" xml:space="preserve">
     <value>Uitzetten</value>
   </data>

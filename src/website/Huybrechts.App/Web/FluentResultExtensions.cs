@@ -8,7 +8,21 @@ public class StatusResult
 {
     public static StatusResult Deserialize(string json)
     {
-        return System.Text.Json.JsonSerializer.Deserialize<StatusResult>(json) ?? new();
+        if (IsProbablyJson(json))
+            return System.Text.Json.JsonSerializer.Deserialize<StatusResult>(json) ?? new();
+        else
+            return new()
+            {
+                IsFailed = false,
+                IsSuccess = false,
+                Message = json
+            };
+    }
+
+    private static bool IsProbablyJson(string input)
+    {
+        input = input.Trim();
+        return (input.StartsWith("{") && input.EndsWith("}")) || (input.StartsWith("[") && input.EndsWith("]"));
     }
 
     public bool IsFailed { get; set; } = false;

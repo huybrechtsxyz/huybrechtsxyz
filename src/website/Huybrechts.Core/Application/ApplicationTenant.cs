@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Finbuckle.MultiTenant;
+using FluentResults;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Huybrechts.Core.Application;
@@ -44,5 +46,15 @@ public record ApplicationTenant
             this.Picture = new byte[entity.Picture.Length];
             Array.Copy(entity.Picture, this.Picture, entity.Picture.Length);
         }
+    }
+
+    public TenantInfo ToTenantInfo()
+    {
+        return new TenantInfo()
+        {
+            Identifier = Id,
+            Id = Id,
+            Name = Name
+        };
     }
 }
