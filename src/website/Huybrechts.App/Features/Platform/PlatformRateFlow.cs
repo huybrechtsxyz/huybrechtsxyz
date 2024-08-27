@@ -17,7 +17,7 @@ namespace Huybrechts.App.Features.Platform;
 
 public static class PlatformRateFlow
 {
-    public static List<string> DefaultCurrencies { get; } = Currencies.Items.Select(s => s.Code).ToList();
+    public static List<string> DefaultCurrencies { get; } = ["EUR", "USD"]; //Currencies.Items.Select(s => s.Code).ToList();
 
     public static async Task<List<PlatformRegion>> GetRegionsAsync(FeatureContext dbcontext, Ulid platformInfoId, CancellationToken token)
     {

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Core.Setup;
@@ -10,24 +11,27 @@ namespace Huybrechts.Core.Setup;
 /// The <c>CurrencyInfo</c> class is designed to be loaded into memory from a JSON file on application startup, 
 /// providing a quick reference for currency-related operations without the need for frequent database access.
 /// </remarks>
-public class CurrencyInfo
+public record SetupCurrency : Entity, IEntity
 {
     /// <summary>
     /// The ISO 4217 code for the currency (e.g., "USD" for US Dollar, "EUR" for Euro).
     /// This field is required and serves as the primary key.
     /// </summary>
-    [Key]
     [Required(ErrorMessage = "Currency code is required.")]
     [MaxLength(10, ErrorMessage = "Currency code must not exceed 10 characters.")]
     public string Code { get; set; } = string.Empty;
 
     /// <summary>
-    /// The ISO 3166-1 alpha-2 country code associated with the currency (e.g., "US" for the United States).
-    /// This field is required.
+    /// Foreign key to the country entity.
     /// </summary>
-    [Required(ErrorMessage = "Country code is required.")]
-    [MaxLength(10, ErrorMessage = "Country code must not exceed 10 characters.")]
-    public string CountryCode { get; set; } = string.Empty;
+    [Required]
+    [Comment("Foreign key referencing the SetupCountry.")]
+    public Ulid SetupCountryId { get; set; } = Ulid.Empty;
+
+    /// <summary>
+    /// Navigation property to the related SetupCountry.
+    /// </summary>
+    public virtual SetupCountry SetupCountry { get; set; } = new();
 
     /// <summary>
     /// The name of the currency (e.g., "United States Dollar").
@@ -48,5 +52,6 @@ public class CurrencyInfo
     /// A concatenated and normalized string of key fields used for searching (e.g., "usd~united states dollar~us").
     /// This is a derived field and is not stored in the database.
     /// </summary>
-    public string SearchIndex => $"{Code}~{Name}~{CountryCode}".ToLowerInvariant();
+    [Comment("This field will store the normalized, concatenated values for searching")]
+    public string? SearchIndex { get; set; }
 }

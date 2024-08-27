@@ -120,6 +120,15 @@
   <data name="Code" xml:space="preserve">
     <value>Code</value>
   </data>
+  <data name="Country" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="CountryCode" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="CountryName" xml:space="preserve">
+    <value>Country</value>
+  </data>
   <data name="Description" xml:space="preserve">
     <value>Description</value>
   </data>

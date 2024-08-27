@@ -120,6 +120,9 @@
   <data name="Countries" xml:space="preserve">
     <value>Landen</value>
   </data>
+  <data name="Currencies" xml:space="preserve">
+    <value>Valuta</value>
+  </data>
   <data name="Languages" xml:space="preserve">
     <value>Talen</value>
   </data>
@@ -127,6 +130,6 @@
     <value>Instellingen</value>
   </data>
   <data name="System units" xml:space="preserve">
-    <value>Systeemeenheden</value>
+    <value>Eenheden</value>
   </data>
 </root>

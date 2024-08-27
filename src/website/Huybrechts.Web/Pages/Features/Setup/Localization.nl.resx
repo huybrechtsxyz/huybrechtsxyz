@@ -162,6 +162,42 @@
   <data name="CountryIndexTitle" xml:space="preserve">
     <value>Beheer Landen</value>
   </data>
+  <data name="Currencies" xml:space="preserve">
+    <value>Munteenheden</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Munteenheid</value>
+  </data>
+  <data name="CurrencyCreateInfo" xml:space="preserve">
+    <value>Gebruik deze pagina om een nieuwe valuta aan het systeem toe te voegen. U moet de ISO-code, naam, symbool en andere relevante details van de valuta specificeren. Deze informatie helpt bij het standaardiseren van transacties over verschillende regio's en zorgt voor nauwkeurige valutaconversies.</value>
+  </data>
+  <data name="CurrencyCreateTitle" xml:space="preserve">
+    <value>Een Nieuwe Valuta Toevoegen</value>
+  </data>
+  <data name="CurrencyDeleteInfo" xml:space="preserve">
+    <value>Deze pagina stelt u in staat een valuta uit het systeem te verwijderen. Zorg ervoor dat de valuta niet in gebruik is in lopende transacties of financiële dossiers voordat u doorgaat. Het verwijderen van een valuta is permanent en kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="CurrencyDeleteTitle" xml:space="preserve">
+    <value>Een Valuta Verwijderen</value>
+  </data>
+  <data name="CurrencyEditInfo" xml:space="preserve">
+    <value>Op deze pagina kunt u de gegevens van een bestaande valuta in het systeem wijzigen. Werk informatie bij zoals de naam van de valuta, ISO-code, symbool of wisselkoers. Zorg ervoor dat alle velden correct zijn ingevuld om gegevensconsistentie en nauwkeurigheid te waarborgen.</value>
+  </data>
+  <data name="CurrencyEditTitle" xml:space="preserve">
+    <value>Valutagegevens Bijwerken</value>
+  </data>
+  <data name="CurrencyImportInfo" xml:space="preserve">
+    <value>Gebruik deze pagina om valuta's in het systeem te importeren uit een vooraf bestaande lijst op basis van ISO-codes. Deze functionaliteit is ontworpen om het proces van het toevoegen van gestandaardiseerde valuta's te stroomlijnen, zodat alle invoer voldoet aan internationale normen. Selecteer de gewenste valuta's uit de lijst om ze efficiënt aan uw systeem toe te voegen.</value>
+  </data>
+  <data name="CurrencyImportTitle" xml:space="preserve">
+    <value>Valuta's Importeren van Vooraf Gedefinieerde ISO-lijst</value>
+  </data>
+  <data name="CurrencyIndexInfo" xml:space="preserve">
+    <value>Deze pagina toont een uitgebreide lijst van alle valuta's die momenteel in het systeem beschikbaar zijn. Hier kunt u de details van elke valuta bekijken, zoals de naam, ISO-code en wisselkoers. Gebruik de beschikbare opties om nieuwe valuta's toe te voegen, bestaande te bewerken of valuta's te verwijderen die niet langer nodig zijn.</value>
+  </data>
+  <data name="CurrencyIndexTitle" xml:space="preserve">
+    <value>Beheer Valuta's</value>
+  </data>
   <data name="Import" xml:space="preserve">
     <value>Importeer</value>
   </data>

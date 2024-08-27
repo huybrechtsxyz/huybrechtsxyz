@@ -162,6 +162,42 @@
   <data name="CountryIndexTitle" xml:space="preserve">
     <value>Manage Countries</value>
   </data>
+  <data name="Currencies" xml:space="preserve">
+    <value>Currencies</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
+  <data name="CurrencyCreateInfo" xml:space="preserve">
+    <value>Use this page to add a new currency to the system. You need to specify the currency's ISO code, name, symbol, and other relevant details. This information will help in standardizing transactions across different regions and ensuring accurate currency conversions.</value>
+  </data>
+  <data name="CurrencyCreateTitle" xml:space="preserve">
+    <value>Add a New Currency</value>
+  </data>
+  <data name="CurrencyDeleteInfo" xml:space="preserve">
+    <value>This page allows you to delete a currency from the system. Before proceeding, make sure the currency is not currently in use in any active transactions or financial records. Deleting a currency is permanent and cannot be undone.</value>
+  </data>
+  <data name="CurrencyDeleteTitle" xml:space="preserve">
+    <value>Remove a Currency</value>
+  </data>
+  <data name="CurrencyEditInfo" xml:space="preserve">
+    <value>On this page, you can modify the details of an existing currency in the system. Update information such as the currency's name, ISO code, symbol, or conversion rate. Ensure that all fields are correctly filled to maintain data consistency and accuracy.</value>
+  </data>
+  <data name="CurrencyEditTitle" xml:space="preserve">
+    <value>Update Currency Details</value>
+  </data>
+  <data name="CurrencyImportInfo" xml:space="preserve">
+    <value>Use this page to import currencies into the system from a preexisting list based on ISO codes. This functionality is designed to streamline the process of adding standardized currencies, ensuring that all entries conform to international standards. Select the desired currencies from the list to add them to your system efficiently.</value>
+  </data>
+  <data name="CurrencyImportTitle" xml:space="preserve">
+    <value>Import Currencies from Predefined ISO List</value>
+  </data>
+  <data name="CurrencyIndexInfo" xml:space="preserve">
+    <value>This page displays a comprehensive list of all currencies currently available in the system. From here, you can view details of each currency, such as their names, ISO codes, and conversion rates. Use the available options to add new currencies, edit existing ones, or delete currencies that are no longer needed.</value>
+  </data>
+  <data name="CurrencyIndexTitle" xml:space="preserve">
+    <value>Manage Currencies</value>
+  </data>
   <data name="Import" xml:space="preserve">
     <value>Import</value>
   </data>

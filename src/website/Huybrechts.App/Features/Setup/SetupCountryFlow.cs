@@ -58,7 +58,7 @@ public static class SetupCountryFlow
         code = code.ToUpper().Trim();
 
         return await context.Set<SetupCountry>()
-            .AnyAsync(pr => pr.Code.ToLower() == code
+            .AnyAsync(pr => pr.Code.ToUpper() == code
                          && (!currentId.HasValue || pr.Id != currentId.Value));
     }
 

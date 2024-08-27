@@ -196,6 +196,114 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Currencies.
+        /// </summary>
+        public static string Currencies {
+            get {
+                return ResourceManager.GetString("Currencies", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Currency.
+        /// </summary>
+        public static string Currency {
+            get {
+                return ResourceManager.GetString("Currency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this page to add a new currency to the system. You need to specify the currency&apos;s ISO code, name, symbol, and other relevant details. This information will help in standardizing transactions across different regions and ensuring accurate currency conversions..
+        /// </summary>
+        public static string CurrencyCreateInfo {
+            get {
+                return ResourceManager.GetString("CurrencyCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a New Currency.
+        /// </summary>
+        public static string CurrencyCreateTitle {
+            get {
+                return ResourceManager.GetString("CurrencyCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page allows you to delete a currency from the system. Before proceeding, make sure the currency is not currently in use in any active transactions or financial records. Deleting a currency is permanent and cannot be undone..
+        /// </summary>
+        public static string CurrencyDeleteInfo {
+            get {
+                return ResourceManager.GetString("CurrencyDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove a Currency.
+        /// </summary>
+        public static string CurrencyDeleteTitle {
+            get {
+                return ResourceManager.GetString("CurrencyDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On this page, you can modify the details of an existing currency in the system. Update information such as the currency&apos;s name, ISO code, symbol, or conversion rate. Ensure that all fields are correctly filled to maintain data consistency and accuracy..
+        /// </summary>
+        public static string CurrencyEditInfo {
+            get {
+                return ResourceManager.GetString("CurrencyEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update Currency Details.
+        /// </summary>
+        public static string CurrencyEditTitle {
+            get {
+                return ResourceManager.GetString("CurrencyEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this page to import currencies into the system from a preexisting list based on ISO codes. This functionality is designed to streamline the process of adding standardized currencies, ensuring that all entries conform to international standards. Select the desired currencies from the list to add them to your system efficiently..
+        /// </summary>
+        public static string CurrencyImportInfo {
+            get {
+                return ResourceManager.GetString("CurrencyImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Currencies from Predefined ISO List.
+        /// </summary>
+        public static string CurrencyImportTitle {
+            get {
+                return ResourceManager.GetString("CurrencyImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page displays a comprehensive list of all currencies currently available in the system. From here, you can view details of each currency, such as their names, ISO codes, and conversion rates. Use the available options to add new currencies, edit existing ones, or delete currencies that are no longer needed..
+        /// </summary>
+        public static string CurrencyIndexInfo {
+            get {
+                return ResourceManager.GetString("CurrencyIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage Currencies.
+        /// </summary>
+        public static string CurrencyIndexTitle {
+            get {
+                return ResourceManager.GetString("CurrencyIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import.
         /// </summary>
         public static string Import {

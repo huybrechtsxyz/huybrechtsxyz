@@ -123,6 +123,12 @@
   <data name="DUPLICATE_SETUPCOUNTRY_NAME" xml:space="preserve">
     <value>Land met code {0} bestaat al</value>
   </data>
+  <data name="DUPLICATE_SETUPCURRENCY_CODE" xml:space="preserve">
+    <value>Munteenheid met code {0} bestaat al</value>
+  </data>
+  <data name="DUPLICATE_SETUPCURRENCY_NAME" xml:space="preserve">
+    <value>Munteenheid met naam {0} bestaat al</value>
+  </data>
   <data name="DUPLICATE_SETUPLANGUAGE_NAME" xml:space="preserve">
     <value>Taal met naam {0} bestaat al</value>
   </data>
@@ -131,6 +137,9 @@
   </data>
   <data name="INVALID_SETUPCOUNTRY_ID" xml:space="preserve">
     <value>Kan land met ID {0} niet vinden</value>
+  </data>
+  <data name="INVALID_SETUPCURRENCY_ID" xml:space="preserve">
+    <value>Kan munteenheid met ID {0} niet vinden</value>
   </data>
   <data name="INVALID_SETUPLANGUAGE_ID" xml:space="preserve">
     <value>Kan taal met ID {0} niet vinden</value>

@@ -3,23 +3,40 @@ using AutoMapper.QueryableExtensions;
 using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
+using Huybrechts.Core.Platform;
 using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Cmp;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Huybrechts.App.Features.Setup;
 
-public static class SetupUnitFlow
+public static class SetupCurrencyFlow
 {
+    public static async Task<List<SetupCountry>> GetCountriesAsync(FeatureContext dbcontext, CancellationToken token)
+    {
+        return await dbcontext.Set<SetupCountry>()
+            .OrderBy(o => o.Name)
+            .ToListAsync(cancellationToken: token);
+    }
+
     public record Model
     {
         public Ulid Id { get; init; }
+
+        [Display(Name = "Country", ResourceType = typeof(Localization))]
+        public Ulid SetupCountryId { get; set; } = Ulid.Empty;
+
+        [Display(Name = "Country", ResourceType = typeof(Localization))]
+        public string SetupCountryCode { get; set; } = string.Empty;
+
+        [Display(Name = "Country", ResourceType = typeof(Localization))]
+        public string SetupCountryName { get; set; } = string.Empty;
 
         [Display(Name = nameof(Code), ResourceType = typeof(Localization))]
         public string Code { get; set; } = string.Empty;
@@ -30,28 +47,7 @@ public static class SetupUnitFlow
         [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
         public string? Description { get; set; }
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        [Display(Name = nameof(UnitType), ResourceType = typeof(Localization))]
-        public SetupUnitType UnitType { get; set; }
-
-        [Display(Name = nameof(Precision), ResourceType = typeof(Localization))]
-        public int Precision { get; set; } = 2;
-
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        [Display(Name = nameof(PrecisionType), ResourceType = typeof(Localization))]
-        public MidpointRounding PrecisionType { get; set; } = MidpointRounding.ToEven;
-
-        [Precision(18, 10)]
-        [Display(Name = nameof(Factor), ResourceType = typeof(Localization))]
-        public decimal Factor { get; set; } = 1.0m;
-
-        [Display(Name = nameof(IsBase), ResourceType = typeof(Localization))]
-        public bool IsBase { get; set; } = false;
-
-        [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
-        public string? Remark { get; set; }
-
-        public string SearchIndex => $"{Name}~{UnitType}~{Description}".ToLowerInvariant();
+        public string SearchIndex => $"{Code}~{Name}~{SetupCountryCode}~{SetupCountryName}".ToLowerInvariant();
     }
 
     public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -65,15 +61,28 @@ public static class SetupUnitFlow
         }
     }
 
-    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPUNIT_ID.Replace("{0}", id.ToString()));
+    private static Result CountryNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPCOUNTRY_ID.Replace("{0}", id.ToString()));
 
-    private static Result DuplicateFound(string name) => Result.Fail(Messages.DUPLICATE_SETUPUNIT_NAME.Replace("{0}", name.ToString()));
+    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPCURRENCY_ID.Replace("{0}", id.ToString()));
+
+    private static Result DuplicateCodeFound(string code) => Result.Fail(Messages.DUPLICATE_SETUPCURRENCY_CODE.Replace("{0}", code.ToString()));
+
+    private static Result DuplicateNameFound(string name) => Result.Fail(Messages.DUPLICATE_SETUPCURRENCY_NAME.Replace("{0}", name.ToString()));
+
+    public static async Task<bool> IsDuplicateCodeAsync(DbContext context, string code, Ulid? currentId = null)
+    {
+        code = code.ToUpper().Trim();
+
+        return await context.Set<SetupCurrency>()
+            .AnyAsync(pr => pr.Name.ToUpper() == code
+                         && (!currentId.HasValue || pr.Id != currentId.Value));
+    }
 
     public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid? currentId = null)
     {
         name = name.ToLower().Trim();
 
-        return await context.Set<SetupUnit>()
+        return await context.Set<SetupCurrency>()
             .AnyAsync(pr => pr.Name.ToLower() == name
                          && (!currentId.HasValue || pr.Id != currentId.Value));
     }
@@ -84,7 +93,12 @@ public static class SetupUnitFlow
 
     public sealed record ListModel : Model { }
 
-    internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<SetupUnit, ListModel>(); }
+    internal sealed class ListMapping : Profile 
+    {
+        public ListMapping() => CreateProjection<SetupCurrency, ListModel>()
+            .ForMember(dst => dst.SetupCountryCode, opt => opt.MapFrom(src => src.Code))
+            .ForMember(dst => dst.SetupCountryName, opt => opt.MapFrom(src => src.Name));
+    }
 
     public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
 
@@ -93,7 +107,7 @@ public static class SetupUnitFlow
     public sealed class ListResult : EntityListFlow.Result<ListModel> { }
 
     internal sealed class ListHandler :
-        EntityListFlow.Handler<SetupUnit, ListModel>,
+        EntityListFlow.Handler<SetupCurrency, ListModel>,
         IRequestHandler<ListQuery, Result<ListResult>>
     {
         public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -103,7 +117,7 @@ public static class SetupUnitFlow
 
         public async Task<Result<ListResult>> Handle(ListQuery message, CancellationToken token)
         {
-            IQueryable<SetupUnit> query = _dbcontext.Set<SetupUnit>();
+            IQueryable<SetupCurrency> query = _dbcontext.Set<SetupCurrency>();
 
             var searchString = message.SearchText ?? message.CurrentFilter;
             if (!string.IsNullOrEmpty(searchString))
@@ -121,6 +135,7 @@ public static class SetupUnitFlow
             int pageSize = EntityListFlow.PageSize;
             int pageNumber = message.Page ?? 1;
             var results = await query
+                .Include(i => i.SetupCountry)
                 .ProjectTo<ListModel>(_configuration)
                 .PaginatedListAsync(pageNumber, pageSize);
 
@@ -142,18 +157,56 @@ public static class SetupUnitFlow
 
     public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
 
-    public sealed record CreateCommand : Model, IRequest<Result<Ulid>> { }
-
-    public sealed class CreateValidator : ModelValidator<CreateCommand> 
+    public sealed record CreateQuery : IRequest<Result<CreateCommand>>
     {
-        public CreateValidator(FeatureContext dbContext) :
+    }
+
+    public sealed class CreateQueryValidator : AbstractValidator<CreateQuery>
+    {
+        public CreateQueryValidator()
+        {
+        }
+    }
+
+    public sealed record CreateCommand : Model, IRequest<Result<Ulid>> 
+    {
+        public List<SetupCountry> Countries { get; set; } = [];
+    }
+
+    public sealed class CreateCommandValidator : ModelValidator<CreateCommand> 
+    {
+        public CreateCommandValidator(FeatureContext dbContext) :
             base()
         {
+            RuleFor(x => x.Code).MustAsync(async (code, cancellation) =>
+            {
+                bool exists = await IsDuplicateCodeAsync(dbContext, code);
+                return !exists;
+            }).WithMessage(x => Messages.DUPLICATE_SETUPCURRENCY_CODE.Replace("{0}", x.Code.ToString()));
+
             RuleFor(x => x.Name).MustAsync(async (name, cancellation) =>
             {
                 bool exists = await IsDuplicateNameAsync(dbContext, name);
                 return !exists;
-            }).WithMessage(x => Messages.DUPLICATE_SETUPUNIT_NAME.Replace("{0}", x.Name.ToString()));
+            }).WithMessage(x => Messages.DUPLICATE_SETUPCURRENCY_NAME.Replace("{0}", x.Name.ToString()));
+        }
+    }
+
+    internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCommand>>
+    {
+        private readonly FeatureContext _dbcontext;
+
+        public CreateQueryHandler(FeatureContext dbcontext)
+        {
+            _dbcontext = dbcontext;
+        }
+
+        public async Task<Result<CreateCommand>> Handle(CreateQuery message, CancellationToken token)
+        {
+            var record = CreateNew();
+            record.Countries = await GetCountriesAsync(_dbcontext, token);
+
+            return Result.Ok(record);
         }
     }
 
@@ -168,25 +221,28 @@ public static class SetupUnitFlow
 
         public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
         {
-            if (await IsDuplicateNameAsync(_dbcontext, message.Name))
-                return DuplicateFound(message.Name);
+            if (await IsDuplicateCodeAsync(_dbcontext, message.Code))
+                return DuplicateCodeFound(message.Code);
 
-            var record = new SetupUnit
+            if (await IsDuplicateNameAsync(_dbcontext, message.Name))
+                return DuplicateNameFound(message.Name);
+
+            var country = await _dbcontext.Set<SetupCountry>().FirstOrDefaultAsync(q => q.Id == message.SetupCountryId, cancellationToken: token);
+            if (country == null)
+                return CountryNotFound(message.SetupCountryId);
+
+            var record = new SetupCurrency
             {
                 Id = message.Id,
+                SetupCountry = country,
                 Code = message.Code.ToUpper().Trim(),
                 Name = message.Name.Trim(),
                 Description = message.Description?.Trim(),
-                UnitType = message.UnitType,
-                Factor = message.Factor,
-                IsBase = message.IsBase,
-                Precision = message.Precision,
-                PrecisionType = message.PrecisionType,
-                Remark = message.Remark?.Trim(),
                 SearchIndex = message.SearchIndex,
                 CreatedDT = DateTime.UtcNow
             };
-            await _dbcontext.Set<SetupUnit>().AddAsync(record, token);
+
+            await _dbcontext.Set<SetupCurrency>().AddAsync(record, token);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok(record.Id);
         }
@@ -206,23 +262,34 @@ public static class SetupUnitFlow
         }
     }
 
-    public record UpdateCommand : Model, IRequest<Result> { }
+    public record UpdateCommand : Model, IRequest<Result> 
+    {
+        public List<SetupCountry> Countries { get; set; } = [];
+    }
 
     public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
     {
         public UpdateCommandValidator(FeatureContext dbContext)
         {
-            RuleFor(x => x).MustAsync(async (rec, cancellation) =>
+            RuleFor(x => x.Code).MustAsync(async (code, cancellation) =>
             {
-                bool exists = await IsDuplicateNameAsync(dbContext, rec.Name, rec.Id);
+                bool exists = await IsDuplicateCodeAsync(dbContext, code);
                 return !exists;
-            }).WithMessage(x => Messages.DUPLICATE_SETUPUNIT_NAME.Replace("{0}", x.Name.ToString()));
+            }).WithMessage(x => Messages.DUPLICATE_SETUPCURRENCY_CODE.Replace("{0}", x.Code.ToString()));
+
+            RuleFor(x => x.Name).MustAsync(async (name, cancellation) =>
+            {
+                bool exists = await IsDuplicateNameAsync(dbContext, name);
+                return !exists;
+            }).WithMessage(x => Messages.DUPLICATE_SETUPCURRENCY_NAME.Replace("{0}", x.Name.ToString()));
         }
     }
 
     internal class UpdateCommandMapping : Profile 
     { 
-        public UpdateCommandMapping() => CreateProjection<SetupUnit, UpdateCommand>(); 
+        public UpdateCommandMapping() => CreateProjection<SetupCurrency, UpdateCommand>()
+            .ForMember(dst => dst.SetupCountryCode, opt => opt.MapFrom(src => src.Code))
+            .ForMember(dst => dst.SetupCountryName, opt => opt.MapFrom(src => src.Name));
     }
 
     internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
@@ -238,14 +305,17 @@ public static class SetupUnitFlow
 
         public async Task<Result<UpdateCommand>> Handle(UpdateQuery message, CancellationToken token)
         {
-            var command = await _dbcontext.Set<SetupUnit>()
+            var record = await _dbcontext.Set<SetupCurrency>()
+                .Include(i => i.SetupCountry)
                 .ProjectTo<UpdateCommand>(_configuration)
                 .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
 
-            if (command is null)
+            if (record is null)
                 return RecordNotFound(message.Id ?? Ulid.Empty);
 
-            return Result.Ok(command);
+            record.Countries = await GetCountriesAsync(_dbcontext, token);
+
+            return Result.Ok(record);
         }
     }
 
@@ -260,26 +330,28 @@ public static class SetupUnitFlow
 
         public async Task<Result> Handle(UpdateCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<SetupUnit>().FindAsync([message.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<SetupCurrency>().FindAsync([message.Id], cancellationToken: token);
             if (record is null)
                 return RecordNotFound(message.Id);
 
-            if (await IsDuplicateNameAsync(_dbcontext, message.Name, record.Id))
-                return DuplicateFound(message.Name);
+            if (await IsDuplicateCodeAsync(_dbcontext, message.Code, record.Id))
+                return DuplicateCodeFound(message.Code);
 
+            if (await IsDuplicateNameAsync(_dbcontext, message.Name, record.Id))
+                return DuplicateNameFound(message.Name);
+
+            var country = await _dbcontext.Set<SetupCountry>().FirstOrDefaultAsync(q => q.Id == message.SetupCountryId, cancellationToken: token);
+            if (country == null)
+                return CountryNotFound(message.SetupCountryId);
+
+            record.SetupCountry = country;
             record.Code = message.Code.ToUpper().Trim();
             record.Name = message.Name.Trim();
             record.Description = message.Description?.Trim();
-            record.UnitType = message.UnitType;
-            record.Factor = message.Factor;
-            record.IsBase = message.IsBase;
-            record.Precision = message.Precision;
-            record.PrecisionType = message.PrecisionType;
-            record.Remark = message.Remark?.Trim();
             record.SearchIndex = message.SearchIndex;
             record.ModifiedDT = DateTime.UtcNow;
 
-            _dbcontext.Set<SetupUnit>().Update(record);
+            _dbcontext.Set<SetupCurrency>().Update(record);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();
         }
@@ -299,7 +371,10 @@ public static class SetupUnitFlow
         }
     }
 
-    public sealed record DeleteCommand : Model, IRequest<Result> { }
+    public sealed record DeleteCommand : Model, IRequest<Result> 
+    {
+        public List<SetupCountry> Countries { get; set; } = [];
+    }
 
     public sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
     {
@@ -313,7 +388,9 @@ public static class SetupUnitFlow
     {
         public DeleteCommandMapping()
         {
-            CreateProjection<SetupUnit, DeleteCommand>();
+            CreateProjection<SetupCurrency, DeleteCommand>()
+                .ForMember(dst => dst.SetupCountryCode, opt => opt.MapFrom(src => src.Code))
+                .ForMember(dst => dst.SetupCountryName, opt => opt.MapFrom(src => src.Name));
         }
     }
 
@@ -330,14 +407,17 @@ public static class SetupUnitFlow
 
         public async Task<Result<DeleteCommand>> Handle(DeleteQuery message, CancellationToken token)
         {
-            var command = await _dbcontext.Set<SetupUnit>()
+            var record = await _dbcontext.Set<SetupCurrency>()
+                .Include(i => i.SetupCountry)
                 .ProjectTo<DeleteCommand>(_configuration)
                 .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
 
-            if (command is null)
+            if (record is null)
                 return RecordNotFound(message.Id ?? Ulid.Empty);
 
-            return Result.Ok(command);
+            record.Countries = await GetCountriesAsync(_dbcontext, token);
+
+            return Result.Ok(record);
         }
     }
 
@@ -352,11 +432,11 @@ public static class SetupUnitFlow
 
         public async Task<Result> Handle(DeleteCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<SetupUnit>().FindAsync([message.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<SetupCurrency>().FindAsync([message.Id], cancellationToken: token);
             if(record is null)
                 return RecordNotFound(message.Id);
 
-            _dbcontext.Set<SetupUnit>().Remove(record);
+            _dbcontext.Set<SetupCurrency>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();
         }
@@ -366,11 +446,25 @@ public static class SetupUnitFlow
     // IMPORT
     //
 
-    public sealed record ImportModel : Model
+    public sealed record ImportModel
     {
         [NotMapped]
         [Display(Name = nameof(IsSelected), ResourceType = typeof(Localization))]
         public bool IsSelected { get; set; }
+
+        [Display(Name = nameof(CountryCode), ResourceType = typeof(Localization))]
+        public string CountryCode { get; set; } = string.Empty;
+
+        [Display(Name = nameof(Code), ResourceType = typeof(Localization))]
+        public string Code { get; set; } = string.Empty;
+
+        [Display(Name = nameof(Name), ResourceType = typeof(Localization))]
+        public string Name { get; set; } = string.Empty;
+
+        [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
+        public string? Description { get; set; }
+
+        public string SearchIndex => $"{Code}~{Name}~{CountryCode}".ToLowerInvariant();
     }
 
     public sealed class ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
@@ -391,7 +485,7 @@ public static class SetupUnitFlow
     public sealed class ImportCommandValidator : AbstractValidator<ImportCommand> { public ImportCommandValidator() { } }
 
     internal sealed class ImportQueryHandler :
-       EntityListFlow.Handler<SetupUnit, ImportModel>,
+       EntityListFlow.Handler<SetupCurrency, ImportModel>,
        IRequestHandler<ImportQuery, Result<ImportResult>>
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
@@ -406,10 +500,10 @@ public static class SetupUnitFlow
         {
             string wwwrootPath = _webHostEnvironment.WebRootPath;
 
-            var filePath = Path.Combine(wwwrootPath, "data", "systemunits.json");
+            var filePath = Path.Combine(wwwrootPath, "data", "currencies.json");
             if (!File.Exists(filePath))
             {
-                throw new FileNotFoundException("The systemunits.json file was not found.", filePath);
+                throw new FileNotFoundException("The currencies.json file was not found.", filePath);
             }
 
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -455,29 +549,33 @@ public static class SetupUnitFlow
             if (message is null || message.Items is null || message.Items.Count < 0)
                 return Result.Ok();
 
+            var countries = await GetCountriesAsync(_dbcontext, token);
+
             bool changes = false;
             foreach (var item in message.Items ?? [])
             {
+                if (await IsDuplicateCodeAsync(_dbcontext, item.Code))
+                    continue;
+
                 if (await IsDuplicateNameAsync(_dbcontext, item.Name))
                     continue;
 
-                var record = new SetupUnit
+                var country = countries.FirstOrDefault(f => f.Code == item.CountryCode);
+                if (country is null)
+                    continue;
+
+                var record = new SetupCurrency
                 {
                     Id = Ulid.NewUlid(),
+                    SetupCountry = country,
                     Code = item.Code.ToUpper().Trim(),
                     Name = item.Name.Trim(),
                     Description = item.Description?.Trim(),
-                    UnitType = item.UnitType,
-                    Factor = item.Factor,
-                    IsBase = item.IsBase,
-                    Precision = item.Precision,
-                    PrecisionType = item.PrecisionType,
-                    Remark = item.Remark?.Trim(),
-                    SearchIndex = item.SearchIndex,
+                    SearchIndex = $"{item.Code.ToUpper().Trim()}~{item.Name.Trim()}~{country.Code}~{country.Name}".ToLowerInvariant(),
                     CreatedDT = DateTime.UtcNow
                 };
 
-                await _dbcontext.Set<SetupUnit>().AddAsync(record, token);
+                await _dbcontext.Set<SetupCurrency>().AddAsync(record, token);
                 changes = true;
             }
 

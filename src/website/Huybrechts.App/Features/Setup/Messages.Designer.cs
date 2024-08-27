@@ -79,6 +79,24 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate currency name for {0}.
+        /// </summary>
+        public static string DUPLICATE_SETUPCURRENCY_CODE {
+            get {
+                return ResourceManager.GetString("DUPLICATE_SETUPCURRENCY_CODE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate currency name for {0}.
+        /// </summary>
+        public static string DUPLICATE_SETUPCURRENCY_NAME {
+            get {
+                return ResourceManager.GetString("DUPLICATE_SETUPCURRENCY_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate language for {0}.
         /// </summary>
         public static string DUPLICATE_SETUPLANGUAGE_NAME {
@@ -102,6 +120,15 @@ namespace Huybrechts.App.Features.Setup {
         public static string INVALID_SETUPCOUNTRY_ID {
             get {
                 return ResourceManager.GetString("INVALID_SETUPCOUNTRY_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find currency with ID {0}.
+        /// </summary>
+        public static string INVALID_SETUPCURRENCY_ID {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPCURRENCY_ID", resourceCulture);
             }
         }
         
