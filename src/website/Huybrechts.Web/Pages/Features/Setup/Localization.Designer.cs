@@ -88,6 +88,96 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Landen.
+        /// </summary>
+        public static string Countries {
+            get {
+                return ResourceManager.GetString("Countries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Land.
+        /// </summary>
+        public static string Country {
+            get {
+                return ResourceManager.GetString("Country", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a new country to the system by specifying its details. This will make the country available for selection across different contexts..
+        /// </summary>
+        public static string CountryCreateInfo {
+            get {
+                return ResourceManager.GetString("CountryCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New Country.
+        /// </summary>
+        public static string CountryCreateTitle {
+            get {
+                return ResourceManager.GetString("CountryCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm the deletion of this country. Once deleted, the country will no longer be available for selection in any context..
+        /// </summary>
+        public static string CountryDeleteInfo {
+            get {
+                return ResourceManager.GetString("CountryDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Country.
+        /// </summary>
+        public static string CountryDeleteTitle {
+            get {
+                return ResourceManager.GetString("CountryDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update the details of an existing country to ensure it meets the current needs and preferences of your organization..
+        /// </summary>
+        public static string CountryEditInfo {
+            get {
+                return ResourceManager.GetString("CountryEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Country.
+        /// </summary>
+        public static string CountryEditTitle {
+            get {
+                return ResourceManager.GetString("CountryEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View and manage the list of countries available in the system. You can add, edit, or delete countries to ensure the appropriate options are available for various applications..
+        /// </summary>
+        public static string CountryIndexInfo {
+            get {
+                return ResourceManager.GetString("CountryIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage Countries.
+        /// </summary>
+        public static string CountryIndexTitle {
+            get {
+                return ResourceManager.GetString("CountryIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Language.
         /// </summary>
         public static string Language {

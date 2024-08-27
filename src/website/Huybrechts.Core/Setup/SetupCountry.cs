@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Huybrechts.Core.Setup;
 
@@ -9,7 +10,7 @@ namespace Huybrechts.Core.Setup;
 /// This class provides essential information about each country, such as its ISO code, official language, currency, and more.
 /// The ISOCode is always stored in uppercase to ensure consistency across various data operations.
 /// </remarks>
-public class CountryInfo
+public record SetupCountry : Entity, IEntity
 {
     /// <summary>
     /// Gets or sets the ISO 3166-1 alpha-2 code of the country.
@@ -29,7 +30,7 @@ public class CountryInfo
     /// </remarks>
     [Required]
     [MaxLength(128)]
-    public string ShortName { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the translated name of the country in its native language or most widely accepted form.
@@ -46,7 +47,7 @@ public class CountryInfo
     /// <remarks>
     /// This property provides additional context or information about the country, such as its geographical location, population, or other relevant data.
     /// </remarks>
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the default currency code of the country (ISO 4217 currency code).
@@ -54,9 +55,9 @@ public class CountryInfo
     /// <remarks>
     /// This property provides the default currency used in the country (e.g., "USD" for United States Dollar, "EUR" for Euro).
     /// </remarks>
-    [Required]
-    [MaxLength(10)]
-    public string CurrencyCode { get; set; } = string.Empty;
+    //[Required]
+    //[MaxLength(10)]
+    //public string CurrencyCode { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the default language code of the country (ISO 639-1 language code).
@@ -64,7 +65,13 @@ public class CountryInfo
     /// <remarks>
     /// This property provides the default or primary language used in the country (e.g., "EN" for English, "FR" for French).
     /// </remarks>
-    [Required]
-    [MaxLength(10)]
-    public string LanguageCode { get; set; } = string.Empty;
+    //[Required]
+    //[MaxLength(10)]
+    //public string LanguageCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// This field will store the normalized, concatenated values for searching
+    /// </summary>
+    [Comment("This field will store the normalized, concatenated values for searching")]
+    public string? SearchIndex { get; set; }
 }

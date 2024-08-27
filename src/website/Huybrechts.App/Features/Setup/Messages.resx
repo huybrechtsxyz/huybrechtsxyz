@@ -117,11 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DUPLICATE_SETUPCOUNTRY_CODE" xml:space="preserve">
+    <value>Duplicate country name for {0}</value>
+  </data>
+  <data name="DUPLICATE_SETUPCOUNTRY_NAME" xml:space="preserve">
+    <value>Duplicate country code for {0}</value>
+  </data>
   <data name="DUPLICATE_SETUPLANGUAGE_NAME" xml:space="preserve">
     <value>Duplicate language for {0}</value>
   </data>
   <data name="DUPLICATE_SETUPUNIT_NAME" xml:space="preserve">
     <value>Duplicate system unit for {0}</value>
+  </data>
+  <data name="INVALID_SETUPCOUNTRY_ID" xml:space="preserve">
+    <value>Unable to find country with ID {0}</value>
   </data>
   <data name="INVALID_SETUPLANGUAGE_ID" xml:space="preserve">
     <value>Unable to find language with ID {0}</value>

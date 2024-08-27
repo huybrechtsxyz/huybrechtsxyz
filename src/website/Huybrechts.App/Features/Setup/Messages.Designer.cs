@@ -61,6 +61,24 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate country name for {0}.
+        /// </summary>
+        public static string DUPLICATE_SETUPCOUNTRY_CODE {
+            get {
+                return ResourceManager.GetString("DUPLICATE_SETUPCOUNTRY_CODE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate country code for {0}.
+        /// </summary>
+        public static string DUPLICATE_SETUPCOUNTRY_NAME {
+            get {
+                return ResourceManager.GetString("DUPLICATE_SETUPCOUNTRY_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate language for {0}.
         /// </summary>
         public static string DUPLICATE_SETUPLANGUAGE_NAME {
@@ -75,6 +93,15 @@ namespace Huybrechts.App.Features.Setup {
         public static string DUPLICATE_SETUPUNIT_NAME {
             get {
                 return ResourceManager.GetString("DUPLICATE_SETUPUNIT_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find country with ID {0}.
+        /// </summary>
+        public static string INVALID_SETUPCOUNTRY_ID {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPCOUNTRY_ID", resourceCulture);
             }
         }
         

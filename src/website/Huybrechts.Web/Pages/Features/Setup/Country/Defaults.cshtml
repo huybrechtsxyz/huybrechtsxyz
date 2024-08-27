@@ -1,0 +1,20 @@
+﻿@page
+@using Huybrechts.Core.Setup
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Huybrechts.Web.Pages.Features.Setup.Localization> SL
+@model Huybrechts.Web.Pages.Features.Setup.Country.DefaultModel
+@{
+    //ViewData["CardTitle"] = SL["UnitCreateTitle"];
+    ViewData["ActivePage"] = ManageNavPages.Country;
+}
+
+<partial name="_StatusResult" for="StatusMessage" />
+<p class="text-info">
+    
+</p>
+
+<div class="row">
+    <div class="col-md-6">
+        
+    </div>
+</div>

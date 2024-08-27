@@ -126,6 +126,36 @@
   <data name="Clear Filter" xml:space="preserve">
     <value>Clear Filter</value>
   </data>
+  <data name="Countries" xml:space="preserve">
+    <value>Landen</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Land</value>
+  </data>
+  <data name="CountryCreateInfo" xml:space="preserve">
+    <value>Add a new country to the system by specifying its details. This will make the country available for selection across different contexts.</value>
+  </data>
+  <data name="CountryCreateTitle" xml:space="preserve">
+    <value>Add New Country</value>
+  </data>
+  <data name="CountryDeleteInfo" xml:space="preserve">
+    <value>Confirm the deletion of this country. Once deleted, the country will no longer be available for selection in any context.</value>
+  </data>
+  <data name="CountryDeleteTitle" xml:space="preserve">
+    <value>Delete Country</value>
+  </data>
+  <data name="CountryEditInfo" xml:space="preserve">
+    <value>Update the details of an existing country to ensure it meets the current needs and preferences of your organization.</value>
+  </data>
+  <data name="CountryEditTitle" xml:space="preserve">
+    <value>Edit Country</value>
+  </data>
+  <data name="CountryIndexInfo" xml:space="preserve">
+    <value>View and manage the list of countries available in the system. You can add, edit, or delete countries to ensure the appropriate options are available for various applications.</value>
+  </data>
+  <data name="CountryIndexTitle" xml:space="preserve">
+    <value>Manage Countries</value>
+  </data>
   <data name="Language" xml:space="preserve">
     <value>Language</value>
   </data>

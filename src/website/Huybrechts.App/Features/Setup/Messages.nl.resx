@@ -117,11 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DUPLICATE_SETUPCOUNTRY_CODE" xml:space="preserve">
+    <value>Land met naam {0} bestaat al</value>
+  </data>
+  <data name="DUPLICATE_SETUPCOUNTRY_NAME" xml:space="preserve">
+    <value>Land met code {0} bestaat al</value>
+  </data>
   <data name="DUPLICATE_SETUPLANGUAGE_NAME" xml:space="preserve">
     <value>Taal met naam {0} bestaat al</value>
   </data>
   <data name="DUPLICATE_SETUPUNIT_NAME" xml:space="preserve">
     <value>Systeemeenheid met naam {0} bestaat al</value>
+  </data>
+  <data name="INVALID_SETUPCOUNTRY_ID" xml:space="preserve">
+    <value>Kan land met ID {0} niet vinden</value>
   </data>
   <data name="INVALID_SETUPLANGUAGE_ID" xml:space="preserve">
     <value>Kan taal met ID {0} niet vinden</value>

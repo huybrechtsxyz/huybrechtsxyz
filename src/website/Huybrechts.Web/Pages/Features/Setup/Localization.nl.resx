@@ -126,6 +126,36 @@
   <data name="Clear Filter" xml:space="preserve">
     <value>Wis filter</value>
   </data>
+  <data name="Countries" xml:space="preserve">
+    <value>Landen</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Land</value>
+  </data>
+  <data name="CountryCreateInfo" xml:space="preserve">
+    <value>Voeg een nieuw land toe aan het systeem door de details op te geven. Dit zorgt ervoor dat het land beschikbaar is voor selectie in verschillende contexten.</value>
+  </data>
+  <data name="CountryCreateTitle" xml:space="preserve">
+    <value>Nieuw Land Toevoegen</value>
+  </data>
+  <data name="CountryDeleteInfo" xml:space="preserve">
+    <value>Bevestig het verwijderen van dit land. Na verwijdering is het land niet langer beschikbaar voor selectie in enige context.</value>
+  </data>
+  <data name="CountryDeleteTitle" xml:space="preserve">
+    <value>Land Verwijderen</value>
+  </data>
+  <data name="CountryEditInfo" xml:space="preserve">
+    <value>Werk de details van een bestaand land bij om ervoor te zorgen dat deze voldoen aan de huidige behoeften en voorkeuren van uw organisatie.</value>
+  </data>
+  <data name="CountryEditTitle" xml:space="preserve">
+    <value>Land Bewerken</value>
+  </data>
+  <data name="CountryIndexInfo" xml:space="preserve">
+    <value>Bekijk en beheer de lijst met landen die beschikbaar zijn in het systeem. U kunt landen toevoegen, bewerken of verwijderen om ervoor te zorgen dat de juiste opties beschikbaar zijn voor verschillende toepassingen.</value>
+  </data>
+  <data name="CountryIndexTitle" xml:space="preserve">
+    <value>Beheer Landen</value>
+  </data>
   <data name="Language" xml:space="preserve">
     <value>Taal</value>
   </data>
