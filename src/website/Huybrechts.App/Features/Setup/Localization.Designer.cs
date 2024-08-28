@@ -97,6 +97,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Currency.
+        /// </summary>
+        public static string Currency {
+            get {
+                return ResourceManager.GetString("Currency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Description.
         /// </summary>
         public static string Description {
@@ -129,6 +138,15 @@ namespace Huybrechts.App.Features.Setup {
         public static string IsSelected {
             get {
                 return ResourceManager.GetString("IsSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        public static string Language {
+            get {
+                return ResourceManager.GetString("Language", resourceCulture);
             }
         }
         

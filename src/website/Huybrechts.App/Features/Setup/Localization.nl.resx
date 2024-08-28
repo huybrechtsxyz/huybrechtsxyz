@@ -129,6 +129,9 @@
   <data name="CountryName" xml:space="preserve">
     <value>Land</value>
   </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Valuta</value>
+  </data>
   <data name="Description" xml:space="preserve">
     <value>Omschrijving</value>
   </data>
@@ -140,6 +143,9 @@
   </data>
   <data name="IsSelected" xml:space="preserve">
     <value>Geselecteerd?</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Taal</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Naam</value>

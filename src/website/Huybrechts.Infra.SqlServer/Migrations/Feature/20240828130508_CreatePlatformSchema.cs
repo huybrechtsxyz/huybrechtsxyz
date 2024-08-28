@@ -33,25 +33,6 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 comment: "Table storing information about platforms that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.");
 
             migrationBuilder.CreateTable(
-                name: "SetupCountries",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
-                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    TranslatedName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SearchIndex = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SetupCountries", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SetupCurrencies",
                 columns: table => new
                 {
@@ -207,6 +188,37 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 comment: "Services offered by the platform, such as compute, storage, or networking resources.");
 
             migrationBuilder.CreateTable(
+                name: "SetupCountries",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    SetupLanguageId = table.Column<string>(type: "nvarchar(26)", nullable: true),
+                    SetupCurrencyId = table.Column<string>(type: "nvarchar(26)", nullable: true),
+                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    TranslatedName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SearchIndex = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SetupCountries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SetupCountries_SetupCurrencies_SetupCurrencyId",
+                        column: x => x.SetupCurrencyId,
+                        principalTable: "SetupCurrencies",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_SetupCountries_SetupLanguages_SetupLanguageId",
+                        column: x => x.SetupLanguageId,
+                        principalTable: "SetupLanguages",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PlatformRate",
                 columns: table => new
                 {
@@ -348,6 +360,16 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 column: "SearchIndex");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SetupCountries_SetupCurrencyId",
+                table: "SetupCountries",
+                column: "SetupCurrencyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupCountries_SetupLanguageId",
+                table: "SetupCountries",
+                column: "SetupLanguageId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SetupUnit_Code",
                 table: "SetupUnit",
                 column: "Code",
@@ -381,16 +403,16 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "SetupCountries");
 
             migrationBuilder.DropTable(
-                name: "SetupCurrencies");
-
-            migrationBuilder.DropTable(
-                name: "SetupLanguages");
-
-            migrationBuilder.DropTable(
                 name: "PlatformRate");
 
             migrationBuilder.DropTable(
                 name: "SetupUnit");
+
+            migrationBuilder.DropTable(
+                name: "SetupCurrencies");
+
+            migrationBuilder.DropTable(
+                name: "SetupLanguages");
 
             migrationBuilder.DropTable(
                 name: "PlatformProduct");

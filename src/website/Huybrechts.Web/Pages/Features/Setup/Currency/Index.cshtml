@@ -84,8 +84,8 @@
                                    asp-route-searchText="@Model.Data.CurrentFilter"
                                    asp-route-sortOrder="@Model.Data.SortOrder"
                                    asp-route-pageindex="@i"
-                                class="page-link">
-                                    @(i)
+                                   class="page-link">
+                                   @(i)
                                 </a>
                             </li>
                         }
@@ -95,9 +95,9 @@
                                asp-route-searchText="@Model.Data.CurrentFilter"
                                asp-route-sortOrder="@Model.Data.SortOrder"
                                asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
-                            class="page-link" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">@SL["Next"]</span>
+                               class="page-link" aria-label="Next">
+                               <span class="sr-only">@SL["Next"]</span>
+                               <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
                     </ul>

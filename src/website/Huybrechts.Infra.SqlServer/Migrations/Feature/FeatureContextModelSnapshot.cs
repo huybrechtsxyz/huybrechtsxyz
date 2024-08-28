@@ -577,6 +577,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(max)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
+                    b.Property<string>("SetupCurrencyId")
+                        .HasColumnType("nvarchar(26)");
+
+                    b.Property<string>("SetupLanguageId")
+                        .HasColumnType("nvarchar(26)");
+
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -588,6 +594,10 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(128)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SetupCurrencyId");
+
+                    b.HasIndex("SetupLanguageId");
 
                     b.ToTable("SetupCountries");
                 });
@@ -830,6 +840,21 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired();
 
                     b.Navigation("PlatformInfo");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Setup.SetupCountry", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Setup.SetupCurrency", "SetupCurrency")
+                        .WithMany()
+                        .HasForeignKey("SetupCurrencyId");
+
+                    b.HasOne("Huybrechts.Core.Setup.SetupLanguage", "SetupLanguage")
+                        .WithMany()
+                        .HasForeignKey("SetupLanguageId");
+
+                    b.Navigation("SetupCurrency");
+
+                    b.Navigation("SetupLanguage");
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>

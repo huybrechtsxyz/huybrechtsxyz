@@ -423,7 +423,7 @@ public static class SetupUnitFlow
                 records = records.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor)).ToList();
             }
 
-            records = [.. records.OrderBy(o => o.Name)];
+            records = [.. records.OrderBy(o => o.UnitType).ThenBy(o => o.Name)];
             int pageSize = EntityListFlow.PageSize;
             int pageNumber = message.Page ?? 1;
 

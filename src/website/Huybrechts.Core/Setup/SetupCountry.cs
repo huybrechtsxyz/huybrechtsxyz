@@ -13,6 +13,26 @@ namespace Huybrechts.Core.Setup;
 public record SetupCountry : Entity, IEntity
 {
     /// <summary>
+    /// Gets or sets the identifier of the official language of the country.
+    /// </summary>
+    public Ulid? SetupLanguageId { get; set; }
+
+    /// <summary>
+    /// Navigation property for the official language of the country.
+    /// </summary>
+    public SetupLanguage? SetupLanguage { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the official currency of the country.
+    /// </summary>
+    public Ulid? SetupCurrencyId { get; set; }
+
+    /// <summary>
+    /// Navigation property for the official currency of the country.
+    /// </summary>
+    public SetupCurrency? SetupCurrency { get; set; }
+
+    /// <summary>
     /// Gets or sets the ISO 3166-1 alpha-2 code of the country.
     /// </summary>
     /// <remarks>
@@ -48,26 +68,6 @@ public record SetupCountry : Entity, IEntity
     /// This property provides additional context or information about the country, such as its geographical location, population, or other relevant data.
     /// </remarks>
     public string? Description { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the default currency code of the country (ISO 4217 currency code).
-    /// </summary>
-    /// <remarks>
-    /// This property provides the default currency used in the country (e.g., "USD" for United States Dollar, "EUR" for Euro).
-    /// </remarks>
-    //[Required]
-    //[MaxLength(10)]
-    //public string CurrencyCode { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the default language code of the country (ISO 639-1 language code).
-    /// </summary>
-    /// <remarks>
-    /// This property provides the default or primary language used in the country (e.g., "EN" for English, "FR" for French).
-    /// </remarks>
-    //[Required]
-    //[MaxLength(10)]
-    //public string LanguageCode { get; set; } = string.Empty;
 
     /// <summary>
     /// This field will store the normalized, concatenated values for searching

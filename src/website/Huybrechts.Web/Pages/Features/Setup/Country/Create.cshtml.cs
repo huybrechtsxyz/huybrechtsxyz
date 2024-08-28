@@ -1,6 +1,7 @@
 using FluentValidation;
 using FluentValidation.Results;
 using Huybrechts.App.Web;
+using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,8 @@ namespace Huybrechts.Web.Pages.Features.Setup.Country;
 public class CreateModel : PageModel
 {
     private readonly IMediator _mediator;
-    private readonly IValidator<Flow.CreateCommand> _validator;
+    private readonly IValidator<Flow.CreateQuery> _getValidator;
+    private readonly IValidator<Flow.CreateCommand> _postValidator;
 
     [BindProperty]
     public Flow.CreateCommand Data { get; set; }
@@ -22,23 +24,48 @@ public class CreateModel : PageModel
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    public CreateModel(IMediator mediator, IValidator<Flow.CreateCommand> validator)
+    public CreateModel(IMediator mediator,
+        IValidator<Flow.CreateQuery> getValidator,
+        IValidator<Flow.CreateCommand> postValidator)
     {
         _mediator = mediator;
-        _validator = validator;
+        _getValidator = getValidator;
+        _postValidator = postValidator;
         Data = new();
     }
 
-    public void OnGet()
+    public async Task<IActionResult> OnGetAsync()
     {
-        Data = Flow.CreateNew();
+        try
+        {
+            Flow.CreateQuery message = new() { };
+
+            ValidationResult state = await _getValidator.ValidateAsync(message);
+            if (!state.IsValid)
+                return BadRequest(state);
+
+            var result = await _mediator.Send(message) ?? new();
+            if (result.HasStatusMessage())
+                StatusMessage = result.ToStatusMessage();
+
+            if (result.IsFailed)
+                return RedirectToPage(nameof(Index));
+
+            Data = result.Value;
+
+            return Page();
+        }
+        catch (Exception)
+        {
+            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
+        }
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
         try
         {
-            ValidationResult state = await _validator.ValidateAsync(Data);
+            ValidationResult state = await _postValidator.ValidateAsync(Data);
             if (!state.IsValid)
             {
                 state.AddToModelState(ModelState, nameof(Data) + ".");
