@@ -18,7 +18,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <input type="hidden" asp-for="Data.Id" />
             <div class="form-floating mb-3">
-                <input asp-for="Data.Name" class="form-control" />
+                <input asp-for="Data.Name" class="form-control border-info" required />
                 <label asp-for="Data.Name" class="form-label"></label>
                 <span asp-validation-for="Data.Name" class="text-danger"></span>
             </div>

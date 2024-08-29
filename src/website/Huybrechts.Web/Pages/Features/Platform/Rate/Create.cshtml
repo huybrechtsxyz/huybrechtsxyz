@@ -24,7 +24,7 @@
                                     Value = p.Id.ToString(),
                                     Text = p.Label
                                 }).ToList()"
-                        class="form-select" >
+                        class="form-select border-info" required>
                     <option id="@Ulid.Empty">@SL["Select"]</option>
                 </select>
                 <label asp-for="Data.PlatformRegionId" class="form-label"></label>
@@ -36,7 +36,7 @@
                                     Value = p.Id.ToString(),
                                     Text = p.Label
                                 }).ToList()"
-                        class="form-select" >
+                        class="form-select border-info" required>
                     <option id="@Ulid.Empty">@SL["Select"]</option>
                 </select>
                 <label asp-for="Data.PlatformServiceId" class="form-label"></label>
@@ -48,63 +48,63 @@
                                     Value = p,
                                     Text = p
                                 }).ToList()"
-                        class="form-select" >
+                        class="form-select border-info" required>
                     <option id="">@SL["Select"]</option>
                 </select>
                 <label asp-for="Data.CurrencyCode" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.ValidFrom" class="form-control" />
+                <input asp-for="Data.ValidFrom" class="form-control border-info" required />
                 <label asp-for="Data.ValidFrom" class="form-label"></label>
                 <span asp-validation-for="Data.ValidFrom" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.ServiceName" class="form-control" />
+                <input asp-for="Data.ServiceName" class="form-control border-info" required />
                 <label asp-for="Data.ServiceName" class="form-label"></label>
                 <span asp-validation-for="Data.ServiceName" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.ServiceFamily" class="form-control" />
+                <input asp-for="Data.ServiceFamily" class="form-control border-info" required />
                 <label asp-for="Data.ServiceFamily" class="form-label"></label>
                 <span asp-validation-for="Data.ServiceFamily" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.ProductName" class="form-control" />
+                <input asp-for="Data.ProductName" class="form-control border-info" required />
                 <label asp-for="Data.ProductName" class="form-label"></label>
                 <span asp-validation-for="Data.ProductName" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.SkuName" class="form-control" />
+                <input asp-for="Data.SkuName" class="form-control border-info" required />
                 <label asp-for="Data.SkuName" class="form-label"></label>
                 <span asp-validation-for="Data.SkuName" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.MeterName" class="form-control" />
+                <input asp-for="Data.MeterName" class="form-control border-info" required />
                 <label asp-for="Data.MeterName" class="form-label"></label>
                 <span asp-validation-for="Data.MeterName" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.RateType" class="form-control" />
+                <input asp-for="Data.RateType" class="form-control border-info" required />
                 <label asp-for="Data.RateType" class="form-label"></label>
                 <span asp-validation-for="Data.RateType" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.RetailPrice" class="form-control" />
+                <input asp-for="Data.RetailPrice" class="form-control border-info" required />
                 <label asp-for="Data.RetailPrice" class="form-label"></label>
                 <span asp-validation-for="Data.RetailPrice" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.UnitPrice" class="form-control" />
+                <input asp-for="Data.UnitPrice" class="form-control border-info" required />
                 <label asp-for="Data.UnitPrice" class="form-label"></label>
                 <span asp-validation-for="Data.UnitPrice" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.MinimumUnits" class="form-control" />
+                <input asp-for="Data.MinimumUnits" class="form-control border-info" required />
                 <label asp-for="Data.MinimumUnits" class="form-label"></label>
                 <span asp-validation-for="Data.MinimumUnits" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.UnitOfMeasure" class="form-control" />
+                <input asp-for="Data.UnitOfMeasure" class="form-control border-info" required />
                 <label asp-for="Data.UnitOfMeasure" class="form-label"></label>
                 <span asp-validation-for="Data.UnitOfMeasure" class="text-danger"></span>
             </div>

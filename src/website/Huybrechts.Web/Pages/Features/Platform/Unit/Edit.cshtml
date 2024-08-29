@@ -29,23 +29,23 @@
                                     Value = p.Id.ToString(),
                                     Text = p.Name
                                 }).ToList()"
-                        class="form-select">
+                        class="form-select border-info" required>
                     <option id="@Ulid.Empty">@SL["Select"]</option>
                 </select>
                 <label asp-for="Data.SetupUnitId" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.UnitFactor" class="form-control" />
+                <input asp-for="Data.UnitFactor" class="form-control border-info" required />
                 <label asp-for="Data.UnitFactor" class="form-label"></label>
                 <span asp-validation-for="Data.UnitFactor" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.DefaultValue" class="form-control" />
+                <input asp-for="Data.DefaultValue" class="form-control border-info" required />
                 <label asp-for="Data.DefaultValue" class="form-label"></label>
                 <span asp-validation-for="Data.DefaultValue" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Description" class="form-control" />
+                <input asp-for="Data.Description" class="form-control border-info" required />
                 <label asp-for="Data.Description" class="form-label"></label>
                 <span asp-validation-for="Data.Description" class="text-danger"></span>
             </div>

@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Huybrechts.App.Features.Platform;
 
@@ -74,7 +73,7 @@ public static class PlatformProductFlow
             RuleFor(m => m.Name).NotEmpty().Length(1, 128);
             RuleFor(m => m.Label).NotEmpty().Length(1, 128);
             RuleFor(m => m.Category).Length(0, 128);
-            RuleFor(m => m.Description).Length(1, 256);
+            RuleFor(m => m.Description).Length(0, 256);
 
             RuleFor(m => m.CostDriver).Length(0, 256);
             RuleFor(m => m.CostBasedOn).Length(0, 128);
