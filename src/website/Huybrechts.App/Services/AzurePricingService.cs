@@ -12,7 +12,8 @@ public class AzurePricingService
         Regions = 1,
         Services = 2,
         Products = 3,
-        Rates = 4
+        Rates = 4,
+        Units = 5
     }
 
     private readonly PlatformImportOptions _options;
@@ -29,7 +30,7 @@ public class AzurePricingService
         var uniqueset = new HashSet<string>();
         string requestUrl = string.Empty;
         int currentPage = 0;
-        int maxPages = 20;
+        int maxPages = 50;
 
         using HttpClient httpClient = new();
 
@@ -50,6 +51,12 @@ public class AzurePricingService
             requestUrl = request.ProductUrl;
             if (!string.IsNullOrEmpty(searchString))
                 requestUrl += request.ProductSearch.Replace("{0}", searchString);
+        }
+        else if (ServiceType.Units == type)
+        {
+            requestUrl = request.UnitUrl;
+            if (!string.IsNullOrEmpty(searchString))
+                requestUrl += request.UnitSearch.Replace("{0}", searchString);
         }
         else
         {
@@ -103,6 +110,17 @@ public class AzurePricingService
                             foreach (var item in pricingResponse.Items ?? [])
                             {
                                 if (!string.IsNullOrEmpty(item.ProductName) && uniqueset.Add(item.ProductName))
+                                {
+                                    pricingResult.Items!.Add(item);
+                                    pricingResult.Count += 1;
+                                }
+                            }
+                        }
+                        else if (ServiceType.Units == type)
+                        {
+                            foreach (var item in pricingResponse.Items ?? [])
+                            {
+                                if (!string.IsNullOrEmpty(item.UnitOfMeasure) && uniqueset.Add(item.UnitOfMeasure))
                                 {
                                     pricingResult.Items!.Add(item);
                                     pricingResult.Count += 1;
@@ -314,6 +332,17 @@ public class AzurePricingService
             currency,
             service,
             location,
+            searchString);
+    }
+
+    public async Task<PricingResponse?> GetUnitsAsync(string searchString)
+    {
+        return await GetPricingItemsAsync(
+            _options.Platforms["Azure"],
+            ServiceType.Units,
+            "",
+            "",
+            "",
             searchString);
     }
 }

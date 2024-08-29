@@ -124,6 +124,123 @@ namespace Huybrechts.Web.Pages.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default unit.
+        /// </summary>
+        public static string DefaultUnit {
+            get {
+                return ResourceManager.GetString("DefaultUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Define a new default unit of measure for a platform. This will be used as a standard measurement across different functionalities within the platform..
+        /// </summary>
+        public static string DefaultUnitCreateInfo {
+            get {
+                return ResourceManager.GetString("DefaultUnitCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create New Platform Default Unit.
+        /// </summary>
+        public static string DefaultUnitCreateTitle {
+            get {
+                return ResourceManager.GetString("DefaultUnitCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove a default unit of measure from the platform. This action is irreversible and will impact all areas where this unit is currently in use..
+        /// </summary>
+        public static string DefaultUnitDeleteInfo {
+            get {
+                return ResourceManager.GetString("DefaultUnitDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Platform Default Unit.
+        /// </summary>
+        public static string DefaultUnitDeleteTitle {
+            get {
+                return ResourceManager.GetString("DefaultUnitDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify the details of an existing default unit of measure associated with a platform. Ensure the unit remains accurate and relevant for platform operations..
+        /// </summary>
+        public static string DefaultUnitEditInfo {
+            get {
+                return ResourceManager.GetString("DefaultUnitEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Platform Default Unit.
+        /// </summary>
+        public static string DefaultUnitEditTitle {
+            get {
+                return ResourceManager.GetString("DefaultUnitEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import default units of measure for platforms using a pre-existing list based on ISO codes. This helps streamline the setup process and maintain consistency across platforms..
+        /// </summary>
+        public static string DefaultUnitImportInfo {
+            get {
+                return ResourceManager.GetString("DefaultUnitImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Platform Default Units.
+        /// </summary>
+        public static string DefaultUnitImportTitle {
+            get {
+                return ResourceManager.GetString("DefaultUnitImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View and manage the default units of measure associated with platforms. These units are pre-defined for ease of use across various operations..
+        /// </summary>
+        public static string DefaultUnitIndexInfo {
+            get {
+                return ResourceManager.GetString("DefaultUnitIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platform Default Units.
+        /// </summary>
+        public static string DefaultUnitIndexTitle {
+            get {
+                return ResourceManager.GetString("DefaultUnitIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string DefaultUnitNoResults {
+            get {
+                return ResourceManager.GetString("DefaultUnitNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default units.
+        /// </summary>
+        public static string DefaultUnits {
+            get {
+                return ResourceManager.GetString("DefaultUnits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove an existing platform from the system. Deleting a platform will also remove all associated regions, products, and services. Use this page to permanently delete a cloud platform or on-premise solution..
         /// </summary>
         public static string DeleteInfo {

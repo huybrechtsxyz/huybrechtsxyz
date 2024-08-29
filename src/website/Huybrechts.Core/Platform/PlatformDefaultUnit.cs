@@ -1,4 +1,4 @@
-﻿using Finbuckle.MultiTenant;
+using Finbuckle.MultiTenant;
 using Huybrechts.Core.Setup;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
@@ -15,47 +15,22 @@ namespace Huybrechts.Core.Platform;
 /// Each unit of measure is linked to a setup unit from the `SetupUnit` table.
 /// </remarks>
 [MultiTenant]
-[Table("PlatformRateUnit")]
-[Comment("Table representing a unit of measurement for a rate within a platform's product offering, translating platform-specific units into standard project metrics.")]
-public record PlatformRateUnit : Entity, IEntity
+[Table("PlatformDefaultUnit")]
+[Comment("Represents a default unit of measure for a platform, linking to a setup unit and a specific platform.")]
+[Index(nameof(SearchIndex))]
+public record PlatformDefaultUnit : Entity, IEntity
 {
     /// <summary>
-    /// Foreign key referencing the PlatformInfo table.
-    /// This links the rate to a specific platform, ensuring that rates are associated with the correct environment.
+    /// Foreign key to the PlatformInfo entity.
     /// </summary>
     [Required]
-    [Comment("Foreign key referencing the PlatformInfo entity.")]
+    [Comment("Foreign key referencing the PlatformInfo.")]
     public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
 
     /// <summary>
-    /// Foreign key referencing the PlatformProduct table.
-    /// This links the rate to a specific product offered on the platform, allowing for accurate pricing.
+    /// Navigation property to the related PlatformInfo.
     /// </summary>
-    [Required]
-    [Comment("Foreign key referencing the PlatformProduct entity.")]
-    public Ulid PlatformProductId { get; set; } = Ulid.Empty;
-
-    /// <summary>
-    /// Foreign key referencing the PlatformRate table.
-    /// This links the rate to a specific product offered on the platform, allowing for accurate pricing.
-    /// </summary>
-    [Required]
-    [Comment("Foreign key referencing the PlatformProduct entity.")]
-    public Ulid PlatformRateId { get; set; } = Ulid.Empty;
-
-    // <summary>
-    /// Navigation property for PlatformRate.
-    /// </summary>
-    [ForeignKey(nameof(PlatformRateId))]
-    public PlatformRate PlatformRate { get; set; } = null!;
-
-    /// <summary>
-    /// The unit of measure for the rate (e.g., per hour, per GB).
-    /// Describes what the rate applies to, ensuring clarity in billing metrics.
-    /// </summary>
-    [MaxLength(64)]
-    [Comment("Unit of measure.")]
-    public string UnitOfMeasure { get; set; } = string.Empty;
+    public virtual PlatformInfo PlatformInfo { get; set; } = new();
 
     /// <summary>
     /// Foreign key linking to the SetupUnit entity.
@@ -69,6 +44,14 @@ public record PlatformRateUnit : Entity, IEntity
     /// </summary>
     [ForeignKey(nameof(SetupUnitId))]
     public SetupUnit SetupUnit { get; set; } = null!;
+
+    /// <summary>
+    /// The unit of measure for the rate (e.g., per hour, per GB).
+    /// Describes what the rate applies to, ensuring clarity in billing metrics.
+    /// </summary>
+    [MaxLength(64)]
+    [Comment("Unit of measure.")]
+    public string UnitOfMeasure { get; set; } = string.Empty;
 
     /// <summary>
     /// The conversion factor for the unit rate, used to translate platform units to standard units.
@@ -89,12 +72,11 @@ public record PlatformRateUnit : Entity, IEntity
     public decimal DefaultValue { get; set; } = 0;
 
     /// <summary>
-    /// Description of the measuring unit to provide additional context for users.
+    /// A brief description of the region.
     /// </summary>
-    [MaxLength(200)]
-    [DisplayName("Description")]
-    [Comment("Description of the measuring unit, providing additional context for users.")]
-    public string Description { get; set; } = string.Empty;
+    [MaxLength(256)]
+    [Comment("A brief description providing additional details about the region.")]
+    public string? Description { get; set; }
 
     /// <summary>
     /// This field will store the normalized, concatenated values for searching

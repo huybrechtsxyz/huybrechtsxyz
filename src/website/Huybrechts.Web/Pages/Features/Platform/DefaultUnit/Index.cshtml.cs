@@ -5,10 +5,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Flow = Huybrechts.App.Features.Platform.PlatformDefaultUnitFlow;
 
-using Flow = Huybrechts.App.Features.Setup.SetupCurrencyFlow;
-
-namespace Huybrechts.Web.Pages.Features.Setup.Currency;
+namespace Huybrechts.Web.Pages.Features.Platform.DefaultUnit;
 
 [Authorize(Policy = TenantPolicies.IsMember)]
 public class IndexModel : PageModel
@@ -28,6 +27,7 @@ public class IndexModel : PageModel
     }
 
     public async Task<IActionResult> OnGetAsync(
+        Ulid? platformInfoId,
         string currentFilter,
         string searchText,
         string sortOrder,
@@ -35,8 +35,9 @@ public class IndexModel : PageModel
     {
         try
         {
-            var message = new Flow.ListQuery()
+            Flow.ListQuery message = new()
             {
+                PlatformInfoId = platformInfoId,
                 CurrentFilter = currentFilter,
                 SearchText = searchText,
                 SortOrder = sortOrder,
@@ -51,12 +52,15 @@ public class IndexModel : PageModel
             if (result.HasStatusMessage())
                 StatusMessage = result.ToStatusMessage();
 
+            if (result.IsFailed)
+                return BadRequest();
+
             Data = result.Value;
             return Page();
         }
-        catch(Exception)
+        catch (Exception ex)
         {
-            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
+            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError, message = ex.Message });
         }
     }
 }

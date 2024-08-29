@@ -127,6 +127,8 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
 
     public DbSet<PlatformInfo> Platforms { get; set; }
 
+    public DbSet<PlatformDefaultUnit> PlatformDefaultUnits { get; set; }
+
     public DbSet<PlatformRegion> PlatformRegions { get; set; }
 
     public DbSet<PlatformService> PlatformServices { get; set; }

@@ -129,6 +129,9 @@
   <data name="DUPLICATE_PLATFORM_NAME" xml:space="preserve">
     <value>Duplicate platform for {0}</value>
   </data>
+  <data name="INVALID_PLATFORMDEFAULTUNIT_ID" xml:space="preserve">
+    <value>Unable to find default unit with ID {0}</value>
+  </data>
   <data name="INVALID_PLATFORMPRODUCT_ID" xml:space="preserve">
     <value>Unable to find product with ID {0}</value>
   </data>

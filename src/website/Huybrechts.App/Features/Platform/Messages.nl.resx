@@ -129,6 +129,9 @@
   <data name="DUPLICATE_PLATFORM_NAME" xml:space="preserve">
     <value>Platform met naam {0} bestaat al</value>
   </data>
+  <data name="INVALID_PLATFORMDEFAULTUNIT_ID" xml:space="preserve">
+    <value>Kan standaard eenheid met ID {0} niet vinden</value>
+  </data>
   <data name="INVALID_PLATFORMPRODUCT_ID" xml:space="preserve">
     <value>Kan platform product met ID {0} niet vinden</value>
   </data>

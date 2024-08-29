@@ -1,15 +1,14 @@
 ﻿@page
-@using Microsoft.Extensions.Localization
 @inject IStringLocalizer<Localization> SL
-@model Huybrechts.Web.Pages.Features.Platform.IndexModel
+@model Huybrechts.Web.Pages.Features.Platform.DefaultUnit.IndexModel
 @{
-    ViewData["CardTitle"] =  SL["IndexTitle"];
+    ViewData["CardTitle"] = Model.Data.Platform.Name + " | " + SL["DefaultUnitIndexTitle"];
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
 <partial name="_StatusResult" for="StatusMessage" />
 <p class="text-info">
-    @SL["IndexInfo"]
+    @SL["DefaultUnitIndexInfo"]
 </p>
 <div class="row">
     <div class="col-md-12">
@@ -17,16 +16,29 @@
         <div class="row">
             <form class="row row-cols-md-auto g-3 align-items-center">
                 <div class="col-md-3 d-flex gap-1 align-items-center mb-3">
-                    <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Create">
+                    <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="/Features/Platform/Index" asp-route-platformInfoId="@Model.Data.Platform.Id">
+                        <i class="bi bi-arrow-up-circle-fill fs-5"></i>
+                    </a>
+                    <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Create" asp-route-platformInfoId="@Model.Data.Platform.Id">
                         <i class="bi bi-plus-circle fs-5"></i>
                         <span class="vr"></span>
                         @SL["Add New"]
                     </a>
+                    @if(Model.Data.Platform.Provider != Core.Platform.PlatformProvider.None)
+                    {
+                        <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Import" asp-route-platformInfoId="@Model.Data.Platform.Id">
+                            <i class="bi bi-cloud-arrow-down-fill fs-5"></i>
+                            <span class="vr"></span>
+                            @SL["Import"]
+                        </a>
+                    }
                 </div>
                 <div class="col-md-9 d-flex gap-1 align-items-center justify-content-md-end mb-3">
+                    <input type="text" name="platformInfoName" value="@Model.Data.Platform.Name" class="form-control" disabled />
+                    <input type="hidden" name="platformInfoId" value="@Model.Data.Platform.Id" />
                     <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="@SL["Search..."]" class="form-control" autocomplete="off" />
                     <input type="submit" value="@SL["Search"]" class="btn btn-primary" /> |
-                    <a asp-page="Index" class="btn btn-secondary text-nowrap" type="button" role="button">@SL["Clear Filter"]</a>
+                    <a asp-page="Index" asp-route-platformInfoId="@Model.Data.Platform.Id" class="btn btn-secondary text-nowrap" type="button" role="button">@SL["Clear Filter"]</a>
                 </div>
             </form>
             @if (Model.Data.Results.Count > 0)
@@ -35,7 +47,9 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].Name)</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].UnitOfMeasure)</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].UnitFactor)</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].DefaultValue)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Description)</th>
                                 <th></th>
                             </tr>
@@ -44,33 +58,13 @@
                             @foreach (var record in Model.Data.Results)
                             {
                                 <tr>
-                                    <td>@Html.DisplayFor(modelItem => record!.Name)</td>
+                                    <td>@Html.DisplayFor(modelItem => record!.UnitOfMeasure)</td>
+                                    <td>@Html.DisplayFor(modelItem => record!.UnitFactor)</td>
+                                    <td>@Html.DisplayFor(modelItem => record!.DefaultValue)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Description)</td>
                                     <td>
                                         <a asp-page="Edit" asp-route-id="@record!.Id" class="btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i></a>
                                         <a asp-page="Delete" asp-route-id="@record!.Id" class="btn btn-icon btn-secondary"><i class="bi bi-trash2-fill"></i></a>
-
-                                        <a asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@record!.Id" class="btn btn-info">
-                                            <i class="bi bi-collection"></i>
-                                            <span class="vr"></span>
-                                            @SL["Products"]
-                                        </a>
-                                        <a asp-page="/Features/Platform/Region/Index" asp-route-platformInfoId="@record!.Id" class="btn btn-outline-info">
-                                            <i class="bi bi-geo-alt-fill"></i>
-                                            <span class="vr"></span>
-                                            @SL["Regions"]
-                                        </a>
-                                        <a asp-page="/Features/Platform/Service/Index" asp-route-platformInfoId="@record!.Id" class="btn btn-outline-info">
-                                            <i class="bi bi-box-fill"></i>
-                                            <span class="vr"></span>
-                                            @SL["Services"]
-                                        </a>
-                                        <a asp-page="/Features/Platform/DefaultUnit/Index" asp-route-platformInfoId="@record!.Id" class="btn btn-outline-info">
-                                            <i class="bi bi-rulers"></i>
-                                            <span class="vr"></span>
-                                            @SL["DefaultUnits"]
-                                        </a>
-                                        
                                     </td>
                                 </tr>
                             }
@@ -81,10 +75,11 @@
                     <ul class="pagination justify-content-center">
                         <li class="page-item @prev">
                             <a asp-page="Index"
+                               asp-route-platformInfoId="@Model.Data.Platform.Id"
                                asp-route-currentFilter="@Model.Data.CurrentFilter"
                                asp-route-searchText="@Model.Data.CurrentFilter"
                                asp-route-sortOrder="@Model.Data.SortOrder"
-                               asp-route-pageIndex="@(Model.Data.Results.PageIndex - 1)"                            
+                               asp-route-pageindex="@(Model.Data.Results.PageIndex - 1)"
                                class="page-link" aria-label="Previous">
                                <span aria-hidden="true">&laquo;</span>
                                <span class="sr-only">@SL["Previous"]</span>
@@ -94,6 +89,7 @@
                         {
                             <li class="page-item @(Model.Data.Results.PageIndex == i ? "active" : string.Empty)" aria-current="page">
                                 <a asp-page="Index"
+                                   asp-route-platformInfoId="@Model.Data.Platform.Id"
                                    asp-route-currentFilter="@Model.Data.CurrentFilter"
                                    asp-route-searchText="@Model.Data.CurrentFilter"
                                    asp-route-sortOrder="@Model.Data.SortOrder"
@@ -105,13 +101,14 @@
                         }
                         <li class="page-item @next">
                             <a asp-page="Index"
+                               asp-route-platformInfoId="@Model.Data.Platform.Id"
                                asp-route-currentFilter="@Model.Data.CurrentFilter"
                                asp-route-searchText="@Model.Data.CurrentFilter"
                                asp-route-sortOrder="@Model.Data.SortOrder"
                                asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
                                class="page-link" aria-label="Next">
                                <span class="sr-only">@SL["Next"]</span>
-                               <span aria-hidden="true">&raquo;</span>>
+                               <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
                     </ul>
@@ -120,9 +117,14 @@
             else
             {
                 <div class="card border-2 border-secondary">
-                    <h5 class="card-body">@SL["NoResults"]</h5>
+                    <h5 class="card-body">@SL["DefaultUnitNoResults"]</h5>
                 </div>
             }
         </div>
     </div>
 </div>
+
+@section Breadcrumb {
+    <li class="breadcrumb-item">@Model.Data.Platform.Name</li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/DefaultUnit/Index" asp-route-platformInfoId="@Model.Data.Platform.Id">@SL["DefaultUnits"]</a></li>
+}

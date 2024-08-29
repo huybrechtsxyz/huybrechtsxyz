@@ -17,6 +17,40 @@ namespace Huybrechts.App.Features.Setup;
 
 public static class SetupUnitFlow
 {
+    private static SetupUnit? _defaultSetupUnit;
+
+    public static async Task<SetupUnit> FindOrCreateDefaultSetupUnitAsync(FeatureContext context, bool save, CancellationToken token)
+    {
+        if (_defaultSetupUnit is not null)
+            return _defaultSetupUnit;
+
+        SetupUnit? record = await context.Set<SetupUnit>().FirstOrDefaultAsync(f => f.Code == "DEFAULT", cancellationToken: token);
+        if (record is not null)
+            return record;
+
+        record = new()
+        {
+            Id = Ulid.NewUlid(),
+            Code = "DEFAULT",
+            Name = "Default",
+            Factor = 1,
+            IsBase = false,
+            Precision = 0,
+            PrecisionType = MidpointRounding.ToEven,
+            UnitType = SetupUnitType.System,
+            Remark = null,
+            SearchIndex = "default",
+            Description = "Default unit",
+            CreatedDT = DateTime.Now,
+        };
+
+        context.Set<SetupUnit>().Add(record);
+        if (save)
+            await context.SaveChangesAsync(token);
+        _defaultSetupUnit = record;
+        return record;
+    }
+
     public record Model
     {
         public Ulid Id { get; init; }

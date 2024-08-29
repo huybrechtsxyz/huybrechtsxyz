@@ -43,8 +43,6 @@ public static class SetupCurrencyFlow
         }
     }
 
-    private static Result CountryNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPCOUNTRY_ID.Replace("{0}", id.ToString()));
-
     private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPCURRENCY_ID.Replace("{0}", id.ToString()));
 
     private static Result DuplicateCodeFound(string code) => Result.Fail(Messages.DUPLICATE_SETUPCURRENCY_CODE.Replace("{0}", code.ToString()));
@@ -163,17 +161,17 @@ public static class SetupCurrencyFlow
 
     internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCommand>>
     {
-        private readonly FeatureContext _dbcontext;
+        //private readonly FeatureContext _dbcontext;
 
-        public CreateQueryHandler(FeatureContext dbcontext)
+        public CreateQueryHandler() //FeatureContext dbcontext)
         {
-            _dbcontext = dbcontext;
+            //_dbcontext = dbcontext;
         }
 
-        public async Task<Result<CreateCommand>> Handle(CreateQuery message, CancellationToken token)
+        public Task<Result<CreateCommand>> Handle(CreateQuery message, CancellationToken token)
         {
             var record = CreateNew();
-            return Result.Ok(record);
+            return Task.FromResult(Result.Ok(record));
         }
     }
 

@@ -146,7 +146,7 @@ public record PlatformRate : Entity, IEntity
     /// The unit of measure for the rate (e.g., per hour, per GB).
     /// Describes what the rate applies to, ensuring clarity in billing metrics.
     /// </summary>
-    [MaxLength(32)]
+    [MaxLength(64)]
     [Comment("Unit of measure.")]
     public string UnitOfMeasure { get; set; } = string.Empty;
 

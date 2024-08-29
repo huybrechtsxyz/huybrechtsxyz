@@ -19,6 +19,10 @@ public class PlatformImportOptionSettings
 
     public string ProductSearch { get; set; } = string.Empty;
 
+    public string UnitUrl { get; set; } = string.Empty;
+
+    public string UnitSearch { get; set; } = string.Empty;
+
     public string RatesUrl { get; set; } = string.Empty;
 
     public string RatesSearch { get; set; } = string.Empty;

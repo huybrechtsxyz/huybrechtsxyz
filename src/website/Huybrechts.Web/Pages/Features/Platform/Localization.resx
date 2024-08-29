@@ -138,6 +138,45 @@
   <data name="Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
+  <data name="DefaultUnit" xml:space="preserve">
+    <value>Default unit</value>
+  </data>
+  <data name="DefaultUnitCreateInfo" xml:space="preserve">
+    <value>Define a new default unit of measure for a platform. This will be used as a standard measurement across different functionalities within the platform.</value>
+  </data>
+  <data name="DefaultUnitCreateTitle" xml:space="preserve">
+    <value>Create New Platform Default Unit</value>
+  </data>
+  <data name="DefaultUnitDeleteInfo" xml:space="preserve">
+    <value>Remove a default unit of measure from the platform. This action is irreversible and will impact all areas where this unit is currently in use.</value>
+  </data>
+  <data name="DefaultUnitDeleteTitle" xml:space="preserve">
+    <value>Delete Platform Default Unit</value>
+  </data>
+  <data name="DefaultUnitEditInfo" xml:space="preserve">
+    <value>Modify the details of an existing default unit of measure associated with a platform. Ensure the unit remains accurate and relevant for platform operations.</value>
+  </data>
+  <data name="DefaultUnitEditTitle" xml:space="preserve">
+    <value>Edit Platform Default Unit</value>
+  </data>
+  <data name="DefaultUnitImportInfo" xml:space="preserve">
+    <value>Import default units of measure for platforms using a pre-existing list based on ISO codes. This helps streamline the setup process and maintain consistency across platforms.</value>
+  </data>
+  <data name="DefaultUnitImportTitle" xml:space="preserve">
+    <value>Import Platform Default Units</value>
+  </data>
+  <data name="DefaultUnitIndexInfo" xml:space="preserve">
+    <value>View and manage the default units of measure associated with platforms. These units are pre-defined for ease of use across various operations.</value>
+  </data>
+  <data name="DefaultUnitIndexTitle" xml:space="preserve">
+    <value>Platform Default Units</value>
+  </data>
+  <data name="DefaultUnitNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="DefaultUnits" xml:space="preserve">
+    <value>Default units</value>
+  </data>
   <data name="DeleteInfo" xml:space="preserve">
     <value>Remove an existing platform from the system. Deleting a platform will also remove all associated regions, products, and services. Use this page to permanently delete a cloud platform or on-premise solution.</value>
   </data>

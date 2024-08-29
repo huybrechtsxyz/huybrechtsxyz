@@ -4,6 +4,7 @@ using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Config;
 using Huybrechts.App.Data;
+using Huybrechts.App.Features.Setup;
 using Huybrechts.App.Services;
 using Huybrechts.Core.Platform;
 using MediatR;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
+using System.Linq.Dynamic.Core.Tokenizer;
 using static Huybrechts.App.Services.AzurePricingService;
 
 namespace Huybrechts.App.Features.Platform;
@@ -18,6 +20,36 @@ namespace Huybrechts.App.Features.Platform;
 public static class PlatformRateFlow
 {
     public static List<string> DefaultCurrencies { get; } = ["EUR", "USD"]; //Currencies.Items.Select(s => s.Code).ToList();
+
+    public static async Task AddDefaultSetupUnits(FeatureContext context, PlatformRate rate, bool save, CancellationToken token)
+    {
+        var defaultUnits = await PlatformDefaultUnitFlow.GetDefaultUnitsFor(context, rate, save, token);
+        if (defaultUnits is null || defaultUnits.Count < 1)
+            return;
+        
+        foreach (var defaultUnit in defaultUnits)
+        {
+            PlatformRateUnit rateUnit = new()
+            {
+                Id = Ulid.NewUlid(),
+                PlatformInfoId = rate.PlatformInfoId,
+                PlatformProductId = rate.PlatformProductId,
+                PlatformRate = rate,
+                PlatformRateId = rate.Id,
+                SetupUnit = defaultUnit.SetupUnit,
+                SetupUnitId = defaultUnit.SetupUnit.Id,
+                UnitOfMeasure = rate.UnitOfMeasure,
+                UnitFactor = defaultUnit.UnitFactor,
+                DefaultValue = defaultUnit.DefaultValue,
+                Description = defaultUnit.Description ?? string.Empty,
+                SearchIndex = defaultUnit.SearchIndex,
+                CreatedDT = DateTime.UtcNow,
+            };
+            await context.Set<PlatformRateUnit>().AddAsync(rateUnit, token);
+        }
+
+        return;
+    }
 
     public static async Task<List<PlatformRegion>> GetRegionsAsync(FeatureContext dbcontext, Ulid platformInfoId, CancellationToken token)
     {
@@ -404,7 +436,7 @@ public static class PlatformRateFlow
         {
             var product = await _dbcontext.Set<PlatformProduct>().FindAsync([message.PlatformProductId], cancellationToken: token);
             if (product is null)
-                return PlatformNotFound(message.PlatformProductId);
+                return ProductNotFound(message.PlatformProductId);
 
             var record = new PlatformRate
             {
@@ -431,8 +463,10 @@ public static class PlatformRateFlow
                 UnitOfMeasure = message.UnitOfMeasure.Trim(),
                 IsPrimaryRegion = message.IsPrimaryRegion
             };
-
             await _dbcontext.Set<PlatformRate>().AddAsync(record, token);
+
+            await AddDefaultSetupUnits(_dbcontext, record, false, token);
+
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok(record.Id);
         }
@@ -911,6 +945,8 @@ public static class PlatformRateFlow
                 };
                 await _dbcontext.Set<PlatformRate>().AddAsync(record, token);
                 changes = true;
+
+                await AddDefaultSetupUnits(_dbcontext, record, false, token);
             }
 
             if (changes)

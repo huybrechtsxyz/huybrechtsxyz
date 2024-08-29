@@ -106,6 +106,15 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find default unit with ID {0}.
+        /// </summary>
+        public static string INVALID_PLATFORMDEFAULTUNIT_ID {
+            get {
+                return ResourceManager.GetString("INVALID_PLATFORMDEFAULTUNIT_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find product with ID {0}.
         /// </summary>
         public static string INVALID_PLATFORMPRODUCT_ID {

@@ -138,6 +138,45 @@
   <data name="Currency" xml:space="preserve">
     <value>Munteenheid</value>
   </data>
+  <data name="DefaultUnit" xml:space="preserve">
+    <value>Standaard eenheid</value>
+  </data>
+  <data name="DefaultUnitCreateInfo" xml:space="preserve">
+    <value>Definieer een nieuwe standaard eenheid voor een platform. Deze eenheid zal worden gebruikt als standaardmaat binnen verschillende functies van het platform.</value>
+  </data>
+  <data name="DefaultUnitCreateTitle" xml:space="preserve">
+    <value>Nieuwe Standaard Eenheid voor Platform Maken</value>
+  </data>
+  <data name="DefaultUnitDeleteInfo" xml:space="preserve">
+    <value>Verwijder een standaard eenheid van een platform. Deze actie is onomkeerbaar en zal invloed hebben op alle gebieden waar deze eenheid momenteel in gebruik is.</value>
+  </data>
+  <data name="DefaultUnitDeleteTitle" xml:space="preserve">
+    <value>Standaard Eenheid van Platform Verwijderen</value>
+  </data>
+  <data name="DefaultUnitEditInfo" xml:space="preserve">
+    <value>Wijzig de details van een bestaande standaard eenheid die aan een platform is gekoppeld. Zorg ervoor dat de eenheid nauwkeurig en relevant blijft voor platformoperaties.</value>
+  </data>
+  <data name="DefaultUnitEditTitle" xml:space="preserve">
+    <value>Standaard Eenheid van Platform Bewerken</value>
+  </data>
+  <data name="DefaultUnitImportInfo" xml:space="preserve">
+    <value>Importeer standaard eenheden voor platforms met behulp van een bestaande lijst gebaseerd op ISO-codes. Dit helpt het instelproces te stroomlijnen en consistentie te waarborgen over platforms heen.</value>
+  </data>
+  <data name="DefaultUnitImportTitle" xml:space="preserve">
+    <value>Standaard Eenheden van Platform Importeren</value>
+  </data>
+  <data name="DefaultUnitIndexInfo" xml:space="preserve">
+    <value>Bekijk en beheer de standaard eenheden die zijn gekoppeld aan platforms. Deze eenheden zijn vooraf gedefinieerd voor gebruiksgemak bij verschillende operaties.</value>
+  </data>
+  <data name="DefaultUnitIndexTitle" xml:space="preserve">
+    <value>Standaard Eenheden van het Platform</value>
+  </data>
+  <data name="DefaultUnitNoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
+  </data>
+  <data name="DefaultUnits" xml:space="preserve">
+    <value>Standaard eenheden</value>
+  </data>
   <data name="DeleteInfo" xml:space="preserve">
     <value>Verwijder een bestaand platform uit het systeem. Het verwijderen van een platform zal ook alle bijbehorende regio's, producten en diensten verwijderen. Gebruik deze pagina om een cloudplatform of een on-premise oplossing permanent te verwijderen.</value>
   </data>
@@ -215,6 +254,36 @@
   </data>
   <data name="Rate" xml:space="preserve">
     <value>Rate</value>
+  </data>
+  <data name="RateCreateInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om een nieuw tarief voor een dienst op het platform toe te voegen. Zorg ervoor dat u alle vereiste velden invult, zoals de naam van de dienst, valuta, en de geldigheidsperiode.</value>
+  </data>
+  <data name="RateCreateTitle" xml:space="preserve">
+    <value>Nieuw Platformtarief Toevoegen</value>
+  </data>
+  <data name="RateDeleteInfo" xml:space="preserve">
+    <value>Weet u zeker dat u dit tarief wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="RateDeleteTitle" xml:space="preserve">
+    <value>Platformtarief Verwijderen</value>
+  </data>
+  <data name="RateEditInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om de details van een bestaand tarief te bewerken. Werk de onderstaande velden bij indien nodig en sla uw wijzigingen op.</value>
+  </data>
+  <data name="RateEditTitle" xml:space="preserve">
+    <value>Platformtarief Bewerken</value>
+  </data>
+  <data name="RateImportInfo" xml:space="preserve">
+    <value>Gebruik deze pagina om Azure-platformtarieven rechtstreeks uit de Azure Pricing API te importeren. Dit zorgt ervoor dat de meest recente prijsinformatie voor Azure-diensten automatisch in het systeem wordt geïntegreerd, zodat tarieven nauwkeurig en actueel worden beheerd.</value>
+  </data>
+  <data name="RateImportTitle" xml:space="preserve">
+    <value>Platformtarieven Importeren</value>
+  </data>
+  <data name="RateIndexInfo" xml:space="preserve">
+    <value>Deze pagina toont een lijst met alle tarieven voor diensten op het platform. U kunt details bekijken zoals de naam van de dienst, valuta, verkoopprijs, en meer.</value>
+  </data>
+  <data name="RateIndexTitle" xml:space="preserve">
+    <value>Platformtarieven</value>
   </data>
   <data name="RateNoResults" xml:space="preserve">
     <value>Geen resultaten gevonden</value>
