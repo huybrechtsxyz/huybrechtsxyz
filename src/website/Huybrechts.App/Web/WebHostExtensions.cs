@@ -256,20 +256,20 @@ public static class WebHostExtensions
         }
 
         builder.Services.AddResponseCaching();
-        builder.Services.AddResponseCompression(options =>
-        {
-            options.EnableForHttps = true;
-            options.Providers.Add<BrotliCompressionProvider>();
-            options.Providers.Add<GzipCompressionProvider>();
-        });
-        builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
-        {
-            options.Level = CompressionLevel.Fastest;
-        });
-        builder.Services.Configure<GzipCompressionProviderOptions>(options =>
-        {
-            options.Level = CompressionLevel.SmallestSize;
-        });
+        //builder.Services.AddResponseCompression(options =>
+        //{
+        //    options.EnableForHttps = true;
+        //    //options.Providers.Add<BrotliCompressionProvider>();
+        //    options.Providers.Add<GzipCompressionProvider>();
+        //});
+        ////builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+        ////{
+        ////    options.Level = CompressionLevel.Fastest;
+        ////});
+        //builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+        //{
+        //    options.Level = CompressionLevel.SmallestSize;
+        //});
         builder.Services.Configure<CookiePolicyOptions>(options =>
         {
             // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -342,7 +342,7 @@ public static class WebHostExtensions
     public static WebApplication AddRedirectionMiddleware(this WebApplication app, ILogger log)
     {
         log.Information("Configure the response compression");
-        app.UseResponseCompression();
+        //app.UseResponseCompression();
 
         if (!ApplicationSettings.IsRunningInContainer())
         {

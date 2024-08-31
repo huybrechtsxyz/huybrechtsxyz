@@ -1,0 +1,96 @@
+﻿@page
+@using Huybrechts.Core.Project
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Localization> SL
+@model Huybrechts.Web.Pages.Features.Project.EditModel
+@{
+    ViewData["CardTitle"] = SL["InfoEditTitle"];
+}
+
+<partial name="_StatusResult" for="StatusMessage" />
+<p class="text-info">
+    @SL["InfoEditInfo"]
+</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <form id="edit-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input type="hidden" asp-for="Data.Id" />
+            <input type="hidden" asp-for="Data.Code" />
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Code" class="form-control border-info" required />
+                <label asp-for="Data.Code" class="form-label"></label>
+                <span asp-validation-for="Data.Code" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Name" class="form-control border-info" required />
+                <label asp-for="Data.Name" class="form-label"></label>
+                <span asp-validation-for="Data.Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Description" class="form-control" />
+                <label asp-for="Data.Description" class="form-label"></label>
+                <span asp-validation-for="Data.Description" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.State" class="form-control border-info" required />
+                <label asp-for="Data.State" class="form-label"></label>
+                <span asp-validation-for="Data.State" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Reason" class="form-control" />
+                <label asp-for="Data.Reason" class="form-label"></label>
+                <span asp-validation-for="Data.Reason" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.StartDate" class="form-control" />
+                <label asp-for="Data.StartDate" class="form-label"></label>
+                <span asp-validation-for="Data.StartDate" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.TargetDate" class="form-control" />
+                <label asp-for="Data.TargetDate" class="form-label"></label>
+                <span asp-validation-for="Data.TargetDate" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Priority" class="form-control" />
+                <label asp-for="Data.Priority" class="form-label"></label>
+                <span asp-validation-for="Data.Priority" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Risk" class="form-control" />
+                <label asp-for="Data.Risk" class="form-label"></label>
+                <span asp-validation-for="Data.Risk" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Effort" class="form-control" />
+                <label asp-for="Data.Effort" class="form-label"></label>
+                <span asp-validation-for="Data.Effort" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.BusinessValue" class="form-control" />
+                <label asp-for="Data.BusinessValue" class="form-label"></label>
+                <span asp-validation-for="Data.BusinessValue" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Rating" class="form-control" />
+                <label asp-for="Data.Rating" class="form-label"></label>
+                <span asp-validation-for="Data.Rating" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Remark" class="form-control" />
+                <label asp-for="Data.Remark" class="form-label"></label>
+                <span asp-validation-for="Data.Remark" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <a class="w-30 btn btn-lg btn-secondary" asp-page="Index"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                <button id="edit-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

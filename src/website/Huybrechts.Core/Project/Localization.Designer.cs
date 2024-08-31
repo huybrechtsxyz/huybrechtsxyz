@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Huybrechts.Web.Pages.Shared {
+namespace Huybrechts.Core.Project {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace Huybrechts.Web.Pages.Shared {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Shared {
+    public class Localization {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Shared() {
+        internal Localization() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Huybrechts.Web.Pages.Shared {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.Web.Pages.Shared.Shared", typeof(Shared).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.Core.Project.Localization", typeof(Localization).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,92 +61,38 @@ namespace Huybrechts.Web.Pages.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Accept.
+        ///   Looks up a localized string similar to Code.
         /// </summary>
-        public static string Accept {
+        public static string Code {
             get {
-                return ResourceManager.GetString("Accept", resourceCulture);
+                return ResourceManager.GetString("Code", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Learn More.
+        ///   Looks up a localized string similar to Description.
         /// </summary>
-        public static string Learn_More {
+        public static string Description {
             get {
-                return ResourceManager.GetString("Learn More", resourceCulture);
+                return ResourceManager.GetString("Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Logout.
+        ///   Looks up a localized string similar to Name.
         /// </summary>
-        public static string Logout {
+        public static string Name {
             get {
-                return ResourceManager.GetString("Logout", resourceCulture);
+                return ResourceManager.GetString("Name", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NEW.
+        ///   Looks up a localized string similar to Remark.
         /// </summary>
-        public static string NEW {
+        public static string Remark {
             get {
-                return ResourceManager.GetString("NEW", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Platforms.
-        /// </summary>
-        public static string Platforms {
-            get {
-                return ResourceManager.GetString("Platforms", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Profile.
-        /// </summary>
-        public static string Profile {
-            get {
-                return ResourceManager.GetString("Profile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Projects.
-        /// </summary>
-        public static string Projects {
-            get {
-                return ResourceManager.GetString("Projects", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Setup.
-        /// </summary>
-        public static string Setup {
-            get {
-                return ResourceManager.GetString("Setup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Teams.
-        /// </summary>
-        public static string Teams {
-            get {
-                return ResourceManager.GetString("Teams", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This website uses cookies. Learn more about our privacy and cookie use policy..
-        /// </summary>
-        public static string This_website_uses_cookies__Learn_more_about_our_privacy_and_cookie_use_policy_ {
-            get {
-                return ResourceManager.GetString("This website uses cookies. Learn more about our privacy and cookie use policy.", resourceCulture);
+                return ResourceManager.GetString("Remark", resourceCulture);
             }
         }
     }

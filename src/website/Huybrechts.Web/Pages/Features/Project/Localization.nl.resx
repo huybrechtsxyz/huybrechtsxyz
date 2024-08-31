@@ -117,34 +117,58 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Accept" xml:space="preserve">
-    <value>Accept</value>
+  <data name="Add New" xml:space="preserve">
+    <value>Toevoegen</value>
   </data>
-  <data name="Learn More" xml:space="preserve">
-    <value>Learn More</value>
+  <data name="Add Selection" xml:space="preserve">
+    <value>Add Selection</value>
   </data>
-  <data name="Logout" xml:space="preserve">
-    <value>Logout</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuleer</value>
   </data>
-  <data name="NEW" xml:space="preserve">
-    <value>NEW</value>
+  <data name="Clear Filter" xml:space="preserve">
+    <value>Wis filter</value>
   </data>
-  <data name="Platforms" xml:space="preserve">
-    <value>Platforms</value>
+  <data name="InfoCreateInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om een nieuw project aan te maken. Vul alle verplichte velden in, zoals projectnaam, beschrijving en startdatum, om een nieuw project toe te voegen.</value>
   </data>
-  <data name="Profile" xml:space="preserve">
-    <value>Profile</value>
+  <data name="InfoCreateTitle" xml:space="preserve">
+    <value>Nieuw project aanmaken</value>
   </data>
-  <data name="Projects" xml:space="preserve">
-    <value>Projects</value>
+  <data name="InfoDeleteInfo" xml:space="preserve">
+    <value>Weet u zeker dat u dit project wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt en zal het project permanent van het platform verwijderen.</value>
   </data>
-  <data name="Setup" xml:space="preserve">
-    <value>Setup</value>
+  <data name="InfoDeleteTitle" xml:space="preserve">
+    <value>Project verwijderen</value>
   </data>
-  <data name="Teams" xml:space="preserve">
-    <value>Teams</value>
+  <data name="InfoEditInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om de details van een bestaand project te bewerken. Werk de benodigde velden bij en sla uw wijzigingen op om de projectinformatie up-to-date te houden.</value>
   </data>
-  <data name="This website uses cookies. Learn more about our privacy and cookie use policy." xml:space="preserve">
-    <value>This website uses cookies. Learn more about our privacy and cookie use policy.</value>
+  <data name="InfoEditTitle" xml:space="preserve">
+    <value>Project bewerken</value>
+  </data>
+  <data name="InfoIndexInfo" xml:space="preserve">
+    <value>Deze pagina geeft een overzicht van alle projecten op het platform.</value>
+  </data>
+  <data name="InfoIndexTitle" xml:space="preserve">
+    <value>Projectoverzicht</value>
+  </data>
+  <data name="InfoNoResults" xml:space="preserve">
+    <value>InfoNoResults</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Volgende</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Vorige</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Zoek</value>
+  </data>
+  <data name="Search..." xml:space="preserve">
+    <value>Zoek...</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Selecteer</value>
   </data>
 </root>

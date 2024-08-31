@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Huybrechts.Web.Pages.Shared {
+namespace Huybrechts.App.Features.Project {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace Huybrechts.Web.Pages.Shared {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Shared {
+    public class Localization {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Shared() {
+        internal Localization() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Huybrechts.Web.Pages.Shared {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.Web.Pages.Shared.Shared", typeof(Shared).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Huybrechts.App.Features.Project.Localization", typeof(Localization).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,92 +61,119 @@ namespace Huybrechts.Web.Pages.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Accept.
+        ///   Looks up a localized string similar to Business value.
         /// </summary>
-        public static string Accept {
+        public static string BusinessValue {
             get {
-                return ResourceManager.GetString("Accept", resourceCulture);
+                return ResourceManager.GetString("BusinessValue", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Learn More.
+        ///   Looks up a localized string similar to Code.
         /// </summary>
-        public static string Learn_More {
+        public static string Code {
             get {
-                return ResourceManager.GetString("Learn More", resourceCulture);
+                return ResourceManager.GetString("Code", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Logout.
+        ///   Looks up a localized string similar to Description.
         /// </summary>
-        public static string Logout {
+        public static string Description {
             get {
-                return ResourceManager.GetString("Logout", resourceCulture);
+                return ResourceManager.GetString("Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NEW.
+        ///   Looks up a localized string similar to Effort.
         /// </summary>
-        public static string NEW {
+        public static string Effort {
             get {
-                return ResourceManager.GetString("NEW", resourceCulture);
+                return ResourceManager.GetString("Effort", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Platforms.
+        ///   Looks up a localized string similar to Name.
         /// </summary>
-        public static string Platforms {
+        public static string Name {
             get {
-                return ResourceManager.GetString("Platforms", resourceCulture);
+                return ResourceManager.GetString("Name", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Profile.
+        ///   Looks up a localized string similar to Priority.
         /// </summary>
-        public static string Profile {
+        public static string Priority {
             get {
-                return ResourceManager.GetString("Profile", resourceCulture);
+                return ResourceManager.GetString("Priority", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Projects.
+        ///   Looks up a localized string similar to Rating.
         /// </summary>
-        public static string Projects {
+        public static string Rating {
             get {
-                return ResourceManager.GetString("Projects", resourceCulture);
+                return ResourceManager.GetString("Rating", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Setup.
+        ///   Looks up a localized string similar to Reason.
         /// </summary>
-        public static string Setup {
+        public static string Reason {
             get {
-                return ResourceManager.GetString("Setup", resourceCulture);
+                return ResourceManager.GetString("Reason", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Teams.
+        ///   Looks up a localized string similar to Remark.
         /// </summary>
-        public static string Teams {
+        public static string Remark {
             get {
-                return ResourceManager.GetString("Teams", resourceCulture);
+                return ResourceManager.GetString("Remark", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This website uses cookies. Learn more about our privacy and cookie use policy..
+        ///   Looks up a localized string similar to Risk.
         /// </summary>
-        public static string This_website_uses_cookies__Learn_more_about_our_privacy_and_cookie_use_policy_ {
+        public static string Risk {
             get {
-                return ResourceManager.GetString("This website uses cookies. Learn more about our privacy and cookie use policy.", resourceCulture);
+                return ResourceManager.GetString("Risk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start date.
+        /// </summary>
+        public static string StartDate {
+            get {
+                return ResourceManager.GetString("StartDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State.
+        /// </summary>
+        public static string State {
+            get {
+                return ResourceManager.GetString("State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Target date.
+        /// </summary>
+        public static string TargetDate {
+            get {
+                return ResourceManager.GetString("TargetDate", resourceCulture);
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Finbuckle.MultiTenant.Abstractions;
 using Finbuckle.MultiTenant.EntityFrameworkCore;
 using Huybrechts.Core.Platform;
+using Huybrechts.Core.Project;
 using Huybrechts.Core.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -138,4 +139,10 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
     public DbSet<PlatformRate> PlatformRates { get; set; }
 
     public DbSet<PlatformRateUnit> PlatformRateUnits { get; set; }
+
+    //
+    // PROJECT
+    //
+
+    public DbSet<ProjectInfo> Projects { get; set; }
 }

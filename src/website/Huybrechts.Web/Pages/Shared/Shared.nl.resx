@@ -135,6 +135,9 @@
   <data name="Profile" xml:space="preserve">
     <value>Profiel</value>
   </data>
+  <data name="Projects" xml:space="preserve">
+    <value>Projecten</value>
+  </data>
   <data name="Setup" xml:space="preserve">
     <value>Instellingen</value>
   </data>

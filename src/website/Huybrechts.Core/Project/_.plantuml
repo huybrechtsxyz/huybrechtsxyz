@@ -1,41 +1,106 @@
 @startuml Platform CD
 
-class Project {
+class ProjectInfo {
+    + Id: Ulid
+    + Name: string
+    + Description: string
 }
 
-class Design {
+note right of ProjectInfo
+    Represents a project that architects create.
+    Each project can consist of multiple designs and scenarios to estimate platform costs.
+end note
+
+class ProjectDesign {
+    + Id: Ulid
+    + Name: string
+    + Description: string
 }
 
-Project "1" -- "0..*" Design
+note right of ProjectDesign
+    One of the possible designs for this project.
+    This is about finding the right solution for the project.
+end note
 
-class Component {
+ProjectInfo "1" -- "0..*" ProjectDesign : "can have"
+
+class ProjectDesignComponent {
+    + Id: Ulid
+    + ComponentName: string
+    + Description: string
+    + PlatformProductId: Ulid
 }
 
-Design "1" -- "0..*" Component
+note right of ProjectDesignComponent
+    Each design can have multiple components.
+    A component is linked to a PlatformProduct.
+end note
 
-class Measure {
+ProjectDesign "1" -- "0..*" ProjectDesignComponent : "can have"
+
+class ProjectDesignMeasure {
+    + Id: Ulid
+    + MeasureName: string
+    + Formula: string
 }
 
-Component "1" -- "0..*" Measure
+note right of ProjectDesignMeasure
+    Each design has multiple measures.
+    A measure is a formula that interprets the scenario metrics for that specific component.
+    This allows the price calculation of the component based on the platform rates of the linked product.
+end note
 
-class Scenario {
+ProjectDesignComponent "1" -- "0..*" ProjectDesignMeasure : "can have"
+
+class ProjectScenario {
+    + Id: Ulid
+    + ScenarioName: string
+    + Description: string
 }
 
-Project "1" -- "0..*" Scenario
+note right of ProjectScenario
+    A scenario allows for different sets of conditions and assumptions under which a project might operate.
+    Scenarios help architects simulate various operational environments and usage patterns.
+end note
 
-class Metric {
+ProjectInfo "1" -- "0..*" ProjectScenario : "can have"
+
+class ProjectScenarioMetric {
+    + Id: Ulid
+    + MetricName: string
+    + Value: decimal
 }
 
-Scenario "1" -- "0..*" Metric
+note right of ProjectScenarioMetric
+    Metrics that are associated with each scenario.
+    These metrics are key in calculating costs and resources needed for a scenario.
+end note
 
-class Simulation {
+ProjectScenario "1" -- "0..*" ProjectScenarioMetric : "can have"
+
+class ProjectSim {
+    + Id: Ulid
+    + SimName: string
+    + Description: string
 }
 
-Project "1" -- "0..*" Simulation
+note right of ProjectSim
+    Represents a simulation that models different potential outcomes and resource allocations for a project.
+end note
 
-class Estimate {
+ProjectInfo "1" -- "0..*" ProjectSim : "can have"
+
+class ProjectSimEstimate {
+    + Id: Ulid
+    + EstimateName: string
+    + CostEstimate: decimal
 }
 
-Simulation "1" -- "0..*" Estimate
+note right of ProjectSimEstimate
+    Represents an estimated cost for a simulation.
+    This includes predicted expenses based on platform rates and component measures.
+end note
+
+ProjectSim "1" -- "0..*" ProjectSimEstimate : "can have"
 
 @enduml

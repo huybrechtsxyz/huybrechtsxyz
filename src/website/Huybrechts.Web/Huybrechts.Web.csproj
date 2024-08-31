@@ -54,6 +54,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Localization.resx</DependentUpon>
     </Compile>
+    <Compile Update="Pages\Features\Project\Localization.Designer.cs">
+      <DependentUpon>Localization.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Pages\Features\Setup\Localization.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -93,6 +98,15 @@
     <EmbeddedResource Update="Pages\Features\Platform\Localization.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Localization.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\Features\Project\Localization.nl.resx">
+      <SubType>Designer</SubType>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\Features\Project\Localization.resx">
+      <SubType>Designer</SubType>
+      <LastGenOutput>Localization.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Pages\Features\Setup\Localization.nl.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

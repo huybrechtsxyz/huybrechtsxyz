@@ -117,34 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Accept" xml:space="preserve">
-    <value>Accept</value>
+  <data name="DUPLICATE_PROJECT_CODE" xml:space="preserve">
+    <value>Platform met code {0} bestaat al</value>
   </data>
-  <data name="Learn More" xml:space="preserve">
-    <value>Learn More</value>
+  <data name="INVALID_PROJECT_CODE" xml:space="preserve">
+    <value>Kan project met Code {0} niet vinden</value>
   </data>
-  <data name="Logout" xml:space="preserve">
-    <value>Logout</value>
-  </data>
-  <data name="NEW" xml:space="preserve">
-    <value>NEW</value>
-  </data>
-  <data name="Platforms" xml:space="preserve">
-    <value>Platforms</value>
-  </data>
-  <data name="Profile" xml:space="preserve">
-    <value>Profile</value>
-  </data>
-  <data name="Projects" xml:space="preserve">
-    <value>Projects</value>
-  </data>
-  <data name="Setup" xml:space="preserve">
-    <value>Setup</value>
-  </data>
-  <data name="Teams" xml:space="preserve">
-    <value>Teams</value>
-  </data>
-  <data name="This website uses cookies. Learn more about our privacy and cookie use policy." xml:space="preserve">
-    <value>This website uses cookies. Learn more about our privacy and cookie use policy.</value>
+  <data name="INVALID_PROJECT_ID" xml:space="preserve">
+    <value>Kan project met ID {0} niet vinden</value>
   </data>
 </root>

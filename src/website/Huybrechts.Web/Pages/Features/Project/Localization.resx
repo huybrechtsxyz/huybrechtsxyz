@@ -117,34 +117,55 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Accept" xml:space="preserve">
-    <value>Accept</value>
+  <data name="Add New" xml:space="preserve">
+    <value>Add New</value>
   </data>
-  <data name="Learn More" xml:space="preserve">
-    <value>Learn More</value>
+  <data name="Add Selection" xml:space="preserve">
+    <value>Add Selection</value>
   </data>
-  <data name="Logout" xml:space="preserve">
-    <value>Logout</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
   </data>
-  <data name="NEW" xml:space="preserve">
-    <value>NEW</value>
+  <data name="Clear Filter" xml:space="preserve">
+    <value>Clear Filter</value>
   </data>
-  <data name="Platforms" xml:space="preserve">
-    <value>Platforms</value>
+  <data name="InfoCreateInfo" xml:space="preserve">
+    <value>Use this form to create a new project. Fill in all required fields, such as project name, description, and start date, to add a new project to the platform.</value>
   </data>
-  <data name="Profile" xml:space="preserve">
-    <value>Profile</value>
+  <data name="InfoCreateTitle" xml:space="preserve">
+    <value>Create New Project</value>
   </data>
-  <data name="Projects" xml:space="preserve">
-    <value>Projects</value>
+  <data name="InfoDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this project? This action cannot be undone and will permanently remove the project from the platform.</value>
   </data>
-  <data name="Setup" xml:space="preserve">
-    <value>Setup</value>
+  <data name="InfoDeleteTitle" xml:space="preserve">
+    <value>Delete Project</value>
   </data>
-  <data name="Teams" xml:space="preserve">
-    <value>Teams</value>
+  <data name="InfoEditInfo" xml:space="preserve">
+    <value>Use this form to edit the details of an existing project. Update the necessary fields and save your changes to keep the project information up to date.</value>
   </data>
-  <data name="This website uses cookies. Learn more about our privacy and cookie use policy." xml:space="preserve">
-    <value>This website uses cookies. Learn more about our privacy and cookie use policy.</value>
+  <data name="InfoEditTitle" xml:space="preserve">
+    <value>Edit Project</value>
+  </data>
+  <data name="InfoIndexInfo" xml:space="preserve">
+    <value>This page provides an overview of all projects.</value>
+  </data>
+  <data name="InfoIndexTitle" xml:space="preserve">
+    <value>Project Overview</value>
+  </data>
+  <data name="InfoNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Search..." xml:space="preserve">
+    <value>Search...</value>
   </data>
 </root>
