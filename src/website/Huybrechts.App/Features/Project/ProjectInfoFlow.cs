@@ -110,11 +110,11 @@ public static class ProjectInfoFlow
 
     internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<ProjectInfo, ListModel>(); }
 
-    public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
+    public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
 
     public sealed class ListValidator : AbstractValidator<ListQuery> { public ListValidator() { } }
 
-    public sealed class ListResult : EntityListFlow.Result<ListModel> { }
+    public sealed record ListResult : EntityListFlow.Result<ListModel> { }
 
     internal sealed class ListHandler :
         EntityListFlow.Handler<ProjectInfo, ListModel>,
@@ -332,7 +332,7 @@ public static class ProjectInfoFlow
             record.Name = message.Name.Trim();
             record.Description = message.Description?.Trim();
             record.Remark = message.Remark?.Trim();
-            record.Tags = message.Tags.Trim();
+            record.Tags = message.Tags?.Trim();
             record.SearchIndex = message.SearchIndex;
             record.ModifiedDT = DateTime.UtcNow;
 

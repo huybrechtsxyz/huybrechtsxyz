@@ -63,11 +63,11 @@ public static class PlatformInfoFlow
 
     internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<PlatformInfo, ListModel>(); }
 
-    public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
+    public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
 
     public sealed class ListValidator : AbstractValidator<ListQuery> { public ListValidator() { } }
 
-    public sealed class ListResult : EntityListFlow.Result<ListModel> { }
+    public sealed record ListResult : EntityListFlow.Result<ListModel> { }
 
     internal sealed class ListHandler :
         EntityListFlow.Handler<PlatformInfo, ListModel>,

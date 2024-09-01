@@ -103,5 +103,4 @@ public static class FluentResultExtensions
         StatusResult value = result.ToStatusResult();
         return System.Text.Json.JsonSerializer.Serialize(value);
     }
-
 }

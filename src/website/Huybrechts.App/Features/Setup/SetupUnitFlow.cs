@@ -120,11 +120,11 @@ public static class SetupUnitFlow
 
     internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<SetupUnit, ListModel>(); }
 
-    public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
+    public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
 
     public sealed class ListValidator : AbstractValidator<ListQuery> { public ListValidator() { } }
 
-    public sealed class ListResult : EntityListFlow.Result<ListModel> { }
+    public sealed record ListResult : EntityListFlow.Result<ListModel> { }
 
     internal sealed class ListHandler :
         EntityListFlow.Handler<SetupUnit, ListModel>,
@@ -407,13 +407,13 @@ public static class SetupUnitFlow
         public bool IsSelected { get; set; }
     }
 
-    public sealed class ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
+    public sealed record ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
     {
     }
 
     public sealed class ImportQueryValidator : AbstractValidator<ImportQuery> { public ImportQueryValidator() { } }
 
-    public sealed class ImportResult : EntityListFlow.Result<ImportModel>
+    public sealed record ImportResult : EntityListFlow.Result<ImportModel>
     {
     }
 

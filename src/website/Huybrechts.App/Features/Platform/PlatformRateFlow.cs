@@ -189,7 +189,7 @@ public static class PlatformRateFlow
             .ForMember(dest => dest.PlatformProductLabel, opt => opt.MapFrom(src => src.PlatformProduct.Label));
     }
 
-    public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
+    public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
     {
         public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
 
@@ -208,7 +208,7 @@ public static class PlatformRateFlow
         } 
     }
 
-    public sealed class ListResult : EntityListFlow.Result<ListModel>
+    public sealed record ListResult : EntityListFlow.Result<ListModel>
     {
         public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
 
@@ -722,7 +722,7 @@ public static class PlatformRateFlow
             ;
     }
 
-    public sealed class ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
+    public sealed record ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
     {
         public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
 
@@ -741,7 +741,7 @@ public static class PlatformRateFlow
         }
     }
 
-    public sealed class ImportResult : EntityListFlow.Result<ImportModel>
+    public sealed record ImportResult : EntityListFlow.Result<ImportModel>
     {
         public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
 

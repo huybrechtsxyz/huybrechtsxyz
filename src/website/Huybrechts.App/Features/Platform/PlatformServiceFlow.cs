@@ -85,7 +85,7 @@ public static class PlatformServiceFlow
             .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
     }
 
-    public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
+    public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
     {
         public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
     }
@@ -98,7 +98,7 @@ public static class PlatformServiceFlow
         } 
     }
 
-    public sealed class ListResult : EntityListFlow.Result<ListModel>
+    public sealed record ListResult : EntityListFlow.Result<ListModel>
     {
         public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
 
@@ -468,7 +468,7 @@ public static class PlatformServiceFlow
         public bool IsSelected { get; set; }
     }
 
-    public sealed class ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
+    public sealed record ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
     {
         public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
     }
@@ -481,7 +481,7 @@ public static class PlatformServiceFlow
         }
     }
 
-    public sealed class ImportResult : EntityListFlow.Result<ImportModel>
+    public sealed record ImportResult : EntityListFlow.Result<ImportModel>
     {
         public PlatformInfo Platform { get; set; } = new();
     }

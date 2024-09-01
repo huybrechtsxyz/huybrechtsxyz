@@ -95,7 +95,7 @@ public static class PlatformRateUnitFlow
             CreateProjection<PlatformRateUnit, ListModel>();
     }
 
-    public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
+    public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
     {
         public Ulid? PlatformRateId { get; set; } = Ulid.Empty;
     }
@@ -108,7 +108,7 @@ public static class PlatformRateUnitFlow
         } 
     }
 
-    public sealed class ListResult : EntityListFlow.Result<ListModel>
+    public sealed record ListResult : EntityListFlow.Result<ListModel>
     {
         public Ulid? PlatformRateId { get; set; } = Ulid.Empty;
 

@@ -4,11 +4,22 @@ using Huybrechts.Core;
 
 namespace Huybrechts.App.Features;
 
-public static class EntityListFlow
+public abstract class EntityListFlow
 {
     internal const int PageSize = 50;
 
-    public class Query
+    public interface IListQuery
+    {
+        string CurrentFilter { get; init; }
+
+        string SearchText { get; init; }
+
+        string SortOrder { get; init; }
+
+        int? Page { get; init; }
+    }
+
+    public record Query : IListQuery
     {
         public string CurrentFilter { get; init; } = string.Empty;
 
@@ -19,7 +30,18 @@ public static class EntityListFlow
         public int? Page { get; init; }
     }
 
-    public class Result<TModel>
+    public interface IListResult<TModel>
+    {
+        public string CurrentFilter { get; init; }
+
+        public string SearchText { get; init; }
+
+        public string SortOrder { get; init; }
+
+        public PaginatedList<TModel> Results { get; init; }
+    }
+
+    public record Result<TModel> : IListResult<TModel>
     {
         public string CurrentFilter { get; init; } = string.Empty;
 
@@ -35,8 +57,6 @@ public static class EntityListFlow
         protected readonly FeatureContext _dbcontext;
         protected readonly IConfigurationProvider _configuration;
         
-        internal IQueryable<TEntity> EntitySet => _dbcontext.Set<TEntity>();
-
         public Handler(FeatureContext dbcontext, IConfigurationProvider configuration)
         {
             _dbcontext = dbcontext;
