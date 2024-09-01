@@ -16,8 +16,8 @@ namespace Huybrechts.App.Features.Project;
 
 public static class ProjectInfoFlow
 {
-    public static string GetSearchIndex(string code, string name)
-        => $"{code}~{name}".ToLowerInvariant();
+    public static string GetSearchIndex(string code, string name, string? tags)
+        => $"{code}~{name}~{tags}".ToLowerInvariant();
 
     public record Model
     {
@@ -35,7 +35,10 @@ public static class ProjectInfoFlow
         [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
         public string? Remark { get; set; }
 
-        public string SearchIndex => GetSearchIndex(Code, Name);
+        public string SearchIndex => GetSearchIndex(Code, Name, Tags);
+
+        [Display(Name = nameof(Tags), ResourceType = typeof(Localization))]
+        public string? Tags { get; set; }
 
         [Display(Name = nameof(State), ResourceType = typeof(Localization))]
         public string State { get; set; } = string.Empty;
@@ -226,6 +229,7 @@ public static class ProjectInfoFlow
                 Name = message.Name.Trim(),
                 Description = message.Description?.Trim(),
                 Remark = message.Remark?.Trim(),
+                Tags = message.Tags?.Trim(),
                 SearchIndex = message.SearchIndex,
                 CreatedDT = DateTime.UtcNow,
 
@@ -328,6 +332,7 @@ public static class ProjectInfoFlow
             record.Name = message.Name.Trim();
             record.Description = message.Description?.Trim();
             record.Remark = message.Remark?.Trim();
+            record.Tags = message.Tags.Trim();
             record.SearchIndex = message.SearchIndex;
             record.ModifiedDT = DateTime.UtcNow;
 

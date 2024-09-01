@@ -25,6 +25,10 @@
     </div>
 </div>
 
+@section Links {
+    @RenderSection("Links", required: false)
+}
+
 @section Breadcrumb {
     <li class="breadcrumb-item"><a asp-page="/Features/Platform/Index">@SL["Projects"]</a></li>
     @RenderSection("Breadcrumb", required: false)

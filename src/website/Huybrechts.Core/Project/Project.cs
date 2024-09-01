@@ -1,5 +1,6 @@
 using Finbuckle.MultiTenant;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -27,7 +28,6 @@ public record ProjectInfo : Entity, IEntity
     /// The ParentId is an optional field and can be null if the project does not have a parent.
     /// </remarks>
     public Ulid? ParentId { get; set; }
-
 
     /// <summary>
     /// The unique code of the Project.
@@ -57,6 +57,17 @@ public record ProjectInfo : Entity, IEntity
     /// </summary>
     [Comment("Additional remarks or comments about the Project.")]
     public string? Remark { get; set; }
+
+    /// <summary>
+    /// Gets or sets the tags associated with the project.
+    /// </summary>
+    /// <remarks>
+    /// Tags help categorize the design and improve searchability and filtering based on keywords.
+    /// </remarks>
+    [MaxLength(256)]
+    [DisplayName("Tags")]
+    [Comment("Keywords or categories for the project")]
+    public string? Tags { get; set; }
 
     /// <summary>
     /// This field will store the normalized, concatenated values for searching

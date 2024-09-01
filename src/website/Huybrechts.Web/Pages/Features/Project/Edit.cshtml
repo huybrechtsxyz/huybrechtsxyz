@@ -86,6 +86,12 @@
                 <span asp-validation-for="Data.Rating" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
+                <input type="text" id="tagsInput" name="tags" class="form-control" placeholder="Enter tags" />
+                <label asp-for="Data.Tags" class="form-label"></label>
+                <input type="hidden" asp-for="Data.Tags" id="tagsHiddenInput" />
+                <span asp-validation-for="Data.Tags" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
                 <input asp-for="Data.Remark" class="form-control" />
                 <label asp-for="Data.Remark" class="form-label"></label>
                 <span asp-validation-for="Data.Remark" class="text-danger"></span>
@@ -98,6 +104,11 @@
     </div>
 </div>
 
+@section Links {
+    <link rel="stylesheet" href="/lib/tagify/tagify.min.css">
+}
+
 @section Scripts {
+    <script src="/lib/tagify/tagify.min.js"></script>
     <partial name="_ValidationScriptsPartial" />
 }
