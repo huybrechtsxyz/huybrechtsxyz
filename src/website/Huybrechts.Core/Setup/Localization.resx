@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ObjectType_Project" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="ObjectType_Project_d" xml:space="preserve">
+    <value>For projects</value>
+  </data>
   <data name="SetupUnitType_AmountOfSubstance" xml:space="preserve">
     <value>Substance</value>
   </data>
@@ -212,5 +218,41 @@
   </data>
   <data name="SetupUnitType_Volume_d" xml:space="preserve">
     <value>Units of measurement for volume</value>
+  </data>
+  <data name="StateType_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="StateType_Completed_d" xml:space="preserve">
+    <value>Marks that the object has been fully completed.</value>
+  </data>
+  <data name="StateType_InProgress" xml:space="preserve">
+    <value>In Progress</value>
+  </data>
+  <data name="StateType_InProgress_d" xml:space="preserve">
+    <value>The object is in progress.</value>
+  </data>
+  <data name="StateType_New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="StateType_New_d" xml:space="preserve">
+    <value>Represents a new object within the platform.</value>
+  </data>
+  <data name="StateType_Proposed" xml:space="preserve">
+    <value>Proposed</value>
+  </data>
+  <data name="StateType_Proposed_d" xml:space="preserve">
+    <value>The object has been suggested.</value>
+  </data>
+  <data name="StateType_Removed" xml:space="preserve">
+    <value>Removed</value>
+  </data>
+  <data name="StateType_Removed_d" xml:space="preserve">
+    <value>Indicates that the object has been removed or cancelled.</value>
+  </data>
+  <data name="StateType_Resolved" xml:space="preserve">
+    <value>Resolved</value>
+  </data>
+  <data name="StateType_Resolved_d" xml:space="preserve">
+    <value>A solution has been found.</value>
   </data>
 </root>

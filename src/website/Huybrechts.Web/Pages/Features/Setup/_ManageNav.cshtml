@@ -6,8 +6,9 @@
 }
 <ul class="nav nav-pills flex-column">
     <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="setup" asp-page="/Features/Setup/Index">@Localizer["Setup"]</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.StateNavClass(ViewContext)" id="states" asp-page="/Features/Setup/State/Index">@Localizer["States"]</a></li>
     <li class="nav-item"><a class="nav-link @ManageNavPages.CountryNavClass(ViewContext)" id="countries" asp-page="/Features/Setup/Country/Index">@Localizer["Countries"]</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.CurrencyNavClass(ViewContext)" id="languages" asp-page="/Features/Setup/Currency/Index">@Localizer["Currencies"]</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.CurrencyNavClass(ViewContext)" id="currencies" asp-page="/Features/Setup/Currency/Index">@Localizer["Currencies"]</a></li>
     <li class="nav-item"><a class="nav-link @ManageNavPages.LanguageNavClass(ViewContext)" id="languages" asp-page="/Features/Setup/Language/Index">@Localizer["Languages"]</a></li>
     <li class="nav-item"><a class="nav-link @ManageNavPages.UnitNavClass(ViewContext)" id="setupunit" asp-page="/Features/Setup/Unit/Index">@Localizer["System units"]</a></li>
 </ul>

@@ -448,6 +448,15 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string NoResults {
+            get {
+                return ResourceManager.GetString("NoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Previous.
         /// </summary>
         public static string Previous {
@@ -480,6 +489,123 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         public static string Setup {
             get {
                 return ResourceManager.GetString("Setup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State.
+        /// </summary>
+        public static string State {
+            get {
+                return ResourceManager.GetString("State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this form to create a new state. Provide the necessary details, including the object type, state type, name, description, and sequence order. This will allow you to manage and organize the states within your platform..
+        /// </summary>
+        public static string StateCreateInfo {
+            get {
+                return ResourceManager.GetString("StateCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New State.
+        /// </summary>
+        public static string StateCreateTitle {
+            get {
+                return ResourceManager.GetString("StateCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this state? This action is irreversible and will remove the state from the system. Make sure that the state is no longer needed before proceeding..
+        /// </summary>
+        public static string StateDeleteInfo {
+            get {
+                return ResourceManager.GetString("StateDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete State.
+        /// </summary>
+        public static string StateDeleteTitle {
+            get {
+                return ResourceManager.GetString("StateDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this form to edit the details of an existing state. You can update the object type, state type, name, description, and sequence order. Ensure all changes are accurate before saving..
+        /// </summary>
+        public static string StateEditInfo {
+            get {
+                return ResourceManager.GetString("StateEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit State.
+        /// </summary>
+        public static string StateEditTitle {
+            get {
+                return ResourceManager.GetString("StateEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this page to import states from a predefined list or external source. This functionality allows you to quickly integrate multiple states into the system, ensuring consistency and efficiency..
+        /// </summary>
+        public static string StateImportInfo {
+            get {
+                return ResourceManager.GetString("StateImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import States.
+        /// </summary>
+        public static string StateImportTitle {
+            get {
+                return ResourceManager.GetString("StateImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page provides an overview of all custom states available for various objects such as projects, constraints, and requirements. You can view the list of states, their descriptions, and their current status..
+        /// </summary>
+        public static string StateIndexInfo {
+            get {
+                return ResourceManager.GetString("StateIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State Management.
+        /// </summary>
+        public static string StateIndexTitle {
+            get {
+                return ResourceManager.GetString("StateIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No states found.
+        /// </summary>
+        public static string StateNoResults {
+            get {
+                return ResourceManager.GetString("StateNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to States.
+        /// </summary>
+        public static string States {
+            get {
+                return ResourceManager.GetString("States", resourceCulture);
             }
         }
         

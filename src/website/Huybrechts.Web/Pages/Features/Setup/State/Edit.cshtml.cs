@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-using Flow = Huybrechts.App.Features.Project.ProjectInfoFlow;
+using Flow = Huybrechts.App.Features.Setup.SetupStateFlow;
 
-namespace Huybrechts.Web.Pages.Features.Project;
+namespace Huybrechts.Web.Pages.Features.Setup.State;
 
-[Authorize(Policy = TenantPolicies.IsContributor)]
+[Authorize(Policy = TenantPolicies.IsManager)]
 public class EditModel : PageModel
 {
     private readonly IMediator _mediator;

@@ -118,19 +118,25 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DUPLICATE_SETUPCOUNTRY_CODE" xml:space="preserve">
-    <value>Duplicate country name for {0}</value>
-  </data>
-  <data name="DUPLICATE_SETUPCOUNTRY_NAME" xml:space="preserve">
     <value>Duplicate country code for {0}</value>
   </data>
+  <data name="DUPLICATE_SETUPCOUNTRY_NAME" xml:space="preserve">
+    <value>Duplicate country name for {0}</value>
+  </data>
   <data name="DUPLICATE_SETUPCURRENCY_CODE" xml:space="preserve">
-    <value>Duplicate currency name for {0}</value>
+    <value>Duplicate currency code for {0}</value>
   </data>
   <data name="DUPLICATE_SETUPCURRENCY_NAME" xml:space="preserve">
     <value>Duplicate currency name for {0}</value>
   </data>
+  <data name="DUPLICATE_SETUPLANGUAGE_CODE" xml:space="preserve">
+    <value>Duplicate language code for {0}</value>
+  </data>
   <data name="DUPLICATE_SETUPLANGUAGE_NAME" xml:space="preserve">
-    <value>Duplicate language for {0}</value>
+    <value>Duplicate language name for {0}</value>
+  </data>
+  <data name="DUPLICATE_SETUPSTATE_NAME" xml:space="preserve">
+    <value>Duplicate system state name for {0}</value>
   </data>
   <data name="DUPLICATE_SETUPUNIT_NAME" xml:space="preserve">
     <value>Duplicate system unit for {0}</value>
@@ -143,6 +149,9 @@
   </data>
   <data name="INVALID_SETUPLANGUAGE_ID" xml:space="preserve">
     <value>Unable to find language with ID {0}</value>
+  </data>
+  <data name="INVALID_SETUPSTATE_ID" xml:space="preserve">
+    <value>Unable to find system state with ID {0}</value>
   </data>
   <data name="INVALID_SETUPUNIT_ID" xml:space="preserve">
     <value>Unable to find system unit with ID {0}</value>

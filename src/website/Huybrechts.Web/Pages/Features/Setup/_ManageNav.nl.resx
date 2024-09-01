@@ -129,6 +129,9 @@
   <data name="Setup" xml:space="preserve">
     <value>Instellingen</value>
   </data>
+  <data name="States" xml:space="preserve">
+    <value>Statussen</value>
+  </data>
   <data name="System units" xml:space="preserve">
     <value>Eenheden</value>
   </data>

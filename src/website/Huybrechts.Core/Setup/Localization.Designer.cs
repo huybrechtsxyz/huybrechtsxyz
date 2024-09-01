@@ -61,6 +61,24 @@ namespace Huybrechts.Core.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project.
+        /// </summary>
+        public static string ObjectType_Project {
+            get {
+                return ResourceManager.GetString("ObjectType_Project", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For projects.
+        /// </summary>
+        public static string ObjectType_Project_d {
+            get {
+                return ResourceManager.GetString("ObjectType_Project_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Substance.
         /// </summary>
         public static string SetupUnitType_AmountOfSubstance {
@@ -345,6 +363,114 @@ namespace Huybrechts.Core.Setup {
         public static string SetupUnitType_Volume_d {
             get {
                 return ResourceManager.GetString("SetupUnitType_Volume_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        public static string StateType_Completed {
+            get {
+                return ResourceManager.GetString("StateType_Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marks that the object has been fully completed..
+        /// </summary>
+        public static string StateType_Completed_d {
+            get {
+                return ResourceManager.GetString("StateType_Completed_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In Progress.
+        /// </summary>
+        public static string StateType_InProgress {
+            get {
+                return ResourceManager.GetString("StateType_InProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The object is in progress..
+        /// </summary>
+        public static string StateType_InProgress_d {
+            get {
+                return ResourceManager.GetString("StateType_InProgress_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New.
+        /// </summary>
+        public static string StateType_New {
+            get {
+                return ResourceManager.GetString("StateType_New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Represents a new object within the platform..
+        /// </summary>
+        public static string StateType_New_d {
+            get {
+                return ResourceManager.GetString("StateType_New_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Proposed.
+        /// </summary>
+        public static string StateType_Proposed {
+            get {
+                return ResourceManager.GetString("StateType_Proposed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The object has been suggested..
+        /// </summary>
+        public static string StateType_Proposed_d {
+            get {
+                return ResourceManager.GetString("StateType_Proposed_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removed.
+        /// </summary>
+        public static string StateType_Removed {
+            get {
+                return ResourceManager.GetString("StateType_Removed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Indicates that the object has been removed or cancelled..
+        /// </summary>
+        public static string StateType_Removed_d {
+            get {
+                return ResourceManager.GetString("StateType_Removed_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resolved.
+        /// </summary>
+        public static string StateType_Resolved {
+            get {
+                return ResourceManager.GetString("StateType_Resolved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A solution has been found..
+        /// </summary>
+        public static string StateType_Resolved_d {
+            get {
+                return ResourceManager.GetString("StateType_Resolved_d", resourceCulture);
             }
         }
     }

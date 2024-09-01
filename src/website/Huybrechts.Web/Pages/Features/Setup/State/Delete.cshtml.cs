@@ -6,26 +6,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-using Flow = Huybrechts.App.Features.Project.ProjectInfoFlow;
+using Flow = Huybrechts.App.Features.Setup.SetupStateFlow;
 
-namespace Huybrechts.Web.Pages.Features.Project;
+namespace Huybrechts.Web.Pages.Features.Setup.State;
 
-[Authorize(Policy = TenantPolicies.IsContributor)]
-public class EditModel : PageModel
+[Authorize(Policy = TenantPolicies.IsManager)]
+public class DeleteModel : PageModel
 {
     private readonly IMediator _mediator;
-    private readonly IValidator<Flow.UpdateQuery> _getValidator;
-    private readonly IValidator<Flow.UpdateCommand> _postValidator;
+    private readonly IValidator<Flow.DeleteQuery> _getValidator;
+    private readonly IValidator<Flow.DeleteCommand> _postValidator;
 
     [BindProperty]
-    public Flow.UpdateCommand Data { get; set; } = new();
+    public Flow.DeleteCommand Data { get; set; } = new();
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    public EditModel(IMediator mediator,
-        IValidator<Flow.UpdateQuery> getValidator,
-        IValidator<Flow.UpdateCommand> postValidator)
+    public DeleteModel(IMediator mediator,
+        IValidator<Flow.DeleteQuery> getValidator, 
+        IValidator<Flow.DeleteCommand> postValidator)
     {
         _mediator = mediator;
         _getValidator = getValidator;
@@ -36,18 +36,21 @@ public class EditModel : PageModel
     {
         try
         {
-            Flow.UpdateQuery message = new() { Id = id };
-            
+            Flow.DeleteQuery message = new() { Id = id };
+
             ValidationResult state = await _getValidator.ValidateAsync(message);
             if (!state.IsValid)
                 return BadRequest(state);
-                        
+
             var result = await _mediator.Send(message) ?? new();
             if (result.HasStatusMessage())
                 StatusMessage = result.ToStatusMessage();
 
             if (result.IsFailed)
                 return RedirectToPage(nameof(Index));
+
+            if (result.HasStatusMessage())
+                StatusMessage = result.ToStatusMessage();
 
             Data = result.Value;
             return Page();
@@ -65,14 +68,14 @@ public class EditModel : PageModel
             ValidationResult state = await _postValidator.ValidateAsync(Data);
             if (!state.IsValid)
             {
-                state.AddToModelState(ModelState);
+                state.AddToModelState(this.ModelState);
                 return Page();
             }
 
             var result = await _mediator.Send(Data);
             if (result.IsFailed)
             {
-                result.AddToModelState(ModelState);
+                state.AddToModelState(this.ModelState);
                 return BadRequest(ModelState);
             }
 

@@ -97,6 +97,78 @@ namespace Huybrechts.Web.Pages.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use this form to add a new design for your project. Provide details about the proposed solution, including its name and description..
+        /// </summary>
+        public static string DesignCreateInfo {
+            get {
+                return ResourceManager.GetString("DesignCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create New Project Design.
+        /// </summary>
+        public static string DesignCreateTitle {
+            get {
+                return ResourceManager.GetString("DesignCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this project design? This action cannot be undone and will remove the design from the project permanently..
+        /// </summary>
+        public static string DesignDeleteInfo {
+            get {
+                return ResourceManager.GetString("DesignDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Project Design.
+        /// </summary>
+        public static string DesignDeleteTitle {
+            get {
+                return ResourceManager.GetString("DesignDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this form to update the details of an existing project design. Make changes to the design&apos;s name or description and save your updates..
+        /// </summary>
+        public static string DesignEditInfo {
+            get {
+                return ResourceManager.GetString("DesignEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Project Design.
+        /// </summary>
+        public static string DesignEditTitle {
+            get {
+                return ResourceManager.GetString("DesignEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page lists all the designs for the selected project. Here, you can view, edit, or delete existing designs or create a new design to propose different solutions..
+        /// </summary>
+        public static string DesignIndexInfo {
+            get {
+                return ResourceManager.GetString("DesignIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Designs.
+        /// </summary>
+        public static string DesignIndexTitle {
+            get {
+                return ResourceManager.GetString("DesignIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Use this form to create a new project. Fill in all required fields, such as project name, description, and start date, to add a new project to the platform..
         /// </summary>
         public static string InfoCreateInfo {
@@ -183,6 +255,24 @@ namespace Huybrechts.Web.Pages.Features.Project {
         public static string Next {
             get {
                 return ResourceManager.GetString("Next", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage your projects.
+        /// </summary>
+        public static string PageInfo {
+            get {
+                return ResourceManager.GetString("PageInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Management.
+        /// </summary>
+        public static string PageTitle {
+            get {
+                return ResourceManager.GetString("PageTitle", resourceCulture);
             }
         }
         

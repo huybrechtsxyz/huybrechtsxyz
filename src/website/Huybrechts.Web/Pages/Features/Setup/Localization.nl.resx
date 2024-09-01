@@ -246,6 +246,9 @@
   <data name="Next" xml:space="preserve">
     <value>Volgende</value>
   </data>
+  <data name="NoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
+  </data>
   <data name="Previous" xml:space="preserve">
     <value>Vorige</value>
   </data>
@@ -257,6 +260,45 @@
   </data>
   <data name="Setup" xml:space="preserve">
     <value>Instellingen</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="StateCreateInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om een nieuwe status te maken. Geef de benodigde gegevens op, inclusief het objecttype, de statusstype, naam, beschrijving en volgorde. Dit stelt u in status om de staten binnen uw platform te beheren en te organiseren.</value>
+  </data>
+  <data name="StateCreateTitle" xml:space="preserve">
+    <value>Nieuwe Status Toevoegen</value>
+  </data>
+  <data name="StateDeleteInfo" xml:space="preserve">
+    <value>Weet u zeker dat u deze status wilt verwijderen? Deze actie is onomkeerbaar en zal de status uit het systeem verwijderen. Zorg ervoor dat de staat niet langer nodig is voordat u doorgaat.</value>
+  </data>
+  <data name="StateDeleteTitle" xml:space="preserve">
+    <value>Status Verwijderen</value>
+  </data>
+  <data name="StateEditInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om de gegevens van een bestaande status te bewerken. U kunt het objecttype, statusstype, naam, beschrijving en volgorde bijwerken. Zorg ervoor dat alle wijzigingen correct zijn voordat u opslaat.</value>
+  </data>
+  <data name="StateEditTitle" xml:space="preserve">
+    <value>Status Bewerken</value>
+  </data>
+  <data name="StateImportInfo" xml:space="preserve">
+    <value>Gebruik deze pagina om staten te importeren vanuit een vooraf gedefinieerde lijst. Deze functionaliteit stelt u in staat om snel meerdere staten in het systeem te integreren, wat zorgt voor consistentie en efficiëntie.</value>
+  </data>
+  <data name="StateImportTitle" xml:space="preserve">
+    <value>Importeren</value>
+  </data>
+  <data name="StateIndexInfo" xml:space="preserve">
+    <value>Deze pagina biedt een overzicht van alle aangepaste statussen die beschikbaar zijn voor verschillende objecten zoals projecten, beperkingen en vereisten. U kunt de lijst met statussen, hun beschrijvingen en hun huidige status bekijken.</value>
+  </data>
+  <data name="StateIndexTitle" xml:space="preserve">
+    <value>Statusbeheer</value>
+  </data>
+  <data name="StateNoResults" xml:space="preserve">
+    <value>Geen statussen gevonden</value>
+  </data>
+  <data name="States" xml:space="preserve">
+    <value>Statussen</value>
   </data>
   <data name="UnitCreateInfo" xml:space="preserve">
     <value>Gebruik dit formulier om een nieuwe meeteenheid te maken. Zorg ervoor dat alle velden correct zijn ingevuld om de attributen van de eenheid te definiëren, inclusief het type, de naam en de omrekenfactor.</value>

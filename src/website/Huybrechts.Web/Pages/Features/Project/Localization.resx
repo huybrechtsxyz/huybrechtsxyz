@@ -129,6 +129,30 @@
   <data name="Clear Filter" xml:space="preserve">
     <value>Clear Filter</value>
   </data>
+  <data name="DesignCreateInfo" xml:space="preserve">
+    <value>Use this form to add a new design for your project. Provide details about the proposed solution, including its name and description.</value>
+  </data>
+  <data name="DesignCreateTitle" xml:space="preserve">
+    <value>Create New Project Design</value>
+  </data>
+  <data name="DesignDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this project design? This action cannot be undone and will remove the design from the project permanently.</value>
+  </data>
+  <data name="DesignDeleteTitle" xml:space="preserve">
+    <value>Delete Project Design</value>
+  </data>
+  <data name="DesignEditInfo" xml:space="preserve">
+    <value>Use this form to update the details of an existing project design. Make changes to the design's name or description and save your updates.</value>
+  </data>
+  <data name="DesignEditTitle" xml:space="preserve">
+    <value>Edit Project Design</value>
+  </data>
+  <data name="DesignIndexInfo" xml:space="preserve">
+    <value>This page lists all the designs for the selected project. Here, you can view, edit, or delete existing designs or create a new design to propose different solutions.</value>
+  </data>
+  <data name="DesignIndexTitle" xml:space="preserve">
+    <value>Project Designs</value>
+  </data>
   <data name="InfoCreateInfo" xml:space="preserve">
     <value>Use this form to create a new project. Fill in all required fields, such as project name, description, and start date, to add a new project to the platform.</value>
   </data>
@@ -158,6 +182,12 @@
   </data>
   <data name="Next" xml:space="preserve">
     <value>Next</value>
+  </data>
+  <data name="PageInfo" xml:space="preserve">
+    <value>Manage your projects</value>
+  </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Project Management</value>
   </data>
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>

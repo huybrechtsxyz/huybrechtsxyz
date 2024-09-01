@@ -246,6 +246,9 @@
   <data name="Next" xml:space="preserve">
     <value>Next</value>
   </data>
+  <data name="NoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
   </data>
@@ -257,6 +260,45 @@
   </data>
   <data name="Setup" xml:space="preserve">
     <value>Setup</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="StateCreateInfo" xml:space="preserve">
+    <value>Use this form to create a new state. Provide the necessary details, including the object type, state type, name, description, and sequence order. This will allow you to manage and organize the states within your platform.</value>
+  </data>
+  <data name="StateCreateTitle" xml:space="preserve">
+    <value>Add New State</value>
+  </data>
+  <data name="StateDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this state? This action is irreversible and will remove the state from the system. Make sure that the state is no longer needed before proceeding.</value>
+  </data>
+  <data name="StateDeleteTitle" xml:space="preserve">
+    <value>Delete State</value>
+  </data>
+  <data name="StateEditInfo" xml:space="preserve">
+    <value>Use this form to edit the details of an existing state. You can update the object type, state type, name, description, and sequence order. Ensure all changes are accurate before saving.</value>
+  </data>
+  <data name="StateEditTitle" xml:space="preserve">
+    <value>Edit State</value>
+  </data>
+  <data name="StateImportInfo" xml:space="preserve">
+    <value>Use this page to import states from a predefined list or external source. This functionality allows you to quickly integrate multiple states into the system, ensuring consistency and efficiency.</value>
+  </data>
+  <data name="StateImportTitle" xml:space="preserve">
+    <value>Import States</value>
+  </data>
+  <data name="StateIndexInfo" xml:space="preserve">
+    <value>This page provides an overview of all custom states available for various objects such as projects, constraints, and requirements. You can view the list of states, their descriptions, and their current status.</value>
+  </data>
+  <data name="StateIndexTitle" xml:space="preserve">
+    <value>State Management</value>
+  </data>
+  <data name="StateNoResults" xml:space="preserve">
+    <value>No states found</value>
+  </data>
+  <data name="States" xml:space="preserve">
+    <value>States</value>
   </data>
   <data name="UnitCreateInfo" xml:space="preserve">
     <value>se this form to create a new unit of measurement. Ensure all fields are correctly filled out to define the unit’s attributes, including its type, name, and conversion factor.</value>

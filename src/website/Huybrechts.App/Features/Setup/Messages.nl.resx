@@ -129,8 +129,14 @@
   <data name="DUPLICATE_SETUPCURRENCY_NAME" xml:space="preserve">
     <value>Munteenheid met naam {0} bestaat al</value>
   </data>
+  <data name="DUPLICATE_SETUPLANGUAGE_CODE" xml:space="preserve">
+    <value>Taal met kode {0} bestaat al</value>
+  </data>
   <data name="DUPLICATE_SETUPLANGUAGE_NAME" xml:space="preserve">
     <value>Taal met naam {0} bestaat al</value>
+  </data>
+  <data name="DUPLICATE_SETUPSTATE_NAME" xml:space="preserve">
+    <value>Status met naam {0} bestaat al</value>
   </data>
   <data name="DUPLICATE_SETUPUNIT_NAME" xml:space="preserve">
     <value>Systeemeenheid met naam {0} bestaat al</value>
@@ -143,6 +149,9 @@
   </data>
   <data name="INVALID_SETUPLANGUAGE_ID" xml:space="preserve">
     <value>Kan taal met ID {0} niet vinden</value>
+  </data>
+  <data name="INVALID_SETUPSTATE_ID" xml:space="preserve">
+    <value>Kan status met ID {0} niet vinden</value>
   </data>
   <data name="INVALID_SETUPUNIT_ID" xml:space="preserve">
     <value>Kan systeemeenheid met ID {0} niet vinden</value>

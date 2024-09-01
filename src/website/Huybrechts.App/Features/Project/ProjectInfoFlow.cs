@@ -3,7 +3,10 @@ using AutoMapper.QueryableExtensions;
 using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
+using Huybrechts.App.Features.Setup;
+using Huybrechts.Core.Platform;
 using Huybrechts.Core.Project;
+using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -160,7 +163,14 @@ public static class ProjectInfoFlow
 
     public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
 
-    public sealed record CreateCommand : Model, IRequest<Result<Ulid>> { }
+    public sealed record CreateQuery : IRequest<Result<CreateCommand>> { }
+
+    public sealed class CreateQueryValidator : AbstractValidator<CreateQuery> { public CreateQueryValidator() { } }
+
+    public sealed record CreateCommand : Model, IRequest<Result<Ulid>> 
+    {
+        public List<SetupState> States { get; set; } = [];
+    }
 
     public sealed class CreateValidator : ModelValidator<CreateCommand> 
     {
@@ -176,11 +186,30 @@ public static class ProjectInfoFlow
         }
     }
 
-    internal sealed class CreateHandler : IRequestHandler<CreateCommand, Result<Ulid>>
+    internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCommand>>
     {
         private readonly FeatureContext _dbcontext;
 
-        public CreateHandler(FeatureContext dbcontext)
+        public CreateQueryHandler(FeatureContext dbcontext)
+        {
+            _dbcontext = dbcontext;
+        }
+
+        public async Task<Result<CreateCommand>> Handle(CreateQuery message, CancellationToken token)
+        {
+            CreateCommand command = CreateNew();
+
+            command.States = await SetupStateFlow.GetProjectStatesAync(_dbcontext);
+
+            return Result.Ok(command);
+        }
+    }
+
+    internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Result<Ulid>>
+    {
+        private readonly FeatureContext _dbcontext;
+
+        public CreateCommandHandler(FeatureContext dbcontext)
         {
             _dbcontext = dbcontext;
         }
@@ -231,7 +260,10 @@ public static class ProjectInfoFlow
         }
     }
 
-    public record UpdateCommand : Model, IRequest<Result> { }
+    public record UpdateCommand : Model, IRequest<Result> 
+    {
+        public List<SetupState> States { get; set; } = [];
+    }
 
     public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
     {
@@ -271,6 +303,8 @@ public static class ProjectInfoFlow
 
             if (command is null)
                 return RecordNotFound(message.Id ?? Ulid.Empty);
+
+            command.States = await SetupStateFlow.GetProjectStatesAync(_dbcontext);
 
             return Result.Ok(command);
         }

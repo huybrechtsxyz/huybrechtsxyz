@@ -629,6 +629,115 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectInfo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
+                        .HasComment("Primary Key");
+
+                    b.Property<int?>("BusinessValue")
+                        .HasColumnType("INTEGER")
+                        .HasComment("Gets or sets the business value of the project.");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasComment("Code of the Project.");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("TEXT")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasComment("Detailed description of the Project.");
+
+                    b.Property<int?>("Effort")
+                        .HasColumnType("INTEGER")
+                        .HasComment("Gets or sets the effort required for the project.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("TEXT")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasComment("Name of the Project.");
+
+                    b.Property<string>("ParentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Priority")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasComment("Gets or sets the priority of the project.");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("INTEGER")
+                        .HasComment("Gets or sets the rating of the project, reflecting its priority, quality, or stakeholder approval.");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasComment("Gets or sets the reason for the current state of the project.");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("TEXT")
+                        .HasComment("Additional remarks or comments about the Project.");
+
+                    b.Property<string>("Risk")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasComment("Gets or sets the risk of the project.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("TEXT")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("TEXT")
+                        .HasComment("Gets or sets the start date for the project.");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasComment("Gets or sets the current state of the project.");
+
+                    b.Property<DateTime?>("TargetDate")
+                        .HasColumnType("TEXT")
+                        .HasComment("Gets or sets the target completion date for the project.");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("BLOB")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("SearchIndex");
+
+                    b.ToTable("Project", t =>
+                        {
+                            t.HasComment("Table storing information about Projects that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupCountry", b =>
                 {
                     b.Property<string>("Id")
@@ -666,6 +775,11 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("SetupLanguageId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -679,11 +793,24 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("SearchIndex");
+
                     b.HasIndex("SetupCurrencyId");
 
                     b.HasIndex("SetupLanguageId");
 
-                    b.ToTable("SetupCountries");
+                    b.ToTable("SetupCountry", t =>
+                        {
+                            t.HasComment("Represents information about different countries, including their codes, names, and associated details.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupCurrency", b =>
@@ -718,6 +845,11 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                         .HasColumnType("TEXT")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -726,7 +858,20 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.ToTable("SetupCurrencies");
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("SearchIndex");
+
+                    b.ToTable("SetupCurrency", t =>
+                        {
+                            t.HasComment("Represents a currency entity with detailed information such as code, name, description, and associated country code.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupLanguage", b =>
@@ -761,6 +906,11 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                         .HasColumnType("TEXT")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -774,7 +924,82 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.ToTable("SetupLanguages");
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("SearchIndex");
+
+                    b.ToTable("SetupLanguage", t =>
+                        {
+                            t.HasComment("Represents a currency entity with detailed information such as code, name, description, and associated country code.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Setup.SetupState", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
+                        .HasComment("Primary Key");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("TEXT")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("TEXT")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ObjectType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("TEXT")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<int>("Sequence")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("StateType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("BLOB")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SearchIndex");
+
+                    b.HasIndex("ObjectType", "Name")
+                        .IsUnique();
+
+                    b.ToTable("SetupState", t =>
+                        {
+                            t.HasComment("Represents a custom state that can be applied to various objects, such as projects, constraints, requirements, and more.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupUnit", b =>

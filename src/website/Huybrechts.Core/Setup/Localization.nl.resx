@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ObjectType_Project" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="ObjectType_Project_d" xml:space="preserve">
+    <value>Voor projecten</value>
+  </data>
   <data name="SetupUnitType_AmountOfSubstance" xml:space="preserve">
     <value>Stof</value>
   </data>
@@ -212,5 +218,41 @@
   </data>
   <data name="SetupUnitType_Volume_d" xml:space="preserve">
     <value>Eenheden voor het meten van volume</value>
+  </data>
+  <data name="StateType_Completed" xml:space="preserve">
+    <value>Voltooid</value>
+  </data>
+  <data name="StateType_Completed_d" xml:space="preserve">
+    <value>Geeft aan dat het object volledig is voltooid.</value>
+  </data>
+  <data name="StateType_InProgress" xml:space="preserve">
+    <value>Bezig</value>
+  </data>
+  <data name="StateType_InProgress_d" xml:space="preserve">
+    <value>Het object is in uitvoering.</value>
+  </data>
+  <data name="StateType_New" xml:space="preserve">
+    <value>Nieuw</value>
+  </data>
+  <data name="StateType_New_d" xml:space="preserve">
+    <value>Vertegenwoordigt een nieuw object binnen het platform.</value>
+  </data>
+  <data name="StateType_Proposed" xml:space="preserve">
+    <value>Voorgesteld</value>
+  </data>
+  <data name="StateType_Proposed_d" xml:space="preserve">
+    <value>Het object is voorgesteld.</value>
+  </data>
+  <data name="StateType_Removed" xml:space="preserve">
+    <value>Verwijderd</value>
+  </data>
+  <data name="StateType_Removed_d" xml:space="preserve">
+    <value>Geeft aan dat het object is verwijderd of geannuleerd.</value>
+  </data>
+  <data name="StateType_Resolved" xml:space="preserve">
+    <value>Opgelost</value>
+  </data>
+  <data name="StateType_Resolved_d" xml:space="preserve">
+    <value>Er is een oplossing gevonden.</value>
   </data>
 </root>

@@ -160,6 +160,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Object type.
+        /// </summary>
+        public static string ObjectType {
+            get {
+                return ResourceManager.GetString("ObjectType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Precision.
         /// </summary>
         public static string Precision {
@@ -183,6 +192,24 @@ namespace Huybrechts.App.Features.Setup {
         public static string Remark {
             get {
                 return ResourceManager.GetString("Remark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sequence.
+        /// </summary>
+        public static string Sequence {
+            get {
+                return ResourceManager.GetString("Sequence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State type.
+        /// </summary>
+        public static string StateType {
+            get {
+                return ResourceManager.GetString("StateType", resourceCulture);
             }
         }
         

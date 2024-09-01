@@ -150,6 +150,9 @@
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="ObjectType" xml:space="preserve">
+    <value>Object type</value>
+  </data>
   <data name="Precision" xml:space="preserve">
     <value>Precision</value>
   </data>
@@ -158,6 +161,12 @@
   </data>
   <data name="Remark" xml:space="preserve">
     <value>Remark</value>
+  </data>
+  <data name="Sequence" xml:space="preserve">
+    <value>Sequence</value>
+  </data>
+  <data name="StateType" xml:space="preserve">
+    <value>State type</value>
   </data>
   <data name="TranslatedName" xml:space="preserve">
     <value>Translated name</value>

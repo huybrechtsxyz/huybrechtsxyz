@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Finbuckle.MultiTenant;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Huybrechts.Core.Setup;
 
@@ -10,6 +12,12 @@ namespace Huybrechts.Core.Setup;
 /// This class provides essential information about each country, such as its ISO code, official language, currency, and more.
 /// The ISOCode is always stored in uppercase to ensure consistency across various data operations.
 /// </remarks>
+[MultiTenant]
+[Table("SetupCountry")]
+[Index(nameof(Code), IsUnique = true)]
+[Index(nameof(Name), IsUnique = true)]
+[Index(nameof(SearchIndex))]
+[Comment("Represents information about different countries, including their codes, names, and associated details.")]
 public record SetupCountry : Entity, IEntity
 {
     /// <summary>

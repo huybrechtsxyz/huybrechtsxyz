@@ -15,25 +15,36 @@ using System.Text.Json.Serialization;
 
 namespace Huybrechts.App.Features.Setup;
 
-public static class SetupLanguageFlow
+public static class SetupStateFlow
 {
+    public static async Task<List<SetupState>> GetProjectStatesAync(FeatureContext context)
+        => await context.Set<SetupState>()
+            .Where(q => q.ObjectType == ObjectType.Project)
+            .OrderBy(o => o.ObjectType).ThenBy(o => o.Sequence).ThenBy(o => o.Name)
+            .ToListAsync();
+
     public record Model
     {
         public Ulid Id { get; init; }
 
-        [Display(Name = nameof(Code), ResourceType = typeof(Localization))]
-        public string Code { get; set; } = string.Empty;
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        [Display(Name = nameof(ObjectType), ResourceType = typeof(Localization))]
+        public ObjectType ObjectType { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        [Display(Name = nameof(StateType), ResourceType = typeof(Localization))]
+        public StateType StateType { get; set; }
 
         [Display(Name = nameof(Name), ResourceType = typeof(Localization))]
         public string Name { get; set; } = string.Empty;
 
+        [Display(Name = nameof(Sequence), ResourceType = typeof(Localization))]
+        public int Sequence { get; set; } = 0;
+
         [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
         public string? Description { get; set; }
 
-        [Display(Name = nameof(TranslatedName), ResourceType = typeof(Localization))]
-        public string TranslatedName { get; set; } = string.Empty;
-
-        public string SearchIndex => $"{Code}~{Name}~{TranslatedName}".ToUpperInvariant();
+        public string SearchIndex => $"{Name}~{Description}".ToUpperInvariant();
     }
 
     public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -41,23 +52,24 @@ public static class SetupLanguageFlow
         public ModelValidator()
         {
             RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
-            RuleFor(m => m.Code).NotEmpty().Length(1, 10);
+            RuleFor(m => m.ObjectType).NotEmpty();
+            RuleFor(m => m.StateType).NotEmpty();
             RuleFor(m => m.Name).NotEmpty().Length(1, 128);
+            RuleFor(m => m.Sequence).NotNull();
             RuleFor(m => m.Description).Length(0, 256);
-            RuleFor(m => m.TranslatedName).NotEmpty().Length(1, 128);
         }
     }
 
-    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPLANGUAGE_ID.Replace("{0}", id.ToString()));
+    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPSTATE_ID.Replace("{0}", id.ToString()));
 
-    private static Result DuplicateFound(string name) => Result.Fail(Messages.DUPLICATE_SETUPLANGUAGE_NAME.Replace("{0}", name.ToString()));
+    private static Result DuplicateFound(string name) => Result.Fail(Messages.DUPLICATE_SETUPSTATE_NAME.Replace("{0}", name.ToString()));
 
-    public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid? currentId = null)
+    public static async Task<bool> IsDuplicateNameAsync(DbContext context, ObjectType objectType, string name, Ulid? currentId = null)
     {
         name = name.ToLower().Trim();
 
-        return await context.Set<SetupLanguage>()
-            .AnyAsync(pr => pr.Name.ToLower() == name
+        return await context.Set<SetupState>()
+            .AnyAsync(pr => pr.ObjectType == objectType && pr.Name.ToLower() == name
                          && (!currentId.HasValue || pr.Id != currentId.Value));
     }
 
@@ -67,7 +79,7 @@ public static class SetupLanguageFlow
 
     public sealed record ListModel : Model { }
 
-    internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<SetupLanguage, ListModel>(); }
+    internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<SetupState, ListModel>(); }
 
     public sealed class ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
 
@@ -76,7 +88,7 @@ public static class SetupLanguageFlow
     public sealed class ListResult : EntityListFlow.Result<ListModel> { }
 
     internal sealed class ListHandler :
-        EntityListFlow.Handler<SetupLanguage, ListModel>,
+        EntityListFlow.Handler<SetupState, ListModel>,
         IRequestHandler<ListQuery, Result<ListResult>>
     {
         public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -86,7 +98,7 @@ public static class SetupLanguageFlow
 
         public async Task<Result<ListResult>> Handle(ListQuery message, CancellationToken token)
         {
-            IQueryable<SetupLanguage> query = _dbcontext.Set<SetupLanguage>();
+            IQueryable<SetupState> query = _dbcontext.Set<SetupState>();
 
             var searchString = message.SearchText ?? message.CurrentFilter;
             if (!string.IsNullOrEmpty(searchString))
@@ -99,7 +111,7 @@ public static class SetupLanguageFlow
             {
                 query = query.OrderBy(message.SortOrder);
             }
-            else query = query.OrderBy(o => o.Name);
+            else query = query.OrderBy(o => o.ObjectType).ThenBy(o => o.Sequence).ThenBy(o => o.Name);
 
             int pageSize = EntityListFlow.PageSize;
             int pageNumber = message.Page ?? 1;
@@ -132,17 +144,11 @@ public static class SetupLanguageFlow
         public CreateValidator(FeatureContext dbContext) :
             base()
         {
-            RuleFor(x => x.Code).MustAsync(async (code, cancellation) =>
+            RuleFor(x => x).MustAsync(async (rec, cancellation) =>
             {
-                bool exists = await IsDuplicateNameAsync(dbContext, code);
+                bool exists = await IsDuplicateNameAsync(dbContext, rec.ObjectType, rec.Name);
                 return !exists;
-            }).WithMessage(x => Messages.DUPLICATE_SETUPLANGUAGE_CODE.Replace("{0}", x.Code.ToString()));
-
-            RuleFor(x => x.Name).MustAsync(async (name, cancellation) =>
-            {
-                bool exists = await IsDuplicateNameAsync(dbContext, name);
-                return !exists;
-            }).WithMessage(x => Messages.DUPLICATE_SETUPLANGUAGE_NAME.Replace("{0}", x.Name.ToString()));
+            }).WithMessage(x => Messages.DUPLICATE_SETUPSTATE_NAME.Replace("{0}", x.Name.ToString()));
         }
     }
 
@@ -157,21 +163,21 @@ public static class SetupLanguageFlow
 
         public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
         {
-            if (await IsDuplicateNameAsync(_dbcontext, message.Name))
+            if (await IsDuplicateNameAsync(_dbcontext, message.ObjectType, message.Name))
                 return DuplicateFound(message.Name);
 
-            var record = new SetupLanguage
+            var record = new SetupState
             {
                 Id = message.Id,
-                Code = message.Code.ToUpper().Trim(),
+                ObjectType = message.ObjectType,
+                StateType = message.StateType,
                 Name = message.Name.Trim(),
                 Description = message.Description?.Trim(),
+                Sequence = message.Sequence,
                 SearchIndex = message.SearchIndex,
-                CreatedDT = DateTime.UtcNow,
-
-                TranslatedName = message.TranslatedName
+                CreatedDT = DateTime.UtcNow
             };
-            await _dbcontext.Set<SetupLanguage>().AddAsync(record, token);
+            await _dbcontext.Set<SetupState>().AddAsync(record, token);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok(record.Id);
         }
@@ -199,21 +205,15 @@ public static class SetupLanguageFlow
         {
             RuleFor(x => x).MustAsync(async (rec, cancellation) =>
             {
-                bool exists = await IsDuplicateNameAsync(dbContext, rec.Code, rec.Id);
+                bool exists = await IsDuplicateNameAsync(dbContext, rec.ObjectType, rec.Name, rec.Id);
                 return !exists;
-            }).WithMessage(x => Messages.DUPLICATE_SETUPLANGUAGE_CODE.Replace("{0}", x.Code.ToString()));
-
-            RuleFor(x => x).MustAsync(async (rec, cancellation) =>
-            {
-                bool exists = await IsDuplicateNameAsync(dbContext, rec.Name, rec.Id);
-                return !exists;
-            }).WithMessage(x => Messages.DUPLICATE_SETUPLANGUAGE_NAME.Replace("{0}", x.Name.ToString()));
+            }).WithMessage(x => Messages.DUPLICATE_SETUPSTATE_NAME.Replace("{0}", x.Name.ToString()));
         }
     }
 
     internal class UpdateCommandMapping : Profile 
     { 
-        public UpdateCommandMapping() => CreateProjection<SetupLanguage, UpdateCommand>(); 
+        public UpdateCommandMapping() => CreateProjection<SetupState, UpdateCommand>(); 
     }
 
     internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
@@ -229,7 +229,7 @@ public static class SetupLanguageFlow
 
         public async Task<Result<UpdateCommand>> Handle(UpdateQuery message, CancellationToken token)
         {
-            var command = await _dbcontext.Set<SetupLanguage>()
+            var command = await _dbcontext.Set<SetupState>()
                 .ProjectTo<UpdateCommand>(_configuration)
                 .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
 
@@ -251,22 +251,22 @@ public static class SetupLanguageFlow
 
         public async Task<Result> Handle(UpdateCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<SetupLanguage>().FindAsync([message.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<SetupState>().FindAsync([message.Id], cancellationToken: token);
             if (record is null)
                 return RecordNotFound(message.Id);
 
-            if (await IsDuplicateNameAsync(_dbcontext, message.Name, record.Id))
+            if (await IsDuplicateNameAsync(_dbcontext, message.ObjectType, message.Name, record.Id))
                 return DuplicateFound(message.Name);
 
-            record.Code = message.Code.ToUpper().Trim();
+            record.ObjectType = message.ObjectType;
+            record.StateType = message.StateType;
             record.Name = message.Name.Trim();
             record.Description = message.Description?.Trim();
+            record.Sequence = message.Sequence;
             record.SearchIndex = message.SearchIndex;
             record.ModifiedDT = DateTime.UtcNow;
 
-            record.TranslatedName = message.TranslatedName;
-
-            _dbcontext.Set<SetupLanguage>().Update(record);
+            _dbcontext.Set<SetupState>().Update(record);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();
         }
@@ -300,7 +300,7 @@ public static class SetupLanguageFlow
     {
         public DeleteCommandMapping()
         {
-            CreateProjection<SetupLanguage, DeleteCommand>();
+            CreateProjection<SetupState, DeleteCommand>();
         }
     }
 
@@ -317,7 +317,7 @@ public static class SetupLanguageFlow
 
         public async Task<Result<DeleteCommand>> Handle(DeleteQuery message, CancellationToken token)
         {
-            var command = await _dbcontext.Set<SetupLanguage>()
+            var command = await _dbcontext.Set<SetupState>()
                 .ProjectTo<DeleteCommand>(_configuration)
                 .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
 
@@ -339,11 +339,11 @@ public static class SetupLanguageFlow
 
         public async Task<Result> Handle(DeleteCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<SetupLanguage>().FindAsync([message.Id], cancellationToken: token);
+            var record = await _dbcontext.Set<SetupState>().FindAsync([message.Id], cancellationToken: token);
             if(record is null)
                 return RecordNotFound(message.Id);
 
-            _dbcontext.Set<SetupLanguage>().Remove(record);
+            _dbcontext.Set<SetupState>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();
         }
@@ -378,7 +378,7 @@ public static class SetupLanguageFlow
     public sealed class ImportCommandValidator : AbstractValidator<ImportCommand> { public ImportCommandValidator() { } }
 
     internal sealed class ImportQueryHandler :
-       EntityListFlow.Handler<SetupLanguage, ImportModel>,
+       EntityListFlow.Handler<SetupState, ImportModel>,
        IRequestHandler<ImportQuery, Result<ImportResult>>
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
@@ -393,10 +393,10 @@ public static class SetupLanguageFlow
         {
             string wwwrootPath = _webHostEnvironment.WebRootPath;
 
-            var filePath = Path.Combine(wwwrootPath, "data", "languages.json");
+            var filePath = Path.Combine(wwwrootPath, "data", "states.json");
             if (!File.Exists(filePath))
             {
-                throw new FileNotFoundException("The languages.json file was not found.", filePath);
+                throw new FileNotFoundException("The states.json file was not found.", filePath);
             }
 
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -410,7 +410,7 @@ public static class SetupLanguageFlow
                 records = records.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor)).ToList();
             }
 
-            records = [.. records.OrderBy(o => o.Name)];
+            records = [.. records.OrderBy(o => o.ObjectType).ThenBy(o => o.Sequence).ThenBy(o => o.Name)];
             int pageSize = EntityListFlow.PageSize;
             int pageNumber = message.Page ?? 1;
 
@@ -445,21 +445,22 @@ public static class SetupLanguageFlow
             bool changes = false;
             foreach (var item in message.Items ?? [])
             {
-                if (await IsDuplicateNameAsync(_dbcontext, item.Name))
+                if (await IsDuplicateNameAsync(_dbcontext, item.ObjectType, item.Name))
                     continue;
 
-                var record = new SetupLanguage
+                var record = new SetupState
                 {
                     Id = Ulid.NewUlid(),
-                    Code = item.Code.ToUpper().Trim(),
+                    ObjectType = item.ObjectType,
+                    StateType = item.StateType,
                     Name = item.Name.Trim(),
-                    TranslatedName = item.TranslatedName.Trim(),
+                    Sequence = item.Sequence,
                     Description = item.Description?.Trim(),
                     SearchIndex = item.SearchIndex,
                     CreatedDT = DateTime.UtcNow
                 };
 
-                await _dbcontext.Set<SetupLanguage>().AddAsync(record, token);
+                await _dbcontext.Set<SetupState>().AddAsync(record, token);
                 changes = true;
             }
 

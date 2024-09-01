@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Finbuckle.MultiTenant;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Huybrechts.Core.Setup;
 
@@ -10,6 +12,12 @@ namespace Huybrechts.Core.Setup;
 /// This class is used to define and manage the language settings, such as code, name, and description. 
 /// The Code property should always be stored in uppercase to maintain consistency across various data operations.
 /// </remarks>
+[MultiTenant]
+[Table("SetupLanguage")]
+[Index(nameof(Code), IsUnique = true)]
+[Index(nameof(Name), IsUnique = true)]
+[Index(nameof(SearchIndex))]
+[Comment("Represents a currency entity with detailed information such as code, name, description, and associated country code.")]
 public record SetupLanguage : Entity, IEntity
 {
     /// <summary>

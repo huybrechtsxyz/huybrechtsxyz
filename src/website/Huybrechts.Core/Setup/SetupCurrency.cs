@@ -1,5 +1,7 @@
+using Finbuckle.MultiTenant;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Huybrechts.Core.Setup;
 
@@ -11,6 +13,12 @@ namespace Huybrechts.Core.Setup;
 /// The <c>CurrencyInfo</c> class is designed to be loaded into memory from a JSON file on application startup, 
 /// providing a quick reference for currency-related operations without the need for frequent database access.
 /// </remarks>
+[MultiTenant]
+[Table("SetupCurrency")]
+[Index(nameof(Code), IsUnique = true)]
+[Index(nameof(Name), IsUnique = true)]
+[Index(nameof(SearchIndex))]
+[Comment("Represents a currency entity with detailed information such as code, name, description, and associated country code.")]
 public record SetupCurrency : Entity, IEntity
 {
     /// <summary>

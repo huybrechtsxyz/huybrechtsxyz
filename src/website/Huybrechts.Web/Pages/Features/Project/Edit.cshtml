@@ -29,19 +29,26 @@
                 <span asp-validation-for="Data.Name" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Description" class="form-control" />
-                <label asp-for="Data.Description" class="form-label"></label>
-                <span asp-validation-for="Data.Description" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Data.State" class="form-control border-info" required />
+                <select asp-for="Data.State"
+                        asp-items="Model.Data.States?.Select(p => new SelectListItem
+                                {
+                                    Value = p.Name,
+                                    Text = p.Name
+                                }).ToList()"
+                        class="form-select border-info" required>
+                    <option id="">@SL["Select"]</option>
+                </select>
                 <label asp-for="Data.State" class="form-label"></label>
-                <span asp-validation-for="Data.State" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Reason" class="form-control" />
                 <label asp-for="Data.Reason" class="form-label"></label>
                 <span asp-validation-for="Data.Reason" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Description" class="form-control" />
+                <label asp-for="Data.Description" class="form-label"></label>
+                <span asp-validation-for="Data.Description" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.StartDate" class="form-control" />

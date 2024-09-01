@@ -61,7 +61,7 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate country name for {0}.
+        ///   Looks up a localized string similar to Duplicate country code for {0}.
         /// </summary>
         public static string DUPLICATE_SETUPCOUNTRY_CODE {
             get {
@@ -70,7 +70,7 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate country code for {0}.
+        ///   Looks up a localized string similar to Duplicate country name for {0}.
         /// </summary>
         public static string DUPLICATE_SETUPCOUNTRY_NAME {
             get {
@@ -79,7 +79,7 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate currency name for {0}.
+        ///   Looks up a localized string similar to Duplicate currency code for {0}.
         /// </summary>
         public static string DUPLICATE_SETUPCURRENCY_CODE {
             get {
@@ -97,11 +97,29 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate language for {0}.
+        ///   Looks up a localized string similar to Duplicate language code for {0}.
+        /// </summary>
+        public static string DUPLICATE_SETUPLANGUAGE_CODE {
+            get {
+                return ResourceManager.GetString("DUPLICATE_SETUPLANGUAGE_CODE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate language name for {0}.
         /// </summary>
         public static string DUPLICATE_SETUPLANGUAGE_NAME {
             get {
                 return ResourceManager.GetString("DUPLICATE_SETUPLANGUAGE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate system state name for {0}.
+        /// </summary>
+        public static string DUPLICATE_SETUPSTATE_NAME {
+            get {
+                return ResourceManager.GetString("DUPLICATE_SETUPSTATE_NAME", resourceCulture);
             }
         }
         
@@ -138,6 +156,15 @@ namespace Huybrechts.App.Features.Setup {
         public static string INVALID_SETUPLANGUAGE_ID {
             get {
                 return ResourceManager.GetString("INVALID_SETUPLANGUAGE_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find system state with ID {0}.
+        /// </summary>
+        public static string INVALID_SETUPSTATE_ID {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPSTATE_ID", resourceCulture);
             }
         }
         

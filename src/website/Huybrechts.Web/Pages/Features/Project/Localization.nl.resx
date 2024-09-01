@@ -129,6 +129,30 @@
   <data name="Clear Filter" xml:space="preserve">
     <value>Wis filter</value>
   </data>
+  <data name="DesignCreateInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om een nieuw ontwerp voor uw project toe te voegen. Geef details over de voorgestelde oplossing, inclusief de naam en beschrijving ervan.</value>
+  </data>
+  <data name="DesignCreateTitle" xml:space="preserve">
+    <value>Nieuw Projectontwerp Maken</value>
+  </data>
+  <data name="DesignDeleteInfo" xml:space="preserve">
+    <value>Weet u zeker dat u dit projectontwerp wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt en zal het ontwerp permanent uit het project verwijderen.</value>
+  </data>
+  <data name="DesignDeleteTitle" xml:space="preserve">
+    <value>Projectontwerp Verwijderen</value>
+  </data>
+  <data name="DesignEditInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om de details van een bestaand projectontwerp bij te werken. Breng wijzigingen aan in de naam of beschrijving van het ontwerp en sla uw updates op.</value>
+  </data>
+  <data name="DesignEditTitle" xml:space="preserve">
+    <value>Projectontwerp Bewerken</value>
+  </data>
+  <data name="DesignIndexInfo" xml:space="preserve">
+    <value>Deze pagina toont alle ontwerpen voor het geselecteerde project. Hier kunt u bestaande ontwerpen bekijken, bewerken of verwijderen, of een nieuw ontwerp maken om verschillende oplossingen voor te stellen.</value>
+  </data>
+  <data name="DesignIndexTitle" xml:space="preserve">
+    <value>Projectontwerpen</value>
+  </data>
   <data name="InfoCreateInfo" xml:space="preserve">
     <value>Gebruik dit formulier om een nieuw project aan te maken. Vul alle verplichte velden in, zoals projectnaam, beschrijving en startdatum, om een nieuw project toe te voegen.</value>
   </data>
@@ -158,6 +182,12 @@
   </data>
   <data name="Next" xml:space="preserve">
     <value>Volgende</value>
+  </data>
+  <data name="PageInfo" xml:space="preserve">
+    <value>Beheer uw projecten</value>
+  </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Project Management</value>
   </data>
   <data name="Previous" xml:space="preserve">
     <value>Vorige</value>
