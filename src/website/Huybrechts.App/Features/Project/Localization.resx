@@ -123,17 +123,26 @@
   <data name="Code" xml:space="preserve">
     <value>Code</value>
   </data>
+  <data name="Dependencies" xml:space="preserve">
+    <value>Dependencies</value>
+  </data>
   <data name="Description" xml:space="preserve">
     <value>Description</value>
   </data>
   <data name="Effort" xml:space="preserve">
     <value>Effort</value>
   </data>
+  <data name="Environment" xml:space="preserve">
+    <value>Environment</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
   <data name="Priority" xml:space="preserve">
     <value>Priority</value>
+  </data>
+  <data name="Project" xml:space="preserve">
+    <value>Project</value>
   </data>
   <data name="Rating" xml:space="preserve">
     <value>Rating</value>
@@ -158,5 +167,8 @@
   </data>
   <data name="TargetDate" xml:space="preserve">
     <value>Target date</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
   </data>
 </root>

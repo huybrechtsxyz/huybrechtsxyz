@@ -129,6 +129,9 @@
   <data name="Clear Filter" xml:space="preserve">
     <value>Wis filter</value>
   </data>
+  <data name="Design" xml:space="preserve">
+    <value>Ontwerp</value>
+  </data>
   <data name="DesignCreateInfo" xml:space="preserve">
     <value>Gebruik dit formulier om een nieuw ontwerp voor uw project toe te voegen. Geef details over de voorgestelde oplossing, inclusief de naam en beschrijving ervan.</value>
   </data>
@@ -152,6 +155,9 @@
   </data>
   <data name="DesignIndexTitle" xml:space="preserve">
     <value>Projectontwerpen</value>
+  </data>
+  <data name="Designs" xml:space="preserve">
+    <value>Ontwerpen</value>
   </data>
   <data name="InfoCreateInfo" xml:space="preserve">
     <value>Gebruik dit formulier om een nieuw project aan te maken. Vul alle verplichte velden in, zoals projectnaam, beschrijving en startdatum, om een nieuw project toe te voegen.</value>

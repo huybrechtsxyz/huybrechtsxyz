@@ -97,6 +97,15 @@ namespace Huybrechts.Web.Pages.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Design.
+        /// </summary>
+        public static string Design {
+            get {
+                return ResourceManager.GetString("Design", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Use this form to add a new design for your project. Provide details about the proposed solution, including its name and description..
         /// </summary>
         public static string DesignCreateInfo {
@@ -165,6 +174,15 @@ namespace Huybrechts.Web.Pages.Features.Project {
         public static string DesignIndexTitle {
             get {
                 return ResourceManager.GetString("DesignIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Designs.
+        /// </summary>
+        public static string Designs {
+            get {
+                return ResourceManager.GetString("Designs", resourceCulture);
             }
         }
         

@@ -4,7 +4,6 @@ using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
 using Huybrechts.App.Features.Setup;
-using Huybrechts.Core.Platform;
 using Huybrechts.Core.Project;
 using Huybrechts.Core.Setup;
 using MediatR;
@@ -16,9 +15,6 @@ namespace Huybrechts.App.Features.Project;
 
 public static class ProjectInfoFlow
 {
-    public static string GetSearchIndex(string code, string name, string? tags)
-        => $"{code}~{name}~{tags}".ToLowerInvariant();
-
     public record Model
     {
         public Ulid Id { get; init; }
@@ -35,7 +31,7 @@ public static class ProjectInfoFlow
         [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
         public string? Remark { get; set; }
 
-        public string SearchIndex => GetSearchIndex(Code, Name, Tags);
+        public string SearchIndex => ModelHelper.GetSearchIndex(Code, Name, Description, Tags);
 
         [Display(Name = nameof(Tags), ResourceType = typeof(Localization))]
         public string? Tags { get; set; }
@@ -70,7 +66,32 @@ public static class ProjectInfoFlow
 
         [Display(Name = nameof(Rating), ResourceType = typeof(Localization))]
         public int? Rating { get; set; }
+    }
 
+    public static class ModelHelper
+    {
+        public static string GetSearchIndex
+            (string code, string name, string? description, string? tags)
+            => $"{code}~{name}~{description}~{tags}".ToLowerInvariant();
+
+        public static void CopyFields(Model model, ProjectInfo entity)
+        {
+            entity.Name = model.Name.Trim();
+            entity.Description = model.Description?.Trim();
+            entity.Remark = model.Remark?.Trim();
+            entity.Tags = model.Tags?.Trim();
+            entity.SearchIndex = model.SearchIndex;
+
+            entity.State = model.State.Trim();
+            entity.Reason = model.Reason?.Trim();
+            entity.StartDate = model.StartDate;
+            entity.TargetDate = model.TargetDate;
+            entity.Priority = model.Priority?.Trim();
+            entity.Risk = model.Risk?.Trim();
+            entity.Effort = model.Effort;
+            entity.BusinessValue = model.BusinessValue;
+            entity.Rating = model.Rating;
+        }
     }
 
     public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -89,7 +110,7 @@ public static class ProjectInfoFlow
         }
     }
 
-    private static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
+    private static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
 
     private static Result DuplicateCodeFound(string code) => Result.Fail(Messages.DUPLICATE_PROJECT_CODE.Replace("{0}", code.ToString()));
 
@@ -222,31 +243,17 @@ public static class ProjectInfoFlow
             if (await IsDuplicateCodeAsync(_dbcontext, message.Code))
                 return DuplicateCodeFound(message.Code);
 
-            var record = new ProjectInfo
+            var entity = new ProjectInfo
             {
                 Id = message.Id,
-                Code = message.Code.ToUpper().Trim(),
-                Name = message.Name.Trim(),
-                Description = message.Description?.Trim(),
-                Remark = message.Remark?.Trim(),
-                Tags = message.Tags?.Trim(),
-                SearchIndex = message.SearchIndex,
-                CreatedDT = DateTime.UtcNow,
-
                 ParentId = Ulid.Empty,
-                State = message.State,
-                Reason = message.Reason,
-                StartDate = message.StartDate,
-                TargetDate = message.TargetDate,
-                Priority = message.Priority,
-                Risk = message.Risk,
-                Effort = message.Effort,
-                BusinessValue = message.BusinessValue,
-                Rating = message.Rating
+                CreatedDT = DateTime.UtcNow,
             };
-            await _dbcontext.Set<ProjectInfo>().AddAsync(record, token);
+            ModelHelper.CopyFields(message, entity);
+
+            await _dbcontext.Set<ProjectInfo>().AddAsync(entity, token);
             await _dbcontext.SaveChangesAsync(token);
-            return Result.Ok(record.Id);
+            return Result.Ok(entity.Id);
         }
     }
 
@@ -306,7 +313,7 @@ public static class ProjectInfoFlow
                 .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
 
             if (command is null)
-                return RecordNotFound(message.Id ?? Ulid.Empty);
+                return EntityNotFound(message.Id ?? Ulid.Empty);
 
             command.States = await SetupStateFlow.GetProjectStatesAync(_dbcontext);
 
@@ -325,29 +332,14 @@ public static class ProjectInfoFlow
 
         public async Task<Result> Handle(UpdateCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<ProjectInfo>().FindAsync([message.Id], cancellationToken: token);
-            if (record is null)
-                return RecordNotFound(message.Id);
+            var entity = await _dbcontext.Set<ProjectInfo>().FindAsync([message.Id], cancellationToken: token);
+            if (entity is null)
+                return EntityNotFound(message.Id);
 
-            record.Name = message.Name.Trim();
-            record.Description = message.Description?.Trim();
-            record.Remark = message.Remark?.Trim();
-            record.Tags = message.Tags?.Trim();
-            record.SearchIndex = message.SearchIndex;
-            record.ModifiedDT = DateTime.UtcNow;
+            entity.ModifiedDT = DateTime.UtcNow;
+            ModelHelper.CopyFields(message, entity);
 
-            record.ParentId = Ulid.Empty;
-            record.State = message.State;
-            record.Reason = message.Reason;
-            record.StartDate = message.StartDate;
-            record.TargetDate = message.TargetDate;
-            record.Priority = message.Priority;
-            record.Risk = message.Risk;
-            record.Effort = message.Effort;
-            record.BusinessValue = message.BusinessValue;
-            record.Rating = message.Rating;
-
-            _dbcontext.Set<ProjectInfo>().Update(record);
+            _dbcontext.Set<ProjectInfo>().Update(entity);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();
         }
@@ -403,7 +395,7 @@ public static class ProjectInfoFlow
                 .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
 
             if (command is null)
-                return RecordNotFound(message.Id ?? Ulid.Empty);
+                return EntityNotFound(message.Id ?? Ulid.Empty);
 
             return Result.Ok(command);
         }
@@ -420,11 +412,11 @@ public static class ProjectInfoFlow
 
         public async Task<Result> Handle(DeleteCommand message, CancellationToken token)
         {
-            var record = await _dbcontext.Set<ProjectInfo>().FindAsync([message.Id], cancellationToken: token);
-            if(record is null)
-                return RecordNotFound(message.Id);
+            var entity = await _dbcontext.Set<ProjectInfo>().FindAsync([message.Id], cancellationToken: token);
+            if(entity is null)
+                return EntityNotFound(message.Id);
 
-            _dbcontext.Set<ProjectInfo>().Remove(record);
+            _dbcontext.Set<ProjectInfo>().Remove(entity);
             await _dbcontext.SaveChangesAsync(token);
             return Result.Ok();
         }

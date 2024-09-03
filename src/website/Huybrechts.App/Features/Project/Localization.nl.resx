@@ -123,17 +123,26 @@
   <data name="Code" xml:space="preserve">
     <value>Kode</value>
   </data>
+  <data name="Dependencies" xml:space="preserve">
+    <value>afhankelijkheden</value>
+  </data>
   <data name="Description" xml:space="preserve">
     <value>Omschrijving</value>
   </data>
   <data name="Effort" xml:space="preserve">
     <value>Inspanning</value>
   </data>
+  <data name="Environment" xml:space="preserve">
+    <value>Omgeving</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Naam</value>
   </data>
   <data name="Priority" xml:space="preserve">
     <value>Prioriteit</value>
+  </data>
+  <data name="Project" xml:space="preserve">
+    <value>Project</value>
   </data>
   <data name="Rating" xml:space="preserve">
     <value>Beoordeling</value>
@@ -158,5 +167,8 @@
   </data>
   <data name="TargetDate" xml:space="preserve">
     <value>Doel datum</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Versie</value>
   </data>
 </root>

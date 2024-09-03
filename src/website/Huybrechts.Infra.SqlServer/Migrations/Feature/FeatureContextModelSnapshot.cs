@@ -627,6 +627,108 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectDesign", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Dependencies")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("List of dependencies for the design");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Environment")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasComment("The environment in which the project design is implemented.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("Priority")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasComment("Gets or sets the priority of the project.");
+
+                    b.Property<string>("ProjectInfoId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("int")
+                        .HasComment("Gets or sets the rating of the project, reflecting its priority, quality, or stakeholder approval.");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Gets or sets the reason for the current state of the design.");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("Additional remarks or comments about the project design.");
+
+                    b.Property<string>("Risk")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasComment("Gets or sets the risk of the project.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasComment("Gets or sets the current state of the project design.");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("Keywords or categories for the design");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Version")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasComment("Design version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SearchIndex");
+
+                    b.HasIndex("ProjectInfoId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ProjectDesign", t =>
+                        {
+                            t.HasComment("Represents a specific design or solution proposal for a project.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectInfo", b =>
                 {
                     b.Property<string>("Id")
@@ -1168,6 +1270,17 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired();
 
                     b.Navigation("PlatformInfo");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectDesign", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Project.ProjectInfo", "ProjectInfo")
+                        .WithMany()
+                        .HasForeignKey("ProjectInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectInfo");
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupCountry", b =>

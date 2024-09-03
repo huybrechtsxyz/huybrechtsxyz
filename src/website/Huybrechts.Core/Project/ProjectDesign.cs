@@ -1,6 +1,5 @@
 using Finbuckle.MultiTenant;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -65,7 +64,6 @@ public record ProjectDesign : Entity, IEntity
     /// <remarks>
     /// Tags help categorize the design and improve searchability and filtering based on keywords.
     /// </remarks>
-    [MaxLength(256)]
     [Comment("Keywords or categories for the design")]
     public string? Tags { get; set; }
 
@@ -79,6 +77,16 @@ public record ProjectDesign : Entity, IEntity
     [MaxLength(32)]
     [Comment("Gets or sets the current state of the project design.")]
     public string State { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the reason for the current state of the design.
+    /// </summary>
+    /// <remarks>
+    /// Provides context for the current state of the design.
+    /// </remarks>
+    [MaxLength(256)]
+    [Comment("Gets or sets the reason for the current state of the design.")]
+    public string? Reason { get; set; }
 
     /// <summary>
     /// Gets or sets the environment in which the project design is implemented.
@@ -99,16 +107,6 @@ public record ProjectDesign : Entity, IEntity
     [MaxLength(32)]
     [Comment("Design version")]
     public string? Version { get; set; }
-
-    /// <summary>
-    /// Gets or sets the reason for the current state of the design.
-    /// </summary>
-    /// <remarks>
-    /// Provides context for the current state of the design.
-    /// </remarks>
-    [MaxLength(256)]
-    [Comment("Gets or sets the reason for the current state of the design.")]
-    public string? Reason { get; set; }
 
     /// <summary>
     /// Gets or sets the list of dependencies required for the design.
