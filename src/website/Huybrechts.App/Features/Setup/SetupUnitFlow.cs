@@ -41,7 +41,7 @@ public static class SetupUnitFlow
             Remark = null,
             SearchIndex = "default",
             Description = "Default unit",
-            CreatedDT = DateTime.Now,
+            CreatedDT = DateTime.UtcNow,
         };
 
         context.Set<SetupUnit>().Add(record);
@@ -413,9 +413,7 @@ public static class SetupUnitFlow
 
     public sealed class ImportQueryValidator : AbstractValidator<ImportQuery> { public ImportQueryValidator() { } }
 
-    public sealed record ImportResult : EntityListFlow.Result<ImportModel>
-    {
-    }
+    public sealed record ImportResult : EntityListFlow.Result<ImportModel> { }
 
     public sealed record ImportCommand : IRequest<Result>
     {

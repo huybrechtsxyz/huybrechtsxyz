@@ -927,7 +927,7 @@ public static class PlatformRateFlow
                     PlatformServiceId = message.PlatformServiceId,
                     Remark = item.Remark,
                     SearchIndex = item.SearchIndex,
-                    CreatedDT = DateTime.Today,
+                    CreatedDT = DateTime.UtcNow,
 
                     ServiceName = item.ServiceName,
                     ServiceFamily = item.ServiceFamily,
