@@ -114,6 +114,7 @@ public static class ProjectInfoFlow
 
     private static Result DuplicateCodeFound(string code) => Result.Fail(Messages.DUPLICATE_PROJECT_CODE.Replace("{0}", code.ToString()));
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
     public static async Task<bool> IsDuplicateCodeAsync(DbContext context, string code, Ulid? currentId = null)
     {
         code = code.ToUpper().Trim();
@@ -223,7 +224,7 @@ public static class ProjectInfoFlow
         {
             CreateCommand command = CreateNew();
 
-            command.States = await SetupStateFlow.GetProjectStatesAync(_dbcontext);
+            command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext);
 
             return Result.Ok(command);
         }
@@ -315,7 +316,7 @@ public static class ProjectInfoFlow
             if (command is null)
                 return EntityNotFound(message.Id ?? Ulid.Empty);
 
-            command.States = await SetupStateFlow.GetProjectStatesAync(_dbcontext);
+            command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext);
 
             return Result.Ok(command);
         }

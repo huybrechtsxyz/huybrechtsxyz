@@ -64,14 +64,14 @@ public class CreateTenantWorker
 
     private async Task CreateSetupStates(CancellationToken token = default)
     {
-        SetupStateFlow.ImportQuery query = new() { };
+        Features.Setup.SetupStateFlow.ImportQuery query = new() { };
         var request = await _mediator.Send(query, token);
         if (request.IsFailed)
             return;
 
         var entities = request.Value.Results.ToList();
 
-        SetupStateFlow.ImportCommand command = new() { Items = entities };
+        Features.Setup.SetupStateFlow.ImportCommand command = new() { Items = entities };
         _ = await _mediator.Send(command, token);
     }
 

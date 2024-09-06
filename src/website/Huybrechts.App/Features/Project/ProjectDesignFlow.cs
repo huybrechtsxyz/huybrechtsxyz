@@ -116,6 +116,7 @@ public static class ProjectDesignFlow
 
     private static Result DuplicateEntityFound(string name) => Result.Fail(Messages.DUPLICATE_PROJECTDESIGN_NAME.Replace("{0}", name.ToString()));
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
     public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid ProjectInfoId, Ulid? currentId = null)
     {
         name = name.ToLower().Trim();
@@ -282,7 +283,7 @@ public static class ProjectDesignFlow
 
             var command = CreateNew(Project);
 
-            command.States = await SetupStateFlow.GetProjectStatesAync(_dbcontext);
+            command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext);
 
             return Result.Ok(command);
         }
@@ -395,7 +396,7 @@ public static class ProjectDesignFlow
                 return ProjectNotFound(command.ProjectInfoId);
 
             command.ProjectInfo = project;
-            command.States = await SetupStateFlow.GetProjectStatesAync(_dbcontext);
+            command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext);
 
             return Result.Ok(command);
         }
