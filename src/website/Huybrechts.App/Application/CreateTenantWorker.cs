@@ -92,14 +92,14 @@ public class CreateTenantWorker
     {
         List<string> defaults = ["EN", "NL"];
 
-        SetupLanguageFlow.ImportQuery query = new() { };
+        Features.Setup.SetupLanguageFlow.ImportQuery query = new() { };
         var request = await _mediator.Send(query, token);
         if (request.IsFailed)
             return;
 
         var entities = request.Value.Results.Where(q => defaults.Contains(q.Code)).ToList();
 
-        SetupLanguageFlow.ImportCommand command = new() { Items = entities };
+        Features.Setup.SetupLanguageFlow.ImportCommand command = new() { Items = entities };
         _ = await _mediator.Send(command, token);
     }
 
@@ -107,14 +107,14 @@ public class CreateTenantWorker
     {
         List<string> defaults = ["EUR", "USD"];
 
-        SetupCurrencyFlow.ImportQuery query = new() { };
+        Features.Setup.SetupCurrencyFlow.ImportQuery query = new() { };
         var request = await _mediator.Send(query, token);
         if (request.IsFailed)
             return;
 
         var entities = request.Value.Results.Where(q => defaults.Contains(q.Code)).ToList();
 
-        SetupCurrencyFlow.ImportCommand command = new() { Items = entities };
+        Features.Setup.SetupCurrencyFlow.ImportCommand command = new() { Items = entities };
         _ = await _mediator.Send(command, token);
     }
 
@@ -122,14 +122,14 @@ public class CreateTenantWorker
     {
         List<string> defaults = ["BE", "US"];
 
-        SetupCountryFlow.ImportQuery query = new() { };
+        Features.Setup.SetupCountryFlow.ImportQuery query = new() { };
         var request = await _mediator.Send(query, token);
         if (request.IsFailed)
             return;
 
         var entities = request.Value.Results.Where(q => defaults.Contains(q.Code)).ToList();
 
-        SetupCountryFlow.ImportCommand command = new() { Items = entities };
+        Features.Setup.SetupCountryFlow.ImportCommand command = new() { Items = entities };
         _ = await _mediator.Send(command, token);
     }
 
