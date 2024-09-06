@@ -14,8 +14,8 @@ namespace Huybrechts.Core.Setup;
 /// </remarks>
 [MultiTenant]
 [Table("SetupState")]
-[Index(nameof(ObjectType),nameof(Name), IsUnique = true)]
-[Index(nameof(SearchIndex))]
+[Index(nameof(TenantId), nameof(ObjectType), nameof(Name), IsUnique = true)]
+[Index(nameof(TenantId), nameof(SearchIndex))]
 [Comment("Represents a custom state that can be applied to various objects, such as projects, constraints, requirements, and more.")]
 public record SetupState : Entity, IEntity
 {

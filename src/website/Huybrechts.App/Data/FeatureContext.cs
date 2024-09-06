@@ -15,7 +15,8 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
 {
     private IDbContextTransaction? _currentTransaction;
 
-    public FeatureContext(IMultiTenantContextAccessor multiTenantContextAccessor, DbContextOptions options) : base(multiTenantContextAccessor, options)
+    public FeatureContext(IMultiTenantContextAccessor multiTenantContextAccessor, DbContextOptions options) 
+        : base(multiTenantContextAccessor, options)
     {
     }
 

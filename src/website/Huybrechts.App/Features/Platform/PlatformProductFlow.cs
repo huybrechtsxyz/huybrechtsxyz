@@ -650,6 +650,7 @@ public static class PlatformProductFlow
                         Description = item.Description?.Trim(),
                         Remark = item.Remark?.Trim(),
                         CreatedDT = DateTime.UtcNow,
+                        SearchIndex = item.SearchIndex,
 
                         CostBasedOn = item.CostBasedOn,
                         CostDriver = item.CostDriver,

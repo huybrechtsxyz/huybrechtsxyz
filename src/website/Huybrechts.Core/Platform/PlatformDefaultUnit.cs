@@ -17,7 +17,8 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformDefaultUnit")]
 [Comment("Represents a default unit of measure for a platform, linking to a setup unit and a specific platform.")]
-[Index(nameof(SearchIndex))]
+[Index(nameof(TenantId), nameof(PlatformInfoId), nameof(UnitOfMeasure))]
+[Index(nameof(TenantId), nameof(SearchIndex))]
 public record PlatformDefaultUnit : Entity, IEntity
 {
     /// <summary>

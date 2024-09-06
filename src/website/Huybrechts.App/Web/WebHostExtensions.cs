@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +21,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using System.IO.Compression;
 
 namespace Huybrechts.App.Web;
 
@@ -157,10 +155,12 @@ public static class WebHostExtensions
 
         builder.Services.AddMultiTenant<TenantInfo>()
             .WithStore<MultiTenantStore>(ServiceLifetime.Transient)
-            .WithBasePathStrategy(options => 
-            { 
+            .WithBasePathStrategy(options =>
+            {
                 options.RebaseAspNetCorePathBase = true;
             });
+
+        //builder.Services.AddTransient<IFeatureContextProvider, FeatureContextProvider>();
 
         return builder;
     }

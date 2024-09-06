@@ -123,6 +123,9 @@
   <data name="Add Defaults" xml:space="preserve">
     <value>Toevoegen standaard</value>
   </data>
+  <data name="Defaults for team {0} are being created" xml:space="preserve">
+    <value>Standaard instellingen voor team {0} worden aangemaakt</value>
+  </data>
   <data name="Disable" xml:space="preserve">
     <value>Uitzetten</value>
   </data>

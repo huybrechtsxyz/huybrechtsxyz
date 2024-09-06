@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Finbuckle.MultiTenant.Abstractions;
 using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
@@ -432,9 +433,14 @@ public static class SetupStateFlow
     {
         private readonly FeatureContext _dbcontext;
 
-        public ImportCommandHandler(FeatureContext dbcontext)
+        public ImportCommandHandler(
+            IMultiTenantContextAccessor contextAccessor,
+            FeatureContext context)
         {
-            _dbcontext = dbcontext;
+            _dbcontext = context;
+
+            // TODO: Needed for the CreateTenantWorker to be able to overwrite blank TenantId values
+            _dbcontext.TenantMismatchMode = Finbuckle.MultiTenant.EntityFrameworkCore.TenantMismatchMode.Overwrite;
         }
 
         public async Task<Result> Handle(ImportCommand message, CancellationToken token)

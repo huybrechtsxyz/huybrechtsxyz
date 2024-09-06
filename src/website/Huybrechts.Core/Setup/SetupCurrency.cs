@@ -15,9 +15,9 @@ namespace Huybrechts.Core.Setup;
 /// </remarks>
 [MultiTenant]
 [Table("SetupCurrency")]
-[Index(nameof(Code), IsUnique = true)]
-[Index(nameof(Name), IsUnique = true)]
-[Index(nameof(SearchIndex))]
+[Index(nameof(TenantId), nameof(Code), IsUnique = true)]
+[Index(nameof(TenantId), nameof(Name), IsUnique = true)]
+[Index(nameof(TenantId), nameof(SearchIndex))]
 [Comment("Represents a currency entity with detailed information such as code, name, description, and associated country code.")]
 public record SetupCurrency : Entity, IEntity
 {

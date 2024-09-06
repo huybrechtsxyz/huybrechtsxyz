@@ -444,6 +444,7 @@ public static class PlatformRateFlow
                 PlatformInfoId = product.PlatformInfoId,
                 PlatformProduct = product,
                 PlatformRegionId = message.PlatformRegionId,
+                PlatformServiceId = message.PlatformServiceId,
                 PlatformProductId = message.PlatformProductId,
                 Remark = message.Remark?.Trim(),
                 SearchIndex = message.SearchIndex?.Trim(),

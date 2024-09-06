@@ -608,7 +608,8 @@ public static class PlatformServiceFlow
                         Category = item.Category.Trim(),
                         Description = item.Description?.Trim(),
                         Remark = item.Remark?.Trim(),
-                        CreatedDT = DateTime.UtcNow
+                        CreatedDT = DateTime.UtcNow,
+                        SearchIndex = item.SearchIndex
                     };
                     await _dbcontext.Set<PlatformService>().AddAsync(record, token);
                     changes = true;

@@ -13,7 +13,8 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformRate")]
 [Comment("Represents the pricing rate of a service on a platform, including details such as the currency, price, and validity period.")]
-[Index(nameof(SearchIndex))]
+[Index(nameof(TenantId), nameof(PlatformInfoId), nameof(PlatformProductId), nameof(ValidFrom))]
+[Index(nameof(TenantId), nameof(SearchIndex))]
 public record PlatformRate : Entity, IEntity
 {
     /// <summary>

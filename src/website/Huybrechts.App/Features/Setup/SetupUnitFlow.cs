@@ -120,7 +120,10 @@ public static class SetupUnitFlow
 
     internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<SetupUnit, ListModel>(); }
 
-    public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
+    public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> 
+    {
+        public string? SearchCode { get; set; }
+    }
 
     public sealed class ListValidator : AbstractValidator<ListQuery> { public ListValidator() { } }
 
@@ -140,10 +143,18 @@ public static class SetupUnitFlow
             IQueryable<SetupUnit> query = _dbcontext.Set<SetupUnit>();
 
             var searchString = message.SearchText ?? message.CurrentFilter;
-            if (!string.IsNullOrEmpty(searchString))
+            if (string.IsNullOrEmpty(message.SearchCode))
             {
-                var searchFor = searchString.ToLower();
-                query = query.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor));
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    var searchFor = searchString.ToLower();
+                    query = query.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor));
+                }
+            }
+            else
+            {
+                query = query.Where(q => q.Code == message.SearchCode.ToUpper());
+                searchString = message.SearchCode;
             }
 
             if (!string.IsNullOrEmpty(message.SortOrder))

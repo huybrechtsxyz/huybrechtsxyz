@@ -12,8 +12,8 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformService")]
 [Comment("Services offered by the platform, such as compute, storage, or networking resources.")]
-[Index(nameof(PlatformInfoId), nameof(Name), IsUnique = true)]
-[Index(nameof(SearchIndex))]
+[Index(nameof(TenantId), nameof(PlatformInfoId), nameof(Name), IsUnique = true)]
+[Index(nameof(TenantId), nameof(SearchIndex))]
 public record PlatformService : Entity, IEntity
 {
     /// <summary>

@@ -12,8 +12,8 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformProduct")]
 [Comment("Represents a product offered on a specific platform, detailing attributes such as the product's name, description, and other relevant metadata.")]
-[Index(nameof(PlatformInfoId), nameof(Name), IsUnique = true)]
-[Index(nameof(SearchIndex))]
+[Index(nameof(TenantId), nameof(PlatformInfoId), nameof(Name), IsUnique = true)]
+[Index(nameof(TenantId), nameof(SearchIndex))]
 public record PlatformProduct : Entity, IEntity
 {
     /// <summary>

@@ -610,7 +610,8 @@ public static class PlatformRegionFlow
                         Label = item.Label.Trim(),
                         Description = item.Description?.Trim(),
                         Remark = item.Remark?.Trim(),
-                        CreatedDT = DateTime.UtcNow
+                        CreatedDT = DateTime.UtcNow,
+                        SearchIndex = item.SearchIndex
                     };
                     await _dbcontext.Set<PlatformRegion>().AddAsync(record, token);
                     changes = true;

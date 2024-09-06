@@ -13,8 +13,8 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformRegion")]
 [Comment("Regions supported by the platform, representing data center locations.")]
-[Index(nameof(PlatformInfoId), nameof(Name), IsUnique = true)]
-[Index(nameof(SearchIndex))]
+[Index(nameof(TenantId), nameof(PlatformInfoId), nameof(Name), IsUnique = true)]
+[Index(nameof(TenantId), nameof(SearchIndex))]
 public record PlatformRegion : Entity, IEntity
 {
     /// <summary>

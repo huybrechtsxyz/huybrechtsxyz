@@ -24,6 +24,11 @@ public record Entity : IEntity
     [Comment("Primary Key")]
     public Ulid Id { get; set; }
 
+    [Required]
+    [MaxLength(64)]
+    [Comment("The tenant identifier")]
+    public string TenantId { get; set; } = string.Empty;
+
     /// <summary>
     /// Date time created
     /// </summary>

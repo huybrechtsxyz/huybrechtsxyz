@@ -119,7 +119,10 @@ public static class PlatformInfoFlow
 
     public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
 
-    public sealed record CreateCommand : Model, IRequest<Result<Ulid>> { }
+    public sealed record CreateCommand : Model, IRequest<Result<Ulid>>
+    {
+        public bool SkipIfExists { get; set; } = false;
+    }
 
     public sealed class CreateValidator : ModelValidator<CreateCommand> 
     {
@@ -146,7 +149,14 @@ public static class PlatformInfoFlow
         public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
         {
             if (await IsDuplicateNameAsync(_dbcontext, message.Name))
-                return DuplicateFound(message.Name);
+                if (message.SkipIfExists)
+                {
+                    var name = message.Name.ToLower().Trim();
+                    var item = await _dbcontext.Set<PlatformInfo>().FirstAsync(pr => pr.Name.ToLower() == name);
+                    return Result.Ok(item.Id);
+                }
+                else
+                    return DuplicateFound(message.Name);
 
             var record = new PlatformInfo
             {

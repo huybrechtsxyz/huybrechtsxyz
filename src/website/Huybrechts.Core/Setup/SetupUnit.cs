@@ -14,9 +14,9 @@ namespace Huybrechts.Core.Setup;
 /// </remarks>
 [MultiTenant]
 [Table("SetupUnit")]
-[Index(nameof(Code), IsUnique = true)]
-[Index(nameof(Name), IsUnique = true)]
-[Index(nameof(SearchIndex))]
+[Index(nameof(TenantId), nameof(Code), IsUnique = true)]
+[Index(nameof(TenantId), nameof(Name), IsUnique = true)]
+[Index(nameof(TenantId), nameof(SearchIndex))]
 [Comment("Represents a measurement unit used for different types such as height, weight, volume, etc.")]
 public record SetupUnit: Entity, IEntity
 {

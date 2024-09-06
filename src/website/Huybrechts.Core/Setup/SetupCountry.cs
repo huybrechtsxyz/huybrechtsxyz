@@ -14,9 +14,9 @@ namespace Huybrechts.Core.Setup;
 /// </remarks>
 [MultiTenant]
 [Table("SetupCountry")]
-[Index(nameof(Code), IsUnique = true)]
-[Index(nameof(Name), IsUnique = true)]
-[Index(nameof(SearchIndex))]
+[Index(nameof(TenantId), nameof(Code), IsUnique = true)]
+[Index(nameof(TenantId), nameof(Name), IsUnique = true)]
+[Index(nameof(TenantId), nameof(SearchIndex))]
 [Comment("Represents information about different countries, including their codes, names, and associated details.")]
 public record SetupCountry : Entity, IEntity
 {

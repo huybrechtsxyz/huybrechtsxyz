@@ -17,6 +17,7 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformRateUnit")]
 [Comment("Table representing a unit of measurement for a rate within a platform's product offering, translating platform-specific units into standard project metrics.")]
+[Index(nameof(TenantId), nameof(PlatformInfoId), nameof(PlatformProductId), nameof(PlatformRateId), nameof(UnitOfMeasure))]
 public record PlatformRateUnit : Entity, IEntity
 {
     /// <summary>

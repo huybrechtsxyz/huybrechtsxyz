@@ -178,7 +178,7 @@ namespace Huybrechts.Web.Pages.Account.Tenant
             var result = await _tenantManager.CreateDefaultsForTenantAsync(user, item);
             if (!result.IsFailed)
             {
-                var message = _localizer["The team {0} is pending activation"];
+                var message = _localizer["Defaults for team {0} are being created"];
                 StatusMessage = message.Value.Replace("{0}", Input.Id);
             }
             else
