@@ -4,7 +4,7 @@ using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Config;
 using Huybrechts.App.Data;
-using Huybrechts.App.Features.Setup;
+using Huybrechts.App.Features.Setup.SetupUnitFlow;
 using Huybrechts.App.Services;
 using Huybrechts.Core.Platform;
 using Huybrechts.Core.Setup;
@@ -18,6 +18,7 @@ namespace Huybrechts.App.Features.Platform;
 
 public static class PlatformDefaultUnitFlow
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
     public static async Task<List<PlatformDefaultUnit>> GetDefaultUnitsFor(FeatureContext context, PlatformRate rate, bool save, CancellationToken token)
     {
         string unitOfMeasure = rate.UnitOfMeasure.ToLower().Trim();
@@ -30,7 +31,7 @@ public static class PlatformDefaultUnitFlow
         if (defaultUnits is not null && defaultUnits.Count > 0)
             return defaultUnits;
 
-        var setupUnit = await SetupUnitFlow.FindOrCreateDefaultSetupUnitAsync(context, save, token);
+        var setupUnit = await SetuptUnitHelper.FindOrCreateDefaultSetupUnitAsync(context, save, token);
         defaultUnits = [];
         defaultUnits.Add(new PlatformDefaultUnit()
         {
@@ -643,7 +644,7 @@ public static class PlatformDefaultUnitFlow
             if (platform is null)
                 return PlatformNotFound(message.PlatformInfoId);
 
-            var setupUnit = await SetupUnitFlow.FindOrCreateDefaultSetupUnitAsync(_dbcontext, false, token);
+            var setupUnit = await SetuptUnitHelper.FindOrCreateDefaultSetupUnitAsync(_dbcontext, false, token);
 
             bool changes = false;
             foreach (var item in message.Items)

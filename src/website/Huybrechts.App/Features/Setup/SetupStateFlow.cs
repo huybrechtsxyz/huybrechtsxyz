@@ -65,6 +65,7 @@ public static class SetupStateFlow
 
     private static Result DuplicateFound(string name) => Result.Fail(Messages.DUPLICATE_SETUPSTATE_NAME.Replace("{0}", name.ToString()));
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
     public static async Task<bool> IsDuplicateNameAsync(DbContext context, ObjectType objectType, string name, Ulid? currentId = null)
     {
         name = name.ToLower().Trim();
@@ -433,9 +434,7 @@ public static class SetupStateFlow
     {
         private readonly FeatureContext _dbcontext;
 
-        public ImportCommandHandler(
-            IMultiTenantContextAccessor contextAccessor,
-            FeatureContext context)
+        public ImportCommandHandler(FeatureContext context)
         {
             _dbcontext = context;
 

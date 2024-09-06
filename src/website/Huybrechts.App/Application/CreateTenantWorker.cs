@@ -77,14 +77,14 @@ public class CreateTenantWorker
 
     private async Task CreateSetupUnits(CancellationToken token = default)
     {
-        SetupUnitFlow.ImportQuery query = new() { };
+        Features.Setup.SetupUnitFlow.ImportQuery query = new() { };
         var request = await _mediator.Send(query, token);
         if (request.IsFailed)
             return;
 
         var entities = request.Value.Results.ToList();
 
-        SetupUnitFlow.ImportCommand command = new() { Items = entities };
+        Features.Setup.SetupUnitFlow.ImportCommand command = new() { Items = entities };
         _ = await _mediator.Send(command, token);
     }
 
@@ -302,7 +302,7 @@ public class CreateTenantWorker
 
         // UNITS
 
-        SetupUnitFlow.ListQuery unitListQuery = new()
+        Features.Setup.SetupUnitFlow.ListQuery unitListQuery = new()
         {
             SearchText = "DEFAULT"
         };
