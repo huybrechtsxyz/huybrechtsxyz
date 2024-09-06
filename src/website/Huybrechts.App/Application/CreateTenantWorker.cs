@@ -145,7 +145,7 @@ public class CreateTenantWorker
 
     private async Task CreatePlatformAzure(CancellationToken token = default)
     {
-        PlatformInfoFlow.CreateCommand platformCommand = new()
+        Features.Platform.PlatformInfoFlow.CreateCommand platformCommand = new()
         {
             Id = Ulid.NewUlid(),
             Name = "Azure",
@@ -159,7 +159,7 @@ public class CreateTenantWorker
 
         // REGION
 
-        PlatformRegionFlow.ImportQuery regionQuery = new()
+        Features.Platform.PlatformRegionFlow.ImportQuery regionQuery = new()
         {
             PlatformInfoId = platformInfoId,
             SearchText = "europe",
@@ -168,12 +168,12 @@ public class CreateTenantWorker
         var regionRequest = await _mediator.Send(regionQuery, token);
         if (regionRequest.IsFailed) return;
         var regions = regionRequest.Value.Results.ToList();
-        PlatformRegionFlow.ImportCommand regionCommand = new() { PlatformInfoId = platformInfoId, Items = regions };
+        Features.Platform.PlatformRegionFlow.ImportCommand regionCommand = new() { PlatformInfoId = platformInfoId, Items = regions };
         _ = await _mediator.Send(regionCommand, token);
 
         // SERVICE
 
-        PlatformServiceFlow.ImportQuery serviceQuery = new()
+        Features.Platform.PlatformServiceFlow.ImportQuery serviceQuery = new()
         {
             PlatformInfoId = platformInfoId,
             SearchText = "API Management",
@@ -182,21 +182,21 @@ public class CreateTenantWorker
         var serviceRequest = await _mediator.Send(serviceQuery, token);
         if (serviceRequest.IsFailed) return;
         var services = serviceRequest.Value.Results.ToList();
-        PlatformServiceFlow.ImportCommand serviceCommand = new() { PlatformInfoId = platformInfoId, Items = services };
+        Features.Platform.PlatformServiceFlow.ImportCommand serviceCommand = new() { PlatformInfoId = platformInfoId, Items = services };
         _ = await _mediator.Send(serviceCommand, token);
 
         // UNITS
 
-        PlatformDefaultUnitFlow.ImportQuery unitQuery = new() { PlatformInfoId = platformInfoId };
+        Features.Platform.PlatformDefaultUnitFlow.ImportQuery unitQuery = new() { PlatformInfoId = platformInfoId };
         var unitRequest = await _mediator.Send(unitQuery, token);
         if (unitRequest.IsFailed) return;
         var units = unitRequest.Value.Results.ToList();
-        PlatformDefaultUnitFlow.ImportCommand unitCommand = new() { PlatformInfoId = platformInfoId, Items = units };
+        Features.Platform.PlatformDefaultUnitFlow.ImportCommand unitCommand = new() { PlatformInfoId = platformInfoId, Items = units };
         _ = await _mediator.Send(unitCommand, token);
 
         // PRODUCTS
 
-        PlatformProductFlow.ImportQuery productQuery = new()
+        Features.Platform.PlatformProductFlow.ImportQuery productQuery = new()
         {
             PlatformInfoId = platformInfoId,
             SearchText = "API Management",
@@ -205,12 +205,12 @@ public class CreateTenantWorker
         var productRequest = await _mediator.Send(productQuery, token);
         if (productRequest.IsFailed) return;
         var products = productRequest.Value.Results.ToList();
-        PlatformProductFlow.ImportCommand productCommand = new() { PlatformInfoId = platformInfoId, Items = products };
+        Features.Platform.PlatformProductFlow.ImportCommand productCommand = new() { PlatformInfoId = platformInfoId, Items = products };
         _ = await _mediator.Send(productCommand, token);
 
         // RATES
 
-        PlatformRegionFlow.ListQuery regionListQuery = new()
+        Features.Platform.PlatformRegionFlow.ListQuery regionListQuery = new()
         {
             PlatformInfoId = platformInfoId,
             SearchText = "westeurope",
@@ -219,7 +219,7 @@ public class CreateTenantWorker
         var regionListRequest = await _mediator.Send(regionListQuery, token);
         var regionInfo = regionListRequest.Value.Results.First();
 
-        PlatformServiceFlow.ListQuery serviceListQuery = new()
+        Features.Platform.PlatformServiceFlow.ListQuery serviceListQuery = new()
         {
             PlatformInfoId = platformInfoId,
             SearchText = "API Management",
@@ -228,7 +228,7 @@ public class CreateTenantWorker
         var serviceListRequest = await _mediator.Send(serviceListQuery, token);
         var serviceInfo = serviceListRequest.Value.Results.First();
 
-        PlatformProductFlow.ListQuery productListQuery = new()
+        Features.Platform.PlatformProductFlow.ListQuery productListQuery = new()
         {
             PlatformInfoId = platformInfoId,
             SearchText = "API Management",
@@ -238,7 +238,7 @@ public class CreateTenantWorker
         var productInfo = productListRequest.Value.Results.First();
 
         List<string> defaultRates = ["Basic v2"];
-        PlatformRateFlow.ImportQuery rateQuery = new()
+        Features.Platform.PlatformRateFlow.ImportQuery rateQuery = new()
         {
             PlatformRegionId = regionInfo.Id,
             PlatformServiceId = serviceInfo.Id,
@@ -249,7 +249,7 @@ public class CreateTenantWorker
         var rateRequest = await _mediator.Send(rateQuery, token);
         if (rateRequest.IsFailed) return;
         var rates = rateRequest.Value.Results.Where(q => defaultRates.Contains(q.SkuName)).ToList();
-        PlatformRateFlow.ImportCommand rateCommand = new()
+        Features.Platform.PlatformRateFlow.ImportCommand rateCommand = new()
         {
             PlatformProductId = productInfo.Id,
             PlatformRegionId = regionInfo.Id,
@@ -261,7 +261,7 @@ public class CreateTenantWorker
 
     private async Task CreatePlatformOnPremise(CancellationToken token = default)
     {
-        PlatformInfoFlow.CreateCommand platformCommand = new()
+        Features.Platform.PlatformInfoFlow.CreateCommand platformCommand = new()
         {
             Id = Ulid.NewUlid(),
             Name = "On Premise",
@@ -275,7 +275,7 @@ public class CreateTenantWorker
 
         // REGION
 
-        PlatformRegionFlow.CreateCommand regionCommand = new()
+        Features.Platform.PlatformRegionFlow.CreateCommand regionCommand = new()
         {
             Id = Ulid.NewUlid(),
             PlatformInfoId = platformInfoId,
@@ -288,7 +288,7 @@ public class CreateTenantWorker
 
         // SERVICE
 
-        PlatformServiceFlow.CreateCommand serviceCommand = new()
+        Features.Platform.PlatformServiceFlow.CreateCommand serviceCommand = new()
         {
             Id = Ulid.NewUlid(),
             PlatformInfoId = platformInfoId,
@@ -309,7 +309,7 @@ public class CreateTenantWorker
         var unitListResponse = await _mediator.Send(unitListQuery, token);
         var defaultUnit = unitListResponse.Value.Results.First();
 
-        PlatformDefaultUnitFlow.CreateCommand unitCommand = new()
+        Features.Platform.PlatformDefaultUnitFlow.CreateCommand unitCommand = new()
         {
             Id = Ulid.NewUlid(),
             PlatformInfoId = platformInfoId,
@@ -323,7 +323,7 @@ public class CreateTenantWorker
 
         // PRODUCTS
 
-        PlatformProductFlow.CreateCommand productCommand = new()
+        Features.Platform.PlatformProductFlow.CreateCommand productCommand = new()
         {
             Id = Ulid.NewUlid(),
             PlatformInfoId = platformInfoId,
@@ -337,7 +337,7 @@ public class CreateTenantWorker
 
         // RATES
 
-        PlatformRegionFlow.ListQuery regionListQuery = new()
+        Features.Platform.PlatformRegionFlow.ListQuery regionListQuery = new()
         {
             PlatformInfoId = platformInfoId,
             SearchText = "HQ",
@@ -346,7 +346,7 @@ public class CreateTenantWorker
         var regionListRequest = await _mediator.Send(regionListQuery, token);
         var regionInfo = regionListRequest.Value.Results.First();
 
-        PlatformServiceFlow.ListQuery serviceListQuery = new()
+        Features.Platform.PlatformServiceFlow.ListQuery serviceListQuery = new()
         {
             PlatformInfoId = platformInfoId,
             SearchText = "VM",
@@ -355,7 +355,7 @@ public class CreateTenantWorker
         var serviceListRequest = await _mediator.Send(serviceListQuery, token);
         var serviceInfo = serviceListRequest.Value.Results.First();
 
-        PlatformProductFlow.ListQuery productListQuery = new()
+        Features.Platform.PlatformProductFlow.ListQuery productListQuery = new()
         {
             PlatformInfoId = platformInfoId,
             SearchText = "VM",
@@ -364,7 +364,7 @@ public class CreateTenantWorker
         var productListRequest = await _mediator.Send(productListQuery, token);
         var productInfo = productListRequest.Value.Results.First();
 
-        PlatformRateFlow.CreateCommand rateCommand = new()
+        Features.Platform.PlatformRateFlow.CreateCommand rateCommand = new()
         {
             Id = Ulid.NewUlid(),
             PlatformInfoId = platformInfoId,
