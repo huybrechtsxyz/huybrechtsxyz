@@ -63,7 +63,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -85,9 +86,11 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasIndex("PlatformInfoId");
 
-                    b.HasIndex("SearchIndex");
-
                     b.HasIndex("SetupUnitId");
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "UnitOfMeasure");
 
                     b.ToTable("PlatformDefaultUnit", t =>
                         {
@@ -137,7 +140,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -146,10 +150,10 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("Platform", t =>
                         {
@@ -241,7 +245,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -250,9 +255,11 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("PlatformInfoId");
 
-                    b.HasIndex("PlatformInfoId", "Name")
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
                     b.ToTable("PlatformProduct", t =>
@@ -364,7 +371,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -390,7 +398,9 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasIndex("PlatformProductId");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "PlatformProductId", "ValidFrom");
 
                     b.ToTable("PlatformRate", t =>
                         {
@@ -452,7 +462,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -475,6 +486,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.HasIndex("PlatformRateId");
 
                     b.HasIndex("SetupUnitId");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "PlatformProductId", "PlatformRateId", "UnitOfMeasure");
 
                     b.ToTable("PlatformRateUnit", t =>
                         {
@@ -531,7 +544,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -540,9 +554,11 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("PlatformInfoId");
 
-                    b.HasIndex("PlatformInfoId", "Name")
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
                     b.ToTable("PlatformRegion", t =>
@@ -605,7 +621,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -614,9 +631,11 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("PlatformInfoId");
 
-                    b.HasIndex("PlatformInfoId", "Name")
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
                     b.ToTable("PlatformService", t =>
@@ -702,7 +721,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -820,7 +840,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -882,7 +903,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -896,17 +918,17 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.HasIndex("SearchIndex");
-
                     b.HasIndex("SetupCurrencyId");
 
                     b.HasIndex("SetupLanguageId");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("SetupCountry", t =>
                         {
@@ -951,7 +973,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -960,13 +983,13 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique();
 
-                    b.HasIndex("Name")
+                    b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("SetupCurrency", t =>
                         {
@@ -1011,7 +1034,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -1025,13 +1049,13 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique();
 
-                    b.HasIndex("Name")
+                    b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("SetupLanguage", t =>
                         {
@@ -1080,7 +1104,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -1089,9 +1114,9 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
-                    b.HasIndex("ObjectType", "Name")
+                    b.HasIndex("TenantId", "ObjectType", "Name")
                         .IsUnique();
 
                     b.ToTable("SetupState", t =>
@@ -1161,7 +1186,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -1174,13 +1200,13 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique();
 
-                    b.HasIndex("Name")
+                    b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("SetupUnit", t =>
                         {

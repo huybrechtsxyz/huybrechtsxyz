@@ -3,90 +3,97 @@ using System;
 using Huybrechts.App.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Huybrechts.Infra.Sqlite.Migrations.Feature
+namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 {
     [DbContext(typeof(FeatureContext))]
-    [Migration("20240829180413_CreatePlatformSchema")]
+    [Migration("20240906112613_CreatePlatformSchema")]
     partial class CreatePlatformSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformDefaultUnit", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Primary Key");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Date time created");
 
                     b.Property<decimal>("DefaultValue")
                         .HasPrecision(12, 4)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("decimal(12,4)")
                         .HasComment("Default rate for the unit, representing a base measurement standard.");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(256)")
                         .HasComment("A brief description providing additional details about the region.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Modified time created");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key referencing the PlatformInfo.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(450)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("SetupUnitId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key linking to the SetupUnit entity.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("rowversion");
 
                     b.Property<decimal>("UnitFactor")
                         .HasPrecision(12, 6)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("decimal(12,6)")
                         .HasComment("Conversion factor for the unit rate, translating platform units to standard units.");
 
                     b.Property<string>("UnitOfMeasure")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(64)")
                         .HasComment("Unit of measure.");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PlatformInfoId");
 
-                    b.HasIndex("SearchIndex");
-
                     b.HasIndex("SetupUnitId");
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "UnitOfMeasure");
 
                     b.ToTable("PlatformDefaultUnit", t =>
                         {
@@ -99,57 +106,57 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformInfo", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Primary Key");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(256)")
                         .HasComment("Detailed description of the platform.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Name of the platform.");
 
                     b.Property<int>("Provider")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasComment("The platform's supported automation provider, enabling automated resource management.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasComment("Additional remarks or comments about the platform.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(450)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("rowversion");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("Platform", t =>
                         {
@@ -162,98 +169,100 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformProduct", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Primary Key");
 
                     b.Property<string>("AboutURL")
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(512)")
                         .HasComment("URL linking to additional information about the product.");
 
                     b.Property<string>("Category")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Category of the product");
 
                     b.Property<string>("CostBasedOn")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Parameters or metrics on which the cost of the product is based.");
 
                     b.Property<string>("CostDriver")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(256)")
                         .HasComment("The cost driver or factor that influences the pricing of the product.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(256)")
                         .HasComment("A brief description providing details about the product.");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("A label representing the product, often used for display purposes.");
 
                     b.Property<string>("Limitations")
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(512)")
                         .HasComment("Limitations or constraints related to the product.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("The name of the product offered by the platform.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key referencing the PlatformInfo entity.");
 
                     b.Property<string>("PricingTier")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Size or pricing tier associated with the product.");
 
                     b.Property<string>("PricingURL")
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(512)")
                         .HasComment("URL providing pricing information for the product.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasComment("Additional remarks or notes regarding the product.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(450)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("rowversion");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("PlatformInfoId");
 
-                    b.HasIndex("PlatformInfoId", "Name")
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
                     b.ToTable("PlatformProduct", t =>
@@ -267,132 +276,134 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Primary Key");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Date time created");
 
                     b.Property<string>("CurrencyCode")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(10)")
                         .HasComment("Currency code.");
 
                     b.Property<bool>("IsPrimaryRegion")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("bit")
                         .HasComment("Indicates whether this is the primary rate for the region.");
 
                     b.Property<string>("MeterName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Meter name.");
 
                     b.Property<decimal>("MinimumUnits")
                         .HasPrecision(12, 6)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("decimal(12,6)")
                         .HasComment("Tier minimum units.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Modified time created");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key referencing the PlatformInfo entity.");
 
                     b.Property<string>("PlatformProductId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key referencing the PlatformProduct entity.");
 
                     b.Property<string>("PlatformRegionId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key referencing the PlatformRegion entity.");
 
                     b.Property<string>("PlatformServiceId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key referencing the PlatformService entity.");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Product name.");
 
                     b.Property<string>("RateType")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Rate type.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasComment("Additional remarks or comments about the rate.");
 
                     b.Property<decimal>("RetailPrice")
                         .HasPrecision(12, 6)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("decimal(12,6)")
                         .HasComment("Retail price.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(450)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("ServiceFamily")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("Service family or category.");
 
                     b.Property<string>("ServiceName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("The name of the service.");
 
                     b.Property<string>("SkuName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("SKU name.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("UnitOfMeasure")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(64)")
                         .HasComment("Unit of measure.");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(12, 6)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("decimal(12,6)")
                         .HasComment("Unit price.");
 
                     b.Property<DateTime>("ValidFrom")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Rate is valid from.");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PlatformProductId");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "PlatformProductId", "ValidFrom");
 
                     b.ToTable("PlatformRate", t =>
                         {
@@ -405,72 +416,72 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRateUnit", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Primary Key");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Date time created");
 
                     b.Property<decimal>("DefaultValue")
                         .HasPrecision(12, 4)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("decimal(12,4)")
                         .HasComment("Default rate for the unit, representing a base measurement standard.");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(200)")
                         .HasComment("Description of the measuring unit, providing additional context for users.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Modified time created");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key referencing the PlatformInfo entity.");
 
                     b.Property<string>("PlatformProductId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key referencing the PlatformProduct entity.");
 
                     b.Property<string>("PlatformRateId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key referencing the PlatformProduct entity.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("SetupUnitId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key linking to the SetupUnit entity.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("rowversion");
 
                     b.Property<decimal>("UnitFactor")
                         .HasPrecision(12, 6)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("decimal(12,6)")
                         .HasComment("Conversion factor for the unit rate, translating platform units to standard units.");
 
                     b.Property<string>("UnitOfMeasure")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(64)")
                         .HasComment("Unit of measure.");
 
                     b.HasKey("Id");
@@ -478,6 +489,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.HasIndex("PlatformRateId");
 
                     b.HasIndex("SetupUnitId");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "PlatformProductId", "PlatformRateId", "UnitOfMeasure");
 
                     b.ToTable("PlatformRateUnit", t =>
                         {
@@ -490,63 +503,65 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Primary Key");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(256)")
                         .HasComment("A brief description providing additional details about the region.");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("A label representing the region, often the location name.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("The unique name identifier of the region.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key referencing the PlatformInfo.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasComment("Additional remarks or notes regarding the region.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(450)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("rowversion");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("PlatformInfoId");
 
-                    b.HasIndex("PlatformInfoId", "Name")
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
                     b.ToTable("PlatformRegion", t =>
@@ -560,68 +575,70 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Primary Key");
 
                     b.Property<string>("Category")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("The category or family of the service, helping to classify it among similar offerings.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(256)")
                         .HasComment("A brief description providing additional details about the service.");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("A label representing the service, often used in the user interface.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(128)")
                         .HasComment("The name of the service or service offered by the platform.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Foreign key referencing the PlatformInfo entity.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(max)")
                         .HasComment("Additional remarks or notes regarding the service.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(450)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("rowversion");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("PlatformInfoId");
 
-                    b.HasIndex("PlatformInfoId", "Name")
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
                     b.ToTable("PlatformService", t =>
@@ -632,53 +649,275 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
-            modelBuilder.Entity("Huybrechts.Core.Setup.SetupCountry", b =>
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectDesign", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Primary Key");
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Date time created");
 
+                    b.Property<string>("Dependencies")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("List of dependencies for the design");
+
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Environment")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasComment("The environment in which the project design is implemented.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("Priority")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasComment("Gets or sets the priority of the project.");
+
+                    b.Property<string>("ProjectInfoId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("int")
+                        .HasComment("Gets or sets the rating of the project, reflecting its priority, quality, or stakeholder approval.");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Gets or sets the reason for the current state of the design.");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("Additional remarks or comments about the project design.");
+
+                    b.Property<string>("Risk")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasComment("Gets or sets the risk of the project.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(450)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
-                    b.Property<string>("SetupCurrencyId")
-                        .HasColumnType("TEXT");
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasComment("Gets or sets the current state of the project design.");
 
-                    b.Property<string>("SetupLanguageId")
-                        .HasColumnType("TEXT");
+                    b.Property<string>("Tags")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("Keywords or categories for the design");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Version")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasComment("Design version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SearchIndex");
+
+                    b.HasIndex("ProjectInfoId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ProjectDesign", t =>
+                        {
+                            t.HasComment("Represents a specific design or solution proposal for a project.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectInfo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<int?>("BusinessValue")
+                        .HasColumnType("int")
+                        .HasComment("Gets or sets the business value of the project.");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasComment("Code of the Project.");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Detailed description of the Project.");
+
+                    b.Property<int?>("Effort")
+                        .HasColumnType("int")
+                        .HasComment("Gets or sets the effort required for the project.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasComment("Name of the Project.");
+
+                    b.Property<string>("ParentId")
+                        .HasColumnType("nvarchar(26)");
+
+                    b.Property<string>("Priority")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasComment("Gets or sets the priority of the project.");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("int")
+                        .HasComment("Gets or sets the rating of the project, reflecting its priority, quality, or stakeholder approval.");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Gets or sets the reason for the current state of the project.");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("Additional remarks or comments about the Project.");
+
+                    b.Property<string>("Risk")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasComment("Gets or sets the risk of the project.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2")
+                        .HasComment("Gets or sets the start date for the project.");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasComment("Gets or sets the current state of the project.");
+
+                    b.Property<string>("Tags")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Keywords or categories for the project");
+
+                    b.Property<DateTime?>("TargetDate")
+                        .HasColumnType("datetime2")
+                        .HasComment("Gets or sets the target completion date for the project.");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("SearchIndex");
+
+                    b.ToTable("Project", t =>
+                        {
+                            t.HasComment("Table storing information about Projects that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Setup.SetupCountry", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<string>("SetupCurrencyId")
+                        .HasColumnType("nvarchar(26)");
+
+                    b.Property<string>("SetupLanguageId")
+                        .HasColumnType("nvarchar(26)");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("TranslatedName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("Id");
 
@@ -686,180 +925,291 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasIndex("SetupLanguageId");
 
-                    b.ToTable("SetupCountries");
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.ToTable("SetupCountry", t =>
+                        {
+                            t.HasComment("Represents information about different countries, including their codes, names, and associated details.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupCurrency", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(26)")
                         .HasComment("Primary Key");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("datetime2")
                         .HasComment("Modified time created");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("TEXT")
-                        .HasComment("This field will store the normalized, concatenated values for searching");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SetupCurrencies");
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Setup.SetupLanguage", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT")
-                        .HasComment("Primary Key");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Date time created");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Modified time created");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("SearchIndex")
-                        .HasColumnType("TEXT")
-                        .HasComment("This field will store the normalized, concatenated values for searching");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<string>("TranslatedName")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SetupLanguages");
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Setup.SetupUnit", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT")
-                        .HasComment("Primary Key");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("TEXT")
-                        .HasComment("A unique code representing the unit, standard across all instances.");
-
-                    b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Date time created");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("TEXT")
-                        .HasComment("A detailed description of the unit.");
-
-                    b.Property<decimal>("Factor")
-                        .HasPrecision(18, 10)
-                        .HasColumnType("TEXT")
-                        .HasComment("A multiplication factor used to convert this unit to the base unit.");
-
-                    b.Property<bool>("IsBase")
-                        .HasColumnType("INTEGER")
-                        .HasComment("Indicates whether this unit is the base unit for its type.");
-
-                    b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Modified time created");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("The unique name of the unit within its type.");
-
-                    b.Property<int>("Precision")
-                        .HasColumnType("INTEGER")
-                        .HasComment("Number of decimal places for the unit.");
-
-                    b.Property<int>("PrecisionType")
-                        .HasColumnType("INTEGER")
-                        .HasComment("Determines how values are rounded according to the System.Decimal Rounding enum.");
-
-                    b.Property<string>("Remark")
-                        .HasColumnType("TEXT")
-                        .HasComment("Additional remarks or comments about the unit.");
-
-                    b.Property<string>("SearchIndex")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar(450)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.ToTable("SetupCurrency", t =>
+                        {
+                            t.HasComment("Represents a currency entity with detailed information such as code, name, description, and associated country code.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Setup.SetupLanguage", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("TranslatedName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.ToTable("SetupLanguage", t =>
+                        {
+                            t.HasComment("Represents a currency entity with detailed information such as code, name, description, and associated country code.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Setup.SetupState", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<int>("ObjectType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<int>("Sequence")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StateType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "ObjectType", "Name")
+                        .IsUnique();
+
+                    b.ToTable("SetupState", t =>
+                        {
+                            t.HasComment("Represents a custom state that can be applied to various objects, such as projects, constraints, requirements, and more.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Setup.SetupUnit", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasComment("A unique code representing the unit, standard across all instances.");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasComment("A detailed description of the unit.");
+
+                    b.Property<decimal>("Factor")
+                        .HasPrecision(18, 10)
+                        .HasColumnType("decimal(18,10)")
+                        .HasComment("A multiplication factor used to convert this unit to the base unit.");
+
+                    b.Property<bool>("IsBase")
+                        .HasColumnType("bit")
+                        .HasComment("Indicates whether this unit is the base unit for its type.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasComment("The unique name of the unit within its type.");
+
+                    b.Property<int>("Precision")
+                        .HasColumnType("int")
+                        .HasComment("Number of decimal places for the unit.");
+
+                    b.Property<int>("PrecisionType")
+                        .HasColumnType("int")
+                        .HasComment("Determines how values are rounded according to the System.Decimal Rounding enum.");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("Additional remarks or comments about the unit.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The tenant identifier");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<int>("UnitType")
-                        .HasColumnType("INTEGER")
+                        .HasColumnType("int")
                         .HasComment("Gets or sets the type of the unit (e.g., Height, Weight, Volume, System, etc.).");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique();
 
-                    b.HasIndex("Name")
+                    b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("SetupUnit", t =>
                         {
@@ -949,6 +1299,17 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                         .IsRequired();
 
                     b.Navigation("PlatformInfo");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectDesign", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Project.ProjectInfo", "ProjectInfo")
+                        .WithMany()
+                        .HasForeignKey("ProjectInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectInfo");
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupCountry", b =>

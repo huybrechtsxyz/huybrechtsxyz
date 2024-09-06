@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 {
     [DbContext(typeof(FeatureContext))]
-    [Migration("20240901103126_CreateProjectInfo")]
-    partial class CreateProjectInfo
+    [Migration("20240906112550_CreatePlatformSchema")]
+    partial class CreatePlatformSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,7 +61,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -84,9 +85,11 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasIndex("PlatformInfoId");
 
-                    b.HasIndex("SearchIndex");
-
                     b.HasIndex("SetupUnitId");
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "UnitOfMeasure");
 
                     b.ToTable("PlatformDefaultUnit", t =>
                         {
@@ -136,7 +139,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -146,10 +150,10 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("Platform", t =>
                         {
@@ -241,7 +245,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -251,9 +256,11 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("PlatformInfoId");
 
-                    b.HasIndex("PlatformInfoId", "Name")
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
                     b.ToTable("PlatformProduct", t =>
@@ -365,7 +372,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -392,7 +400,9 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasIndex("PlatformProductId");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "PlatformProductId", "ValidFrom");
 
                     b.ToTable("PlatformRate", t =>
                         {
@@ -454,7 +464,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -478,6 +489,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.HasIndex("PlatformRateId");
 
                     b.HasIndex("SetupUnitId");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "PlatformProductId", "PlatformRateId", "UnitOfMeasure");
 
                     b.ToTable("PlatformRateUnit", t =>
                         {
@@ -534,7 +547,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -544,9 +558,11 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("PlatformInfoId");
 
-                    b.HasIndex("PlatformInfoId", "Name")
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
                     b.ToTable("PlatformRegion", t =>
@@ -609,7 +625,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -619,14 +636,120 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("PlatformInfoId");
 
-                    b.HasIndex("PlatformInfoId", "Name")
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
                     b.ToTable("PlatformService", t =>
                         {
                             t.HasComment("Services offered by the platform, such as compute, storage, or networking resources.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectDesign", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT")
+                        .HasComment("Primary Key");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("TEXT")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Dependencies")
+                        .HasColumnType("TEXT")
+                        .HasComment("List of dependencies for the design");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Environment")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasComment("The environment in which the project design is implemented.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("TEXT")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Priority")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasComment("Gets or sets the priority of the project.");
+
+                    b.Property<string>("ProjectInfoId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("INTEGER")
+                        .HasComment("Gets or sets the rating of the project, reflecting its priority, quality, or stakeholder approval.");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasComment("Gets or sets the reason for the current state of the design.");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("TEXT")
+                        .HasComment("Additional remarks or comments about the project design.");
+
+                    b.Property<string>("Risk")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasComment("Gets or sets the risk of the project.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("TEXT")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasComment("Gets or sets the current state of the project design.");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("TEXT")
+                        .HasComment("Keywords or categories for the design");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("BLOB")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Version")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasComment("Design version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SearchIndex");
+
+                    b.HasIndex("ProjectInfoId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ProjectDesign", t =>
+                        {
+                            t.HasComment("Represents a specific design or solution proposal for a project.");
                         });
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
@@ -711,6 +834,11 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                         .HasColumnType("TEXT")
                         .HasComment("Gets or sets the current state of the project.");
 
+                    b.Property<string>("Tags")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasComment("Keywords or categories for the project");
+
                     b.Property<DateTime?>("TargetDate")
                         .HasColumnType("TEXT")
                         .HasComment("Gets or sets the target completion date for the project.");
@@ -718,7 +846,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -781,7 +910,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -796,17 +926,17 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.HasIndex("SearchIndex");
-
                     b.HasIndex("SetupCurrencyId");
 
                     b.HasIndex("SetupLanguageId");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("SetupCountry", t =>
                         {
@@ -851,7 +981,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -861,13 +992,13 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique();
 
-                    b.HasIndex("Name")
+                    b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("SetupCurrency", t =>
                         {
@@ -912,7 +1043,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -927,13 +1059,13 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique();
 
-                    b.HasIndex("Name")
+                    b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("SetupLanguage", t =>
                         {
@@ -982,7 +1114,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -992,9 +1125,9 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
-                    b.HasIndex("ObjectType", "Name")
+                    b.HasIndex("TenantId", "ObjectType", "Name")
                         .IsUnique();
 
                     b.ToTable("SetupState", t =>
@@ -1064,7 +1197,8 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasComment("The tenant identifier");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -1078,13 +1212,13 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique();
 
-                    b.HasIndex("Name")
+                    b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("SetupUnit", t =>
                         {
@@ -1174,6 +1308,17 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                         .IsRequired();
 
                     b.Navigation("PlatformInfo");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectDesign", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Project.ProjectInfo", "ProjectInfo")
+                        .WithMany()
+                        .HasForeignKey("ProjectInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectInfo");
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupCountry", b =>

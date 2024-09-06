@@ -21,7 +21,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     Provider = table.Column<int>(type: "int", nullable: false, comment: "The platform's supported automation provider, enabling automated resource management."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or comments about the platform."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
@@ -33,25 +33,59 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 comment: "Table storing information about platforms that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.");
 
             migrationBuilder.CreateTable(
-                name: "SetupCurrencies",
+                name: "Project",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
-                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    SearchIndex = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    ParentId = table.Column<string>(type: "nvarchar(26)", nullable: true),
+                    Code = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false, comment: "Code of the Project."),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "Name of the Project."),
+                    Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "Detailed description of the Project."),
+                    Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or comments about the Project."),
+                    Tags = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "Keywords or categories for the project"),
+                    SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    State = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false, comment: "Gets or sets the current state of the project."),
+                    Reason = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "Gets or sets the reason for the current state of the project."),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the start date for the project."),
+                    TargetDate = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the target completion date for the project."),
+                    Priority = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true, comment: "Gets or sets the priority of the project."),
+                    Risk = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true, comment: "Gets or sets the risk of the project."),
+                    Effort = table.Column<int>(type: "int", nullable: true, comment: "Gets or sets the effort required for the project."),
+                    BusinessValue = table.Column<int>(type: "int", nullable: true, comment: "Gets or sets the business value of the project."),
+                    Rating = table.Column<int>(type: "int", nullable: true, comment: "Gets or sets the rating of the project, reflecting its priority, quality, or stakeholder approval."),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SetupCurrencies", x => x.Id);
-                });
+                    table.PrimaryKey("PK_Project", x => x.Id);
+                },
+                comment: "Table storing information about Projects that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.");
 
             migrationBuilder.CreateTable(
-                name: "SetupLanguages",
+                name: "SetupCurrency",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SetupCurrency", x => x.Id);
+                },
+                comment: "Represents a currency entity with detailed information such as code, name, description, and associated country code.");
+
+            migrationBuilder.CreateTable(
+                name: "SetupLanguage",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
@@ -59,15 +93,39 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     TranslatedName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    SearchIndex = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SetupLanguages", x => x.Id);
-                });
+                    table.PrimaryKey("PK_SetupLanguage", x => x.Id);
+                },
+                comment: "Represents a currency entity with detailed information such as code, name, description, and associated country code.");
+
+            migrationBuilder.CreateTable(
+                name: "SetupState",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    ObjectType = table.Column<int>(type: "int", nullable: false),
+                    StateType = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Sequence = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SetupState", x => x.Id);
+                },
+                comment: "Represents a custom state that can be applied to various objects, such as projects, constraints, requirements, and more.");
 
             migrationBuilder.CreateTable(
                 name: "SetupUnit",
@@ -84,7 +142,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     Factor = table.Column<decimal>(type: "decimal(18,10)", precision: 18, scale: 10, nullable: false, comment: "A multiplication factor used to convert this unit to the base unit."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or comments about the unit."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
@@ -113,7 +171,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     PricingTier = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true, comment: "Size or pricing tier associated with the product."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or notes regarding the product."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
@@ -141,7 +199,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "A brief description providing additional details about the region."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or notes regarding the region."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
@@ -170,7 +228,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "A brief description providing additional details about the service."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or notes regarding the service."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
@@ -188,7 +246,43 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 comment: "Services offered by the platform, such as compute, storage, or networking resources.");
 
             migrationBuilder.CreateTable(
-                name: "SetupCountries",
+                name: "ProjectDesign",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    ProjectInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or comments about the project design."),
+                    Tags = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Keywords or categories for the design"),
+                    State = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false, comment: "Gets or sets the current state of the project design."),
+                    Reason = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "Gets or sets the reason for the current state of the design."),
+                    Environment = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true, comment: "The environment in which the project design is implemented."),
+                    Version = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true, comment: "Design version"),
+                    Dependencies = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "List of dependencies for the design"),
+                    Priority = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true, comment: "Gets or sets the priority of the project."),
+                    Risk = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true, comment: "Gets or sets the risk of the project."),
+                    Rating = table.Column<int>(type: "int", nullable: true, comment: "Gets or sets the rating of the project, reflecting its priority, quality, or stakeholder approval."),
+                    SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectDesign", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectDesign_Project_ProjectInfoId",
+                        column: x => x.ProjectInfoId,
+                        principalTable: "Project",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                },
+                comment: "Represents a specific design or solution proposal for a project.");
+
+            migrationBuilder.CreateTable(
+                name: "SetupCountry",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
@@ -198,25 +292,27 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     TranslatedName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SearchIndex = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SetupCountries", x => x.Id);
+                    table.PrimaryKey("PK_SetupCountry", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SetupCountries_SetupCurrencies_SetupCurrencyId",
+                        name: "FK_SetupCountry_SetupCurrency_SetupCurrencyId",
                         column: x => x.SetupCurrencyId,
-                        principalTable: "SetupCurrencies",
+                        principalTable: "SetupCurrency",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_SetupCountries_SetupLanguages_SetupLanguageId",
+                        name: "FK_SetupCountry_SetupLanguage_SetupLanguageId",
                         column: x => x.SetupLanguageId,
-                        principalTable: "SetupLanguages",
+                        principalTable: "SetupLanguage",
                         principalColumn: "Id");
-                });
+                },
+                comment: "Represents information about different countries, including their codes, names, and associated details.");
 
             migrationBuilder.CreateTable(
                 name: "PlatformDefaultUnit",
@@ -230,7 +326,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     DefaultValue = table.Column<decimal>(type: "decimal(12,4)", precision: 12, scale: 4, nullable: false, comment: "Default rate for the unit, representing a base measurement standard."),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "A brief description providing additional details about the region."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
@@ -277,7 +373,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     IsPrimaryRegion = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates whether this is the primary rate for the region."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or comments about the rate."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
@@ -308,7 +404,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     DefaultValue = table.Column<decimal>(type: "decimal(12,4)", precision: 12, scale: 4, nullable: false, comment: "Default rate for the unit, representing a base measurement standard."),
                     Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, comment: "Description of the measuring unit, providing additional context for users."),
                     SearchIndex = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
                     ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
@@ -332,15 +428,15 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 comment: "Table representing a unit of measurement for a rate within a platform's product offering, translating platform-specific units into standard project metrics.");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Platform_Name",
+                name: "IX_Platform_TenantId_Name",
                 table: "Platform",
-                column: "Name",
+                columns: new[] { "TenantId", "Name" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Platform_SearchIndex",
+                name: "IX_Platform_TenantId_SearchIndex",
                 table: "Platform",
-                column: "SearchIndex");
+                columns: new[] { "TenantId", "SearchIndex" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlatformDefaultUnit_PlatformInfoId",
@@ -348,25 +444,35 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 column: "PlatformInfoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlatformDefaultUnit_SearchIndex",
-                table: "PlatformDefaultUnit",
-                column: "SearchIndex");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PlatformDefaultUnit_SetupUnitId",
                 table: "PlatformDefaultUnit",
                 column: "SetupUnitId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlatformProduct_PlatformInfoId_Name",
+                name: "IX_PlatformDefaultUnit_TenantId_PlatformInfoId_UnitOfMeasure",
+                table: "PlatformDefaultUnit",
+                columns: new[] { "TenantId", "PlatformInfoId", "UnitOfMeasure" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlatformDefaultUnit_TenantId_SearchIndex",
+                table: "PlatformDefaultUnit",
+                columns: new[] { "TenantId", "SearchIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlatformProduct_PlatformInfoId",
                 table: "PlatformProduct",
-                columns: new[] { "PlatformInfoId", "Name" },
+                column: "PlatformInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlatformProduct_TenantId_PlatformInfoId_Name",
+                table: "PlatformProduct",
+                columns: new[] { "TenantId", "PlatformInfoId", "Name" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlatformProduct_SearchIndex",
+                name: "IX_PlatformProduct_TenantId_SearchIndex",
                 table: "PlatformProduct",
-                column: "SearchIndex");
+                columns: new[] { "TenantId", "SearchIndex" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlatformRate_PlatformProductId",
@@ -374,9 +480,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 column: "PlatformProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlatformRate_SearchIndex",
+                name: "IX_PlatformRate_TenantId_PlatformInfoId_PlatformProductId_ValidFrom",
                 table: "PlatformRate",
-                column: "SearchIndex");
+                columns: new[] { "TenantId", "PlatformInfoId", "PlatformProductId", "ValidFrom" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlatformRate_TenantId_SearchIndex",
+                table: "PlatformRate",
+                columns: new[] { "TenantId", "SearchIndex" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlatformRateUnit_PlatformRateId",
@@ -389,53 +500,152 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 column: "SetupUnitId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlatformRegion_PlatformInfoId_Name",
+                name: "IX_PlatformRateUnit_TenantId_PlatformInfoId_PlatformProductId_PlatformRateId_UnitOfMeasure",
+                table: "PlatformRateUnit",
+                columns: new[] { "TenantId", "PlatformInfoId", "PlatformProductId", "PlatformRateId", "UnitOfMeasure" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlatformRegion_PlatformInfoId",
                 table: "PlatformRegion",
-                columns: new[] { "PlatformInfoId", "Name" },
+                column: "PlatformInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlatformRegion_TenantId_PlatformInfoId_Name",
+                table: "PlatformRegion",
+                columns: new[] { "TenantId", "PlatformInfoId", "Name" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlatformRegion_SearchIndex",
+                name: "IX_PlatformRegion_TenantId_SearchIndex",
                 table: "PlatformRegion",
-                column: "SearchIndex");
+                columns: new[] { "TenantId", "SearchIndex" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlatformService_PlatformInfoId_Name",
+                name: "IX_PlatformService_PlatformInfoId",
                 table: "PlatformService",
-                columns: new[] { "PlatformInfoId", "Name" },
+                column: "PlatformInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlatformService_TenantId_PlatformInfoId_Name",
+                table: "PlatformService",
+                columns: new[] { "TenantId", "PlatformInfoId", "Name" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlatformService_SearchIndex",
+                name: "IX_PlatformService_TenantId_SearchIndex",
                 table: "PlatformService",
-                column: "SearchIndex");
+                columns: new[] { "TenantId", "SearchIndex" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_SetupCountries_SetupCurrencyId",
-                table: "SetupCountries",
-                column: "SetupCurrencyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SetupCountries_SetupLanguageId",
-                table: "SetupCountries",
-                column: "SetupLanguageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SetupUnit_Code",
-                table: "SetupUnit",
+                name: "IX_Project_Code",
+                table: "Project",
                 column: "Code",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_SetupUnit_Name",
-                table: "SetupUnit",
-                column: "Name",
+                name: "IX_Project_SearchIndex",
+                table: "Project",
+                column: "SearchIndex");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectDesign_ProjectInfoId_Name",
+                table: "ProjectDesign",
+                columns: new[] { "ProjectInfoId", "Name" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_SetupUnit_SearchIndex",
-                table: "SetupUnit",
+                name: "IX_ProjectDesign_SearchIndex",
+                table: "ProjectDesign",
                 column: "SearchIndex");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupCountry_SetupCurrencyId",
+                table: "SetupCountry",
+                column: "SetupCurrencyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupCountry_SetupLanguageId",
+                table: "SetupCountry",
+                column: "SetupLanguageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupCountry_TenantId_Code",
+                table: "SetupCountry",
+                columns: new[] { "TenantId", "Code" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupCountry_TenantId_Name",
+                table: "SetupCountry",
+                columns: new[] { "TenantId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupCountry_TenantId_SearchIndex",
+                table: "SetupCountry",
+                columns: new[] { "TenantId", "SearchIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupCurrency_TenantId_Code",
+                table: "SetupCurrency",
+                columns: new[] { "TenantId", "Code" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupCurrency_TenantId_Name",
+                table: "SetupCurrency",
+                columns: new[] { "TenantId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupCurrency_TenantId_SearchIndex",
+                table: "SetupCurrency",
+                columns: new[] { "TenantId", "SearchIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupLanguage_TenantId_Code",
+                table: "SetupLanguage",
+                columns: new[] { "TenantId", "Code" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupLanguage_TenantId_Name",
+                table: "SetupLanguage",
+                columns: new[] { "TenantId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupLanguage_TenantId_SearchIndex",
+                table: "SetupLanguage",
+                columns: new[] { "TenantId", "SearchIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupState_TenantId_ObjectType_Name",
+                table: "SetupState",
+                columns: new[] { "TenantId", "ObjectType", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupState_TenantId_SearchIndex",
+                table: "SetupState",
+                columns: new[] { "TenantId", "SearchIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupUnit_TenantId_Code",
+                table: "SetupUnit",
+                columns: new[] { "TenantId", "Code" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupUnit_TenantId_Name",
+                table: "SetupUnit",
+                columns: new[] { "TenantId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetupUnit_TenantId_SearchIndex",
+                table: "SetupUnit",
+                columns: new[] { "TenantId", "SearchIndex" });
         }
 
         /// <inheritdoc />
@@ -454,7 +664,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "PlatformService");
 
             migrationBuilder.DropTable(
-                name: "SetupCountries");
+                name: "ProjectDesign");
+
+            migrationBuilder.DropTable(
+                name: "SetupCountry");
+
+            migrationBuilder.DropTable(
+                name: "SetupState");
 
             migrationBuilder.DropTable(
                 name: "PlatformRate");
@@ -463,10 +679,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "SetupUnit");
 
             migrationBuilder.DropTable(
-                name: "SetupCurrencies");
+                name: "Project");
 
             migrationBuilder.DropTable(
-                name: "SetupLanguages");
+                name: "SetupCurrency");
+
+            migrationBuilder.DropTable(
+                name: "SetupLanguage");
 
             migrationBuilder.DropTable(
                 name: "PlatformProduct");
