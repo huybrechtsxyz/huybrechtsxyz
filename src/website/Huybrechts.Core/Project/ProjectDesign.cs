@@ -12,7 +12,7 @@ namespace Huybrechts.Core.Project;
 /// The <c>ProjectDesign</c> class includes details about a proposed solution for a project. Each design can have multiple components and is used to find the right solution for the project.
 /// </remarks>
 [MultiTenant]
-[Table("ProjectDesign")]
+[Table(nameof(ProjectDesign))]
 [Comment("Represents a specific design or solution proposal for a project.")]
 [Index(nameof(ProjectInfoId), nameof(Name), IsUnique = true)]
 [Index(nameof(SearchIndex))]

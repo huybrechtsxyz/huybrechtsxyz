@@ -6,26 +6,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-using Flow = Huybrechts.App.Features.Project.ProjectInfoFlow;
+using Flow = Huybrechts.App.Features.Project.ProjectComponentFlow;
 
-namespace Huybrechts.Web.Pages.Features.Project;
+namespace Huybrechts.Web.Pages.Features.Project.Component;
 
-[Authorize(Policy = TenantPolicies.IsContributor)]
-public class CreateModel : PageModel
+[Authorize(Policy = TenantPolicies.IsManager)]
+public class EditModel : PageModel
 {
     private readonly IMediator _mediator;
-    private readonly IValidator<Flow.CreateQuery> _getValidator;
-    private readonly IValidator<Flow.CreateCommand> _postValidator;
+    private readonly IValidator<Flow.UpdateQuery> _getValidator;
+    private readonly IValidator<Flow.UpdateCommand> _postValidator;
 
     [BindProperty]
-    public Flow.CreateCommand Data { get; set; }
+    public Flow.UpdateCommand Data { get; set; }
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    public CreateModel(IMediator mediator,
-        IValidator<Flow.CreateQuery> getValidator,
-        IValidator<Flow.CreateCommand> postValidator)
+    public EditModel(IMediator mediator,
+        IValidator<Flow.UpdateQuery> getValidator, 
+        IValidator<Flow.UpdateCommand> postValidator)
     {
         _mediator = mediator;
         _getValidator = getValidator;
@@ -33,11 +33,11 @@ public class CreateModel : PageModel
         Data = new();
     }
 
-    public async Task<IActionResult> OnGetAsync()
+    public async Task<IActionResult> OnGetAsync(Ulid id)
     {
         try
         {
-            Flow.CreateQuery message = new() { };
+            Flow.UpdateQuery message = new() { Id = id };
 
             ValidationResult state = await _getValidator.ValidateAsync(message);
             if (!state.IsValid)
@@ -48,10 +48,9 @@ public class CreateModel : PageModel
                 StatusMessage = result.ToStatusMessage();
 
             if (result.IsFailed)
-                return RedirectToPage(nameof(Index));
+                return RedirectToPage(nameof(Index), new { ProjectDesignId = Data.ProjectDesignId });
 
             Data = result.Value;
-
             return Page();
         }
         catch (Exception)
@@ -72,14 +71,20 @@ public class CreateModel : PageModel
             }
 
             var result = await _mediator.Send(Data);
+            if (result.IsFailed)
+            {
+                result.AddToModelState(ModelState);
+                return BadRequest(ModelState);
+            }
+
             if (result.HasStatusMessage())
                 StatusMessage = result.ToStatusMessage();
 
-            return RedirectToPage(nameof(Index));
+            return RedirectToPage(nameof(Index), new { ProjectDesignId = Data.ProjectDesignId });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError, message = ex.Message });
+            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
         }
     }
 }

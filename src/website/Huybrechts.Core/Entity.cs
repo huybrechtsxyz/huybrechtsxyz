@@ -24,10 +24,12 @@ public record Entity : IEntity
     [Comment("Primary Key")]
     public Ulid Id { get; set; }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     [Required]
     [MaxLength(64)]
     [Comment("The tenant identifier")]
-    public string TenantId { get; set; } = string.Empty;
+    public string TenantId { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     /// <summary>
     /// Date time created

@@ -97,6 +97,105 @@ namespace Huybrechts.Web.Pages.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Component.
+        /// </summary>
+        public static string Component {
+            get {
+                return ResourceManager.GetString("Component", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this form to create a new project component. Components can be a part of larger designs, configurations, or modules and may also contain subcomponents. Define the component type, variant, and the specific role it plays in the project design. You can also link platform resources to the component..
+        /// </summary>
+        public static string ComponentCreateInfo {
+            get {
+                return ResourceManager.GetString("ComponentCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New Component.
+        /// </summary>
+        public static string ComponentCreateTitle {
+            get {
+                return ResourceManager.GetString("ComponentCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this project component? Deleting a component will also remove all its associated subcomponents and configurations from the project design. This action cannot be undone..
+        /// </summary>
+        public static string ComponentDeleteInfo {
+            get {
+                return ResourceManager.GetString("ComponentDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Component.
+        /// </summary>
+        public static string ComponentDeleteTitle {
+            get {
+                return ResourceManager.GetString("ComponentDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify the details of an existing project component. You can update the component&apos;s name, description, and variant type. Additionally, manage the component’s subcomponents and adjust its sequence in the overall project design. Ensure that all platform resource links, if applicable, are accurate..
+        /// </summary>
+        public static string ComponentEditInfo {
+            get {
+                return ResourceManager.GetString("ComponentEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Component.
+        /// </summary>
+        public static string ComponentEditTitle {
+            get {
+                return ResourceManager.GetString("ComponentEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page provides a complete list of all components within the project design. Components can represent high-level elements, configurations, modules, or specific variants. Each component can have subcomponents, which allows you to build complex designs by nesting elements. Use this page to explore and manage components for different project designs..
+        /// </summary>
+        public static string ComponentIndexInfo {
+            get {
+                return ResourceManager.GetString("ComponentIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Components Overview.
+        /// </summary>
+        public static string ComponentIndexTitle {
+            get {
+                return ResourceManager.GetString("ComponentIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string ComponentNoResults {
+            get {
+                return ResourceManager.GetString("ComponentNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Components.
+        /// </summary>
+        public static string Components {
+            get {
+                return ResourceManager.GetString("Components", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Design.
         /// </summary>
         public static string Design {
@@ -174,6 +273,15 @@ namespace Huybrechts.Web.Pages.Features.Project {
         public static string DesignIndexTitle {
             get {
                 return ResourceManager.GetString("DesignIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string DesignNoResults {
+            get {
+                return ResourceManager.GetString("DesignNoResults", resourceCulture);
             }
         }
         

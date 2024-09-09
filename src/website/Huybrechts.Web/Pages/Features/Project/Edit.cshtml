@@ -17,9 +17,9 @@
         <form id="edit-form" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <input type="hidden" asp-for="Data.Id" />
-            <input type="hidden" asp-for="Data.Code" />
             <div class="form-floating mb-3">
-                <input asp-for="Data.Code" class="form-control border-info" required />
+                <input type="hidden" asp-for="Data.Code" />
+                <input asp-for="Data.Code" class="form-control border-info" disabled />
                 <label asp-for="Data.Code" class="form-label"></label>
                 <span asp-validation-for="Data.Code" class="text-danger"></span>
             </div>

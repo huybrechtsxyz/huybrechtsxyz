@@ -28,6 +28,7 @@ class ProjectDesignComponent {
     + Id: Ulid
     + ComponentName: string
     + Description: string
+    + PlatformInfoId: Ulid
     + PlatformProductId: Ulid
 }
 

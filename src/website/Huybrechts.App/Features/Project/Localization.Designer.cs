@@ -79,6 +79,24 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        public static string ComponentLevel {
+            get {
+                return ResourceManager.GetString("ComponentLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Components.
+        /// </summary>
+        public static string Components {
+            get {
+                return ResourceManager.GetString("Components", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dependencies.
         /// </summary>
         public static string Dependencies {
@@ -120,6 +138,24 @@ namespace Huybrechts.App.Features.Project {
         public static string Name {
             get {
                 return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platform.
+        /// </summary>
+        public static string PlatformInfo {
+            get {
+                return ResourceManager.GetString("PlatformInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product.
+        /// </summary>
+        public static string PlatformProduct {
+            get {
+                return ResourceManager.GetString("PlatformProduct", resourceCulture);
             }
         }
         
@@ -178,6 +214,24 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Source.
+        /// </summary>
+        public static string Source {
+            get {
+                return ResourceManager.GetString("Source", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Source type.
+        /// </summary>
+        public static string SourceType {
+            get {
+                return ResourceManager.GetString("SourceType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start date.
         /// </summary>
         public static string StartDate {
@@ -210,6 +264,15 @@ namespace Huybrechts.App.Features.Project {
         public static string TargetDate {
             get {
                 return ResourceManager.GetString("TargetDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string VariantType {
+            get {
+                return ResourceManager.GetString("VariantType", resourceCulture);
             }
         }
         

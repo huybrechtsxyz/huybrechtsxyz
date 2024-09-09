@@ -70,6 +70,15 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate project component for {0}.
+        /// </summary>
+        public static string DUPLICATE_PROJECTCOMPONENT_NAME {
+            get {
+                return ResourceManager.GetString("DUPLICATE_PROJECTCOMPONENT_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate project design name for {0}.
         /// </summary>
         public static string DUPLICATE_PROJECTDESIGN_NAME {
@@ -93,6 +102,15 @@ namespace Huybrechts.App.Features.Project {
         public static string INVALID_PROJECT_ID {
             get {
                 return ResourceManager.GetString("INVALID_PROJECT_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find component with ID {0}.
+        /// </summary>
+        public static string INVALID_PROJECTCOMPONENT_ID {
+            get {
+                return ResourceManager.GetString("INVALID_PROJECTCOMPONENT_ID", resourceCulture);
             }
         }
         

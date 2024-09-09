@@ -15,6 +15,30 @@ namespace Huybrechts.App.Features.Project.ProjectInfoFlow;
 
 public static class ProjectInfoHelper
 {
+    public static string GetSearchIndex
+        (string code, string name, string? description, string? tags)
+        => $"{code}~{name}~{description}~{tags}".ToLowerInvariant();
+
+    public static void CopyFields(Model model, ProjectInfo entity)
+    {
+        entity.Code = model.Code.Trim().ToUpper();
+        entity.Name = model.Name.Trim();
+        entity.Description = model.Description?.Trim();
+        entity.Remark = model.Remark?.Trim();
+        entity.Tags = model.Tags?.Trim();
+        entity.SearchIndex = model.SearchIndex;
+
+        entity.State = model.State.Trim();
+        entity.Reason = model.Reason?.Trim();
+        entity.StartDate = model.StartDate;
+        entity.TargetDate = model.TargetDate;
+        entity.Priority = model.Priority?.Trim();
+        entity.Risk = model.Risk?.Trim();
+        entity.Effort = model.Effort;
+        entity.BusinessValue = model.BusinessValue;
+        entity.Rating = model.Rating;
+    }
+
     public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
 
     internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
@@ -48,7 +72,7 @@ public record Model
     [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
     public string? Remark { get; set; }
 
-    public string SearchIndex => ModelHelper.GetSearchIndex(Code, Name, Description, Tags);
+    public string SearchIndex => ProjectInfoHelper.GetSearchIndex(Code, Name, Description, Tags);
 
     [Display(Name = nameof(Tags), ResourceType = typeof(Localization))]
     public string? Tags { get; set; }
@@ -83,32 +107,6 @@ public record Model
 
     [Display(Name = nameof(Rating), ResourceType = typeof(Localization))]
     public int? Rating { get; set; }
-}
-
-public static class ModelHelper
-{
-    public static string GetSearchIndex
-        (string code, string name, string? description, string? tags)
-        => $"{code}~{name}~{description}~{tags}".ToLowerInvariant();
-
-    public static void CopyFields(Model model, ProjectInfo entity)
-    {
-        entity.Name = model.Name.Trim();
-        entity.Description = model.Description?.Trim();
-        entity.Remark = model.Remark?.Trim();
-        entity.Tags = model.Tags?.Trim();
-        entity.SearchIndex = model.SearchIndex;
-
-        entity.State = model.State.Trim();
-        entity.Reason = model.Reason?.Trim();
-        entity.StartDate = model.StartDate;
-        entity.TargetDate = model.TargetDate;
-        entity.Priority = model.Priority?.Trim();
-        entity.Risk = model.Risk?.Trim();
-        entity.Effort = model.Effort;
-        entity.BusinessValue = model.BusinessValue;
-        entity.Rating = model.Rating;
-    }
 }
 
 public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -251,7 +249,7 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
             ParentId = Ulid.Empty,
             CreatedDT = DateTime.UtcNow,
         };
-        ModelHelper.CopyFields(message, entity);
+        ProjectInfoHelper.CopyFields(message, entity);
 
         await _dbcontext.Set<ProjectInfo>().AddAsync(entity, token);
         await _dbcontext.SaveChangesAsync(token);
@@ -284,10 +282,10 @@ public class UpdateCommandValidator : ModelValidator<UpdateCommand>
     {
         RuleFor(x => x).MustAsync(async (rec, cancellation) =>
         {
-            bool exists = await ProjectInfoHelper.IsDuplicateCodeAsync(dbContext, rec.Name, rec.Id);
+            bool exists = await ProjectInfoHelper.IsDuplicateCodeAsync(dbContext, rec.Code, rec.Id);
             return !exists;
         })
-        .WithMessage(x => Messages.DUPLICATE_PROJECT_CODE.Replace("{0}", x.Name.ToString()))
+        .WithMessage(x => Messages.DUPLICATE_PROJECT_CODE.Replace("{0}", x.Code.ToString()))
         .WithState(x => x.Code);
     }
 }
@@ -339,7 +337,7 @@ internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
             return ProjectInfoHelper.EntityNotFound(message.Id);
 
         entity.ModifiedDT = DateTime.UtcNow;
-        ModelHelper.CopyFields(message, entity);
+        ProjectInfoHelper.CopyFields(message, entity);
 
         _dbcontext.Set<ProjectInfo>().Update(entity);
         await _dbcontext.SaveChangesAsync(token);

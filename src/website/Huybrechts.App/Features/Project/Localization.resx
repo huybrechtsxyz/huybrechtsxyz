@@ -123,6 +123,12 @@
   <data name="Code" xml:space="preserve">
     <value>Code</value>
   </data>
+  <data name="ComponentLevel" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="Components" xml:space="preserve">
+    <value>Components</value>
+  </data>
   <data name="Dependencies" xml:space="preserve">
     <value>Dependencies</value>
   </data>
@@ -137,6 +143,12 @@
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
+  </data>
+  <data name="PlatformInfo" xml:space="preserve">
+    <value>Platform</value>
+  </data>
+  <data name="PlatformProduct" xml:space="preserve">
+    <value>Product</value>
   </data>
   <data name="Priority" xml:space="preserve">
     <value>Priority</value>
@@ -156,6 +168,12 @@
   <data name="Risk" xml:space="preserve">
     <value>Risk</value>
   </data>
+  <data name="Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="SourceType" xml:space="preserve">
+    <value>Source type</value>
+  </data>
   <data name="StartDate" xml:space="preserve">
     <value>Start date</value>
   </data>
@@ -167,6 +185,9 @@
   </data>
   <data name="TargetDate" xml:space="preserve">
     <value>Target date</value>
+  </data>
+  <data name="VariantType" xml:space="preserve">
+    <value>Type</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Version</value>
