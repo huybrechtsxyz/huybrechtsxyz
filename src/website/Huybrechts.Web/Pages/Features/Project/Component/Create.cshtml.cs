@@ -33,11 +33,17 @@ public class CreateModel : PageModel
         _postValidator = postValidator;
     }
 
-    public async Task<IActionResult> OnGetAsync(Ulid ProjectDesignId)
+    public async Task<IActionResult> OnGetAsync(
+        Ulid ProjectDesignId,
+        Ulid? ParentId)
     {
         try
         {
-            Flow.CreateQuery message = new() { ProjectDesignId = ProjectDesignId };
+            Flow.CreateQuery message = new()
+            { 
+                ProjectDesignId = ProjectDesignId,
+                ParentId = ParentId
+            };
 
             ValidationResult state = await _getValidator.ValidateAsync(message);
             if (!state.IsValid)
@@ -48,7 +54,7 @@ public class CreateModel : PageModel
                 StatusMessage = result.ToStatusMessage();
 
             if (result.IsFailed)
-                return RedirectToPage(nameof(Index), new { ProjectDesignId = ProjectDesignId });
+                return RedirectToPage(nameof(Index), new { ProjectDesignId, ParentId });
 
             Data = result.Value;
             return Page();
@@ -74,7 +80,7 @@ public class CreateModel : PageModel
             if (result.HasStatusMessage())
                 StatusMessage = result.ToStatusMessage();
 
-            return RedirectToPage(nameof(Index), new { ProjectInfoId = Data.ProjectInfoId });
+            return RedirectToPage(nameof(Index), new { Data.ProjectDesignId });
         }
         catch (Exception)
         {

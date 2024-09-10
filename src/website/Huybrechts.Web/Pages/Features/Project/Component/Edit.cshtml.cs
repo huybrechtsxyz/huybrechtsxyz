@@ -48,7 +48,7 @@ public class EditModel : PageModel
                 StatusMessage = result.ToStatusMessage();
 
             if (result.IsFailed)
-                return RedirectToPage(nameof(Index), new { ProjectDesignId = Data.ProjectDesignId });
+                return RedirectToPage(nameof(Index), new { Data.ProjectDesignId });
 
             Data = result.Value;
             return Page();
@@ -80,7 +80,7 @@ public class EditModel : PageModel
             if (result.HasStatusMessage())
                 StatusMessage = result.ToStatusMessage();
 
-            return RedirectToPage(nameof(Index), new { ProjectDesignId = Data.ProjectDesignId });
+            return RedirectToPage(nameof(Index), new { Data.ProjectDesignId });
         }
         catch (Exception)
         {

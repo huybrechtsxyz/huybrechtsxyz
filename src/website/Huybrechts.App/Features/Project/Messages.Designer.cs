@@ -70,15 +70,6 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate project component for {0}.
-        /// </summary>
-        public static string DUPLICATE_PROJECTCOMPONENT_NAME {
-            get {
-                return ResourceManager.GetString("DUPLICATE_PROJECTCOMPONENT_NAME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Duplicate project design name for {0}.
         /// </summary>
         public static string DUPLICATE_PROJECTDESIGN_NAME {

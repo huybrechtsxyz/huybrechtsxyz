@@ -48,7 +48,7 @@ public class DeleteModel : PageModel
                 StatusMessage = result.ToStatusMessage();
 
             if (result.IsFailed)
-                return RedirectToPage(nameof(Index), new { ProjectDesignId = Data.ProjectDesignId });
+                return RedirectToPage(nameof(Index), new { Data.ProjectDesignId });
 
             if (result.HasStatusMessage())
                 StatusMessage = result.ToStatusMessage();
@@ -83,7 +83,7 @@ public class DeleteModel : PageModel
             if (result.HasStatusMessage())
                 StatusMessage = result.ToStatusMessage();
 
-            return RedirectToPage(nameof(Index), new { ProjectDesignId = Data.ProjectDesignId });
+            return RedirectToPage(nameof(Index), new { Data.ProjectDesignId });
         }
         catch (Exception)
         {

@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DUPLICATE_PROJECTCOMPONENT_NAME" xml:space="preserve">
-    <value>Component met naam {0} bestaat al</value>
-  </data>
   <data name="DUPLICATE_PROJECTDESIGN_NAME" xml:space="preserve">
     <value>Project ontwerp met naam {0} bestaat al</value>
   </data>

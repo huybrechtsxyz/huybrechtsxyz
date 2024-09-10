@@ -28,6 +28,7 @@ public class IndexModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(
         Ulid? ProjectDesignId,
+        Ulid? parentId,
         string currentFilter,
         string searchText,
         string sortOrder,
@@ -38,6 +39,7 @@ public class IndexModel : PageModel
             Flow.ListQuery message = new()
             {
                 ProjectDesignId = ProjectDesignId,
+                ParentId = parentId,
                 CurrentFilter = currentFilter,
                 SearchText = searchText,
                 SortOrder = sortOrder,

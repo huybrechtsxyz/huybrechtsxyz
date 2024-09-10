@@ -13,11 +13,15 @@ namespace Huybrechts.App.Features.Project.ProjectComponentFlow;
 
 public static class ProjectComponentHelper
 {
-    public static CreateCommand CreateNew(ProjectDesign design) => new()
+    public static CreateCommand CreateNew(ProjectInfo project, ProjectDesign design, ProjectComponent? parent) => new()
     {
         Id = Ulid.NewUlid(),
+        ProjectInfo = project,
+        ProjectInfoId = project.Id,
         ProjectDesign = design,
-        ProjectDesignId = design.Id
+        ProjectDesignId = design.Id,
+        ParentInfo = parent,
+        ParentId = parent?.Id,
     };
 
     public static string GetSearchIndex
@@ -32,8 +36,8 @@ public static class ProjectComponentHelper
         entity.SearchIndex = model.SearchIndex;
 
         entity.Sequence = model.Sequence;
-        entity.Level = model.Level;
-        entity.Variant = model.Variant;
+        entity.ComponentLevel = model.ComponentLevel;
+        entity.VariantType = model.VariantType;
         entity.SourceType = model.SourceType;
         entity.Source = model.Source?.Trim();
         entity.PlatformInfoId = model.PlatformInfoId;
@@ -45,24 +49,6 @@ public static class ProjectComponentHelper
     internal static Result DesignNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTDESIGN_ID.Replace("{0}", id.ToString()));
 
     internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTCOMPONENT_ID.Replace("{0}", id.ToString()));
-
-    internal static Result DuplicateEntityFound(string name) => Result.Fail(Messages.DUPLICATE_PROJECTCOMPONENT_NAME.Replace("{0}", name.ToString()));
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
-    public static async Task<bool> IsDuplicateNameAsync(
-        DbContext context, 
-        string name, 
-        Ulid ProjectInfoId, 
-        Ulid? parentId = null,
-        Ulid? currentId = null)
-    {
-        name = name.ToLower().Trim();
-        return await context.Set<ProjectComponent>()
-            .AnyAsync(pr => pr.Name.ToLower() == name
-                            && pr.ProjectInfoId == ProjectInfoId
-                            && (!parentId.HasValue || pr.ParentId != parentId.Value)
-                            && (!currentId.HasValue || pr.Id != currentId.Value));
-    }
 }
 
 public record Model
@@ -72,8 +58,10 @@ public record Model
     [Display(Name = "Project", ResourceType = typeof(Localization))]
     public Ulid ProjectInfoId { get; set; } = Ulid.Empty;
 
+    [Display(Name = "Design", ResourceType = typeof(Localization))]
     public Ulid ProjectDesignId { get; set; } = Ulid.Empty;
 
+    [Display(Name = "Component", ResourceType = typeof(Localization))]
     public Ulid? ParentId { get; set; } = Ulid.Empty;
 
     [Display(Name = nameof(Sequence), ResourceType = typeof(Localization))]
@@ -92,10 +80,10 @@ public record Model
     public List<ProjectComponent> SubComponents { get; set; } = [];
 
     [Display(Name = nameof(ComponentLevel), ResourceType = typeof(Localization))]
-    public ComponentLevel Level { get; set; } = ComponentLevel.Component;
+    public ComponentLevel ComponentLevel { get; set; } = ComponentLevel.Component;
 
     [Display(Name = nameof(VariantType), ResourceType = typeof(Localization))]
-    public VariantType Variant { get; set; } = VariantType.Standard;
+    public VariantType VariantType { get; set; } = VariantType.Standard;
 
     [Display(Name = nameof(SourceType), ResourceType = typeof(Localization))]
     public SourceType SourceType { get; set; } = SourceType.None;
@@ -141,6 +129,8 @@ internal sealed class ListMapping : Profile
 public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
 {
     public Ulid? ProjectDesignId { get; set; } = Ulid.Empty;
+
+    public Ulid? ParentId { get; set; } = Ulid.Empty;
 }
 
 public sealed class ListValidator : AbstractValidator<ListQuery> 
@@ -154,6 +144,8 @@ public sealed class ListValidator : AbstractValidator<ListQuery>
 public sealed record ListResult : EntityListFlow.Result<ListModel>
 {
     public Ulid? ProjectDesignId { get; set; } = Ulid.Empty;
+
+    public Ulid? ParentId { get; set; } = Ulid.Empty;
 
     public ProjectInfo ProjectInfo = new();
 
@@ -180,19 +172,16 @@ internal sealed class ListHandler :
             return ProjectComponentHelper.ProjectNotFound(design.ProjectInfoId);
 
         IQueryable<ProjectComponent> query = _dbcontext.Set<ProjectComponent>();
-
         var searchString = message.SearchText ?? message.CurrentFilter;
+        query = query.Where(q => q.ProjectInfoId == project.Id && q.ProjectDesignId == design.Id);
+
+        if (message.ParentId.HasValue)
+            query = query.Where(q => q.ParentId == message.ParentId);
+
         if (!string.IsNullOrEmpty(searchString))
         {
             string searchFor = searchString.ToLowerInvariant();
-            query = query.Where(q =>
-                q.ProjectInfoId == project.Id
-                && q.ProjectDesignId == design.Id
-                && (q.SearchIndex != null && q.SearchIndex.Contains(searchFor)));
-        }
-        else
-        {
-            query = query.Where(q => q.ProjectInfoId == project.Id && q.ProjectDesignId == design.Id);
+            query = query.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor));
         }
 
         if (!string.IsNullOrEmpty(message.SortOrder))
@@ -210,6 +199,7 @@ internal sealed class ListHandler :
         var model = new ListResult
         {
             ProjectDesignId = message.ProjectDesignId,
+            ParentId = message.ParentId,
             ProjectInfo = project,
             ProjectDesign = design,
             CurrentFilter = searchString,
@@ -261,13 +251,12 @@ public sealed class CreateCommandValidator : ModelValidator<CreateCommand>
         })
         .WithMessage(m => Messages.INVALID_PROJECT_ID.Replace("{0}", m.ProjectInfoId.ToString()));
 
-        RuleFor(x => x).MustAsync(async (model, cancellation) =>
+        RuleFor(x => x.ProjectDesignId).MustAsync(async (id, cancellation) =>
         {
-            bool exists = await ProjectComponentHelper.IsDuplicateNameAsync(dbContext, model.Name, model.ProjectInfoId);
-            return !exists;
+            bool exists = await dbContext.Set<ProjectDesign>().AnyAsync(x => x.Id == id, cancellation);
+            return exists;
         })
-        .WithMessage(x => Messages.DUPLICATE_PROJECTCOMPONENT_NAME.Replace("{0}", x.Name.ToString()))
-        .WithName(nameof(CreateCommand.Name));
+        .WithMessage(m => Messages.INVALID_PROJECTDESIGN_ID.Replace("{0}", m.ProjectDesignId.ToString()));
     }
 }
 
@@ -298,7 +287,7 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
                 return ProjectComponentHelper.EntityNotFound(message.ParentId ?? Ulid.Empty);
         }
 
-        var command = ProjectComponentHelper.CreateNew(design);
+        var command = ProjectComponentHelper.CreateNew(project, design, parent);
         
         command.ProjectInfo = project;
         command.ParentInfo = parent;
@@ -325,9 +314,6 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
         var project = await _dbcontext.Set<ProjectInfo>().FindAsync([design.ProjectInfoId], cancellationToken: token);
         if (project is null)
             return ProjectComponentHelper.ProjectNotFound(design.ProjectInfoId);
-
-        if (await ProjectComponentHelper.IsDuplicateNameAsync(_dbcontext, message.Name, message.ProjectInfoId))
-            return ProjectComponentHelper.DuplicateEntityFound(message.Name);
 
         var entity = new ProjectComponent
         {
@@ -378,13 +364,12 @@ public class UpdateCommandValidator : ModelValidator<UpdateCommand>
         })
         .WithMessage(m => Messages.INVALID_PROJECT_ID.Replace("{0}", m.ProjectInfoId.ToString()));
 
-        RuleFor(x => x).MustAsync(async (model, cancellation) =>
+        RuleFor(x => x.ProjectDesignId).MustAsync(async (id, cancellation) =>
         {
-            bool exists = await ProjectComponentHelper.IsDuplicateNameAsync(dbContext, model.Name, model.ProjectInfoId, model.Id);
-            return !exists;
+            bool exists = await dbContext.Set<ProjectInfo>().AnyAsync(x => x.Id == id, cancellation);
+            return exists;
         })
-        .WithMessage(x => Messages.DUPLICATE_PROJECTCOMPONENT_NAME.Replace("{0}", x.Name.ToString()))
-        .WithName(nameof(CreateCommand.Name));
+        .WithMessage(m => Messages.INVALID_PROJECTDESIGN_ID.Replace("{0}", m.ProjectDesignId.ToString()));
     }
 }
 
@@ -450,9 +435,6 @@ internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
         var entity = await _dbcontext.Set<ProjectComponent>().FindAsync([message.Id], cancellationToken: token);
         if (entity is null)
             return ProjectComponentHelper.EntityNotFound(message.Id);
-
-        if (await ProjectComponentHelper.IsDuplicateNameAsync(_dbcontext, message.Name, message.ProjectInfoId, entity.Id))
-            return ProjectComponentHelper.DuplicateEntityFound(message.Name);
 
         entity.ModifiedDT = DateTime.UtcNow;
         ProjectComponentHelper.CopyFields(message, entity);

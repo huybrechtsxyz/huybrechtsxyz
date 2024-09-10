@@ -109,7 +109,7 @@ public record ProjectComponent : Entity, IEntity
     /// Defines whether the component is a high-level entity (like a room), 
     /// a configuration option, or a smaller part (like a module or variant).
     /// </remarks>
-    public ComponentLevel Level { get; set; } = ComponentLevel.Component;
+    public ComponentLevel ComponentLevel { get; set; } = ComponentLevel.Component;
 
     /// <summary>
     /// Specifies the type of variant for this component (Standard, Option, Exceptional).
@@ -118,7 +118,7 @@ public record ProjectComponent : Entity, IEntity
     /// Defines whether this component is a standard part, an optional upgrade, 
     /// or an exceptional case for the design.
     /// </remarks>
-    public VariantType Variant { get; set; } = VariantType.Standard;
+    public VariantType VariantType { get; set; } = VariantType.Standard;
 
     /// <summary>
     /// Specifies the source type of this component (None, Platform).

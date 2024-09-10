@@ -123,17 +123,23 @@
   <data name="Code" xml:space="preserve">
     <value>Kode</value>
   </data>
+  <data name="Component" xml:space="preserve">
+    <value>Component</value>
+  </data>
   <data name="ComponentLevel" xml:space="preserve">
     <value>Level</value>
   </data>
   <data name="Components" xml:space="preserve">
-    <value>Components</value>
+    <value>Componenten</value>
   </data>
   <data name="Dependencies" xml:space="preserve">
     <value>afhankelijkheden</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>Omschrijving</value>
+  </data>
+  <data name="Design" xml:space="preserve">
+    <value>Ontwerp</value>
   </data>
   <data name="Effort" xml:space="preserve">
     <value>Inspanning</value>
@@ -143,6 +149,9 @@
   </data>
   <data name="Name" xml:space="preserve">
     <value>Naam</value>
+  </data>
+  <data name="Platform" xml:space="preserve">
+    <value>Platform</value>
   </data>
   <data name="PlatformInfo" xml:space="preserve">
     <value>Platform</value>
@@ -167,6 +176,9 @@
   </data>
   <data name="Risk" xml:space="preserve">
     <value>Risico</value>
+  </data>
+  <data name="Sequence" xml:space="preserve">
+    <value>Volgorde</value>
   </data>
   <data name="Source" xml:space="preserve">
     <value>Bron</value>
