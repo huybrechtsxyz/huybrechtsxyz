@@ -1,6 +1,7 @@
 using FluentValidation;
 using FluentValidation.Results;
 using Huybrechts.App.Web;
+using Huybrechts.Core.Project;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,11 +29,7 @@ public class IndexModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(
         Ulid? ProjectDesignId,
-        Ulid? parentId,
-        string currentFilter,
-        string searchText,
-        string sortOrder,
-        int? pageIndex)
+        Ulid? parentId)
     {
         try
         {
@@ -40,10 +37,6 @@ public class IndexModel : PageModel
             {
                 ProjectDesignId = ProjectDesignId,
                 ParentId = parentId,
-                CurrentFilter = currentFilter,
-                SearchText = searchText,
-                SortOrder = sortOrder,
-                Page = pageIndex
             };
 
             ValidationResult state = await _validator.ValidateAsync(message);
@@ -60,9 +53,54 @@ public class IndexModel : PageModel
             Data = result.Value;
             return Page();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
+            return RedirectToPage("/Error",
+                new
+                {
+                    status = StatusCodes.Status500InternalServerError,
+                    message = ex.Message
+                });
         }
     }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+    public async Task<IActionResult> OnGetLoadAsync(
+        Ulid? ProjectDesignId,
+        Ulid? parentId)
+    {
+        try
+        {
+            Flow.ListQuery message = new()
+            {
+                ProjectDesignId = ProjectDesignId,
+                ParentId = parentId,
+            };
+
+            ValidationResult state = await _validator.ValidateAsync(message);
+            if (!state.IsValid)
+                return BadRequest(state);
+
+            var result = await _mediator.Send(message);
+            if (result.HasStatusMessage())
+                StatusMessage = result.ToStatusMessage();
+
+            if (result.IsFailed)
+                return BadRequest();
+
+            Data = result.Value;
+            return new JsonResult(Data.Results);
+        }
+        catch (Exception ex)
+        {
+            return RedirectToPage("/Error",
+                new
+                {
+                    status = StatusCodes.Status500InternalServerError,
+                    message = ex.Message
+                });
+        }
+        
+    }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 }

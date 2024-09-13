@@ -20,7 +20,6 @@
     <link rel="stylesheet" href="/lib/nifty/bootstrap.css">
     <link rel="stylesheet" href="/lib/nifty/nifty.css">
     <link rel="stylesheet" href="/lib/bootstrap-icons/font/bootstrap-icons.css">
-    <link rel="manifest" href="./site.webmanifest">
     @await RenderSectionAsync("Links", required: false)
 </head>
 <body class="out-quart">
@@ -155,10 +154,10 @@
     <!-- SCROLL TO TOP BUTTON -->
     @await RenderSectionAsync("Scroll", required: false)
 
+    <script src="/lib/jquery/jquery.js"></script>
     <script src="/lib/popperjs/popper.min.js"></script>
     <script src="/lib/nifty/bootstrap.min.js"></script>
     <script src="/lib/nifty/nifty.min.js"></script>
-    <script src="/lib/jquery/jquery.js"></script>
     <script src="/js/layout.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

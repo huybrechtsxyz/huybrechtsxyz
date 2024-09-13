@@ -64,6 +64,9 @@ public record Model
     [Display(Name = "Component", ResourceType = typeof(Localization))]
     public Ulid? ParentId { get; set; } = Ulid.Empty;
 
+    [Display(Name = "Components", ResourceType = typeof(Localization))]
+    public List<Model> Children { get; set; } = [];
+
     [Display(Name = nameof(Sequence), ResourceType = typeof(Localization))]
     public int Sequence { get; set; } = 0;
 
@@ -75,9 +78,6 @@ public record Model
 
     [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
     public string? Remark { get; set; }
-
-    [Display(Name = "Components", ResourceType = typeof(Localization))]
-    public List<ProjectComponent> SubComponents { get; set; } = [];
 
     [Display(Name = nameof(ComponentLevel), ResourceType = typeof(Localization))]
     public ComponentLevel ComponentLevel { get; set; } = ComponentLevel.Component;
@@ -118,15 +118,21 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
 // LIST
 //
 
-public sealed record ListModel : Model { }
-
 internal sealed class ListMapping : Profile
 {
     public ListMapping() =>
-        CreateProjection<ProjectComponent, ListModel>();
+        CreateMap<ProjectComponent, Model>()
+            .ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.Children));
 }
 
-public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
+internal sealed class EntityMapping : Profile
+{
+    public EntityMapping() =>
+        CreateMap<ProjectComponent, ProjectComponent>()
+        .ForMember(dest => dest.Children, opt => opt.Ignore());
+}
+
+public sealed record ListQuery : IRequest<Result<ListResult>>
 {
     public Ulid? ProjectDesignId { get; set; } = Ulid.Empty;
 
@@ -141,7 +147,7 @@ public sealed class ListValidator : AbstractValidator<ListQuery>
     } 
 }
 
-public sealed record ListResult : EntityListFlow.Result<ListModel>
+public sealed record ListResult
 {
     public Ulid? ProjectDesignId { get; set; } = Ulid.Empty;
 
@@ -150,15 +156,20 @@ public sealed record ListResult : EntityListFlow.Result<ListModel>
     public ProjectInfo ProjectInfo = new();
 
     public ProjectDesign ProjectDesign = new();
+
+    public List<Model> Results = [];
 }
 
 internal sealed class ListHandler :
-    EntityListFlow.Handler<ProjectComponent, ListModel>,
+    EntityListFlow.Handler<ProjectComponent, Model>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
-    public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
+    private readonly IMapper _mapper;
+
+    public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration, IMapper mapper)
         : base(dbcontext, configuration)
     {
+        _mapper = mapper;
     }
 
     public async Task<Result<ListResult>> Handle(ListQuery message, CancellationToken token)
@@ -172,29 +183,29 @@ internal sealed class ListHandler :
             return ProjectComponentHelper.ProjectNotFound(design.ProjectInfoId);
 
         IQueryable<ProjectComponent> query = _dbcontext.Set<ProjectComponent>();
-        var searchString = message.SearchText ?? message.CurrentFilter;
         query = query.Where(q => q.ProjectInfoId == project.Id && q.ProjectDesignId == design.Id);
-
         if (message.ParentId.HasValue)
             query = query.Where(q => q.ParentId == message.ParentId);
+        query = query.OrderBy(o => o.Sequence).ThenBy(o => o.Name);
 
-        if (!string.IsNullOrEmpty(searchString))
+        List<ProjectComponent> recordList = await query.ToListAsync(cancellationToken: token) ?? [];
+
+        List<ProjectComponent> BuildHierarchy(Ulid? parentId)
         {
-            string searchFor = searchString.ToLowerInvariant();
-            query = query.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor));
+            return recordList
+                .Where(q => q.ParentId == parentId)
+                .Select(s =>
+                {
+                    var mappedComponent = _mapper.Map<ProjectComponent>(s);
+                    mappedComponent.Children = BuildHierarchy(s.Id);
+                    return mappedComponent;
+                })
+                .ToList();
         }
 
-        if (!string.IsNullOrEmpty(message.SortOrder))
-        {
-            query = query.OrderBy(message.SortOrder);
-        }
-        else query = query.OrderBy(o => o.Name);
+        var records = BuildHierarchy(Ulid.Empty);
 
-        int pageSize = EntityListFlow.PageSize;
-        int pageNumber = message.Page ?? 1;
-        var results = await query
-            .ProjectTo<ListModel>(_configuration)
-            .PaginatedListAsync(pageNumber, pageSize);
+        var results = _mapper.Map<List<Model>>(records);
 
         var model = new ListResult
         {
@@ -202,10 +213,7 @@ internal sealed class ListHandler :
             ParentId = message.ParentId,
             ProjectInfo = project,
             ProjectDesign = design,
-            CurrentFilter = searchString,
-            SearchText = searchString,
-            SortOrder = message.SortOrder,
-            Results = results ?? []
+            Results = results
         };
 
         return model;
@@ -315,11 +323,20 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
         if (project is null)
             return ProjectComponentHelper.ProjectNotFound(design.ProjectInfoId);
 
+        ProjectComponent? parent = null;
+        if (message.ParentId.HasValue && message.ParentId != Ulid.Empty)
+        {
+            parent = await _dbcontext.Set<ProjectComponent>().FindAsync([message.ParentId], cancellationToken: token);
+            if (parent is null)
+                return ProjectComponentHelper.EntityNotFound(message.ParentId ?? Ulid.Empty);
+        }
+
         var entity = new ProjectComponent
         {
             Id = message.Id,
-            ProjectInfoId = design.ProjectInfoId,
+            ProjectInfoId = project.Id,
             ProjectDesign = design,
+            ParentId = parent?.Id ?? Ulid.Empty,
             CreatedDT = DateTime.UtcNow
         };
         ProjectComponentHelper.CopyFields(message, entity);

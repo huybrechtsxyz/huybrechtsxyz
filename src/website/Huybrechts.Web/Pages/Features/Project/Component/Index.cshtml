@@ -3,16 +3,18 @@
 @model Huybrechts.Web.Pages.Features.Project.Component.IndexModel
 @{
     ViewData["CardTitle"] = Model.Data.ProjectInfo.Name + " | " + Model.Data.ProjectDesign.Name + " | " + SL["ComponentIndexTitle"];
-    var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
-    var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
+
+@section Links {
+    <link rel="stylesheet" href="/lib/tabulator/css/tabulator.min.css" />
+}
+
 <partial name="_StatusResult" for="StatusMessage" />
 <p class="text-info">
     @SL["ComponentIndexInfo"]
 </p>
 <div class="row">
     <div class="col-md-12">
-        
         <div class="row">
             <form class="row row-cols-md-auto g-3 align-items-center">
                 <div class="col-md-3 d-flex gap-1 align-items-center mb-3">
@@ -24,91 +26,17 @@
                         <span class="vr"></span>
                         @SL["Add New"]
                     </a>
-                </div>
-                <div class="col-md-9 d-flex gap-1 align-items-center justify-content-md-end mb-3">
-                    <input type="hidden" name="ProjectInfoId" value="@Model.Data.ProjectDesign.Id" />
-                    <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="@SL["Search..."]" class="form-control" autocomplete="off" />
-                    <input type="submit" value="@SL["Search"]" class="btn btn-primary" /> |
-                    <a asp-page="Index" asp-route-ProjectDesignId="@Model.Data.ProjectDesign.Id" class="btn btn-secondary text-nowrap" type="button" role="button">@SL["Clear Filter"]</a>
+                    <button id="addEntityButton" type="button" class="btn btn-primary" onclick="addEntity()">Add Child</button>
+                    <button id="editEntityButton" type="button" class="btn btn-primary" onclick="editEntity()">Edit</button>
+                    <button id="deleteEntityButton" type="button" class="btn btn-primary" onclick="deleteEntity()">Delete</button>
                 </div>
             </form>
             @if (Model.Data.Results.Count > 0)
             {
-                <div class="table-responsove">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].Name)</th>
-                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].ComponentLevel)</th>
-                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].VariantType)</th>
-                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].Source)</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var record in Model.Data.Results)
-                            {
-                                <tr>
-                                    <td>@Html.DisplayFor(modelItem => record!.Name)</td>
-                                    <td>@Html.DisplayFor(modelItem => record!.ComponentLevel)</td>
-                                    <td>@Html.DisplayFor(modelItem => record!.VariantType)</td>
-                                    <td>@Html.DisplayFor(modelItem => record!.Source)</td>
-                                    <td>
-                                        <a asp-page="Edit" asp-route-id="@record!.Id" class="btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i></a>
-                                        <a asp-page="Delete" asp-route-id="@record!.Id" class="btn btn-icon btn-secondary"><i class="bi bi-trash2-fill"></i></a>
-                                        <a asp-page="/Features/Project/Component/Create" asp-route-projectDesignId="@record!.ProjectDesignId" asp-route-parentId="@record.Id" class="btn btn-info">
-                                            <i class="bi bi-layers"></i>
-                                            <span class="vr"></span>
-                                            @SL["Components"]
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
+                <div class="table-responsive">
+                    <table id="table" class="table table-striped">
                     </table>
                 </div>
-                <nav class="text-align-center mt-5" aria-label="Table navigation">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item @prev">
-                            <a asp-page="Index"
-                               asp-route-ProjectDesignId="@Model.Data.ProjectDesign.Id"
-                               asp-route-currentFilter="@Model.Data.CurrentFilter"
-                               asp-route-searchText="@Model.Data.CurrentFilter"
-                               asp-route-sortOrder="@Model.Data.SortOrder"
-                               asp-route-pageindex="@(Model.Data.Results.PageIndex - 1)"
-                               class="page-link" aria-label="Previous">
-                               <span aria-hidden="true">&laquo;</span>
-                               <span class="sr-only">@SL["Previous"]</span>
-                            </a>
-                        </li>
-                        @for (int i = 1; i <= Model.Data.Results.TotalPages; i++)
-                        {
-                            <li class="page-item @(Model.Data.Results.PageIndex == i ? "active" : string.Empty)" aria-current="page">
-                                <a asp-page="Index"
-                                   asp-route-ProjectDesignId="@Model.Data.ProjectDesign.Id"
-                                   asp-route-currentFilter="@Model.Data.CurrentFilter"
-                                   asp-route-searchText="@Model.Data.CurrentFilter"
-                                   asp-route-sortOrder="@Model.Data.SortOrder"
-                                   asp-route-pageindex="@i"
-                                   class="page-link">
-                                   @(i)
-                                </a>
-                            </li>
-                        }
-                        <li class="page-item @next">
-                            <a asp-page="Index"
-                               asp-route-ProjectDesignId="@Model.Data.ProjectDesign.Id"
-                               asp-route-currentFilter="@Model.Data.CurrentFilter"
-                               asp-route-searchText="@Model.Data.CurrentFilter"
-                               asp-route-sortOrder="@Model.Data.SortOrder"
-                               asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
-                               class="page-link" aria-label="Next">
-                               <span class="sr-only">@SL["Next"]</span>
-                               <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
             }
             else
             {
@@ -123,4 +51,109 @@
 @section Breadcrumb {
     <li class="breadcrumb-item">@Model.Data.ProjectInfo.Name</li>
     <li class="breadcrumb-item"><a asp-page="/Features/Design/Index" asp-route-ProjectDesignId="@Model.Data.ProjectDesign.Id">@Model.Data.ProjectDesign.Name</a></li>
+}
+
+@section Scripts {
+    <script src="/lib/tabulator/js/tabulator.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // var ajaxURL = "/Component";
+            // var ajaxParams = {
+            //     handler: "Load",
+            //     projectDesignId: "@Model.Data.ProjectDesign.Id",
+            //     parentId: "@Model.Data.ParentId"
+            // };           
+            // var initDataTable = [
+            //     { "id": "01J7DS881NHWZQ7YNXPX9DDRAM", "projectInfoId": "01J7C2EDJP2X1B69V39P41158H", "projectDesignId": "01J7C38YVH30XM7JZFQ73D03RR", "parentId": "00000000000000000000000000", "children": [{ "id": "01J7H76ZH6KTTT6XJYWMTKDT9H", "projectInfoId": "01J7C2EDJP2X1B69V39P41158H", "projectDesignId": "01J7C38YVH30XM7JZFQ73D03RR", "parentId": "01J7DS881NHWZQ7YNXPX9DDRAM", "children": [{ "id": "01J7HABWQBKEAVFA3VP023Y75R", "projectInfoId": "01J7C2EDJP2X1B69V39P41158H", "projectDesignId": "01J7C38YVH30XM7JZFQ73D03RR", "parentId": "01J7H76ZH6KTTT6XJYWMTKDT9H", "children": [{ "id": "01J7HAH57WWF6BT0PRWVHD0TGV", "projectInfoId": "01J7C2EDJP2X1B69V39P41158H", "projectDesignId": "01J7C38YVH30XM7JZFQ73D03RR", "parentId": "01J7HABWQBKEAVFA3VP023Y75R", "children": [], "sequence": 0, "name": "Extra polishing", "description": null, "remark": null, "componentLevel": 3, "variantType": 1, "sourceType": 0, "source": null, "platformInfoId": null, "platformProductId": null, "searchIndex": "extra polishing~~" }, { "id": "01J7HAFK6EX4V4GWGCVZD24PMZ", "projectInfoId": "01J7C2EDJP2X1B69V39P41158H", "projectDesignId": "01J7C38YVH30XM7JZFQ73D03RR", "parentId": "01J7HABWQBKEAVFA3VP023Y75R", "children": [], "sequence": 0, "name": "Houten Keukenblad", "description": null, "remark": null, "componentLevel": 3, "variantType": 0, "sourceType": 0, "source": null, "platformInfoId": null, "platformProductId": null, "searchIndex": "houten keukenblad~~" }, { "id": "01J7HAG5NFSHFH1HWW5EY0ZZXQ", "projectInfoId": "01J7C2EDJP2X1B69V39P41158H", "projectDesignId": "01J7C38YVH30XM7JZFQ73D03RR", "parentId": "01J7HABWQBKEAVFA3VP023Y75R", "children": [], "sequence": 0, "name": "Stalen keukenblad", "description": null, "remark": null, "componentLevel": 3, "variantType": 0, "sourceType": 0, "source": null, "platformInfoId": null, "platformProductId": null, "searchIndex": "stalen keukenblad~~" }], "sequence": 0, "name": "Keukenblad", "description": "Het keukenblad", "remark": null, "componentLevel": 2, "variantType": 0, "sourceType": 0, "source": null, "platformInfoId": null, "platformProductId": null, "searchIndex": "keukenblad~het keukenblad~" }], "sequence": 0, "name": "Ikea Keuken", "description": "De keuken van ikea", "remark": null, "componentLevel": 1, "variantType": 0, "sourceType": 0, "source": null, "platformInfoId": null, "platformProductId": null, "searchIndex": "ikea keuken~de keuken van ikea~" }], "sequence": 0, "name": "Keuken", "description": "De keuken", "remark": null, "componentLevel": 0, "variantType": 0, "sourceType": 0, "source": null, "platformInfoId": null, "platformProductId": null, "searchIndex": "keuken~de keuken~" }
+            // ];
+            var table = new Tabulator("#table", {
+                // data: initDataTable,
+                // ajaxURL: ajaxURL,  // URL to fetch data
+                // ajaxParams: ajaxParams, // Query parameters
+                // ajaxConfig: "GET", // HTTP request type
+                // ajaxContentType: "json",
+                layout: "fitColumns", // Fit columns to width of table
+                dataTree: true,
+                dataTreeStartExpanded: true,
+                dataTreeChildField: "children",
+                columns: [
+                    { title: "ID", field: "id", sorter: "number" },
+                    { title: "Name", field: "name", sorter: "string" },
+                    { title: "Description", field: "description", sorter: "string" },
+                    { title: "Remark", field: "remark", sorter: "string" },
+                    { title: "Sequence", field: "sequence", sorter: "number" },
+                    { title: "Component Level", field: "componentLevel", sorter: "string" },
+                    { title: "Variant Type", field: "variantType", sorter: "string" },
+                    { title: "Source Type", field: "sourceType", sorter: "string" },
+                    { title: "Source", field: "source", sorter: "string" }
+                ],
+            });
+
+            // AJAX call to fetch data
+            $.ajax({
+                url: "?handler=load",  // The Razor page URL
+                method: "GET",
+                data: {
+                    projectDesignId: "@Model.Data.ProjectDesign.Id",
+                    parentId: "@Model.Data.ParentId"
+                },
+                success: function (response) {
+                    // On success, set the data to Tabulator
+                    console.log("so far so good");
+                    table.setData(response);
+                },
+                error: function (error) {
+                    console.error("Error loading data:", error);
+                }
+            });
+        });
+    </script>
+    <script>
+        function addEntity() {
+            var selectedRecord = getSelectedRow();
+            if (selectedRecord === null) {
+                return;
+            }
+
+            window.location.href = '/' + getTenantFromUrl() + '/Features/Project/Component/Create?'
+                + 'ProjectDesignId=' + selectedRecord.designId
+                + '&parentId=' + selectedRecord.id;
+        }
+        function editEntity() {
+            var selectedRecord = getSelectedRow();
+            if (selectedRecord === null) {
+                return;
+            }
+
+            window.location.href = '/' + getTenantFromUrl() + '/Features/Project/Component/Edit?'
+                + 'Id=' + selectedRecord.id;
+        }
+        function deleteEntity() {
+            var selectedRecord = getSelectedRow();
+            if (selectedRecord === null) {
+                return;
+            }
+
+            window.location.href = '/' + getTenantFromUrl() + '/Features/Project/Component/Delete?'
+                + 'Id=' + selectedRecord.id;
+        }
+        function getSelectedRow() {
+            var selectedRow = $('#table').bootstrapTable('getSelections'); // Get the selected row
+            if (selectedRow.length === 0) {
+                alert('Please select a row first.');
+                null; // Return null if no row is selected
+            }
+
+            return selectedRow[0]; // Return the first selected row
+        }
+        function getTenantFromUrl() {
+            // Get the current URL's pathname
+            var pathParts = window.location.pathname.split('/');
+            // The tenant is the first part after the root domain
+            // pathParts[1] will give you the tenant name
+            var tenant = pathParts[1];
+            // Return the tenant or log it
+            return tenant;
+        }
+    </script>
 }

@@ -51,6 +51,15 @@ public record ProjectComponent : Entity, IEntity
     public Ulid ParentId { get; set; } = Ulid.Empty;
 
     /// <summary>
+    /// A list of subcomponents that belong to this component, allowing for hierarchical nesting.
+    /// </summary>
+    /// <remarks>
+    /// Components can contain other components, forming a hierarchy where 
+    /// each component can have multiple subcomponents.
+    /// </remarks>
+    public List<ProjectComponent> Children { get; set; } = [];
+
+    /// <summary>
     /// Gets or sets the sequence order of this component within its parent design or component.
     /// </summary>
     /// <remarks>
@@ -92,15 +101,6 @@ public record ProjectComponent : Entity, IEntity
     /// This field concatenates normalized values to aid in fast lookups and queries.
     /// </remarks>
     public string? SearchIndex { get; set; }
-
-    /// <summary>
-    /// A list of subcomponents that belong to this component, allowing for hierarchical nesting.
-    /// </summary>
-    /// <remarks>
-    /// Components can contain other components, forming a hierarchy where 
-    /// each component can have multiple subcomponents.
-    /// </remarks>
-    public List<ProjectComponent> SubComponents { get; set; } = [];
 
     /// <summary>
     /// Specifies the level of the component (e.g., Component, Configuration, Module, Variant).
