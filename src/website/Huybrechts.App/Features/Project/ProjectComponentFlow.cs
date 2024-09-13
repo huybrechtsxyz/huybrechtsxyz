@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
+using System.Text.Json.Serialization;
 
 namespace Huybrechts.App.Features.Project.ProjectComponentFlow;
 
@@ -79,12 +80,15 @@ public record Model
     [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
     public string? Remark { get; set; }
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     [Display(Name = nameof(ComponentLevel), ResourceType = typeof(Localization))]
     public ComponentLevel ComponentLevel { get; set; } = ComponentLevel.Component;
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     [Display(Name = nameof(VariantType), ResourceType = typeof(Localization))]
     public VariantType VariantType { get; set; } = VariantType.Standard;
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     [Display(Name = nameof(SourceType), ResourceType = typeof(Localization))]
     public SourceType SourceType { get; set; } = SourceType.None;
 

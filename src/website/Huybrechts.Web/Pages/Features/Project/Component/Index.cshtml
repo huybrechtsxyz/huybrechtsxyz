@@ -57,39 +57,19 @@
     <script src="/lib/tabulator/js/tabulator.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // var ajaxURL = "/Component";
-            // var ajaxParams = {
-            //     handler: "Load",
-            //     projectDesignId: "@Model.Data.ProjectDesign.Id",
-            //     parentId: "@Model.Data.ParentId"
-            // };           
-            // var initDataTable = [
-            //     { "id": "01J7DS881NHWZQ7YNXPX9DDRAM", "projectInfoId": "01J7C2EDJP2X1B69V39P41158H", "projectDesignId": "01J7C38YVH30XM7JZFQ73D03RR", "parentId": "00000000000000000000000000", "children": [{ "id": "01J7H76ZH6KTTT6XJYWMTKDT9H", "projectInfoId": "01J7C2EDJP2X1B69V39P41158H", "projectDesignId": "01J7C38YVH30XM7JZFQ73D03RR", "parentId": "01J7DS881NHWZQ7YNXPX9DDRAM", "children": [{ "id": "01J7HABWQBKEAVFA3VP023Y75R", "projectInfoId": "01J7C2EDJP2X1B69V39P41158H", "projectDesignId": "01J7C38YVH30XM7JZFQ73D03RR", "parentId": "01J7H76ZH6KTTT6XJYWMTKDT9H", "children": [{ "id": "01J7HAH57WWF6BT0PRWVHD0TGV", "projectInfoId": "01J7C2EDJP2X1B69V39P41158H", "projectDesignId": "01J7C38YVH30XM7JZFQ73D03RR", "parentId": "01J7HABWQBKEAVFA3VP023Y75R", "children": [], "sequence": 0, "name": "Extra polishing", "description": null, "remark": null, "componentLevel": 3, "variantType": 1, "sourceType": 0, "source": null, "platformInfoId": null, "platformProductId": null, "searchIndex": "extra polishing~~" }, { "id": "01J7HAFK6EX4V4GWGCVZD24PMZ", "projectInfoId": "01J7C2EDJP2X1B69V39P41158H", "projectDesignId": "01J7C38YVH30XM7JZFQ73D03RR", "parentId": "01J7HABWQBKEAVFA3VP023Y75R", "children": [], "sequence": 0, "name": "Houten Keukenblad", "description": null, "remark": null, "componentLevel": 3, "variantType": 0, "sourceType": 0, "source": null, "platformInfoId": null, "platformProductId": null, "searchIndex": "houten keukenblad~~" }, { "id": "01J7HAG5NFSHFH1HWW5EY0ZZXQ", "projectInfoId": "01J7C2EDJP2X1B69V39P41158H", "projectDesignId": "01J7C38YVH30XM7JZFQ73D03RR", "parentId": "01J7HABWQBKEAVFA3VP023Y75R", "children": [], "sequence": 0, "name": "Stalen keukenblad", "description": null, "remark": null, "componentLevel": 3, "variantType": 0, "sourceType": 0, "source": null, "platformInfoId": null, "platformProductId": null, "searchIndex": "stalen keukenblad~~" }], "sequence": 0, "name": "Keukenblad", "description": "Het keukenblad", "remark": null, "componentLevel": 2, "variantType": 0, "sourceType": 0, "source": null, "platformInfoId": null, "platformProductId": null, "searchIndex": "keukenblad~het keukenblad~" }], "sequence": 0, "name": "Ikea Keuken", "description": "De keuken van ikea", "remark": null, "componentLevel": 1, "variantType": 0, "sourceType": 0, "source": null, "platformInfoId": null, "platformProductId": null, "searchIndex": "ikea keuken~de keuken van ikea~" }], "sequence": 0, "name": "Keuken", "description": "De keuken", "remark": null, "componentLevel": 0, "variantType": 0, "sourceType": 0, "source": null, "platformInfoId": null, "platformProductId": null, "searchIndex": "keuken~de keuken~" }
-            // ];
             var table = new Tabulator("#table", {
-                // data: initDataTable,
-                // ajaxURL: ajaxURL,  // URL to fetch data
-                // ajaxParams: ajaxParams, // Query parameters
-                // ajaxConfig: "GET", // HTTP request type
-                // ajaxContentType: "json",
                 layout: "fitColumns", // Fit columns to width of table
                 dataTree: true,
                 dataTreeStartExpanded: true,
                 dataTreeChildField: "children",
                 columns: [
-                    { title: "ID", field: "id", sorter: "number" },
                     { title: "Name", field: "name", sorter: "string" },
                     { title: "Description", field: "description", sorter: "string" },
-                    { title: "Remark", field: "remark", sorter: "string" },
-                    { title: "Sequence", field: "sequence", sorter: "number" },
                     { title: "Component Level", field: "componentLevel", sorter: "string" },
                     { title: "Variant Type", field: "variantType", sorter: "string" },
-                    { title: "Source Type", field: "sourceType", sorter: "string" },
                     { title: "Source", field: "source", sorter: "string" }
                 ],
             });
-
-            // AJAX call to fetch data
             $.ajax({
                 url: "?handler=load",  // The Razor page URL
                 method: "GET",
