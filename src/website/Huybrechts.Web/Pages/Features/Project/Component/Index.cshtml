@@ -6,7 +6,7 @@
 }
 
 @section Links {
-    <link rel="stylesheet" href="/lib/tabulator/css/tabulator.min.css" />
+    <link rel="stylesheet" href="/lib/tabulator/css/tabulator_bootstrap5.min.css" />
 }
 
 <partial name="_StatusResult" for="StatusMessage" />
@@ -16,21 +16,23 @@
 <div class="row">
     <div class="col-md-12">
         <div class="row">
-            <form class="row row-cols-md-auto g-3 align-items-center">
-                <div class="col-md-3 d-flex gap-1 align-items-center mb-3">
-                    <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="/Features/Project/Design/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfo.Id">
-                        <i class="bi bi-arrow-up-circle-fill fs-5"></i>
-                    </a>
-                    <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Create" asp-route-ProjectDesignId="@Model.Data.ProjectDesign.Id">
-                        <i class="bi bi-plus-circle fs-5"></i>
-                        <span class="vr"></span>
-                        @SL["Add New"]
-                    </a>
-                    <button id="addEntityButton" type="button" class="btn btn-primary" onclick="addEntity()">Add Child</button>
-                    <button id="editEntityButton" type="button" class="btn btn-primary" onclick="editEntity()">Edit</button>
-                    <button id="deleteEntityButton" type="button" class="btn btn-primary" onclick="deleteEntity()">Delete</button>
-                </div>
-            </form>
+            <div class="mb-2 col-md-6 d-flex gap-1 align-items-center" role="group" id="actionButtons">
+                <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="/Features/Project/Design/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfo.Id">
+                    <i class="bi bi-arrow-up-circle-fill fs-5"></i>
+                </a>
+                <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Create" asp-route-ProjectDesignId="@Model.Data.ProjectDesign.Id">
+                    <i class="bi bi-plus-circle fs-5"></i>
+                    <span class="vr"></span>
+                    @SL["Add New"]
+                </a>
+                <button id="addBtn" class="btn btn-primary hstack gap-2 align-self-center" disabled>
+                    <i class="bi bi-plus-circle fs-5"></i>
+                    <span class="vr"></span>
+                    @SL["Add Child"]
+                </button>
+                <button id="editBtn" class="btn btn-icon btn-primary fs-5" disabled><i class="bi bi-pencil-square"></i></button>
+                <button id="deleteBtn" class="btn btn-icon btn-secondary fs-5" disabled><i class="bi bi-trash2-fill"></i></button>
+            </div>
             @if (Model.Data.Results.Count > 0)
             {
                 <div class="table-responsive">
@@ -56,22 +58,52 @@
 @section Scripts {
     <script src="/lib/tabulator/js/tabulator.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        function getUrl() {
+            var pathParts = window.location.pathname.split('/');
+            var tenant = pathParts[1];
+            return `/${tenant}/Features/Project`;
+        }
+
+        function getSelectedRow() {
+            var selectedRow = $('#table').tabulator("getSelectedRows"); // Use Tabulator's API to get selected rows
+            if (selectedRow.length === 0) {
+                alert('Please select a row first.');
+                return null; // Return null if no row is selected
+            }
+            return selectedRow[0]; // Return the first selected row
+        }
+
+        function loadTable() {
             var table = new Tabulator("#table", {
-                layout: "fitColumns", // Fit columns to width of table
+                layout: "fitColumns",
+                selectableRows: 1,
                 dataTree: true,
                 dataTreeStartExpanded: true,
                 dataTreeChildField: "children",
                 columns: [
+                    { title: "ID", field: "id", sorter: "number", visible: false },  // Hidden column for ID
                     { title: "Name", field: "name", sorter: "string" },
                     { title: "Description", field: "description", sorter: "string" },
                     { title: "Component Level", field: "componentLevel", sorter: "string" },
                     { title: "Variant Type", field: "variantType", sorter: "string" },
-                    { title: "Source", field: "source", sorter: "string" }
-                ],
+                    { title: "Source", field: "source", sorter: "string" },
+                ]
             });
+
+            table.on("rowSelectionChanged", function (data, rows, selected, deselected) {
+                if (data.length === 0) {
+                    // No row selected, disable buttons
+                    $("#addBtn, #editBtn, #deleteBtn").prop("disabled", true);
+                    window.selectedRecord = null; // Clear global selectedRecord
+                } else {
+                    // A row is selected, enable buttons
+                    $("#addBtn, #editBtn, #deleteBtn").prop("disabled", false);
+                    window.selectedRecord = data[0]; // Store selected record globally
+                }
+            });
+
             $.ajax({
-                url: "?handler=load",  // The Razor page URL
+                url: "?handler=load",
                 method: "GET",
                 data: {
                     projectDesignId: "@Model.Data.ProjectDesign.Id",
@@ -79,61 +111,46 @@
                 },
                 success: function (response) {
                     // On success, set the data to Tabulator
-                    console.log("so far so good");
                     table.setData(response);
                 },
                 error: function (error) {
                     console.error("Error loading data:", error);
                 }
             });
+        };
+
+        document.addEventListener("DOMContentLoaded", function () {
+            loadTable();
         });
-    </script>
-    <script>
-        function addEntity() {
-            var selectedRecord = getSelectedRow();
-            if (selectedRecord === null) {
-                return;
-            }
 
-            window.location.href = '/' + getTenantFromUrl() + '/Features/Project/Component/Create?'
-                + 'ProjectDesignId=' + selectedRecord.designId
-                + '&parentId=' + selectedRecord.id;
-        }
-        function editEntity() {
-            var selectedRecord = getSelectedRow();
-            if (selectedRecord === null) {
-                return;
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+                loadTable();
             }
+        });
 
-            window.location.href = '/' + getTenantFromUrl() + '/Features/Project/Component/Edit?'
-                + 'Id=' + selectedRecord.id;
-        }
-        function deleteEntity() {
-            var selectedRecord = getSelectedRow();
-            if (selectedRecord === null) {
-                return;
+        $("#addBtn").click(function () {
+            if (window.selectedRecord) {
+                var recordId = window.selectedRecord.id;
+                var uri = getUrl() + `/Component/Create?projectDesignId=@Model.Data.ProjectDesignId&parentId=${recordId}`;
+                window.location.href = uri;
             }
+        });
 
-            window.location.href = '/' + getTenantFromUrl() + '/Features/Project/Component/Delete?'
-                + 'Id=' + selectedRecord.id;
-        }
-        function getSelectedRow() {
-            var selectedRow = $('#table').bootstrapTable('getSelections'); // Get the selected row
-            if (selectedRow.length === 0) {
-                alert('Please select a row first.');
-                null; // Return null if no row is selected
+        $("#editBtn").click(function () {
+            if (window.selectedRecord) {
+                var recordId = window.selectedRecord.id;
+                var uri = getUrl() + `/Component/Edit?id=${recordId}`;
+                window.location.href = uri;
             }
+        });
 
-            return selectedRow[0]; // Return the first selected row
-        }
-        function getTenantFromUrl() {
-            // Get the current URL's pathname
-            var pathParts = window.location.pathname.split('/');
-            // The tenant is the first part after the root domain
-            // pathParts[1] will give you the tenant name
-            var tenant = pathParts[1];
-            // Return the tenant or log it
-            return tenant;
-        }
+        $("#deleteBtn").click(function () {
+            if (window.selectedRecord) {
+                var recordId = window.selectedRecord.id;
+                var uri = getUrl() + `/Component/Delete?id=${recordId}`;
+                window.location.href = uri;
+            }
+        });
     </script>
 }

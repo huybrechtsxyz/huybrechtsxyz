@@ -302,7 +302,6 @@ public static class WebHostExtensions
             log.Information("Configure the HTTP request pipeline for DEVELOPMENT");
             app.UseMigrationsEndPoint();
             app.UseDeveloperExceptionPage();
-            app.UseStatusCodePagesWithRedirects("/Error?status={0}");
         }
         else if (app.Environment.IsTest())
         {
