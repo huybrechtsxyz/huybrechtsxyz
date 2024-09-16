@@ -14,8 +14,8 @@ namespace Huybrechts.Core.Project;
 [MultiTenant]
 [Table(nameof(ProjectDesign))]
 [Comment("Represents a specific design or solution proposal for a project.")]
-[Index(nameof(ProjectInfoId), nameof(Name), IsUnique = true)]
-[Index(nameof(SearchIndex))]
+[Index(nameof(TenantId), nameof(ProjectInfoId), nameof(Name), IsUnique = true)]
+[Index(nameof(TenantId), nameof(SearchIndex))]
 public record ProjectDesign : Entity, IEntity
 {
     /// <summary>
@@ -24,6 +24,8 @@ public record ProjectDesign : Entity, IEntity
     /// <remarks>
     /// This is a foreign key linking to the <c>ProjectInfo</c> entity, indicating which project this design is part of.
     /// </remarks>
+    [Required]
+    [Comment("Gets or sets the unique identifier for the project associated with this design.")]
     public Ulid ProjectInfoId { get; set; } = Ulid.Empty;
 
     /// <summary>
@@ -32,6 +34,7 @@ public record ProjectDesign : Entity, IEntity
     /// <remarks>
     /// This navigation property links to the <c>ProjectInfo</c> class, providing access to the project's details associated with this design.
     /// </remarks>
+    [Comment("Gets or sets the associated project information.")]
     public ProjectInfo ProjectInfo { get; set; } = new();
 
     /// <summary>
@@ -42,6 +45,7 @@ public record ProjectDesign : Entity, IEntity
     /// </remarks>
     [Required]
     [MaxLength(128)]
+    [Comment("Gets or sets the name of the project design.")]
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
@@ -50,6 +54,8 @@ public record ProjectDesign : Entity, IEntity
     /// <remarks>
     /// A detailed explanation of what this design entails, including any specific approaches, technologies, or considerations involved.
     /// </remarks>
+    [MaxLength(256)]
+    [Comment("Gets or sets the description of the project design.")]
     public string? Description { get; set; }
 
     /// <summary>

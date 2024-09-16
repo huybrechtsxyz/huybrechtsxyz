@@ -162,6 +162,36 @@
   <data name="Components" xml:space="preserve">
     <value>Componenten</value>
   </data>
+  <data name="ComponentUnitCreateInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om een nieuwe meeteenheid aan een projectonderdeel toe te voegen. Wijs de meeteenheid toe, geef een variabelenaam op en definieer een formule voor het berekenen van de waarde.</value>
+  </data>
+  <data name="ComponentUnitCreateTitle" xml:space="preserve">
+    <value>Nieuwe Componenteenheid Toevoegen</value>
+  </data>
+  <data name="ComponentUnitDeleteInfo" xml:space="preserve">
+    <value>Weet u zeker dat u deze componenteenheid wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt en verwijdert de gekoppelde meeteenheid en berekeningsformule uit het onderdeel.</value>
+  </data>
+  <data name="ComponentUnitDeleteTitle" xml:space="preserve">
+    <value>Componenteenheid Verwijderen</value>
+  </data>
+  <data name="ComponentUnitEditInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om de details van een bestaande componenteenheid te wijzigen. U kunt de meeteenheid, variabelenaam en berekeningsformule indien nodig aanpassen.</value>
+  </data>
+  <data name="ComponentUnitEditTitle" xml:space="preserve">
+    <value>Componenteenheid Bewerken</value>
+  </data>
+  <data name="ComponentUnitIndexInfo" xml:space="preserve">
+    <value>Deze pagina toont alle meeteenheden die aan elk projectonderdeel zijn gekoppeld. U kunt details bekijken zoals het project, ontwerp, meeteenheid en de berekeningsformule voor elk onderdeel.</value>
+  </data>
+  <data name="ComponentUnitIndexTitle" xml:space="preserve">
+    <value>Component Eenheden</value>
+  </data>
+  <data name="ComponentUnitNoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
+  </data>
+  <data name="ComponentUnits" xml:space="preserve">
+    <value>Eenheden</value>
+  </data>
   <data name="Design" xml:space="preserve">
     <value>Ontwerp</value>
   </data>
@@ -242,5 +272,8 @@
   </data>
   <data name="Select" xml:space="preserve">
     <value>Selecteer</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Eenheid</value>
   </data>
 </root>

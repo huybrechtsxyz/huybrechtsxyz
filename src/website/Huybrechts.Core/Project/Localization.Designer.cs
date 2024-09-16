@@ -59,5 +59,167 @@ namespace Huybrechts.Core.Project {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Component.
+        /// </summary>
+        public static string ComponentLevel_Component {
+            get {
+                return ResourceManager.GetString("ComponentLevel_Component", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A high-level component in the design, such as a room or a main section..
+        /// </summary>
+        public static string ComponentLevel_Component_d {
+            get {
+                return ResourceManager.GetString("ComponentLevel_Component_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configuration.
+        /// </summary>
+        public static string ComponentLevel_Configuration {
+            get {
+                return ResourceManager.GetString("ComponentLevel_Configuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A specific configuration of a component, such as a budget or premium version of a room..
+        /// </summary>
+        public static string ComponentLevel_Configuration_d {
+            get {
+                return ResourceManager.GetString("ComponentLevel_Configuration_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Module.
+        /// </summary>
+        public static string ComponentLevel_Module {
+            get {
+                return ResourceManager.GetString("ComponentLevel_Module", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A module that is part of a larger component, such as the countertop in a kitchen design..
+        /// </summary>
+        public static string ComponentLevel_Module_d {
+            get {
+                return ResourceManager.GetString("ComponentLevel_Module_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variant.
+        /// </summary>
+        public static string ComponentLevel_Variant {
+            get {
+                return ResourceManager.GetString("ComponentLevel_Variant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A variant of a module or configuration, such as an upgraded appliance or feature..
+        /// </summary>
+        public static string ComponentLevel_Variant_d {
+            get {
+                return ResourceManager.GetString("ComponentLevel_Variant_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string SourceType_None {
+            get {
+                return ResourceManager.GetString("SourceType_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No source is associated with the component..
+        /// </summary>
+        public static string SourceType_None_d {
+            get {
+                return ResourceManager.GetString("SourceType_None_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platform.
+        /// </summary>
+        public static string SourceType_Platform {
+            get {
+                return ResourceManager.GetString("SourceType_Platform", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The component is associated with a platform product..
+        /// </summary>
+        public static string SourceType_Platform_d {
+            get {
+                return ResourceManager.GetString("SourceType_Platform_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exceptional.
+        /// </summary>
+        public static string VariantType_Exceptional {
+            get {
+                return ResourceManager.GetString("VariantType_Exceptional", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The component is an exceptional case, often used to handle edge cases in designs..
+        /// </summary>
+        public static string VariantType_Exceptional_d {
+            get {
+                return ResourceManager.GetString("VariantType_Exceptional_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Optional.
+        /// </summary>
+        public static string VariantType_Option {
+            get {
+                return ResourceManager.GetString("VariantType_Option", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The component is an optional upgrade that can be selected..
+        /// </summary>
+        public static string VariantType_Option_d {
+            get {
+                return ResourceManager.GetString("VariantType_Option_d", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Standard.
+        /// </summary>
+        public static string VariantType_Standard {
+            get {
+                return ResourceManager.GetString("VariantType_Standard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The component is part of the standard design..
+        /// </summary>
+        public static string VariantType_Standard_d {
+            get {
+                return ResourceManager.GetString("VariantType_Standard_d", resourceCulture);
+            }
+        }
     }
 }

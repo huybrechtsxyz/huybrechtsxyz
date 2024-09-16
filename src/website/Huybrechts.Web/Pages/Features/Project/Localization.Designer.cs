@@ -196,6 +196,96 @@ namespace Huybrechts.Web.Pages.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use this form to add a new measurement unit to a project component. Assign the unit of measure, provide a variable name, and define a formula for calculating the value..
+        /// </summary>
+        public static string ComponentUnitCreateInfo {
+            get {
+                return ResourceManager.GetString("ComponentUnitCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New Component Unit.
+        /// </summary>
+        public static string ComponentUnitCreateTitle {
+            get {
+                return ResourceManager.GetString("ComponentUnitCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this component unit? This action cannot be undone and will remove the associated measurement unit and calculation formula from the component..
+        /// </summary>
+        public static string ComponentUnitDeleteInfo {
+            get {
+                return ResourceManager.GetString("ComponentUnitDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Component Unit.
+        /// </summary>
+        public static string ComponentUnitDeleteTitle {
+            get {
+                return ResourceManager.GetString("ComponentUnitDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this form to modify the details of an existing component unit. You can update the unit of measure, variable name, and calculation formula as needed..
+        /// </summary>
+        public static string ComponentUnitEditInfo {
+            get {
+                return ResourceManager.GetString("ComponentUnitEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Component Unit.
+        /// </summary>
+        public static string ComponentUnitEditTitle {
+            get {
+                return ResourceManager.GetString("ComponentUnitEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page lists all the measurement units associated with each project component. You can view details such as the project, design, unit of measure, and the calculation formula for each component..
+        /// </summary>
+        public static string ComponentUnitIndexInfo {
+            get {
+                return ResourceManager.GetString("ComponentUnitIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Component Units.
+        /// </summary>
+        public static string ComponentUnitIndexTitle {
+            get {
+                return ResourceManager.GetString("ComponentUnitIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string ComponentUnitNoResults {
+            get {
+                return ResourceManager.GetString("ComponentUnitNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units.
+        /// </summary>
+        public static string ComponentUnits {
+            get {
+                return ResourceManager.GetString("ComponentUnits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Design.
         /// </summary>
         public static string Design {
@@ -426,6 +516,15 @@ namespace Huybrechts.Web.Pages.Features.Project {
         public static string Search___ {
             get {
                 return ResourceManager.GetString("Search...", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unit.
+        /// </summary>
+        public static string Unit {
+            get {
+                return ResourceManager.GetString("Unit", resourceCulture);
             }
         }
     }

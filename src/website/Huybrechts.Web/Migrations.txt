@@ -14,4 +14,3 @@ Add-Migration CreatePlatformSchema -Context "FeatureContext" -Project "Huybrecht
 
 //Add-Migration CreateIdentitySchema -Context "ApplicationContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext
 Add-Migration CreatePlatformSchema -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext
-Add-Migration CreateProjectSchema -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext

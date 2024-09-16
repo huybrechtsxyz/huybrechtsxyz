@@ -15,8 +15,8 @@ namespace Huybrechts.Core.Project;
 /// </remarks>
 [MultiTenant]
 [Table("Project")]
-[Index(nameof(Code), IsUnique = true)]
-[Index(nameof(SearchIndex))]
+[Index(nameof(TenantId), nameof(Code), IsUnique = true)]
+[Index(nameof(TenantId), nameof(SearchIndex))]
 [Comment("Table storing information about Projects that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.")]
 public record ProjectInfo : Entity, IEntity
 {
@@ -27,6 +27,7 @@ public record ProjectInfo : Entity, IEntity
     /// This field allows the structuring of projects in a hierarchical manner, similar to how Epics can have parent-child relationships in Azure DevOps.
     /// The ParentId is an optional field and can be null if the project does not have a parent.
     /// </remarks>
+    [Comment("The project ID this component unit is part of.")]
     public Ulid? ParentId { get; set; }
 
     /// <summary>

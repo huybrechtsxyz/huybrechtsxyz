@@ -123,6 +123,9 @@
   <data name="DUPLICATE_PROJECT_CODE" xml:space="preserve">
     <value>Platform met code {0} bestaat al</value>
   </data>
+  <data name="INVALID_PROJECTCOMPONENTUNIT_ID" xml:space="preserve">
+    <value>Kan project component eenheid met ID {0} niet vinden</value>
+  </data>
   <data name="INVALID_PROJECTCOMPONENT_ID" xml:space="preserve">
     <value>Kan project component met naam {0} niet vinden</value>
   </data>

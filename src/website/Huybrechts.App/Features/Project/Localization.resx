@@ -147,6 +147,9 @@
   <data name="Environment" xml:space="preserve">
     <value>Environment</value>
   </data>
+  <data name="Expression" xml:space="preserve">
+    <value>Expression</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
@@ -197,6 +200,12 @@
   </data>
   <data name="TargetDate" xml:space="preserve">
     <value>Target date</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Unit</value>
+  </data>
+  <data name="Variable" xml:space="preserve">
+    <value>Variable</value>
   </data>
   <data name="VariantType" xml:space="preserve">
     <value>Type</value>

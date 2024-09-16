@@ -162,6 +162,36 @@
   <data name="Components" xml:space="preserve">
     <value>Components</value>
   </data>
+  <data name="ComponentUnitCreateInfo" xml:space="preserve">
+    <value>Use this form to add a new measurement unit to a project component. Assign the unit of measure, provide a variable name, and define a formula for calculating the value.</value>
+  </data>
+  <data name="ComponentUnitCreateTitle" xml:space="preserve">
+    <value>Add New Component Unit</value>
+  </data>
+  <data name="ComponentUnitDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this component unit? This action cannot be undone and will remove the associated measurement unit and calculation formula from the component.</value>
+  </data>
+  <data name="ComponentUnitDeleteTitle" xml:space="preserve">
+    <value>Delete Component Unit</value>
+  </data>
+  <data name="ComponentUnitEditInfo" xml:space="preserve">
+    <value>Use this form to modify the details of an existing component unit. You can update the unit of measure, variable name, and calculation formula as needed.</value>
+  </data>
+  <data name="ComponentUnitEditTitle" xml:space="preserve">
+    <value>Edit Component Unit</value>
+  </data>
+  <data name="ComponentUnitIndexInfo" xml:space="preserve">
+    <value>This page lists all the measurement units associated with each project component. You can view details such as the project, design, unit of measure, and the calculation formula for each component.</value>
+  </data>
+  <data name="ComponentUnitIndexTitle" xml:space="preserve">
+    <value>Component Units</value>
+  </data>
+  <data name="ComponentUnitNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="ComponentUnits" xml:space="preserve">
+    <value>Units</value>
+  </data>
   <data name="Design" xml:space="preserve">
     <value>Design</value>
   </data>
@@ -239,5 +269,8 @@
   </data>
   <data name="Search..." xml:space="preserve">
     <value>Search...</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Unit</value>
   </data>
 </root>

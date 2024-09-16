@@ -152,4 +152,6 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
     public DbSet<ProjectDesign> ProjectDesigns { get; set; }
 
     public DbSet<ProjectComponent> ProjectComponents { get; set; }
+
+    public DbSet<ProjectComponentUnit> ProjectComponentUnits { get; set; }
 }

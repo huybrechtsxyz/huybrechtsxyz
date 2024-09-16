@@ -106,6 +106,15 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find component unit with ID {0}.
+        /// </summary>
+        public static string INVALID_PROJECTCOMPONENTUNIT_ID {
+            get {
+                return ResourceManager.GetString("INVALID_PROJECTCOMPONENTUNIT_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find design with ID {0}.
         /// </summary>
         public static string INVALID_PROJECTDESIGN_ID {

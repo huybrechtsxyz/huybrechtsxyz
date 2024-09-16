@@ -117,4 +117,58 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ComponentLevel_Component" xml:space="preserve">
+    <value>Component</value>
+  </data>
+  <data name="ComponentLevel_Component_d" xml:space="preserve">
+    <value>Een hoogwaardig onderdeel van het ontwerp, zoals een kamer of een hoofddeling.</value>
+  </data>
+  <data name="ComponentLevel_Configuration" xml:space="preserve">
+    <value>Configuratie</value>
+  </data>
+  <data name="ComponentLevel_Configuration_d" xml:space="preserve">
+    <value>Een specifieke configuratie van een component, zoals een budget- of premiumversie van een kamer.</value>
+  </data>
+  <data name="ComponentLevel_Module" xml:space="preserve">
+    <value>Module</value>
+  </data>
+  <data name="ComponentLevel_Module_d" xml:space="preserve">
+    <value>Een module die deel uitmaakt van een groter component, zoals het aanrecht in een keukendesign.</value>
+  </data>
+  <data name="ComponentLevel_Variant" xml:space="preserve">
+    <value>Variant</value>
+  </data>
+  <data name="ComponentLevel_Variant_d" xml:space="preserve">
+    <value>Een variant van een module of configuratie, zoals een verbeterd apparaat of functie.</value>
+  </data>
+  <data name="SourceType_None" xml:space="preserve">
+    <value>Geen</value>
+  </data>
+  <data name="SourceType_None_d" xml:space="preserve">
+    <value>Er is geen bron geassocieerd met het component.</value>
+  </data>
+  <data name="SourceType_Platform" xml:space="preserve">
+    <value>Platform</value>
+  </data>
+  <data name="SourceType_Platform_d" xml:space="preserve">
+    <value>Een platform product is geassocieerd met het component.</value>
+  </data>
+  <data name="VariantType_Exceptional" xml:space="preserve">
+    <value>Uitzonderlijk</value>
+  </data>
+  <data name="VariantType_Exceptional_d" xml:space="preserve">
+    <value>Het component is een uitzonderlijk geval, vaak gebruikt om randgevallen in ontwerpen te behandelen.</value>
+  </data>
+  <data name="VariantType_Option" xml:space="preserve">
+    <value>Optioneel</value>
+  </data>
+  <data name="VariantType_Option_d" xml:space="preserve">
+    <value>Het component is een optionele upgrade die kan worden geselecteerd.</value>
+  </data>
+  <data name="VariantType_Standard" xml:space="preserve">
+    <value>Standaard</value>
+  </data>
+  <data name="VariantType_Standard_d" xml:space="preserve">
+    <value>Het component maakt deel uit van het standaardontwerp.</value>
+  </data>
 </root>

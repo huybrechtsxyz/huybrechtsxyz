@@ -117,4 +117,58 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ComponentLevel_Component" xml:space="preserve">
+    <value>Component</value>
+  </data>
+  <data name="ComponentLevel_Component_d" xml:space="preserve">
+    <value>A high-level component in the design, such as a room or a main section.</value>
+  </data>
+  <data name="ComponentLevel_Configuration" xml:space="preserve">
+    <value>Configuration</value>
+  </data>
+  <data name="ComponentLevel_Configuration_d" xml:space="preserve">
+    <value>A specific configuration of a component, such as a budget or premium version of a room.</value>
+  </data>
+  <data name="ComponentLevel_Module" xml:space="preserve">
+    <value>Module</value>
+  </data>
+  <data name="ComponentLevel_Module_d" xml:space="preserve">
+    <value>A module that is part of a larger component, such as the countertop in a kitchen design.</value>
+  </data>
+  <data name="ComponentLevel_Variant" xml:space="preserve">
+    <value>Variant</value>
+  </data>
+  <data name="ComponentLevel_Variant_d" xml:space="preserve">
+    <value>A variant of a module or configuration, such as an upgraded appliance or feature.</value>
+  </data>
+  <data name="SourceType_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="SourceType_None_d" xml:space="preserve">
+    <value>No source is associated with the component.</value>
+  </data>
+  <data name="SourceType_Platform" xml:space="preserve">
+    <value>Platform</value>
+  </data>
+  <data name="SourceType_Platform_d" xml:space="preserve">
+    <value>The component is associated with a platform product.</value>
+  </data>
+  <data name="VariantType_Exceptional" xml:space="preserve">
+    <value>Exceptional</value>
+  </data>
+  <data name="VariantType_Exceptional_d" xml:space="preserve">
+    <value>The component is an exceptional case, often used to handle edge cases in designs.</value>
+  </data>
+  <data name="VariantType_Option" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+  <data name="VariantType_Option_d" xml:space="preserve">
+    <value>The component is an optional upgrade that can be selected.</value>
+  </data>
+  <data name="VariantType_Standard" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="VariantType_Standard_d" xml:space="preserve">
+    <value>The component is part of the standard design.</value>
+  </data>
 </root>

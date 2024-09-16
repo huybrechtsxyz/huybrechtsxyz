@@ -123,6 +123,9 @@
   <data name="DUPLICATE_PROJECT_CODE" xml:space="preserve">
     <value>Duplicate project code for {0}</value>
   </data>
+  <data name="INVALID_PROJECTCOMPONENTUNIT_ID" xml:space="preserve">
+    <value>Unable to find component unit with ID {0}</value>
+  </data>
   <data name="INVALID_PROJECTCOMPONENT_ID" xml:space="preserve">
     <value>Unable to find component with ID {0}</value>
   </data>

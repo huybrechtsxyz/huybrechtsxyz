@@ -30,9 +30,13 @@
                     <span class="vr"></span>
                     @SL["Add Child"]
                 </button>
-                <button id="editBtn" class="btn btn-icon btn-primary fs-5" disabled><i class="bi bi-pencil-square"></i></button>
-                <button id="deleteBtn" class="btn btn-icon btn-secondary fs-5" disabled><i class="bi bi-trash2-fill"></i></button>
-                <button id="unitBtn" class="btn btn-icon btn-info fs-5" disabled><i class="bi bi-calculator">@SL["ComponentUnits"]</i></button>
+                <button id="editBtn" class="btn btn-icon btn-primary fs-5 hstack gap-2" disabled><i class="bi bi-pencil-square"></i></button>
+                <button id="deleteBtn" class="btn btn-icon btn-secondary fs-5 hstack gap-2" disabled><i class="bi bi-trash2-fill"></i></button>
+                <button id="unitBtn" class="btn btn-info hstack gap-2 align-self-center" disabled>
+                    <i class="bi bi-calculator fs-5"></i>
+                    <span class="vr"></span>
+                    @SL["ComponentUnits"]
+                </button>
             </div>
             @if (Model.Data.Results.Count > 0)
             {
@@ -53,7 +57,8 @@
 
 @section Breadcrumb {
     <li class="breadcrumb-item">@Model.Data.ProjectInfo.Name</li>
-    <li class="breadcrumb-item"><a asp-page="/Features/Design/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfo.Id">@Model.Data.ProjectDesign.Name</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Project/Design/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfo.Id">@Model.Data.ProjectDesign.Name</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Project/Component/Index" asp-route-ProjectDesignId="@Model.Data.ProjectDesignId">@SL["Components"]</a></li>
 }
 
 @section Scripts {
@@ -98,7 +103,7 @@
                     window.selectedRecord = null; // Clear global selectedRecord
                 } else {
                     // A row is selected, enable buttons
-                    $("#addBtn, #editBtn, #deleteBtn, #unitBtn")).prop("disabled", false);
+                    $("#addBtn, #editBtn, #deleteBtn, #unitBtn").prop("disabled", false);
                     window.selectedRecord = data[0]; // Store selected record globally
                 }
             });

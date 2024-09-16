@@ -147,6 +147,9 @@
   <data name="Environment" xml:space="preserve">
     <value>Omgeving</value>
   </data>
+  <data name="Expression" xml:space="preserve">
+    <value>Expressie</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Naam</value>
   </data>
@@ -197,6 +200,12 @@
   </data>
   <data name="TargetDate" xml:space="preserve">
     <value>Doel datum</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Eenheid</value>
+  </data>
+  <data name="Variable" xml:space="preserve">
+    <value>Variable</value>
   </data>
   <data name="VariantType" xml:space="preserve">
     <value>Type</value>

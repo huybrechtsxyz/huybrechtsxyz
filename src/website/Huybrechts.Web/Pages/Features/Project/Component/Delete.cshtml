@@ -68,8 +68,8 @@
 
 @section Breadcrumb {
     <li class="breadcrumb-item">@Model.Data.ProjectInfo.Name</li>
-    <li class="breadcrumb-item">@Model.Data.ProjectDesign.Name</li>
-    <li class="breadcrumb-item"><a asp-page="/Features/Project/Component/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfoId">@SL["Components"]</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Project/Design/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfo.Id">@Model.Data.ProjectDesign.Name</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Project/Component/Index" asp-route-ProjectDesignId="@Model.Data.ProjectDesignId">@SL["Components"]</a></li>
 }
 
 @section Scripts {
