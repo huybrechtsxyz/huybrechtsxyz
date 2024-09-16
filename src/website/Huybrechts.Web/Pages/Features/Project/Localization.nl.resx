@@ -264,6 +264,42 @@
   <data name="Previous" xml:space="preserve">
     <value>Vorige</value>
   </data>
+  <data name="Scenario" xml:space="preserve">
+    <value>Scenario</value>
+  </data>
+  <data name="ScenarioCreateInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om een nieuw scenario voor uw project aan te maken. Een scenario stelt u in staat om een reeks maatstaven te definiëren die kunnen worden toegepast op ontwerpcomponenten. Dit is nuttig om vergelijkingen en schattingen te maken onder verschillende aannames. Geef een naam, beschrijving en eventuele opmerkingen om de context van dit scenario beter te begrijpen.</value>
+  </data>
+  <data name="ScenarioCreateTitle" xml:space="preserve">
+    <value>Nieuw Scenario Aanmaken</value>
+  </data>
+  <data name="ScenarioDeleteInfo" xml:space="preserve">
+    <value>Weet u zeker dat u dit scenario wilt verwijderen? Na het verwijderen worden alle gerelateerde maatstaven voor dit scenario ook verwijderd, en deze actie kan niet ongedaan worden gemaakt. Dit heeft invloed op alle ontwerpen die afhankelijk zijn van de maatstaven die in dit scenario zijn gedefinieerd.</value>
+  </data>
+  <data name="ScenarioDeleteTitle" xml:space="preserve">
+    <value>Scenario Verwijderen</value>
+  </data>
+  <data name="ScenarioEditInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om een bestaand scenario te bewerken. U kunt de naam, beschrijving en opmerkingen van het scenario bijwerken. Scenario's zijn essentieel om verschillende maatstaven toe te passen op ontwerpcomponenten, waarmee u verschillende ontwerpopties kunt verkennen en hun effecten kunt berekenen.</value>
+  </data>
+  <data name="ScenarioEditTitle" xml:space="preserve">
+    <value>Scenario Bewerken</value>
+  </data>
+  <data name="ScenarioIndexInfo" xml:space="preserve">
+    <value>Deze pagina toont een overzicht van alle projectscenario's die voor het platform zijn gedefinieerd. Scenario's worden gebruikt om verschillende maatstaven toe te passen op ontwerpcomponenten, wat "wat-als"-analyses mogelijk maakt. Door meerdere scenario's te gebruiken, kunt u verschillende aannames vergelijken, zoals verschillende metrische waarden voor specifieke ontwerpcomponenten zoals keukenafmetingen of API-verzoeken. Selecteer een scenario om de details te bekijken of te wijzigen.</value>
+  </data>
+  <data name="ScenarioIndexTitle" xml:space="preserve">
+    <value>Projectscenario's</value>
+  </data>
+  <data name="ScenarioNoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
+  </data>
+  <data name="Scenarios" xml:space="preserve">
+    <value>Scenarios</value>
+  </data>
+  <data name="ScenarioUnits" xml:space="preserve">
+    <value>Metrieken</value>
+  </data>
   <data name="Search" xml:space="preserve">
     <value>Zoek</value>
   </data>

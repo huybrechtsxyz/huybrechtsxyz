@@ -120,8 +120,11 @@
   <data name="DUPLICATE_PROJECTDESIGN_NAME" xml:space="preserve">
     <value>Project ontwerp met naam {0} bestaat al</value>
   </data>
+  <data name="DUPLICATE_PROJECTSCENARIO_NAME" xml:space="preserve">
+    <value>Project scenario met code {0} bestaat al</value>
+  </data>
   <data name="DUPLICATE_PROJECT_CODE" xml:space="preserve">
-    <value>Platform met code {0} bestaat al</value>
+    <value>Project met code {0} bestaat al</value>
   </data>
   <data name="INVALID_PROJECTCOMPONENTUNIT_ID" xml:space="preserve">
     <value>Kan project component eenheid met ID {0} niet vinden</value>
@@ -131,6 +134,9 @@
   </data>
   <data name="INVALID_PROJECTDESIGN_ID" xml:space="preserve">
     <value>Kan project ontwerp met naam {0} niet vinden</value>
+  </data>
+  <data name="INVALID_PROJECTSCENARIO_ID" xml:space="preserve">
+    <value>Kan project scenario met ID {0} niet vinden</value>
   </data>
   <data name="INVALID_PROJECT_CODE" xml:space="preserve">
     <value>Kan project met Code {0} niet vinden</value>

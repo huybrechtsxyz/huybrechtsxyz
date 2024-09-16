@@ -502,6 +502,114 @@ namespace Huybrechts.Web.Pages.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Scenario.
+        /// </summary>
+        public static string Scenario {
+            get {
+                return ResourceManager.GetString("Scenario", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this form to create a new scenario for your project. A scenario allows you to define a set of metrics that can be applied to the design components. This is useful for performing comparisons and estimates under different assumptions. Provide a name, description, and any remarks that will help you understand the context of this scenario..
+        /// </summary>
+        public static string ScenarioCreateInfo {
+            get {
+                return ResourceManager.GetString("ScenarioCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create New Scenario.
+        /// </summary>
+        public static string ScenarioCreateTitle {
+            get {
+                return ResourceManager.GetString("ScenarioCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this scenario? Once deleted, all related metric settings for this scenario will also be removed, and it cannot be recovered. This action will affect any designs that rely on the metrics defined in this scenario..
+        /// </summary>
+        public static string ScenarioDeleteInfo {
+            get {
+                return ResourceManager.GetString("ScenarioDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Scenario.
+        /// </summary>
+        public static string ScenarioDeleteTitle {
+            get {
+                return ResourceManager.GetString("ScenarioDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this form to edit an existing scenario. You can update the scenario&apos;s name, description, and remarks. Scenarios are essential for applying different metrics to design components, enabling you to explore various design possibilities and calculate their impacts..
+        /// </summary>
+        public static string ScenarioEditInfo {
+            get {
+                return ResourceManager.GetString("ScenarioEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Scenario.
+        /// </summary>
+        public static string ScenarioEditTitle {
+            get {
+                return ResourceManager.GetString("ScenarioEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page lists all the project scenarios defined for the platform. Scenarios are used to apply different metrics to design components, allowing for &quot;what-if&quot; analysis. By using multiple scenarios, you can compare various assumptions, such as different metric values for specific design components like kitchen size or API requests. Select a scenario to view or modify its details..
+        /// </summary>
+        public static string ScenarioIndexInfo {
+            get {
+                return ResourceManager.GetString("ScenarioIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Scenarios.
+        /// </summary>
+        public static string ScenarioIndexTitle {
+            get {
+                return ResourceManager.GetString("ScenarioIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string ScenarioNoResults {
+            get {
+                return ResourceManager.GetString("ScenarioNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scenarios.
+        /// </summary>
+        public static string Scenarios {
+            get {
+                return ResourceManager.GetString("Scenarios", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Metrics.
+        /// </summary>
+        public static string ScenarioUnits {
+            get {
+                return ResourceManager.GetString("ScenarioUnits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Search.
         /// </summary>
         public static string Search {

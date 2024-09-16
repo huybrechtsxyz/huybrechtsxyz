@@ -79,7 +79,16 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to find platform with Code {0}.
+        ///   Looks up a localized string similar to Duplicate project scenario name for {0}.
+        /// </summary>
+        public static string DUPLICATE_PROJECTSCENARIO_NAME {
+            get {
+                return ResourceManager.GetString("DUPLICATE_PROJECTSCENARIO_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find project with Code {0}.
         /// </summary>
         public static string INVALID_PROJECT_CODE {
             get {
@@ -88,7 +97,7 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to find platform with ID {0}.
+        ///   Looks up a localized string similar to Unable to find project with ID {0}.
         /// </summary>
         public static string INVALID_PROJECT_ID {
             get {
@@ -120,6 +129,15 @@ namespace Huybrechts.App.Features.Project {
         public static string INVALID_PROJECTDESIGN_ID {
             get {
                 return ResourceManager.GetString("INVALID_PROJECTDESIGN_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find scenario with ID {0}.
+        /// </summary>
+        public static string INVALID_PROJECTSCENARIO_ID {
+            get {
+                return ResourceManager.GetString("INVALID_PROJECTSCENARIO_ID", resourceCulture);
             }
         }
     }

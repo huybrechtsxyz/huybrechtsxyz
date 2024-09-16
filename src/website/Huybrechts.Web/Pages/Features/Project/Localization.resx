@@ -264,6 +264,42 @@
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
   </data>
+  <data name="Scenario" xml:space="preserve">
+    <value>Scenario</value>
+  </data>
+  <data name="ScenarioCreateInfo" xml:space="preserve">
+    <value>Use this form to create a new scenario for your project. A scenario allows you to define a set of metrics that can be applied to the design components. This is useful for performing comparisons and estimates under different assumptions. Provide a name, description, and any remarks that will help you understand the context of this scenario.</value>
+  </data>
+  <data name="ScenarioCreateTitle" xml:space="preserve">
+    <value>Create New Scenario</value>
+  </data>
+  <data name="ScenarioDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this scenario? Once deleted, all related metric settings for this scenario will also be removed, and it cannot be recovered. This action will affect any designs that rely on the metrics defined in this scenario.</value>
+  </data>
+  <data name="ScenarioDeleteTitle" xml:space="preserve">
+    <value>Delete Scenario</value>
+  </data>
+  <data name="ScenarioEditInfo" xml:space="preserve">
+    <value>Use this form to edit an existing scenario. You can update the scenario's name, description, and remarks. Scenarios are essential for applying different metrics to design components, enabling you to explore various design possibilities and calculate their impacts.</value>
+  </data>
+  <data name="ScenarioEditTitle" xml:space="preserve">
+    <value>Edit Scenario</value>
+  </data>
+  <data name="ScenarioIndexInfo" xml:space="preserve">
+    <value>This page lists all the project scenarios defined for the platform. Scenarios are used to apply different metrics to design components, allowing for "what-if" analysis. By using multiple scenarios, you can compare various assumptions, such as different metric values for specific design components like kitchen size or API requests. Select a scenario to view or modify its details.</value>
+  </data>
+  <data name="ScenarioIndexTitle" xml:space="preserve">
+    <value>Project Scenarios</value>
+  </data>
+  <data name="ScenarioNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Scenarios" xml:space="preserve">
+    <value>Scenarios</value>
+  </data>
+  <data name="ScenarioUnits" xml:space="preserve">
+    <value>Metrics</value>
+  </data>
   <data name="Search" xml:space="preserve">
     <value>Search</value>
   </data>
