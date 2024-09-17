@@ -1,7 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
 using Huybrechts.App.Web;
-using Huybrechts.Core.Project;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -64,7 +63,6 @@ public class IndexModel : PageModel
         }
     }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public async Task<IActionResult> OnGetLoadAsync(
         Ulid? ProjectDesignId,
         Ulid? parentId)
@@ -102,5 +100,4 @@ public class IndexModel : PageModel
         }
         
     }
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 }

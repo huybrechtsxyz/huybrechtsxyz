@@ -2,7 +2,7 @@
 @inject IStringLocalizer<Localization> SL
 @model Huybrechts.Web.Pages.Features.Project.Component.EditModel
 @{
-    ViewData["CardTitle"] = Model.Data.ProjectInfo.Name + " | " + Model.Data.ProjectDesign.Name + " | " + SL["ComponentEditTitle"];
+    ViewData["CardTitle"] = Model.Data.ProjectInfoName + " | " + Model.Data.ProjectDesignName + " | " + SL["ComponentEditTitle"];
 }
 
 <partial name="_StatusResult" for="StatusMessage" />
@@ -13,14 +13,14 @@
 <div class="row">
     <div class="col-md-6">
         <form id="create-form" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
             <input type="hidden" asp-for="Data.Id" />
+            <input type="hidden" asp-for="Data.ProjectInfoId" />
+            <input type="hidden" asp-for="Data.ProjectDesignId" />
             <input type="hidden" asp-for="Data.ParentId" />
             <div class="form-floating mb-3">
-                <input type="hidden" asp-for="Data.ProjectInfoId" />
-                <input type="hidden" asp-for="Data.ProjectDesignId" />
-                <input asp-for="Data.ProjectDesign.Name" class="form-control" disabled/>
-                <label asp-for="Data.ProjectDesign.Name" class="form-label"></label>
+                <input asp-for="Data.ProjectDesignName" class="form-control" disabled/>
+                <label asp-for="Data.ProjectDesignName" class="form-label"></label>
                 <span asp-validation-for="Data.ProjectDesignId" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
@@ -48,11 +48,27 @@
                 <span asp-validation-for="Data.VariantType" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <select asp-for="Data.SourceType"
+                <select id="sourceType"
+                        asp-for="Data.SourceType"
                         asp-items="Html.GetEnumSelectList<Huybrechts.Core.Project.SourceType>()"
                         class="form-select"></select>
                 <label asp-for="Data.SourceType" class="form-label"></label>
-                <span asp-validation-for="Data.SourceType" class="text-danger"></span>
+            </div>
+            <div id="platformSection" class="form-floating mb-3" style="display:none;">
+                <select id="platforms"
+                        asp-for="Data.PlatformInfoId"
+                        class="form-select">
+                    <option value="@Ulid.Empty">@SL["Select a platform"]</option>
+                </select>
+                <label asp-for="Data.PlatformInfoId" class="form-label"></label>
+            </div>
+            <div id="productSection" class="form-floating mb-3" style="display:none;">
+                <select id="products"
+                        asp-for="Data.PlatformProductId"
+                        class="form-select">
+                    <option value="@Ulid.Empty">@SL["Select a product"]</option>
+                </select>
+                <label asp-for="Data.PlatformProductId" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Remark" class="form-control" />
@@ -68,11 +84,113 @@
 </div>
 
 @section Breadcrumb {
-    <li class="breadcrumb-item">@Model.Data.ProjectInfo.Name</li>
-    <li class="breadcrumb-item"><a asp-page="/Features/Project/Design/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfo.Id">@Model.Data.ProjectDesign.Name</a></li>
+    <li class="breadcrumb-item">@Model.Data.ProjectInfoName</li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Project/Design/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfoId">@Model.Data.ProjectDesignName</a></li>
     <li class="breadcrumb-item"><a asp-page="/Features/Project/Component/Index" asp-route-ProjectDesignId="@Model.Data.ProjectDesignId">@SL["Components"]</a></li>
 }
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Initial check for jQuery loading
+            console.log('jQuery is loaded');
+
+            var selectedSourceType = $('#sourceType').val();
+            var platformId = '@Model.Data.PlatformInfoId';  // Assuming PlatformId is a property in your model
+            var productId = '@Model.Data.PlatformProductId';    // Assuming ProductId is a property in your model
+
+            // Function to load the platform options based on the current SourceType
+            function loadPlatforms(selectedPlatformId = null) {
+                $.ajax({
+                    url: '?handler=platforms',
+                    type: 'GET',
+                    success: function (data) {
+                        var platformSelect = $('#platforms');
+                        platformSelect.empty().append('<option value="">@SL["Select a platform"]</option>');
+
+                        $.each(data, function (index, platform) {
+                            var selected = (selectedPlatformId && platform.id == selectedPlatformId) ? 'selected' : '';
+                            platformSelect.append('<option value="' + platform.id + '" ' + selected + '>' + platform.name + '</option>');
+                        });
+
+                        if (selectedPlatformId) {
+                            $('#platformSection').show();  // Show platform section if a platform is pre-selected
+                        }
+
+                        console.log('Platforms loaded successfully.');
+                    },
+                    error: function () {
+                        console.error('Failed to load platforms.');
+                    }
+                });
+            }
+
+            // Function to load the product options based on the selected platform
+            function loadProducts(platformInfoId, selectedProductId = null) {
+                $.ajax({
+                    url: '?handler=products',
+                    type: 'GET',
+                    data: {
+                        platformInfoId: platformInfoId
+                    },
+                    success: function (data) {
+                        var productSelect = $('#products');
+                        productSelect.empty().append('<option value="">@SL["Select a product"]</option>');
+
+                        $.each(data, function (index, product) {
+                            var selected = (selectedProductId && product.id == selectedProductId) ? 'selected' : '';
+                            productSelect.append('<option value="' + product.id + '" ' + selected + '>' + product.name + '</option>');
+                        });
+
+                        if (selectedProductId) {
+                            $('#productSection').show();  // Show product section if a product is pre-selected
+                        }
+
+                        console.log('Products loaded successfully.');
+                    },
+                    error: function () {
+                        console.error('Failed to load products.');
+                    }
+                });
+            }
+
+            // Handle sourceType dropdown change
+            $('#sourceType').change(function () {
+                selectedSourceType = $(this).val();
+                console.log('Selected SourceType:', selectedSourceType);
+
+                if (selectedSourceType === "Platform") {
+                    $('#platformSection').show();
+                    loadPlatforms();  // Load platforms if "Platform" is selected
+                } else {
+                    $('#platformSection').hide();
+                    $('#productSection').hide();
+                }
+            });
+
+            // Handle platform dropdown change
+            $('#platforms').change(function () {
+                platformId = $(this).val();
+                console.log('Selected Platform ID:', platformId);
+
+                if (platformId) {
+                    loadProducts(platformId);  // Load products if a platform is selected
+                } else {
+                    $('#productSection').hide();
+                }
+            });
+
+            // Initial load based on the pre-selected SourceType, Platform, and Product
+            if (selectedSourceType === "Platform") {
+                $('#platformSection').show();
+                loadPlatforms(platformId);  // Load platforms with the pre-selected platform
+            }
+
+            if (platformId) {
+                loadProducts(platformId, productId);  // Load products with the pre-selected product
+            }
+        });
+
+    </script>
 }

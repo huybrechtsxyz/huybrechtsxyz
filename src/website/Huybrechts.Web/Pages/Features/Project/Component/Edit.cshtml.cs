@@ -59,6 +59,24 @@ public class EditModel : PageModel
         }
     }
 
+    public async Task<IActionResult> OnGetPlatforms()
+    {
+        Huybrechts.App.Features.Platform.PlatformInfoFlow.ListQuery listQuery = new() { };
+        var result = await _mediator.Send(listQuery);
+        if (result.HasStatusMessage())
+            StatusMessage = result.ToStatusMessage();
+        return new JsonResult(result.Value);
+    }
+
+    public async Task<IActionResult> OnGetProducts(Ulid platformInfoId)
+    {
+        Huybrechts.App.Features.Platform.PlatformProductFlow.ListQuery listQuery = new() { PlatformInfoId = platformInfoId };
+        var result = await _mediator.Send(listQuery);
+        if (result.HasStatusMessage())
+            StatusMessage = result.ToStatusMessage();
+        return new JsonResult(result.Value);
+    }
+
     public async Task<IActionResult> OnPostAsync()
     {
         try

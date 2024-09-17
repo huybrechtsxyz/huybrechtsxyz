@@ -1,1 +1,52 @@
 ﻿
+            <div class="form-floating mb-3">
+                <select id="sourceType" 
+                        asp-for="Data.SourceType"
+                        asp-items="Html.GetEnumSelectList<Huybrechts.Core.Project.SourceType>()"
+                        class="form-select"></select>
+                <label asp-for="Data.SourceType" class="form-label"></label>
+                <span asp-validation-for="Data.SourceType" class="text-danger"></span>
+            </div>
+
+            <div id="platformSection" class="form-floating mb-3" style="display:none;">
+                <select id="platforms"
+                        asp-for="Data.PlatformInfoId"
+                        class="form-select">
+                    <option value="@Ulid.Empty">@SL["Select a platform"]</option>
+                </select>
+                <label asp-for="Data.PlatformInfoId" class="form-label"></label>
+            </div>
+
+            <div id="productSection" class="form-floating mb-3" style="display:none;">
+                <select id="products"
+                        asp-for="Data.PlatformProductId"
+                        class="form-select">
+                    <option value="@Ulid.Empty">@SL["Select a product"]</option>
+                </select>
+                <label asp-for="Data.PlatformProductId" class="form-label"></label>
+            </div>
+
+
+            <div class="form-floating mb-3">
+                <select id="sourceType"
+                        asp-for="Data.SourceType"
+                        asp-items="Html.GetEnumSelectList<Huybrechts.Core.Project.SourceType>()"
+                        class="form-select"></select>
+                <label asp-for="Data.SourceType" class="form-label"></label>
+            </div>
+            <div id="platformSection" class="form-floating mb-3" style="display:none;">
+                <select id="platforms"
+                        asp-for="Data.PlatformInfoId"
+                        class="form-select">
+                    <option value="@Ulid.Empty">@SL["Select a platform"]</option>
+                </select>
+                <label asp-for="Data.PlatformInfoId" class="form-label"></label>
+            </div>
+            <div id="productSection" class="form-floating mb-3" style="display:none;">
+                <select id="products"
+                        asp-for="Data.PlatformProductId"
+                        class="form-select">
+                    <option value="@Ulid.Empty">@SL["Select a product"]</option>
+                </select>
+                <label asp-for="Data.PlatformProductId" class="form-label"></label>
+            </div>

@@ -333,6 +333,12 @@
   <data name="Search..." xml:space="preserve">
     <value>Search...</value>
   </data>
+  <data name="Select a platform" xml:space="preserve">
+    <value>Select a platform</value>
+  </data>
+  <data name="Select a product" xml:space="preserve">
+    <value>Select a product</value>
+  </data>
   <data name="Unit" xml:space="preserve">
     <value>Unit</value>
   </data>

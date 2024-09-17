@@ -2,7 +2,7 @@
 @inject IStringLocalizer<Localization> SL
 @model Huybrechts.Web.Pages.Features.Project.Component.DeleteModel
 @{
-    ViewData["CardTitle"] = Model.Data.ProjectInfo.Name + " | " + Model.Data.ProjectDesign.Name + " | " + SL["ComponentDeleteTitle"];
+    ViewData["CardTitle"] = Model.Data.ProjectInfoName + " | " + Model.Data.ProjectDesignName + " | " + SL["ComponentDeleteTitle"];
 }
 
 <partial name="_StatusResult" for="StatusMessage" />
@@ -13,13 +13,13 @@
 <div class="row">
     <div class="col-md-6">
         <form id="create-form" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
             <input type="hidden" asp-for="Data.Id" />
+            <input type="hidden" asp-for="Data.ProjectInfoId" />
+            <input type="hidden" asp-for="Data.ProjectDesignId" />
             <div class="form-floating mb-3">
-                <input type="hidden" asp-for="Data.ProjectInfoId" />
-                <input type="hidden" asp-for="Data.ProjectDesignId" />
-                <input asp-for="Data.ProjectDesign.Name" class="form-control" disabled />
-                <label asp-for="Data.ProjectDesign.Name" class="form-label"></label>
+                <input asp-for="Data.ProjectDesignName" class="form-control" disabled />
+                <label asp-for="Data.ProjectDesignName" class="form-label"></label>
                 <span asp-validation-for="Data.ProjectDesignId" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
@@ -67,8 +67,8 @@
 </div>
 
 @section Breadcrumb {
-    <li class="breadcrumb-item">@Model.Data.ProjectInfo.Name</li>
-    <li class="breadcrumb-item"><a asp-page="/Features/Project/Design/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfo.Id">@Model.Data.ProjectDesign.Name</a></li>
+    <li class="breadcrumb-item">@Model.Data.ProjectInfoName</li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Project/Design/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfoId">@Model.Data.ProjectDesignName</a></li>
     <li class="breadcrumb-item"><a asp-page="/Features/Project/Component/Index" asp-route-ProjectDesignId="@Model.Data.ProjectDesignId">@SL["Components"]</a></li>
 }
 

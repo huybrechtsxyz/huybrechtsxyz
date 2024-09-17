@@ -709,6 +709,24 @@ namespace Huybrechts.Web.Pages.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select a platform.
+        /// </summary>
+        public static string Select_a_platform {
+            get {
+                return ResourceManager.GetString("Select a platform", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a product.
+        /// </summary>
+        public static string Select_a_product {
+            get {
+                return ResourceManager.GetString("Select a product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unit.
         /// </summary>
         public static string Unit {

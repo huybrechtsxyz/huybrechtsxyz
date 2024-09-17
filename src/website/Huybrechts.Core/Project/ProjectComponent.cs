@@ -220,7 +220,7 @@ public enum VariantType
     /// </summary>
     [Display(Name = nameof(VariantType) + "_" + nameof(Standard), Description = nameof(VariantType) + "_" + nameof(Standard) + "_d", ResourceType = typeof(Localization))]
     [Comment("The component is part of the standard design.")]
-    Standard,
+    Standard = 1,
 
     /// <summary>
     /// The component is an optional upgrade that can be selected.

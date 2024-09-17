@@ -336,6 +336,12 @@
   <data name="Select" xml:space="preserve">
     <value>Selecteer</value>
   </data>
+  <data name="Select a platform" xml:space="preserve">
+    <value>Selecteer een platform</value>
+  </data>
+  <data name="Select a product" xml:space="preserve">
+    <value>Selecteer een produkt</value>
+  </data>
   <data name="Unit" xml:space="preserve">
     <value>Eenheid</value>
   </data>

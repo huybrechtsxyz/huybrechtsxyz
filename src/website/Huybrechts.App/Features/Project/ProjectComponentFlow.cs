@@ -12,17 +12,90 @@ using System.Text.Json.Serialization;
 
 namespace Huybrechts.App.Features.Project.ProjectComponentFlow;
 
+public record Model
+{
+    public Ulid Id { get; set; }
+
+    [Display(Name = "Project", ResourceType = typeof(Localization))]
+    public Ulid ProjectInfoId { get; set; } = Ulid.Empty;
+
+    [Display(Name = "Project", ResourceType = typeof(Localization))]
+    public string ProjectInfoName { get; set; } = string.Empty;
+
+    [Display(Name = "Design", ResourceType = typeof(Localization))]
+    public Ulid ProjectDesignId { get; set; } = Ulid.Empty;
+
+    [Display(Name = "Design", ResourceType = typeof(Localization))]
+    public string ProjectDesignName { get; set; } = string.Empty;
+
+    [Display(Name = "Component", ResourceType = typeof(Localization))]
+    public Ulid? ParentId { get; set; } = Ulid.Empty;
+
+    [Display(Name = "Component", ResourceType = typeof(Localization))]
+    public string? ParentName { get; set; } = string.Empty;
+
+    [Display(Name = "Components", ResourceType = typeof(Localization))]
+    public List<Model> Children { get; set; } = [];
+
+    [Display(Name = nameof(Sequence), ResourceType = typeof(Localization))]
+    public int Sequence { get; set; } = 0;
+
+    [Display(Name = nameof(Name), ResourceType = typeof(Localization))]
+    public string Name { get; set; } = string.Empty;
+
+    [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
+    public string? Description { get; set; }
+
+    [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
+    public string? Remark { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [Display(Name = nameof(ComponentLevel), ResourceType = typeof(Localization))]
+    public ComponentLevel ComponentLevel { get; set; } = ComponentLevel.Component;
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [Display(Name = nameof(VariantType), ResourceType = typeof(Localization))]
+    public VariantType VariantType { get; set; } = VariantType.Standard;
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [Display(Name = nameof(SourceType), ResourceType = typeof(Localization))]
+    public SourceType SourceType { get; set; } = SourceType.None;
+
+    [Display(Name = nameof(Source), ResourceType = typeof(Localization))]
+    public string? Source { get; set; }
+
+    [Display(Name = "Platform", ResourceType = typeof(Localization))]
+    public Ulid? PlatformInfoId { get; set; }
+
+    [Display(Name = "PlatformProduct", ResourceType = typeof(Localization))]
+    public Ulid? PlatformProductId { get; set; }
+
+    public string SearchIndex => ProjectComponentHelper.GetSearchIndex(Name, Description, Source);
+}
+
+public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
+{
+    public ModelValidator()
+    {
+        RuleFor(m => m.Id).NotNull().NotEmpty();
+        RuleFor(m => m.ProjectInfoId).NotNull().NotEmpty();
+        RuleFor(m => m.ProjectDesignId).NotNull().NotEmpty();
+        RuleFor(m => m.Name).NotEmpty().Length(1, 128);
+        RuleFor(m => m.Description).Length(0, 256);
+    }
+}
+
 public static class ProjectComponentHelper
 {
     public static CreateCommand CreateNew(ProjectInfo project, ProjectDesign design, ProjectComponent? parent) => new()
     {
         Id = Ulid.NewUlid(),
-        ProjectInfo = project,
         ProjectInfoId = project.Id,
-        ProjectDesign = design,
+        ProjectInfoName = project.Name,
         ProjectDesignId = design.Id,
-        ParentInfo = parent,
+        ProjectDesignName = design.Name,
         ParentId = parent?.Id,
+        ParentName = parent?.Name
     };
 
     public static string GetSearchIndex
@@ -52,72 +125,6 @@ public static class ProjectComponentHelper
     internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTCOMPONENT_ID.Replace("{0}", id.ToString()));
 }
 
-public record Model
-{
-    public Ulid Id { get; set; }
-
-    [Display(Name = "Project", ResourceType = typeof(Localization))]
-    public Ulid ProjectInfoId { get; set; } = Ulid.Empty;
-
-    [Display(Name = "Design", ResourceType = typeof(Localization))]
-    public Ulid ProjectDesignId { get; set; } = Ulid.Empty;
-
-    [Display(Name = "Component", ResourceType = typeof(Localization))]
-    public Ulid? ParentId { get; set; } = Ulid.Empty;
-
-    [Display(Name = "Components", ResourceType = typeof(Localization))]
-    public List<Model> Children { get; set; } = [];
-
-    [Display(Name = nameof(Sequence), ResourceType = typeof(Localization))]
-    public int Sequence { get; set; } = 0;
-
-    [Display(Name = nameof(Name), ResourceType = typeof(Localization))]
-    public string Name { get; set; } = string.Empty;
-
-    [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
-    public string? Description { get; set; }
-
-    [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
-    public string? Remark { get; set; }
-
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    [Display(Name = nameof(ComponentLevel), ResourceType = typeof(Localization))]
-    public ComponentLevel ComponentLevel { get; set; } = ComponentLevel.Component;
-
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    [Display(Name = nameof(VariantType), ResourceType = typeof(Localization))]
-    public VariantType VariantType { get; set; } = VariantType.Standard;
-
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    [Display(Name = nameof(SourceType), ResourceType = typeof(Localization))]
-    public SourceType SourceType { get; set; } = SourceType.None;
-
-    [DataType(DataType.Url)]
-    [Display(Name = nameof(Source), ResourceType = typeof(Localization))]
-    public string? Source { get; set; }
-
-    [DataType(DataType.Url)]
-    [Display(Name = "Platform", ResourceType = typeof(Localization))]
-    public Ulid? PlatformInfoId { get; set; }
-
-    [Display(Name = "PlatformProduct", ResourceType = typeof(Localization))]
-    public Ulid? PlatformProductId { get; set; }
-
-    public string SearchIndex => ProjectComponentHelper.GetSearchIndex(Name, Description, Source);
-}
-
-public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
-{
-    public ModelValidator()
-    {
-        RuleFor(m => m.Id).NotNull().NotEmpty();
-        RuleFor(m => m.ProjectInfoId).NotNull().NotEmpty();
-        RuleFor(m => m.ProjectDesignId).NotNull().NotEmpty();
-        RuleFor(m => m.Name).NotEmpty().Length(1, 128);
-        RuleFor(m => m.Description).Length(0, 256);
-    }
-}
-
 //
 // LIST
 //
@@ -126,7 +133,10 @@ internal sealed class ListMapping : Profile
 {
     public ListMapping() =>
         CreateMap<ProjectComponent, Model>()
-            .ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.Children));
+        .ForMember(dest => dest.ProjectInfoName, opt => opt.Ignore())
+        .ForMember(dest => dest.ProjectDesignName, opt => opt.MapFrom(src => src.ProjectDesign.Name))
+        .ForMember(dest => dest.ParentName, opt => opt.Ignore())
+        .ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.Children));
 }
 
 internal sealed class EntityMapping : Profile
@@ -245,11 +255,6 @@ public sealed class CreateQueryValidator : AbstractValidator<CreateQuery>
 
 public sealed record CreateCommand : Model, IRequest<Result<Ulid>>
 {
-    public ProjectInfo ProjectInfo { get; set; } = new();
-
-    public ProjectDesign ProjectDesign { get; set; } = new();
-
-    public ProjectComponent? ParentInfo { get; set; } = new();
 }
 
 public sealed class CreateCommandValidator : ModelValidator<CreateCommand>
@@ -301,8 +306,9 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
 
         var command = ProjectComponentHelper.CreateNew(project, design, parent);
         
-        command.ProjectInfo = project;
-        command.ParentInfo = parent;
+        command.ProjectInfoName = project.Name;
+        command.ProjectDesignName = design.Name;
+        command.ParentName = parent?.Name;
 
         return Result.Ok(command);
     }
@@ -365,14 +371,7 @@ public sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
     }
 }
 
-public record UpdateCommand : Model, IRequest<Result> 
-{
-    public ProjectInfo ProjectInfo { get; set; } = new();
-
-    public ProjectDesign ProjectDesign { get; set; } = new();
-
-    public ProjectComponent? ParentInfo { get; set; }
-}
+public record UpdateCommand : Model, IRequest<Result> { }
 
 public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
 {
@@ -434,9 +433,9 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
             parent = await _dbcontext.Set<ProjectComponent>().FindAsync([command.ParentId], cancellationToken: token);
         }
 
-        command.ProjectInfo = project;
-        command.ProjectDesign = design;
-        command.ParentInfo = parent;
+        command.ProjectInfoName = project.Name;
+        command.ProjectDesignName = design.Name;
+        command.ParentName = parent?.Name;
 
         return Result.Ok(command);
     }
@@ -480,14 +479,7 @@ public class DeleteQueryValidator : AbstractValidator<DeleteQuery>
     }
 }
 
-public sealed record DeleteCommand : Model, IRequest<Result>
-{
-    public ProjectInfo ProjectInfo { get; set; } = new();
-
-    public ProjectDesign ProjectDesign { get; set; } = new();
-
-    public ProjectComponent? ParentInfo { get; set; }
-}
+public sealed record DeleteCommand : Model, IRequest<Result> { }
 
 public sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
 {
@@ -538,9 +530,9 @@ internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<D
             parent = await _dbcontext.Set<ProjectComponent>().FindAsync([command.ParentId], cancellationToken: token);
         }
 
-        command.ProjectInfo = project;
-        command.ProjectDesign = design;
-        command.ParentInfo = parent;
+        command.ProjectInfoName = project.Name;
+        command.ProjectDesignName = design.Name;
+        command.ParentName = parent?.Name;
 
         return Result.Ok(command);
     }
