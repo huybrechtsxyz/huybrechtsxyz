@@ -297,6 +297,33 @@
   <data name="Scenarios" xml:space="preserve">
     <value>Scenarios</value>
   </data>
+  <data name="ScenarioUnitCreateInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om een nieuwe scenario eenheid toe te voegen. Definieer de naam van de metrische variabele en, indien van toepassing, geef een vaste waarde of een formule op om de waarde dynamisch te berekenen. Deze eenheid zal worden gebruikt in de geselecteerde projectsituatie.</value>
+  </data>
+  <data name="ScenarioUnitCreateTitle" xml:space="preserve">
+    <value>Scenario eenheid Toevoegen</value>
+  </data>
+  <data name="ScenarioUnitDeleteInfo" xml:space="preserve">
+    <value>Weet u zeker dat u deze scenario eenheid wilt verwijderen? Door deze te verwijderen, worden de aan deze eenheid gekoppelde metrische berekeningen uit de projectsituatie verwijderd.</value>
+  </data>
+  <data name="ScenarioUnitDeleteTitle" xml:space="preserve">
+    <value>Scenario eenheid Verwijderen</value>
+  </data>
+  <data name="ScenarioUnitEditInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om een bestaande scenario eenheid te bewerken. Werk de naam van de variabele, de vaste waarde of de formule bij, zodat de eenheid nauwkeurig de benodigde metrische gegevens voor uw projectsituatie weergeeft.</value>
+  </data>
+  <data name="ScenarioUnitEditTitle" xml:space="preserve">
+    <value>Scenario eenheid Bewerken</value>
+  </data>
+  <data name="ScenarioUnitIndexInfo" xml:space="preserve">
+    <value>Deze pagina toont alle scenario eenheden die worden gebruikt voor het berekenen van metrische gegevens binnen de projectsituaties. Elke eenheid definieert een specifieke variabele, die een vaste waarde kan hebben of berekend kan worden via een formule, wat bijdraagt aan de evaluatie van de ontwerponderdelen.</value>
+  </data>
+  <data name="ScenarioUnitIndexTitle" xml:space="preserve">
+    <value>Scenario eenheden</value>
+  </data>
+  <data name="ScenarioUnitNoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
+  </data>
   <data name="ScenarioUnits" xml:space="preserve">
     <value>Metrieken</value>
   </data>

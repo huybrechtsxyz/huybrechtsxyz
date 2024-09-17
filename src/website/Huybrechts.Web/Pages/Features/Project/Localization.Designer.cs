@@ -601,6 +601,87 @@ namespace Huybrechts.Web.Pages.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use this form to add a new scenario unit. Define the metric variable name and, if applicable, provide either a fixed value or a formula to calculate its value dynamically. This unit will be used in the selected project scenario..
+        /// </summary>
+        public static string ScenarioUnitCreateInfo {
+            get {
+                return ResourceManager.GetString("ScenarioUnitCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New Scenario Unit.
+        /// </summary>
+        public static string ScenarioUnitCreateTitle {
+            get {
+                return ResourceManager.GetString("ScenarioUnitCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this scenario unit? Deleting it will remove the metric calculations associated with this unit from the project scenario..
+        /// </summary>
+        public static string ScenarioUnitDeleteInfo {
+            get {
+                return ResourceManager.GetString("ScenarioUnitDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Scenario Unit.
+        /// </summary>
+        public static string ScenarioUnitDeleteTitle {
+            get {
+                return ResourceManager.GetString("ScenarioUnitDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this form to edit an existing scenario unit. Update the variable name, fixed value, or formula, ensuring that the unit accurately represents the metrics needed for your project scenario..
+        /// </summary>
+        public static string ScenarioUnitEditInfo {
+            get {
+                return ResourceManager.GetString("ScenarioUnitEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Scenario Unit.
+        /// </summary>
+        public static string ScenarioUnitEditTitle {
+            get {
+                return ResourceManager.GetString("ScenarioUnitEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page lists all the scenario units used for calculating metrics within the project scenarios. Each unit defines a specific variable, which may either have a fixed value or be calculated through a formula, contributing to the overall design component evaluations..
+        /// </summary>
+        public static string ScenarioUnitIndexInfo {
+            get {
+                return ResourceManager.GetString("ScenarioUnitIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scenario Metrics.
+        /// </summary>
+        public static string ScenarioUnitIndexTitle {
+            get {
+                return ResourceManager.GetString("ScenarioUnitIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string ScenarioUnitNoResults {
+            get {
+                return ResourceManager.GetString("ScenarioUnitNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Metrics.
         /// </summary>
         public static string ScenarioUnits {

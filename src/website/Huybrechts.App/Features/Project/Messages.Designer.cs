@@ -140,5 +140,14 @@ namespace Huybrechts.App.Features.Project {
                 return ResourceManager.GetString("INVALID_PROJECTSCENARIO_ID", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find scenario metric with ID {0}.
+        /// </summary>
+        public static string INVALID_PROJECTSCENARIOUNIT_ID {
+            get {
+                return ResourceManager.GetString("INVALID_PROJECTSCENARIOUNIT_ID", resourceCulture);
+            }
+        }
     }
 }

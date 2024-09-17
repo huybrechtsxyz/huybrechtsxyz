@@ -1,0 +1,61 @@
+﻿@page
+@inject IStringLocalizer<Localization> SL
+@model Huybrechts.Web.Pages.Features.Project.ScenarioUnit.DeleteModel
+@{
+    ViewData["CardTitle"] = Model.Data.ProjectScenario.Name + " | " + SL["ScenarioUnitDeleteTitle"];
+}
+
+<partial name="_StatusResult" for="StatusMessage" />
+<p class="text-info">
+    @SL["ScenarioUnitDeleteInfo"]
+</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <form id="create-form" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input type="hidden" asp-for="Data.Id" />
+            <div class="form-floating mb-3">
+                <input type="hidden" asp-for="Data.ProjectInfoId" />
+                <input type="hidden" asp-for="Data.ProjectScenarioId" />
+                <input asp-for="Data.ProjectScenario.Name" class="form-control" disabled />
+                <label asp-for="Data.ProjectScenarioId" class="form-label"></label>
+                <span asp-validation-for="Data.ProjectScenarioId" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Variable" class="form-control" disabled />
+                <label asp-for="Data.Variable" class="form-label"></label>
+                <span asp-validation-for="Data.Variable" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.SetupUnitName" class="form-control" disabled />
+                <label asp-for="Data.SetupUnitName" class="form-label"></label>
+                <span asp-validation-for="Data.SetupUnitName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Expression" class="form-control" disabled />
+                <label asp-for="Data.Expression" class="form-label"></label>
+                <span asp-validation-for="Data.Expression" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Remark" class="form-control" disabled />
+                <label asp-for="Data.Remark" class="form-label"></label>
+                <span asp-validation-for="Data.Remark" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <a class="w-30 btn btn-lg btn-secondary" asp-page="Index" asp-route-ProjectScenarioId="@Model.Data.ProjectScenarioId"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                <button id="delete-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-trash2-fill"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Breadcrumb {
+    <li class="breadcrumb-item">@Model.Data.ProjectInfo.Name</li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Project/Scenario/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfo.Id">@Model.Data.ProjectScenario.Name</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Project/ScenarioUnit/Index" asp-route-ProjectScenarioId="@Model.Data.ProjectScenarioId">@SL["ScenarioUnits"]</a></li>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

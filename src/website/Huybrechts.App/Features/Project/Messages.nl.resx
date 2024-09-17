@@ -135,6 +135,9 @@
   <data name="INVALID_PROJECTDESIGN_ID" xml:space="preserve">
     <value>Kan project ontwerp met naam {0} niet vinden</value>
   </data>
+  <data name="INVALID_PROJECTSCENARIOUNIT_ID" xml:space="preserve">
+    <value>Kan project scenario eenheid met ID {0} niet vinden</value>
+  </data>
   <data name="INVALID_PROJECTSCENARIO_ID" xml:space="preserve">
     <value>Kan project scenario met ID {0} niet vinden</value>
   </data>

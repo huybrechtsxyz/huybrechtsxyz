@@ -180,6 +180,9 @@
   <data name="Risk" xml:space="preserve">
     <value>Risico</value>
   </data>
+  <data name="Scenario" xml:space="preserve">
+    <value>Scenario</value>
+  </data>
   <data name="Sequence" xml:space="preserve">
     <value>Volgorde</value>
   </data>

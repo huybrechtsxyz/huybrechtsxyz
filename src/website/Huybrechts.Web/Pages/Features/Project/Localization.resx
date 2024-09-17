@@ -297,6 +297,33 @@
   <data name="Scenarios" xml:space="preserve">
     <value>Scenarios</value>
   </data>
+  <data name="ScenarioUnitCreateInfo" xml:space="preserve">
+    <value>Use this form to add a new scenario unit. Define the metric variable name and, if applicable, provide either a fixed value or a formula to calculate its value dynamically. This unit will be used in the selected project scenario.</value>
+  </data>
+  <data name="ScenarioUnitCreateTitle" xml:space="preserve">
+    <value>Add New Scenario Unit</value>
+  </data>
+  <data name="ScenarioUnitDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this scenario unit? Deleting it will remove the metric calculations associated with this unit from the project scenario.</value>
+  </data>
+  <data name="ScenarioUnitDeleteTitle" xml:space="preserve">
+    <value>Delete Scenario Unit</value>
+  </data>
+  <data name="ScenarioUnitEditInfo" xml:space="preserve">
+    <value>Use this form to edit an existing scenario unit. Update the variable name, fixed value, or formula, ensuring that the unit accurately represents the metrics needed for your project scenario.</value>
+  </data>
+  <data name="ScenarioUnitEditTitle" xml:space="preserve">
+    <value>Edit Scenario Unit</value>
+  </data>
+  <data name="ScenarioUnitIndexInfo" xml:space="preserve">
+    <value>This page lists all the scenario units used for calculating metrics within the project scenarios. Each unit defines a specific variable, which may either have a fixed value or be calculated through a formula, contributing to the overall design component evaluations.</value>
+  </data>
+  <data name="ScenarioUnitIndexTitle" xml:space="preserve">
+    <value>Scenario Metrics</value>
+  </data>
+  <data name="ScenarioUnitNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
   <data name="ScenarioUnits" xml:space="preserve">
     <value>Metrics</value>
   </data>

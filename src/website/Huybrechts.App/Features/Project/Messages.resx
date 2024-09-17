@@ -135,6 +135,9 @@
   <data name="INVALID_PROJECTDESIGN_ID" xml:space="preserve">
     <value>Unable to find design with ID {0}</value>
   </data>
+  <data name="INVALID_PROJECTSCENARIOUNIT_ID" xml:space="preserve">
+    <value>Unable to find scenario metric with ID {0}</value>
+  </data>
   <data name="INVALID_PROJECTSCENARIO_ID" xml:space="preserve">
     <value>Unable to find scenario with ID {0}</value>
   </data>

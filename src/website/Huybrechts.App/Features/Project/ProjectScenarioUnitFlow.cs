@@ -10,11 +10,11 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
 
-namespace Huybrechts.App.Features.Project.ProjectComponentUnitFlow;
+namespace Huybrechts.App.Features.Project.ProjectScenarioUnitFlow;
 
-public static class ProjectComponentUnitFlowHelper
+public static class ProjectScenarioUnitFlowHelper
 {
-    public static void CopyFields(Model model, ProjectComponentUnit entity)
+    public static void CopyFields(Model model, ProjectScenarioUnit entity)
     {
         entity.Remark = model.Remark?.Trim();
 
@@ -23,13 +23,12 @@ public static class ProjectComponentUnitFlowHelper
         entity.Expression = model.Expression;
     }
 
-    public static CreateCommand CreateNew(ProjectComponent component) => new()
+    public static CreateCommand CreateNew(ProjectScenario Scenario) => new()
     {
         Id = Ulid.NewUlid(),
-        ProjectInfoId = component.ProjectInfoId,
-        ProjectDesignId = component.ProjectDesignId,
-        ProjectComponentId = component.Id,
-        ProjectComponent = component
+        ProjectInfoId = Scenario.ProjectInfoId,
+        ProjectScenarioId = Scenario.Id,
+        ProjectScenario = Scenario
     };
 
     public static async Task<List<SetupUnit>> GetSetupUnitsAsync(FeatureContext dbcontext, CancellationToken token)
@@ -41,11 +40,9 @@ public static class ProjectComponentUnitFlowHelper
 
     internal static Result ProjectNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
 
-    internal static Result DesignNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTDESIGN_ID.Replace("{0}", id.ToString()));
+    internal static Result ScenarioNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTSCENARIO_ID.Replace("{0}", id.ToString()));
 
-    internal static Result ComponentNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTCOMPONENT_ID.Replace("{0}", id.ToString()));
-
-    internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTCOMPONENTUNIT_ID.Replace("{0}", id.ToString()));
+    internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTSCENARIOUNIT_ID.Replace("{0}", id.ToString()));
 }
 
 public record Model
@@ -55,14 +52,11 @@ public record Model
     [Display(Name = "Project", ResourceType = typeof(Localization))]
     public Ulid ProjectInfoId { get; set; } = Ulid.Empty;
 
-    [Display(Name = "Design", ResourceType = typeof(Localization))]
-    public Ulid ProjectDesignId { get; set; } = Ulid.Empty;
+    [Display(Name = "Scenario", ResourceType = typeof(Localization))]
+    public Ulid ProjectScenarioId { get; set; } = Ulid.Empty;
 
-    [Display(Name = "Component", ResourceType = typeof(Localization))]
-    public Ulid ProjectComponentId { get; set; } = Ulid.Empty;
-
-    [Display(Name = "Component", ResourceType = typeof(Localization))]
-    public ProjectComponent ProjectComponent { get; set; } = new();
+    [Display(Name = "Scenario", ResourceType = typeof(Localization))]
+    public ProjectScenario ProjectScenario { get; set; } = new();
 
     [Display(Name = "Unit", ResourceType = typeof(Localization))]
     public Ulid? SetupUnitId { get; set; }
@@ -86,9 +80,7 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
     {
         RuleFor(m => m.Id).NotNull().NotEmpty();
         RuleFor(m => m.ProjectInfoId).NotNull().NotEmpty();
-        RuleFor(m => m.ProjectDesignId).NotNull().NotEmpty();
-        RuleFor(m => m.ProjectComponentId).NotNull().NotEmpty();
-
+        RuleFor(m => m.ProjectScenarioId).NotNull().NotEmpty();
         RuleFor(m => m.Variable).NotEmpty().Length(1, 128);
         RuleFor(m => m.Expression).Length(0, 256);
     }
@@ -100,8 +92,8 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
 
 public sealed record ListModel : Model 
 {
-    [Display(Name = "Component", ResourceType = typeof(Localization))]
-    public string ProjectComponentName { get; set; } = string.Empty;
+    [Display(Name = "Scenario", ResourceType = typeof(Localization))]
+    public string ProjectScenarioName { get; set; } = string.Empty;
 
     [Display(Name = "Unit", ResourceType = typeof(Localization))]
     public string? SetupUnitName { get; set; }
@@ -110,39 +102,37 @@ public sealed record ListModel : Model
 internal sealed class ListMapping : Profile
 {
     public ListMapping() =>
-        CreateProjection<ProjectComponentUnit, ListModel>()
-        .ForMember(dest => dest.ProjectComponentName, opt => opt.MapFrom(src => src.ProjectComponent.Name))
+        CreateProjection<ProjectScenarioUnit, ListModel>()
+        .ForMember(dest => dest.ProjectScenarioName, opt => opt.MapFrom(src => src.ProjectScenario.Name))
         .ForMember(dest => dest.SetupUnitName, opt => opt.MapFrom(src => (src.SetupUnit ?? new()).Name));
 }
 
 public sealed record ListQuery : IRequest<Result<ListResult>>
 {
-    public Ulid? ProjectComponentId { get; set; } = Ulid.Empty;
+    public Ulid? ProjectScenarioId { get; set; } = Ulid.Empty;
 }
 
 public sealed class ListValidator : AbstractValidator<ListQuery> 
 {
     public ListValidator() 
     { 
-        RuleFor(x => x.ProjectComponentId).NotEmpty().NotEqual(Ulid.Empty); 
+        RuleFor(x => x.ProjectScenarioId).NotEmpty().NotEqual(Ulid.Empty); 
     } 
 }
 
 public sealed record ListResult
 {
-    public Ulid? ProjectComponentId { get; set; } = Ulid.Empty;
+    public Ulid? ProjectScenarioId { get; set; } = Ulid.Empty;
 
     public ProjectInfo ProjectInfo { get; set; } = new();
 
-    public ProjectDesign ProjectDesign { get; set; } = new();
-
-    public ProjectComponent ProjectComponent { get; set; } = new();
+    public ProjectScenario ProjectScenario { get; set; } = new();
 
     public List<ListModel> Results { get; set; } = [];
 }
 
 internal sealed class ListHandler :
-    EntityListFlow.Handler<ProjectComponentUnit, ListModel>,
+    EntityListFlow.Handler<ProjectScenarioUnit, ListModel>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
     public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -152,35 +142,30 @@ internal sealed class ListHandler :
 
     public async Task<Result<ListResult>> Handle(ListQuery message, CancellationToken token)
     {
-        var component = await _dbcontext.Set<ProjectComponent>().FirstOrDefaultAsync(q => q.Id == message.ProjectComponentId, cancellationToken: token);
-        if (component == null)
-            return ProjectComponentUnitFlowHelper.ComponentNotFound(message.ProjectComponentId ?? Ulid.Empty);
+        var Scenario = await _dbcontext.Set<ProjectScenario>().FirstOrDefaultAsync(q => q.Id == message.ProjectScenarioId, cancellationToken: token);
+        if (Scenario == null)
+            return ProjectScenarioUnitFlowHelper.ScenarioNotFound(message.ProjectScenarioId ?? Ulid.Empty);
 
-        var design = await _dbcontext.Set<ProjectDesign>().FirstOrDefaultAsync(q => q.Id == component.ProjectDesignId, cancellationToken: token);
-        if (design == null)
-            return ProjectComponentUnitFlowHelper.DesignNotFound(component.ProjectDesignId);
-
-        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == component.ProjectInfoId, cancellationToken: token);
+        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == Scenario.ProjectInfoId, cancellationToken: token);
         if (project == null)
-            return ProjectComponentUnitFlowHelper.ProjectNotFound(component.ProjectInfoId);
+            return ProjectScenarioUnitFlowHelper.ProjectNotFound(Scenario.ProjectInfoId);
 
-        IQueryable<ProjectComponentUnit> query = _dbcontext.Set<ProjectComponentUnit>();
+        IQueryable<ProjectScenarioUnit> query = _dbcontext.Set<ProjectScenarioUnit>();
 
-        query = query.Where(q => q.ProjectComponentId == message.ProjectComponentId);
+        query = query.Where(q => q.ProjectScenarioId == message.ProjectScenarioId);
 
         query = query.OrderBy(o => o.Variable);
 
         var results = await query
-            .Include(i => i.ProjectComponent)
+            .Include(i => i.ProjectScenario)
             .ProjectTo<ListModel>(_configuration)
             .ToListAsync(token);
 
         var model = new ListResult
         {
-            ProjectComponentId = message.ProjectComponentId,
+            ProjectScenarioId = message.ProjectScenarioId,
             ProjectInfo = project,
-            ProjectDesign = design,
-            ProjectComponent = component,
+            ProjectScenario = Scenario,
             Results = results ?? []
         };
 
@@ -194,22 +179,20 @@ internal sealed class ListHandler :
 
 public sealed record CreateQuery : IRequest<Result<CreateCommand>>
 {
-    public Ulid ProjectComponentId { get; set; } = Ulid.Empty;
+    public Ulid ProjectScenarioId { get; set; } = Ulid.Empty;
 }
 
 public sealed class CreateQueryValidator : AbstractValidator<CreateQuery>
 {
     public CreateQueryValidator()
     {
-        RuleFor(m => m.ProjectComponentId).NotEmpty().NotEqual(Ulid.Empty);
+        RuleFor(m => m.ProjectScenarioId).NotEmpty().NotEqual(Ulid.Empty);
     }
 }
 
 public sealed record CreateCommand : Model, IRequest<Result<Ulid>>
 {
     public ProjectInfo ProjectInfo { get; set; } = new();
-
-    public ProjectDesign ProjectDesign { get; set; } = new();
 
     public List<SetupUnit> SetupUnitList { get; set; } = [];
 }
@@ -218,12 +201,12 @@ public sealed class CreateCommandValidator : ModelValidator<CreateCommand>
 {
     public CreateCommandValidator(FeatureContext dbContext) : base()
     {
-        RuleFor(x => x.ProjectComponentId).MustAsync(async (id, cancellation) =>
+        RuleFor(x => x.ProjectScenarioId).MustAsync(async (id, cancellation) =>
         {
-            bool exists = await dbContext.Set<ProjectComponent>().AnyAsync(x => x.Id == id, cancellation);
+            bool exists = await dbContext.Set<ProjectScenario>().AnyAsync(x => x.Id == id, cancellation);
             return exists;
         })
-        .WithMessage(m => Messages.INVALID_PROJECTCOMPONENT_ID.Replace("{0}", m.ProjectComponentId.ToString()));
+        .WithMessage(m => Messages.INVALID_PROJECTSCENARIO_ID.Replace("{0}", m.ProjectScenarioId.ToString()));
     }
 }
 
@@ -238,24 +221,19 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
 
     public async Task<Result<CreateCommand>> Handle(CreateQuery message, CancellationToken token)
     {
-        var component = await _dbcontext.Set<ProjectComponent>().FirstOrDefaultAsync(q => q.Id == message.ProjectComponentId, cancellationToken: token);
-        if (component == null)
-            return ProjectComponentUnitFlowHelper.ComponentNotFound(message.ProjectComponentId);
+        var Scenario = await _dbcontext.Set<ProjectScenario>().FirstOrDefaultAsync(q => q.Id == message.ProjectScenarioId, cancellationToken: token);
+        if (Scenario == null)
+            return ProjectScenarioUnitFlowHelper.ScenarioNotFound(message.ProjectScenarioId);
 
-        var design = await _dbcontext.Set<ProjectDesign>().FirstOrDefaultAsync(q => q.Id == component.ProjectDesignId, cancellationToken: token);
-        if (design == null)
-            return ProjectComponentUnitFlowHelper.DesignNotFound(component.ProjectDesignId);
-
-        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == component.ProjectInfoId, cancellationToken: token);
+        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == Scenario.ProjectInfoId, cancellationToken: token);
         if (project == null)
-            return ProjectComponentUnitFlowHelper.ProjectNotFound(component.ProjectInfoId);
+            return ProjectScenarioUnitFlowHelper.ProjectNotFound(Scenario.ProjectInfoId);
 
-        var command = ProjectComponentUnitFlowHelper.CreateNew(component);
+        var command = ProjectScenarioUnitFlowHelper.CreateNew(Scenario);
 
         command.ProjectInfo = project;
-        command.ProjectDesign = design;
-        command.ProjectComponent = component;
-        command.SetupUnitList = await ProjectComponentUnitFlowHelper.GetSetupUnitsAsync(_dbcontext, token);
+        command.ProjectScenario = Scenario;
+        command.SetupUnitList = await ProjectScenarioUnitFlowHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(command);
     }
@@ -272,17 +250,13 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
 
     public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
     {
-        var component = await _dbcontext.Set<ProjectComponent>().FirstOrDefaultAsync(q => q.Id == message.ProjectComponentId, cancellationToken: token);
-        if (component == null)
-            return ProjectComponentUnitFlowHelper.ComponentNotFound(message.ProjectComponentId);
+        var Scenario = await _dbcontext.Set<ProjectScenario>().FirstOrDefaultAsync(q => q.Id == message.ProjectScenarioId, cancellationToken: token);
+        if (Scenario == null)
+            return ProjectScenarioUnitFlowHelper.ScenarioNotFound(message.ProjectScenarioId);
 
-        var design = await _dbcontext.Set<ProjectDesign>().FirstOrDefaultAsync(q => q.Id == component.ProjectDesignId, cancellationToken: token);
-        if (design == null)
-            return ProjectComponentUnitFlowHelper.DesignNotFound(component.ProjectDesignId);
-
-        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == component.ProjectInfoId, cancellationToken: token);
+        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == Scenario.ProjectInfoId, cancellationToken: token);
         if (project == null)
-            return ProjectComponentUnitFlowHelper.ProjectNotFound(component.ProjectInfoId);
+            return ProjectScenarioUnitFlowHelper.ProjectNotFound(Scenario.ProjectInfoId);
 
         var setupUnit = await _dbcontext.Set<SetupUnit>().FirstOrDefaultAsync(q => q.Id == message.SetupUnitId, cancellationToken: token);
         if (setupUnit is null)
@@ -293,17 +267,16 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
         else
             message.SetupUnit = setupUnit;
 
-        var entity = new ProjectComponentUnit
+        var entity = new ProjectScenarioUnit
         {
             Id = message.Id,
             ProjectInfoId = message.ProjectInfoId,
-            ProjectDesignId = message.ProjectDesignId,
-            ProjectComponent = component,
+            ProjectScenario = Scenario,
             CreatedDT = DateTime.UtcNow
         };
-        ProjectComponentUnitFlowHelper.CopyFields(message, entity);
+        ProjectScenarioUnitFlowHelper.CopyFields(message, entity);
             
-        await _dbcontext.Set<ProjectComponentUnit>().AddAsync(entity, token);
+        await _dbcontext.Set<ProjectScenarioUnit>().AddAsync(entity, token);
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok(entity.Id);
     }
@@ -327,8 +300,6 @@ public record UpdateCommand : Model, IRequest<Result>
 {
     public ProjectInfo ProjectInfo { get; set; } = new();
 
-    public ProjectDesign ProjectDesign { get; set; } = new();
-
     public List<SetupUnit> SetupUnitList { get; set; } = [];
 }
 
@@ -336,19 +307,19 @@ public class UpdateCommandValidator : ModelValidator<UpdateCommand>
 {
     public UpdateCommandValidator(FeatureContext dbContext)
     {
-        RuleFor(x => x.ProjectComponentId).MustAsync(async (id, cancellation) =>
+        RuleFor(x => x.ProjectScenarioId).MustAsync(async (id, cancellation) =>
         {
-            bool exists = await dbContext.Set<ProjectComponent>().AnyAsync(x => x.Id == id, cancellation);
+            bool exists = await dbContext.Set<ProjectScenario>().AnyAsync(x => x.Id == id, cancellation);
             return exists;
         })
-        .WithMessage(m => Messages.INVALID_PROJECTCOMPONENT_ID.Replace("{0}", m.ProjectComponentId.ToString()));
+        .WithMessage(m => Messages.INVALID_PROJECTSCENARIO_ID.Replace("{0}", m.ProjectScenarioId.ToString()));
     }
 }
 
 internal class UpdateCommandMapping : Profile
 {
     public UpdateCommandMapping() => 
-        CreateProjection<ProjectComponentUnit, UpdateCommand>();
+        CreateProjection<ProjectScenarioUnit, UpdateCommand>();
 }
 
 internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
@@ -364,31 +335,26 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
 
     public async Task<Result<UpdateCommand>> Handle(UpdateQuery message, CancellationToken token)
     {
-        var command = await _dbcontext.Set<ProjectComponentUnit>()
-            .Include(i => i.ProjectComponent)
+        var command = await _dbcontext.Set<ProjectScenarioUnit>()
+            .Include(i => i.ProjectScenario)
             .Include(i => i.SetupUnit)
             .ProjectTo<UpdateCommand>(_configuration)
             .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
 
         if (command == null) 
-            return ProjectComponentUnitFlowHelper.EntityNotFound(message.Id);
+            return ProjectScenarioUnitFlowHelper.EntityNotFound(message.Id);
 
-        var component = await _dbcontext.Set<ProjectComponent>().FirstOrDefaultAsync(q => q.Id == command.ProjectComponentId, cancellationToken: token);
-        if (component == null)
-            return ProjectComponentUnitFlowHelper.ComponentNotFound(command.ProjectComponentId);
+        var Scenario = await _dbcontext.Set<ProjectScenario>().FirstOrDefaultAsync(q => q.Id == command.ProjectScenarioId, cancellationToken: token);
+        if (Scenario == null)
+            return ProjectScenarioUnitFlowHelper.ScenarioNotFound(command.ProjectScenarioId);
 
-        var design = await _dbcontext.Set<ProjectDesign>().FirstOrDefaultAsync(q => q.Id == component.ProjectDesignId, cancellationToken: token);
-        if (design == null)
-            return ProjectComponentUnitFlowHelper.DesignNotFound(component.ProjectDesignId);
-
-        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == component.ProjectInfoId, cancellationToken: token);
+        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == Scenario.ProjectInfoId, cancellationToken: token);
         if (project == null)
-            return ProjectComponentUnitFlowHelper.ProjectNotFound(component.ProjectInfoId);
+            return ProjectScenarioUnitFlowHelper.ProjectNotFound(Scenario.ProjectInfoId);
 
         command.ProjectInfo = project;
-        command.ProjectDesign = design;
-        command.ProjectComponent = component;
-        command.SetupUnitList = await ProjectComponentUnitFlowHelper.GetSetupUnitsAsync(_dbcontext, token);
+        command.ProjectScenario = Scenario;
+        command.SetupUnitList = await ProjectScenarioUnitFlowHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(command);
     }
@@ -405,21 +371,17 @@ internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
 
     public async Task<Result> Handle(UpdateCommand message, CancellationToken token)
     {
-        var entity = await _dbcontext.Set<ProjectComponentUnit>().FindAsync([message.Id], cancellationToken: token);
+        var entity = await _dbcontext.Set<ProjectScenarioUnit>().FindAsync([message.Id], cancellationToken: token);
         if (entity is null)
-            return ProjectComponentUnitFlowHelper.EntityNotFound(message.Id);
+            return ProjectScenarioUnitFlowHelper.EntityNotFound(message.Id);
 
-        var component = await _dbcontext.Set<ProjectComponent>().FirstOrDefaultAsync(q => q.Id == entity.ProjectComponentId, cancellationToken: token);
-        if (component == null)
-            return ProjectComponentUnitFlowHelper.ComponentNotFound(entity.ProjectComponentId);
+        var Scenario = await _dbcontext.Set<ProjectScenario>().FirstOrDefaultAsync(q => q.Id == entity.ProjectScenarioId, cancellationToken: token);
+        if (Scenario == null)
+            return ProjectScenarioUnitFlowHelper.ScenarioNotFound(entity.ProjectScenarioId);
 
-        var design = await _dbcontext.Set<ProjectDesign>().FirstOrDefaultAsync(q => q.Id == component.ProjectDesignId, cancellationToken: token);
-        if (design == null)
-            return ProjectComponentUnitFlowHelper.DesignNotFound(component.ProjectDesignId);
-
-        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == component.ProjectInfoId, cancellationToken: token);
+        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == Scenario.ProjectInfoId, cancellationToken: token);
         if (project == null)
-            return ProjectComponentUnitFlowHelper.ProjectNotFound(component.ProjectInfoId);
+            return ProjectScenarioUnitFlowHelper.ProjectNotFound(Scenario.ProjectInfoId);
 
         var setupUnit = await _dbcontext.Set<SetupUnit>().FirstOrDefaultAsync(q => q.Id == message.SetupUnitId, cancellationToken: token);
         if (setupUnit is null)
@@ -431,9 +393,9 @@ internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
             message.SetupUnit = setupUnit;
 
         entity.ModifiedDT = DateTime.UtcNow;
-        ProjectComponentUnitFlowHelper.CopyFields(message, entity);
+        ProjectScenarioUnitFlowHelper.CopyFields(message, entity);
             
-        _dbcontext.Set<ProjectComponentUnit>().Update(entity);
+        _dbcontext.Set<ProjectScenarioUnit>().Update(entity);
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok();
     }
@@ -457,8 +419,6 @@ public sealed record DeleteCommand : Model, IRequest<Result>
 {
     public ProjectInfo ProjectInfo { get; set; } = new();
 
-    public ProjectDesign ProjectDesign { get; set; } = new();
-
     public string SetupUnitName { get; set; } = string.Empty;
 }
 
@@ -473,7 +433,7 @@ public sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
 internal sealed class DeleteCommandMapping : Profile
 {
     public DeleteCommandMapping() => 
-        CreateProjection<ProjectComponentUnit, DeleteCommand>()
+        CreateProjection<ProjectScenarioUnit, DeleteCommand>()
         .ForMember(dest => dest.SetupUnitName, opt => opt.MapFrom(src => (src.SetupUnit ?? new()).Name));
 }
 
@@ -490,30 +450,25 @@ internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<D
 
     public async Task<Result<DeleteCommand>> Handle(DeleteQuery message, CancellationToken token)
     {
-        var command = await _dbcontext.Set<ProjectComponentUnit>()
-            .Include(i => i.ProjectComponent)
+        var command = await _dbcontext.Set<ProjectScenarioUnit>()
+            .Include(i => i.ProjectScenario)
             .Include(i => i.SetupUnit)
             .ProjectTo<DeleteCommand>(_configuration)
             .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
 
         if (command == null)
-            return ProjectComponentUnitFlowHelper.EntityNotFound(message.Id);
+            return ProjectScenarioUnitFlowHelper.EntityNotFound(message.Id);
 
-        var component = await _dbcontext.Set<ProjectComponent>().FirstOrDefaultAsync(q => q.Id == command.ProjectComponentId, cancellationToken: token);
-        if (component == null)
-            return ProjectComponentUnitFlowHelper.ComponentNotFound(command.ProjectComponentId);
+        var Scenario = await _dbcontext.Set<ProjectScenario>().FirstOrDefaultAsync(q => q.Id == command.ProjectScenarioId, cancellationToken: token);
+        if (Scenario == null)
+            return ProjectScenarioUnitFlowHelper.ScenarioNotFound(command.ProjectScenarioId);
 
-        var design = await _dbcontext.Set<ProjectDesign>().FirstOrDefaultAsync(q => q.Id == component.ProjectDesignId, cancellationToken: token);
-        if (design == null)
-            return ProjectComponentUnitFlowHelper.DesignNotFound(component.ProjectDesignId);
-
-        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == component.ProjectInfoId, cancellationToken: token);
+        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == Scenario.ProjectInfoId, cancellationToken: token);
         if (project == null)
-            return ProjectComponentUnitFlowHelper.ProjectNotFound(component.ProjectInfoId);
+            return ProjectScenarioUnitFlowHelper.ProjectNotFound(Scenario.ProjectInfoId);
 
         command.ProjectInfo = project;
-        command.ProjectDesign = design;
-        command.ProjectComponent = component;
+        command.ProjectScenario = Scenario;
 
         return Result.Ok(command);
     }
@@ -530,11 +485,11 @@ internal class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
 
     public async Task<Result> Handle(DeleteCommand message, CancellationToken token)
     {
-        var entity = await _dbcontext.Set<ProjectComponentUnit>().FindAsync([message.Id], cancellationToken: token);
+        var entity = await _dbcontext.Set<ProjectScenarioUnit>().FindAsync([message.Id], cancellationToken: token);
         if (entity is null)
-            return ProjectComponentUnitFlowHelper.EntityNotFound(message.Id);
+            return ProjectScenarioUnitFlowHelper.EntityNotFound(message.Id);
 
-        _dbcontext.Set<ProjectComponentUnit>().Remove(entity);
+        _dbcontext.Set<ProjectScenarioUnit>().Remove(entity);
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok();
     }
