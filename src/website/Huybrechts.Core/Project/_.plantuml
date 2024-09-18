@@ -1,107 +1,241 @@
-@startuml Platform CD
+@startuml Project CD
 
-class ProjectInfo {
-    + Id: Ulid
-    + Name: string
-    + Description: string
+entity SetupUnit { 
 }
 
-note right of ProjectInfo
-    Represents a project that architects create.
-    Each project can consist of multiple designs and scenarios to estimate platform costs.
+entity PlatformInfo { 
+}
+
+entity PlatformProduct { 
+}
+
+entity ProjectInfo {
+    + Ulid Id
+    + string TenantId
+    + string Code
+    + string Name
+    + string State
+    + string Reason
+    + DateTime? StartDate
+    + DateTime? TargetDate
+    + string? Priority
+    + string? Risk
+    + string? Description
+    + string? Remark
+    + string? Tags
+}
+
+note left
+    Represents a project that can be created. 
+    Each project can consist of multiple designs and scenarios to estimate costs.
 end note
 
-class ProjectDesign {
-    + Id: Ulid
-    + Name: string
-    + Description: string
+entity ProjectDesign {
+    + Ulid Id
+    + string TenantId
+    * Ulid ParentId
+    + Ulid ProjectInfoId
+    + string Name
+    + string? Description
+    + string? Remark
+    + string? Environment
+    + string? Tags
 }
 
-note right of ProjectDesign
+ProjectInfo "1" o-- "0..*" ProjectDesign : "can have"
+ProjectDesign "0" o-- "0..*" ProjectDesign : "can have"
+
+note left
     One of the possible designs for this project.
     This is about finding the right solution for the project.
 end note
 
-ProjectInfo "1" -- "0..*" ProjectDesign : "can have"
-
-class ProjectDesignComponent {
-    + Id: Ulid
-    + ComponentName: string
-    + Description: string
-    + PlatformInfoId: Ulid
-    + PlatformProductId: Ulid
+entity ProjectComponent {
+    + Ulid Ulid
+    + string TenantId
+    + Ulid ParentId
+    + Ulid ProjectInfoId
+    + Ulid ProjectDesignId
+    + int Sequence
+    + string Name
+    + string? Description
+    + string? Remark
+    + string? SearchIndex
+    + ComponentLevel Level
+    + VariantType Variant
+    + SourceType SourceType
+    * string? Proposal
+    * string? Location
+    * string? Subscription
+    * string? ResourceGroup
+    * string? Owner
+    * int Owned
+    + string? Source
+    + Ulid? PlatformInfoId
+    * Ulid? PlatformRegionId
+    + Ulid? PlatformProductId
 }
 
-note right of ProjectDesignComponent
+ProjectDesign "1" o-- "0..*" ProjectComponent : "can have"
+ProjectComponent "1" o-- "0..*" ProjectComponent : "can have"
+PlatformInfo "0" -- "0..*" ProjectComponent
+PlatformProduct "0" -- "0..*" ProjectComponent
+
+note left
     Each design can have multiple components.
-    A component is linked to a PlatformProduct.
+    A component can be linked to a PlatformProduct.
 end note
 
-ProjectDesign "1" -- "0..*" ProjectDesignComponent : "can have"
-
-class ProjectDesignMeasure {
-    + Id: Ulid
-    + MeasureName: string
-    + Formula: string
+enum ComponentLevel {
+    + Component
+    + Configuration
+    + Module
+    + Variant
 }
 
-note right of ProjectDesignMeasure
+ComponentLevel ..> ProjectComponent
+
+note left
+    Defines the level of the component in the hierarchy.
+end note
+
+enum VariantType {
+    + Standard
+    + Option
+    + Exceptional
+}
+
+VariantType ..> ProjectComponent
+
+note left
+    Specifies the variant type of the component (Standard, Option, Exceptional).
+end note
+
+enum SourceType {
+    None
+    Platform
+}
+
+SourceType ..> ProjectComponent
+
+note left
+    Defines the source type for the component (None, Platform).
+end note
+
+entity ProjectComponentUnit {
+    + Ulid Id
+    + string TenantId
+    + Ulid ProjectInfoId
+    + Ulid ProjectDesignId
+    + Ulid ProjectComponentId
+    + Ulid SetupMeasureUnitId
+    + string Variable
+    + string? Expression
+}
+
+ProjectComponent "1" o-- "0..*" ProjectComponentUnit : "can have"
+SetupUnit "1" -- "0..*" ProjectComponentUnit
+
+note left
     Each design has multiple measures.
     A measure is a formula that interprets the scenario metrics for that specific component.
     This allows the price calculation of the component based on the platform rates of the linked product.
 end note
 
-ProjectDesignComponent "1" -- "0..*" ProjectDesignMeasure : "can have"
-
-class ProjectScenario {
-    + Id: Ulid
-    + ScenarioName: string
-    + Description: string
+entity ProjectScenario {
+    + Ulid Id
+    + string TenantId
+    + Ulid ProjectInfoId
+    + string Name
+    + string? Description
+    + string? Remark
+    + string? Tags
 }
 
-note right of ProjectScenario
+ProjectInfo "1" o-- "0..*" ProjectScenario : "can have"
+
+note left
     A scenario allows for different sets of conditions and assumptions under which a project might operate.
     Scenarios help architects simulate various operational environments and usage patterns.
 end note
 
-ProjectInfo "1" -- "0..*" ProjectScenario : "can have"
-
-class ProjectScenarioMetric {
-    + Id: Ulid
-    + MetricName: string
-    + Value: decimal
+entity ProjectScenarioUnit {
+    + Ulid Id
+    + string TenantId
+    + Ulid ProjectInfoId
+    + Ulid SetupMeasureUnitId
+    + string Variable
+    + string? Expression
 }
 
-note right of ProjectScenarioMetric
+ProjectScenario "1" o-- "0..*" ProjectScenarioUnit : "can have"
+
+note left
     Metrics that are associated with each scenario.
     These metrics are key in calculating costs and resources needed for a scenario.
 end note
 
-ProjectScenario "1" -- "0..*" ProjectScenarioMetric : "can have"
-
-class ProjectSim {
-    + Id: Ulid
-    + SimName: string
-    + Description: string
+entity ProjectSimInfo {
+    + Ulid Id
+    + string TenantId
+    + Ulid ProjectInfoId
+    + string Name
+    + string? Description
+    + string? Remark
+    + string? Tags
 }
 
-note right of ProjectSim
-    Represents a simulation that models different potential outcomes and resource allocations for a project.
+ProjectInfo "1" o-- "0..*" ProjectSimInfo : "can have"
+
+note left
+    A simulation represents a calculated outcome based on specific project components and scenarios.
+    Simulations allow for detailed analysis of project viability under various configurations.
 end note
 
-ProjectInfo "1" -- "0..*" ProjectSim : "can have"
+entity ProjectSimEntry {
+    + Ulid Id
+    + string TenantId
+    + Ulid ProjectInfoId
+    + string ProjectInfoName
+    + Ulid ProjectDesignId
+    + string ProjectDesignName
+    + Ulid ProjectComponentId
+    + string ProjectComponentName
+    + Ulid PlatformInfoId
+    + string PlatformInfoName
+    + Ulid PlatformProductId
+    + string PlatformProductName
+    + Ulid ProjectScenarioId
+    + string ProjectScenarioName
 
-class ProjectSimEstimate {
-    + Id: Ulid
-    + EstimateName: string
-    + CostEstimate: decimal
+    + int ComponentSequence
+    + string ComponentName
+    + string? ComponentDescription
+    + ComponentLevel ComponentLevel
+    + VariantType ComponentVariant
+    + string? Proposal
+    + string? Location
+    + string? Subscription
+    + string? ResourceGroup
+    + string? Owner
+    + int Owned
+    
+    + SourceType SourceType
+    + string? Source
+    + Ulid? PlatformInfoId
+    + Ulid? PlatformRegionId
+    + Ulid? PlatformProductId
+
+    + decimal Quantity
+    + decimal RetailPrice
+    + decimal UnitPrice
+    + decimal EntryCost
+    + int Owned
+    + decimal OwnCost
 }
 
-note right of ProjectSimEstimate
-    Represents an estimated cost for a simulation.
-    This includes predicted expenses based on platform rates and component measures.
+ProjectSimInfo "1" o-- "0..*" ProjectSimEntry : "can have"
+
+note left
+    Represents the cost estimate for a component in a project simulation.
 end note
-
-ProjectSim "1" -- "0..*" ProjectSimEstimate : "can have"
-
-@enduml

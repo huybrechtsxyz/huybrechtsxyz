@@ -5,9 +5,9 @@
     ViewData["CardTitle"] = Model.Data.ProjectInfo.Name + " | " + Model.Data.ProjectDesign.Name + " | " + SL["ComponentIndexTitle"];
 }
 
-@section Links {
+@* @section Links {
     <link rel="stylesheet" href="/lib/tabulator/css/tabulator_bootstrap5.min.css" />
-}
+} *@
 
 <partial name="_StatusResult" for="StatusMessage" />
 <p class="text-info">
@@ -64,6 +64,22 @@
 @section Scripts {
     <script src="/lib/tabulator/js/tabulator.min.js"></script>
     <script>
+        function loadTabulatorTheme() {
+            let link = document.createElement('link');
+            link.rel = 'stylesheet';
+            // Check for user's system theme preference
+            //if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            if (document.documentElement.getAttribute('data-bs-theme') == 'dark') {
+                link.href = '/lib/tabulator/css/tabulator_midnight.min.css';
+            } else {
+                link.href = '/lib/tabulator/css/tabulator.min.css';
+            }
+            document.head.appendChild(link);
+        }
+
+        // Call the function to load the correct theme
+        loadTabulatorTheme();
+
         function getUrl() {
             var pathParts = window.location.pathname.split('/');
             var tenant = pathParts[1];
