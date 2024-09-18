@@ -3,12 +3,16 @@ using AutoMapper.QueryableExtensions;
 using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
+using Huybrechts.Core.Platform;
 using Huybrechts.Core.Project;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
+using System.Linq.Dynamic.Core.Tokenizer;
 using System.Text.Json.Serialization;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Huybrechts.App.Features.Project.ProjectComponentFlow;
 
@@ -67,8 +71,14 @@ public record Model
     [Display(Name = "Platform", ResourceType = typeof(Localization))]
     public Ulid? PlatformInfoId { get; set; }
 
+    [Display(Name = "Platform", ResourceType = typeof(Localization))]
+    public string? PlatformInfoName { get; set; }
+
     [Display(Name = "PlatformProduct", ResourceType = typeof(Localization))]
     public Ulid? PlatformProductId { get; set; }
+
+    [Display(Name = "PlatformProduct", ResourceType = typeof(Localization))]
+    public string? PlatformProductName { get; set; }
 
     public string SearchIndex => ProjectComponentHelper.GetSearchIndex(Name, Description, Source);
 }
@@ -101,6 +111,40 @@ public static class ProjectComponentHelper
     public static string GetSearchIndex
         (string name, string? description, string? source)
         => $"{name}~{description}~{source}".ToLowerInvariant();
+
+    public static async Task<string> GetSourceTextAsync(
+        FeatureContext context,
+        ProjectComponent component,
+        CancellationToken token
+        )
+    {
+        switch(component.SourceType)
+        {
+            case SourceType.Platform:
+                {
+                    var source = string.Empty;
+                    if (!component.PlatformInfoId.HasValue || component.PlatformInfoId == Ulid.Empty)
+                        return string.Empty;
+                    
+                    var platformInfo = await context.Set<PlatformInfo>().FirstOrDefaultAsync(s => s.Id == component.PlatformInfoId, cancellationToken: token);
+                    if (platformInfo is null)
+                        return string.Empty;
+
+                    source = platformInfo.Name;
+                                        
+                    if (component.PlatformProductId.HasValue && component.PlatformProductId != Ulid.Empty)
+                    {
+                        var platformProduct = await context.Set<PlatformProduct>().FirstOrDefaultAsync(s => s.Id == component.PlatformProductId, cancellationToken: token);
+                        if (platformProduct is not null)
+                            source += ": " + platformProduct.Label;
+                    }
+
+                    return source;
+                }
+            case SourceType.None: return string.Empty;
+            default: return string.Empty;
+        }
+    }
 
     public static void CopyFields(Model model, ProjectComponent entity)
     {
@@ -350,7 +394,8 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
             CreatedDT = DateTime.UtcNow
         };
         ProjectComponentHelper.CopyFields(message, entity);
-            
+        entity.Source = await ProjectComponentHelper.GetSourceTextAsync(_dbcontext, entity, token);
+
         await _dbcontext.Set<ProjectComponent>().AddAsync(entity, token);
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok(entity.Id);
@@ -386,7 +431,7 @@ public class UpdateCommandValidator : ModelValidator<UpdateCommand>
 
         RuleFor(x => x.ProjectDesignId).MustAsync(async (id, cancellation) =>
         {
-            bool exists = await dbContext.Set<ProjectInfo>().AnyAsync(x => x.Id == id, cancellation);
+            bool exists = await dbContext.Set<ProjectDesign>().AnyAsync(x => x.Id == id, cancellation);
             return exists;
         })
         .WithMessage(m => Messages.INVALID_PROJECTDESIGN_ID.Replace("{0}", m.ProjectDesignId.ToString()));
@@ -431,11 +476,23 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
         if (command.ParentId is not null && command.ParentId != Ulid.Empty)
         {
             parent = await _dbcontext.Set<ProjectComponent>().FindAsync([command.ParentId], cancellationToken: token);
+            command.ParentName = parent?.Name;
+        }
+        if (command.PlatformInfoId.HasValue && command.PlatformInfoId != Ulid.Empty)
+        {
+            var platformInfo = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(s => s.Id == command.PlatformInfoId, cancellationToken: token);
+            if (platformInfo is not null)
+                command.PlatformInfoName = platformInfo.Name;
+        }
+        if (command.PlatformProductId.HasValue && command.PlatformProductId != Ulid.Empty)
+        {
+            var platformProduct = await _dbcontext.Set<PlatformProduct>().FirstOrDefaultAsync(s => s.Id == command.PlatformProductId, cancellationToken: token);
+            if (platformProduct is not null)
+                command.PlatformProductName = platformProduct.Label;
         }
 
         command.ProjectInfoName = project.Name;
         command.ProjectDesignName = design.Name;
-        command.ParentName = parent?.Name;
 
         return Result.Ok(command);
     }
@@ -458,7 +515,8 @@ internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
 
         entity.ModifiedDT = DateTime.UtcNow;
         ProjectComponentHelper.CopyFields(message, entity);
-            
+        entity.Source = await ProjectComponentHelper.GetSourceTextAsync(_dbcontext, entity, token);
+
         _dbcontext.Set<ProjectComponent>().Update(entity);
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok();

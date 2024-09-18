@@ -59,22 +59,22 @@ public class EditModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnGetPlatforms()
+    public async Task<IActionResult> OnGetPlatformsAsync()
     {
         Huybrechts.App.Features.Platform.PlatformInfoFlow.ListQuery listQuery = new() { };
         var result = await _mediator.Send(listQuery);
         if (result.HasStatusMessage())
             StatusMessage = result.ToStatusMessage();
-        return new JsonResult(result.Value);
+        return new JsonResult(result.Value.Results);
     }
 
-    public async Task<IActionResult> OnGetProducts(Ulid platformInfoId)
+    public async Task<IActionResult> OnGetProductsAsync(Ulid platformInfoId)
     {
         Huybrechts.App.Features.Platform.PlatformProductFlow.ListQuery listQuery = new() { PlatformInfoId = platformInfoId };
         var result = await _mediator.Send(listQuery);
         if (result.HasStatusMessage())
             StatusMessage = result.ToStatusMessage();
-        return new JsonResult(result.Value);
+        return new JsonResult(result.Value.Results);
     }
 
     public async Task<IActionResult> OnPostAsync()

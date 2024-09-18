@@ -150,7 +150,7 @@
                     var productSelect = $('#products');
                     productSelect.empty().append('<option value="@Ulid.Empty">@SL["Select a product"]</option>');
                     $.each(data, function (index, product) {
-                        productSelect.append('<option value="' + product.id + '">' + product.name + '</option>');
+                        productSelect.append('<option value="' + product.id + '">' + product.label + '</option>');
                     });
                     $('#productSection').show();
                 },

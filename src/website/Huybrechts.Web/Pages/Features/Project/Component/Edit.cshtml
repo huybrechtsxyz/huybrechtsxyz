@@ -59,6 +59,10 @@
                         asp-for="Data.PlatformInfoId"
                         class="form-select">
                     <option value="@Ulid.Empty">@SL["Select a platform"]</option>
+                    @if(Model.Data.PlatformInfoId.HasValue && Model.Data.PlatformInfoId != Ulid.Empty)
+                    {
+                        <option value="@Model.Data.PlatformInfoId" selected>@Model.Data.PlatformInfoName</option>
+                    }
                 </select>
                 <label asp-for="Data.PlatformInfoId" class="form-label"></label>
             </div>
@@ -67,6 +71,10 @@
                         asp-for="Data.PlatformProductId"
                         class="form-select">
                     <option value="@Ulid.Empty">@SL["Select a product"]</option>
+                    @if (Model.Data.PlatformProductId.HasValue && Model.Data.PlatformProductId != Ulid.Empty)
+                    {
+                        <option value="@Model.Data.PlatformProductId" selected>@Model.Data.PlatformProductName</option>
+                    }
                 </select>
                 <label asp-for="Data.PlatformProductId" class="form-label"></label>
             </div>
@@ -140,7 +148,7 @@
 
                         $.each(data, function (index, product) {
                             var selected = (selectedProductId && product.id == selectedProductId) ? 'selected' : '';
-                            productSelect.append('<option value="' + product.id + '" ' + selected + '>' + product.name + '</option>');
+                            productSelect.append('<option value="' + product.id + '" ' + selected + '>' + product.label + '</option>');
                         });
 
                         if (selectedProductId) {
@@ -160,7 +168,8 @@
                 selectedSourceType = $(this).val();
                 console.log('Selected SourceType:', selectedSourceType);
 
-                if (selectedSourceType === "Platform") {
+                //if (selectedSourceType === "Platform") {
+                if (selectedSourceType === "2") {
                     $('#platformSection').show();
                     loadPlatforms();  // Load platforms if "Platform" is selected
                 } else {
@@ -182,8 +191,10 @@
             });
 
             // Initial load based on the pre-selected SourceType, Platform, and Product
-            if (selectedSourceType === "Platform") {
+            //if (selectedSourceType === "Platform") {
+            if (selectedSourceType === "2") {
                 $('#platformSection').show();
+                $('#productSection').show();
                 loadPlatforms(platformId);  // Load platforms with the pre-selected platform
             }
 
