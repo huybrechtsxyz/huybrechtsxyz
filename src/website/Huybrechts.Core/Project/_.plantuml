@@ -33,17 +33,14 @@ end note
 entity ProjectDesign {
     + Ulid Id
     + string TenantId
-    * Ulid ParentId
     + Ulid ProjectInfoId
     + string Name
     + string? Description
     + string? Remark
-    + string? Environment
     + string? Tags
 }
 
 ProjectInfo "1" o-- "0..*" ProjectDesign : "can have"
-ProjectDesign "0" o-- "0..*" ProjectDesign : "can have"
 
 note left
     One of the possible designs for this project.
@@ -65,11 +62,14 @@ entity ProjectComponent {
     + VariantType Variant
     + SourceType SourceType
     * string? Proposal
+    * string? Account
+    * string? Organization
+    * string? OrganizationalUnit
+    * string? Group
     * string? Location
-    * string? Subscription
-    * string? ResourceGroup
-    * string? Owner
-    * int Owned
+    * string? Environment
+    * string? Responsible
+    * int OwnershipPercentage
     + string? Source
     + Ulid? PlatformInfoId
     * Ulid? PlatformRegionId

@@ -74,6 +74,12 @@
                 <span asp-validation-for="Data.Location" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
+                <input asp-for="Data.Environment" class="form-control" list="environments" />
+                <datalist id="environments"></datalist>
+                <label asp-for="Data.Environment" class="form-label"></label>
+                <span asp-validation-for="Data.Environment" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
                 <input asp-for="Data.Group" class="form-control" list="groups" />
                 <datalist id="groups"></datalist>
                 <label asp-for="Data.Group" class="form-label"></label>
@@ -161,6 +167,7 @@
             loadDatalist('Organization', '#organizations');
             loadDatalist('OrganizationalUnit', '#orgunits');
             loadDatalist('Location', '#locations');
+            loadDatalist('Environment', '#environments');
             loadDatalist('Group', '#groups');
             loadDatalist('Responsible', '#responsibles');
         });

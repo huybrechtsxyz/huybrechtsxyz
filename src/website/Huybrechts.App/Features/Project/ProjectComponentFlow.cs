@@ -77,6 +77,9 @@ public record Model
     [Display(Name = nameof(Group), ResourceType = typeof(Localization))]
     public string? Group { get; set; }
 
+    [Display(Name = nameof(Environment), ResourceType = typeof(Localization))]
+    public string? Environment { get; set; }
+
     [Display(Name = nameof(Responsible), ResourceType = typeof(Localization))]
     public string? Responsible { get; set; }
 
@@ -123,6 +126,7 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
         RuleFor(m => m.Organization).Length(0, 128);
         RuleFor(m => m.OrganizationalUnit).Length(0, 128);
         RuleFor(m => m.Location).Length(0, 128);
+        RuleFor(m => m.Environment).Length(0, 128);
         RuleFor(m => m.Group).Length(0, 128);
         RuleFor(m => m.Responsible).Length(0, 128);
         RuleFor(m => m.OwnershipPercentage).InclusiveBetween(0, 100);
@@ -196,6 +200,7 @@ public static class ProjectComponentHelper
         entity.OrganizationalUnit = model.OrganizationalUnit;
         entity.Location = model.Location;
         entity.Group = model.Group;
+        entity.Environment = model.Environment;
         entity.Responsible = model.Responsible;
         entity.OwnershipPercentage = model.OwnershipPercentage;
         entity.SourceType = model.SourceType;

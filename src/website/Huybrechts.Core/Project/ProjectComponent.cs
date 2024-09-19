@@ -198,6 +198,16 @@ public record ProjectComponent : Entity, IEntity
     public string? Group { get; set; }
 
     /// <summary>
+    /// Gets or sets the environment associated with this component.
+    /// </summary>
+    /// <remarks>
+    /// This field specifies the environment relevant to the component.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the environment associated with the component.")]
+    public string? Environment { get; set; }
+
+    /// <summary>
     /// Gets or sets the responsible to which this component belongs.
     /// </summary>
     /// <remarks>
