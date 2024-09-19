@@ -149,5 +149,14 @@ namespace Huybrechts.App.Features.Project {
                 return ResourceManager.GetString("INVALID_PROJECTSCENARIOUNIT_ID", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find simulation with ID {0}.
+        /// </summary>
+        public static string INVALID_PROJECTSIMULATION_ID {
+            get {
+                return ResourceManager.GetString("INVALID_PROJECTSIMULATION_ID", resourceCulture);
+            }
+        }
     }
 }

@@ -175,7 +175,7 @@ note left
     These metrics are key in calculating costs and resources needed for a scenario.
 end note
 
-entity ProjectSimInfo {
+entity ProjectSimulationInfo {
     + Ulid Id
     + string TenantId
     + Ulid ProjectInfoId
@@ -185,7 +185,7 @@ entity ProjectSimInfo {
     + string? Tags
 }
 
-ProjectInfo "1" o-- "0..*" ProjectSimInfo : "can have"
+ProjectInfo "1" o-- "0..*" ProjectSimulationInfo : "can have"
 
 note left
     A simulation represents a calculated outcome based on specific project components and scenarios.

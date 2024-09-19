@@ -10,7 +10,7 @@ using Flow = Huybrechts.App.Features.Project.ProjectComponentFlow;
 
 namespace Huybrechts.Web.Pages.Features.Project.Component;
 
-[Authorize(Policy = TenantPolicies.IsManager)]
+[Authorize(Policy = TenantPolicies.IsContributor)]
 public class DeleteModel : PageModel
 {
     private readonly IMediator _mediator;

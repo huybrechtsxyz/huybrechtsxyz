@@ -141,6 +141,9 @@
   <data name="INVALID_PROJECTSCENARIO_ID" xml:space="preserve">
     <value>Unable to find scenario with ID {0}</value>
   </data>
+  <data name="INVALID_PROJECTSIMULATION_ID" xml:space="preserve">
+    <value>Unable to find simulation with ID {0}</value>
+  </data>
   <data name="INVALID_PROJECT_CODE" xml:space="preserve">
     <value>Unable to find project with Code {0}</value>
   </data>

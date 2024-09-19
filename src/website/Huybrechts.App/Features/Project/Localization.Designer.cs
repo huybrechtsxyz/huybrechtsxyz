@@ -178,6 +178,15 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Calculating?.
+        /// </summary>
+        public static string IsCalculating {
+            get {
+                return ResourceManager.GetString("IsCalculating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Location.
         /// </summary>
         public static string Location {

@@ -156,6 +156,9 @@
   <data name="Group" xml:space="preserve">
     <value>Groep</value>
   </data>
+  <data name="IsCalculating" xml:space="preserve">
+    <value>Berekening?</value>
+  </data>
   <data name="Location" xml:space="preserve">
     <value>Locatie</value>
   </data>
