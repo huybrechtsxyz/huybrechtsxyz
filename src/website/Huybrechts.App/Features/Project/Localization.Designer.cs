@@ -61,6 +61,15 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Account.
+        /// </summary>
+        public static string Account {
+            get {
+                return ResourceManager.GetString("Account", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Business value.
         /// </summary>
         public static string BusinessValue {
@@ -160,11 +169,56 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Group.
+        /// </summary>
+        public static string Group {
+            get {
+                return ResourceManager.GetString("Group", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location.
+        /// </summary>
+        public static string Location {
+            get {
+                return ResourceManager.GetString("Location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Name {
             get {
                 return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Organization.
+        /// </summary>
+        public static string Organization {
+            get {
+                return ResourceManager.GetString("Organization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Organizational unit.
+        /// </summary>
+        public static string OrganizationalUnit {
+            get {
+                return ResourceManager.GetString("OrganizationalUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ownership %.
+        /// </summary>
+        public static string OwnershipPercentage {
+            get {
+                return ResourceManager.GetString("OwnershipPercentage", resourceCulture);
             }
         }
         
@@ -214,6 +268,15 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Proposal.
+        /// </summary>
+        public static string Proposal {
+            get {
+                return ResourceManager.GetString("Proposal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rating.
         /// </summary>
         public static string Rating {
@@ -237,6 +300,15 @@ namespace Huybrechts.App.Features.Project {
         public static string Remark {
             get {
                 return ResourceManager.GetString("Remark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Responsible.
+        /// </summary>
+        public static string Responsible {
+            get {
+                return ResourceManager.GetString("Responsible", resourceCulture);
             }
         }
         

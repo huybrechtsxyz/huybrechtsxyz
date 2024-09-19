@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
   <data name="BusinessValue" xml:space="preserve">
     <value>Zakelijke Waarde</value>
   </data>
@@ -150,8 +153,23 @@
   <data name="Expression" xml:space="preserve">
     <value>Expressie</value>
   </data>
+  <data name="Group" xml:space="preserve">
+    <value>Groep</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Locatie</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Naam</value>
+  </data>
+  <data name="Organization" xml:space="preserve">
+    <value>Organisatie</value>
+  </data>
+  <data name="OrganizationalUnit" xml:space="preserve">
+    <value>Organisatie eenheid</value>
+  </data>
+  <data name="OwnershipPercentage" xml:space="preserve">
+    <value>Eigendom %</value>
   </data>
   <data name="Platform" xml:space="preserve">
     <value>Platform</value>
@@ -168,6 +186,9 @@
   <data name="Project" xml:space="preserve">
     <value>Project</value>
   </data>
+  <data name="Proposal" xml:space="preserve">
+    <value>Voorstel</value>
+  </data>
   <data name="Rating" xml:space="preserve">
     <value>Beoordeling</value>
   </data>
@@ -176,6 +197,9 @@
   </data>
   <data name="Remark" xml:space="preserve">
     <value>Opmerking</value>
+  </data>
+  <data name="Responsible" xml:space="preserve">
+    <value>Verantwoordelijke</value>
   </data>
   <data name="Risk" xml:space="preserve">
     <value>Risico</value>

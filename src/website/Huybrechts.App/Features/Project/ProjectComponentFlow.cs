@@ -7,12 +7,10 @@ using Huybrechts.Core.Platform;
 using Huybrechts.Core.Project;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
-using System.Linq.Dynamic.Core.Tokenizer;
+using System.Linq.Expressions;
 using System.Text.Json.Serialization;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Huybrechts.App.Features.Project.ProjectComponentFlow;
 
@@ -61,6 +59,31 @@ public record Model
     [Display(Name = nameof(VariantType), ResourceType = typeof(Localization))]
     public VariantType VariantType { get; set; } = VariantType.Standard;
 
+    [Display(Name = nameof(Proposal), ResourceType = typeof(Localization))]
+    public string? Proposal { get; set; }
+
+    [Display(Name = nameof(Account), ResourceType = typeof(Localization))]
+    public string? Account { get; set; }
+
+    [Display(Name = nameof(Organization), ResourceType = typeof(Localization))]
+    public string? Organization { get; set; }
+
+    [Display(Name = nameof(OrganizationalUnit), ResourceType = typeof(Localization))]
+    public string? OrganizationalUnit { get; set; }
+
+    [Display(Name = nameof(Location), ResourceType = typeof(Localization))]
+    public string? Location { get; set; }
+
+    [Display(Name = nameof(Group), ResourceType = typeof(Localization))]
+    public string? Group { get; set; }
+
+    [Display(Name = nameof(Responsible), ResourceType = typeof(Localization))]
+    public string? Responsible { get; set; }
+
+    [Range(0, 100)]
+    [Display(Name = nameof(OwnershipPercentage), ResourceType = typeof(Localization))]
+    public int OwnershipPercentage { get; set; } = 100;
+
     [JsonConverter(typeof(JsonStringEnumConverter))]
     [Display(Name = nameof(SourceType), ResourceType = typeof(Localization))]
     public SourceType SourceType { get; set; } = SourceType.None;
@@ -81,6 +104,8 @@ public record Model
     public string? PlatformProductName { get; set; }
 
     public string SearchIndex => ProjectComponentHelper.GetSearchIndex(Name, Description, Source);
+
+    public int CountComponentUnits { get; set; } = 0;
 }
 
 public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -92,6 +117,15 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
         RuleFor(m => m.ProjectDesignId).NotNull().NotEmpty();
         RuleFor(m => m.Name).NotEmpty().Length(1, 128);
         RuleFor(m => m.Description).Length(0, 256);
+
+        RuleFor(m => m.Proposal).Length(0, 128);
+        RuleFor(m => m.Account).Length(0, 128);
+        RuleFor(m => m.Organization).Length(0, 128);
+        RuleFor(m => m.OrganizationalUnit).Length(0, 128);
+        RuleFor(m => m.Location).Length(0, 128);
+        RuleFor(m => m.Group).Length(0, 128);
+        RuleFor(m => m.Responsible).Length(0, 128);
+        RuleFor(m => m.OwnershipPercentage).InclusiveBetween(0, 100);
     }
 }
 
@@ -156,6 +190,14 @@ public static class ProjectComponentHelper
         entity.Sequence = model.Sequence;
         entity.ComponentLevel = model.ComponentLevel;
         entity.VariantType = model.VariantType;
+        entity.Proposal = model.Proposal;
+        entity.Account = model.Account;
+        entity.Organization = model.Organization;
+        entity.OrganizationalUnit = model.OrganizationalUnit;
+        entity.Location = model.Location;
+        entity.Group = model.Group;
+        entity.Responsible = model.Responsible;
+        entity.OwnershipPercentage = model.OwnershipPercentage;
         entity.SourceType = model.SourceType;
         entity.Source = model.Source?.Trim();
         entity.PlatformInfoId = model.PlatformInfoId;
@@ -180,7 +222,8 @@ internal sealed class ListMapping : Profile
         .ForMember(dest => dest.ProjectInfoName, opt => opt.Ignore())
         .ForMember(dest => dest.ProjectDesignName, opt => opt.MapFrom(src => src.ProjectDesign.Name))
         .ForMember(dest => dest.ParentName, opt => opt.Ignore())
-        .ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.Children));
+        .ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.Children))
+        .ForMember(dest => dest.CountComponentUnits, opt => opt.MapFrom(src => src.ProjectComponentUnits.Count));
 }
 
 internal sealed class EntityMapping : Profile
@@ -246,7 +289,7 @@ internal sealed class ListHandler :
             query = query.Where(q => q.ParentId == message.ParentId);
         query = query.OrderBy(o => o.Sequence).ThenBy(o => o.Name);
 
-        List<ProjectComponent> recordList = await query.ToListAsync(cancellationToken: token) ?? [];
+        List<ProjectComponent> recordList = await query.Include(i => i.ProjectComponentUnits).ToListAsync(cancellationToken: token) ?? [];
 
         List<ProjectComponent> BuildHierarchy(Ulid? parentId)
         {
@@ -275,6 +318,40 @@ internal sealed class ListHandler :
         };
 
         return model;
+    }
+}
+
+//
+//
+//
+
+public sealed class DistinctFieldQuery : IRequest<Result<List<string>>>
+{
+    public Ulid ProjectInfoId { get; set; } = Ulid.Empty;
+
+    public string FieldName { get; set; } = string.Empty;
+}
+
+public sealed class DistinctFieldHandler : IRequestHandler<DistinctFieldQuery, Result<List<string>>>
+{
+    private readonly FeatureContext _dbcontext;
+
+    public DistinctFieldHandler(FeatureContext context)
+    {
+        _dbcontext = context;
+    }
+    public async Task<Result<List<string>>> Handle(DistinctFieldQuery request, CancellationToken token)
+    {
+        var projectComponentType = typeof(ProjectComponent);
+        var parameter = Expression.Parameter(projectComponentType, "s");
+        var property = Expression.PropertyOrField(parameter, request.FieldName);
+        var nullCheck = Expression.Coalesce(property, Expression.Constant(string.Empty));
+        var lambda = Expression.Lambda<Func<ProjectComponent, string>>(nullCheck, parameter);
+        var distinctValues = await _dbcontext.Set<ProjectComponent>()
+            .Select(lambda) // Use the dynamically created expression
+            .Distinct()
+            .ToListAsync(token);
+        return Result.Ok(distinctValues);
     }
 }
 

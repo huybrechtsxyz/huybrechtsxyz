@@ -66,6 +66,9 @@ public record ProjectComponent : Entity, IEntity
     [Comment("A list of subcomponents that belong to this component, allowing for hierarchical nesting.")]
     public List<ProjectComponent> Children { get; set; } = [];
 
+    // navigation to unitss
+    public List<ProjectComponentUnit> ProjectComponentUnits { get; set; } = [];
+
     /// <summary>
     /// Gets or sets the sequence order of this component within its parent design or component.
     /// </summary>
@@ -133,6 +136,85 @@ public record ProjectComponent : Entity, IEntity
     /// </remarks>
     [Comment("Specifies the type of variant for this component (Standard, Option, Exceptional).")]
     public VariantType VariantType { get; set; } = VariantType.Standard;
+
+    /// <summary>
+    /// Gets or sets the proposal associated with the component.
+    /// </summary>
+    /// <remarks>
+    /// Represents the proposal or solution being suggested for this component.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the proposal associated with the component.")]
+    public string? Proposal { get; set; }
+
+    /// <summary>
+    /// Gets or sets the account under which this component is managed.
+    /// </summary>
+    /// <remarks>
+    /// The account represents the platform or service under which the component is linked.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the account under which this component is managed.")]
+    public string? Account { get; set; }
+
+    /// <summary>
+    /// Gets or sets the account under which this component is managed.
+    /// </summary>
+    /// <remarks>
+    /// The Organization represents the platform or service under which the component is linked.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the organization under which this component is managed.")]
+    public string? Organization { get; set; }
+
+    /// <summary>
+    /// Gets or sets the account under which this component is managed.
+    /// </summary>
+    /// <remarks>
+    /// The subscription represents the platform or service under which the component is linked.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the account under which this component is managed.")]
+    public string? OrganizationalUnit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the location associated with this component.
+    /// </summary>
+    /// <remarks>
+    /// This field specifies the physical or logical location relevant to the component.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the location associated with the component.")]
+    public string? Location { get; set; }
+
+    /// <summary>
+    /// Gets or sets the group to which this component belongs.
+    /// </summary>
+    /// <remarks>
+    /// This is used to categorize the component into different groups, making it easier to organize and manage.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the group to which this component belongs.")]
+    public string? Group { get; set; }
+
+    /// <summary>
+    /// Gets or sets the responsible to which this component belongs.
+    /// </summary>
+    /// <remarks>
+    /// This field specifies whop is responsible for the component.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the responsible to which this component belongs.")]
+    public string? Responsible { get; set; }
+
+    /// <summary>
+    /// Gets or sets the percentage of ownership for this component.
+    /// </summary>
+    /// <remarks>
+    /// Indicates the ownership share of this component, default is 100%.
+    /// </remarks>
+    [Comment("Gets or sets the percentage of ownership for this component.")]
+    public int OwnershipPercentage { get; set; } = 100;
 
     /// <summary>
     /// Specifies the source type of this component (None, Platform).

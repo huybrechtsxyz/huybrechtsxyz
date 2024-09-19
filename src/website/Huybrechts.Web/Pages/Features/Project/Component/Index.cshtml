@@ -97,7 +97,7 @@
 
         function loadTable() {
             var table = new Tabulator("#table", {
-                layout: "fitColumns",
+                //layout: "fitColumns",
                 selectableRows: 1,
                 dataTree: true,
                 dataTreeStartExpanded: true,
@@ -106,8 +106,7 @@
                     { title: "ID", field: "id", sorter: "number", visible: false },  // Hidden column for ID
                     { title: "Name", field: "name", sorter: "string" },
                     { title: "Description", field: "description", sorter: "string" },
-                    { title: "Component Level", field: "componentLevel", sorter: "string" },
-                    { title: "Variant Type", field: "variantType", sorter: "string" },
+                    { title: "Units", field: "countComponentUnits", sorter: "int", hozAlign: "center" },
                     { title: "Source", field: "source", sorter: "string" },
                 ]
             });

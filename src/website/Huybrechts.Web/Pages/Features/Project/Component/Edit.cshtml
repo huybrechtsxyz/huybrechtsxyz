@@ -34,18 +34,51 @@
                 <span asp-validation-for="Data.Description" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <select asp-for="Data.ComponentLevel"
-                        asp-items="Html.GetEnumSelectList<Huybrechts.Core.Project.ComponentLevel>()"
-                        class="form-select"></select>
-                <label asp-for="Data.ComponentLevel" class="form-label"></label>
-                <span asp-validation-for="Data.ComponentLevel" class="text-danger"></span>
+                <input asp-for="Data.Proposal" class="form-control" list="proposals" />
+                <datalist id="proposals"></datalist>
+                <label asp-for="Data.Proposal" class="form-label"></label>
+                <span asp-validation-for="Data.Proposal" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <select asp-for="Data.VariantType"
-                        asp-items="Html.GetEnumSelectList<Huybrechts.Core.Project.VariantType>()"
-                        class="form-select"></select>
-                <label asp-for="Data.VariantType" class="form-label"></label>
-                <span asp-validation-for="Data.VariantType" class="text-danger"></span>
+                <input asp-for="Data.Account" class="form-control" list="accounts" />
+                <datalist id="accounts"></datalist>
+                <label asp-for="Data.Account" class="form-label"></label>
+                <span asp-validation-for="Data.Account" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Organization" class="form-control" list="organizations" />
+                <datalist id="organizations"></datalist>
+                <label asp-for="Data.Organization" class="form-label"></label>
+                <span asp-validation-for="Data.Organization" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.OrganizationalUnit" class="form-control" list="orgunits" />
+                <datalist id="orgunits"></datalist>
+                <label asp-for="Data.OrganizationalUnit" class="form-label"></label>
+                <span asp-validation-for="Data.OrganizationalUnit" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Location" class="form-control" list="locations" />
+                <datalist id="locations"></datalist>
+                <label asp-for="Data.Location" class="form-label"></label>
+                <span asp-validation-for="Data.Location" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Group" class="form-control" list="groups" />
+                <datalist id="groups"></datalist>
+                <label asp-for="Data.Group" class="form-label"></label>
+                <span asp-validation-for="Data.Group" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Responsible" class="form-control" list="responsibles" />
+                <datalist id="responsibles"></datalist>
+                <label asp-for="Data.Responsible" class="form-label"></label>
+                <span asp-validation-for="Data.Responsible" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.OwnershipPercentage" class="form-control" />
+                <label asp-for="Data.OwnershipPercentage" class="form-label"></label>
+                <span asp-validation-for="Data.OwnershipPercentage" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <select id="sourceType"
@@ -100,9 +133,34 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script type="text/javascript">
+        function loadDatalist(propertyName, datalistId) {
+            $.ajax({
+                url: '?handler=FieldValues',
+                type: 'GET',
+                data: {
+                    projectInfoId: '@Model.Data.ProjectInfoId',
+                    propertyName: propertyName
+                },
+                success: function (data) {
+                    let datalist = $(datalistId);
+                    data.forEach(function (value) {
+                        datalist.append('<option value="' + value + '"></option>');
+                    });
+                },
+                error: function () {
+                    console.log("Error retrieving " + propertyName);
+                }
+            });
+        };
+
         $(document).ready(function () {
-            // Initial check for jQuery loading
-            console.log('jQuery is loaded');
+            loadDatalist('Proposal', '#proposals');
+            loadDatalist('Account', '#accounts');
+            loadDatalist('Organization', '#organizations');
+            loadDatalist('OrganizationalUnit', '#orgunits');
+            loadDatalist('Location', '#locations');
+            loadDatalist('Group', '#groups');
+            loadDatalist('Responsible', '#responsibles');
 
             var selectedSourceType = $('#sourceType').val();
             var platformId = '@Model.Data.PlatformInfoId';  // Assuming PlatformId is a property in your model

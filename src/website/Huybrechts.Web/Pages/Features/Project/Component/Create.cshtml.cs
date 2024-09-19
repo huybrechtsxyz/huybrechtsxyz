@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
+using Huybrechts.App.Features.Project.ProjectComponentFlow;
 using Huybrechts.App.Web;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -63,6 +64,15 @@ public class CreateModel : PageModel
         {
             return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
         }
+    }
+
+    public async Task<IActionResult> OnGetFieldValuesAsync(Ulid projectInfoId, string propertyName)
+    {
+        DistinctFieldQuery query = new() { ProjectInfoId = projectInfoId , FieldName = propertyName };
+        var result = await _mediator.Send(query);
+        if (result.HasStatusMessage())
+            StatusMessage = result.ToStatusMessage();
+        return new JsonResult(result.Value);
     }
 
     public async Task<IActionResult> OnGetPlatformsAsync()
