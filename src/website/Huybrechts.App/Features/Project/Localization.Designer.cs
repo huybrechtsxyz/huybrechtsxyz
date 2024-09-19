@@ -115,6 +115,15 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Created on.
+        /// </summary>
+        public static string CreatedDT {
+            get {
+                return ResourceManager.GetString("CreatedDT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dependencies.
         /// </summary>
         public static string Dependencies {

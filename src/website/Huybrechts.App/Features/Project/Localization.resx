@@ -135,6 +135,9 @@
   <data name="Components" xml:space="preserve">
     <value>Components</value>
   </data>
+  <data name="CreatedDT" xml:space="preserve">
+    <value>Created on</value>
+  </data>
   <data name="Dependencies" xml:space="preserve">
     <value>Dependencies</value>
   </data>

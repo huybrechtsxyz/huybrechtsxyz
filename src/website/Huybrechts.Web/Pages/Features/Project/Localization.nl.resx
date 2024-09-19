@@ -342,6 +342,36 @@
   <data name="Select a product" xml:space="preserve">
     <value>Selecteer een produkt</value>
   </data>
+  <data name="SimulationCreateInfo" xml:space="preserve">
+    <value>Wijzig de details van een bestaande project simulatie. Pas parameters en scenario's aan indien nodig.</value>
+  </data>
+  <data name="SimulationCreateTitle" xml:space="preserve">
+    <value>Wijzig Project Simulatie</value>
+  </data>
+  <data name="SimulationDeleteInfo" xml:space="preserve">
+    <value>Verwijder een project simulatie uit het systeem. Deze actie verwijdert permanent de simulatie en de bijbehorende gegevens.</value>
+  </data>
+  <data name="SimulationDeleteTitle" xml:space="preserve">
+    <value>Verwijder Project Simulatie</value>
+  </data>
+  <data name="SimulationEditInfo" xml:space="preserve">
+    <value>Stel een nieuwe project simulatie in door de vereiste gegevens en configuraties in te voeren.</value>
+  </data>
+  <data name="SimulationEditTitle" xml:space="preserve">
+    <value>Maak Nieuwe Project Simulatie</value>
+  </data>
+  <data name="SimulationIndexInfo" xml:space="preserve">
+    <value>Bekijk een lijst van alle project simulaties, inclusief hun details en resultaten.</value>
+  </data>
+  <data name="SimulationIndexTitle" xml:space="preserve">
+    <value>Project Simulaties</value>
+  </data>
+  <data name="SimulationNoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
+  </data>
+  <data name="Simulations" xml:space="preserve">
+    <value>Simulaties</value>
+  </data>
   <data name="Unit" xml:space="preserve">
     <value>Eenheid</value>
   </data>

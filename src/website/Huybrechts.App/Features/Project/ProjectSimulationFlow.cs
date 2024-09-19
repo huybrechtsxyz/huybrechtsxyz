@@ -3,7 +3,6 @@ using AutoMapper.QueryableExtensions;
 using FluentResults;
 using FluentValidation;
 using Hangfire;
-using Huybrechts.App.Application;
 using Huybrechts.App.Data;
 using Huybrechts.Core.Project;
 using MediatR;
@@ -32,7 +31,9 @@ public static class ProjectSimulationHelper
     {
         Id = Ulid.NewUlid(),
         ProjectInfoId = Project.Id,
-        ProjectInfoName = Project.Name
+        ProjectInfoName = Project.Name,
+        Name = "Simulation on " + DateTime.Now.ToString("F"),
+        CreatedDT = DateTime.Now
     };
 
     internal static Result ProjectNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
@@ -43,6 +44,10 @@ public static class ProjectSimulationHelper
 public record Model
 {
     public Ulid Id { get; set; }
+
+    [DataType(DataType.DateTime)]
+    [Display(Name = nameof(CreatedDT), ResourceType = typeof(Localization))]
+    public DateTime CreatedDT { get; set; }
 
     [Display(Name = "Project", ResourceType = typeof(Localization))]
     public Ulid ProjectInfoId { get; set; } = Ulid.Empty;
@@ -146,7 +151,7 @@ internal sealed class ListHandler :
         {
             query = query.OrderBy(message.SortOrder);
         }
-        else query = query.OrderBy(o => o.Name);
+        else query = query.OrderByDescending(o => o.CreatedDT).ThenBy(o => o.Name);
 
         int pageSize = EntityListFlow.PageSize;
         int pageNumber = message.Page ?? 1;

@@ -135,6 +135,9 @@
   <data name="Components" xml:space="preserve">
     <value>Componenten</value>
   </data>
+  <data name="CreatedDT" xml:space="preserve">
+    <value>Aangemaakt op</value>
+  </data>
   <data name="Dependencies" xml:space="preserve">
     <value>afhankelijkheden</value>
   </data>

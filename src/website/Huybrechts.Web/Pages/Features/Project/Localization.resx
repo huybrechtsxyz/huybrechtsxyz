@@ -339,6 +339,36 @@
   <data name="Select a product" xml:space="preserve">
     <value>Select a product</value>
   </data>
+  <data name="SimulationCreateInfo" xml:space="preserve">
+    <value>Set up a new project simulation by entering the required details and configurations.</value>
+  </data>
+  <data name="SimulationCreateTitle" xml:space="preserve">
+    <value>Create New Project Simulation</value>
+  </data>
+  <data name="SimulationDeleteInfo" xml:space="preserve">
+    <value>Remove a project simulation from the system. This action will permanently delete the simulation and its associated data.</value>
+  </data>
+  <data name="SimulationDeleteTitle" xml:space="preserve">
+    <value>Delete Project Simulation</value>
+  </data>
+  <data name="SimulationEditInfo" xml:space="preserve">
+    <value>Modify the details of an existing project simulation. Make adjustments to parameters and scenarios as needed.</value>
+  </data>
+  <data name="SimulationEditTitle" xml:space="preserve">
+    <value>Edit Project Simulation</value>
+  </data>
+  <data name="SimulationIndexInfo" xml:space="preserve">
+    <value>View a list of all project simulations, including their details and results.</value>
+  </data>
+  <data name="SimulationIndexTitle" xml:space="preserve">
+    <value>Project Simulations</value>
+  </data>
+  <data name="SimulationNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Simulations" xml:space="preserve">
+    <value>Simulations</value>
+  </data>
   <data name="Unit" xml:space="preserve">
     <value>Unit</value>
   </data>

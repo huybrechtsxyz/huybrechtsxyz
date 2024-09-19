@@ -39,6 +39,7 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].CreatedDT)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Name)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Description)</th>
                                 <th></th>
@@ -48,6 +49,7 @@
                             @foreach (var record in Model.Data.Results)
                             {
                                 <tr>
+                                    <td>@Html.DisplayFor(modelItem => record!.CreatedDT)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Name)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Description)</td>
                                     <td>

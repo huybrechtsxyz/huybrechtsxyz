@@ -727,6 +727,96 @@ namespace Huybrechts.Web.Pages.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set up a new project simulation by entering the required details and configurations..
+        /// </summary>
+        public static string SimulationCreateInfo {
+            get {
+                return ResourceManager.GetString("SimulationCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create New Project Simulation.
+        /// </summary>
+        public static string SimulationCreateTitle {
+            get {
+                return ResourceManager.GetString("SimulationCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove a project simulation from the system. This action will permanently delete the simulation and its associated data..
+        /// </summary>
+        public static string SimulationDeleteInfo {
+            get {
+                return ResourceManager.GetString("SimulationDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Project Simulation.
+        /// </summary>
+        public static string SimulationDeleteTitle {
+            get {
+                return ResourceManager.GetString("SimulationDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify the details of an existing project simulation. Make adjustments to parameters and scenarios as needed..
+        /// </summary>
+        public static string SimulationEditInfo {
+            get {
+                return ResourceManager.GetString("SimulationEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Project Simulation.
+        /// </summary>
+        public static string SimulationEditTitle {
+            get {
+                return ResourceManager.GetString("SimulationEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View a list of all project simulations, including their details and results..
+        /// </summary>
+        public static string SimulationIndexInfo {
+            get {
+                return ResourceManager.GetString("SimulationIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Simulations.
+        /// </summary>
+        public static string SimulationIndexTitle {
+            get {
+                return ResourceManager.GetString("SimulationIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string SimulationNoResults {
+            get {
+                return ResourceManager.GetString("SimulationNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Simulations.
+        /// </summary>
+        public static string Simulations {
+            get {
+                return ResourceManager.GetString("Simulations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unit.
         /// </summary>
         public static string Unit {
