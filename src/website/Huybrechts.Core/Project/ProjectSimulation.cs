@@ -85,4 +85,9 @@ public record ProjectSimulation : Entity, IEntity
     /// </summary>
     [Comment("This field will store the normalized, concatenated values for searching")]
     public string? SearchIndex { get; set; }
+
+    /// <summary>
+    /// Navigation property to the simulation entries
+    /// </summary>
+    public List<ProjectSimulationEntry> SimulationEntries { get; set; } = [];
 }

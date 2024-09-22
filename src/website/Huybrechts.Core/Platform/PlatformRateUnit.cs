@@ -75,7 +75,7 @@ public record PlatformRateUnit : Entity, IEntity
     /// The conversion factor for the unit rate, used to translate platform units to standard units.
     /// </summary>
     [Required]
-    [Precision(12, 6)]
+    [Precision(18, 6)]
     [DisplayName("Unit Factor")]
     [Comment("Conversion factor for the unit rate, translating platform units to standard units.")]
     public decimal UnitFactor { get; set; } = 0;
@@ -84,7 +84,7 @@ public record PlatformRateUnit : Entity, IEntity
     /// The default rate for the unit, representing a base measurement standard.
     /// </summary>
     [Required]
-    [Precision(12, 4)]
+    [Precision(18, 4)]
     [DisplayName("Default Unit")]
     [Comment("Default rate for the unit, representing a base measurement standard.")]
     public decimal DefaultValue { get; set; } = 0;

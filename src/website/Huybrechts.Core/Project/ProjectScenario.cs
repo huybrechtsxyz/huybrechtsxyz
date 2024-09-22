@@ -78,4 +78,9 @@ public record ProjectScenario : Entity, IEntity
     /// </summary>
     [Comment("This field will store the normalized, concatenated values for searching")]
     public string? SearchIndex { get; set; }
+
+    /// <summary>
+    /// Navigation to the scenario units
+    /// </summary>
+    public virtual List<ProjectScenarioUnit> Units { get; set; } = [];
 }

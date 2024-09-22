@@ -55,6 +55,15 @@ public record ProjectScenarioUnit: Entity, IEntity
     public SetupUnit? SetupUnit { get; set; } = new();
 
     /// <summary>
+    /// Gets or sets the sequence order of this unit within its parent scenario.
+    /// </summary>
+    /// <remarks>
+    /// Used to determine the order in which scenario metric should be arranged or processed.
+    /// </remarks>
+    [Comment("Gets or sets the sequence order of this unit within its parent scenario.")]
+    public int Sequence { get; set; } = 0;
+
+    /// <summary>
     /// Gets or sets the name of the metric variable.
     /// </summary>
     /// <remarks>

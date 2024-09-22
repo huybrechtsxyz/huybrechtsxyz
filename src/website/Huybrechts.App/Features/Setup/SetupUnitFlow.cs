@@ -21,6 +21,13 @@ public static class SetuptUnitHelper
 
     public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
 
+    public static async Task<List<SetupUnit>> GetSetupUnitsAsync(FeatureContext dbcontext, CancellationToken token)
+    {
+        return await dbcontext.Set<SetupUnit>()
+            .OrderBy(o => o.UnitType).ThenBy(o => o.Name)
+            .ToListAsync(cancellationToken: token);
+    }
+
     public static async Task<SetupUnit> FindOrCreateDefaultSetupUnitAsync(FeatureContext context, bool save, CancellationToken token)
     {
         if (_defaultSetupUnit is not null)

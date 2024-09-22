@@ -208,17 +208,15 @@ entity ProjectSimEntry {
     + Ulid ProjectScenarioId
     + string ProjectScenarioName
 
-    + int ComponentSequence
-    + string ComponentName
-    + string? ComponentDescription
-    + ComponentLevel ComponentLevel
-    + VariantType ComponentVariant
-    + string? Proposal
-    + string? Location
-    + string? Subscription
-    + string? ResourceGroup
-    + string? Owner
-    + int Owned
+    * string? Proposal
+    * string? Account
+    * string? Organization
+    * string? OrganizationalUnit
+    * string? Group
+    * string? Location
+    * string? Environment
+    * string? Responsible
+    * int OwnershipPercentage
     
     + SourceType SourceType
     + string? Source

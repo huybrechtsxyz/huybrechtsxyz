@@ -61,6 +61,15 @@ public record ProjectComponentUnit : Entity, IEntity
     public SetupUnit? SetupUnit { get; set; } = new();
 
     /// <summary>
+    /// Gets or sets the sequence order of this component within its parent design or component unit.
+    /// </summary>
+    /// <remarks>
+    /// Used to determine the order in which component units should be arranged or processed.
+    /// </remarks>
+    [Comment("Gets or sets the sequence order of this component within its parent design or component unit.")]
+    public int Sequence { get; set; } = 0;
+
+    /// <summary>
     /// Gets or sets the name of the variable used in calculations.
     /// </summary>
     /// <remarks>

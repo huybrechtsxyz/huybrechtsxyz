@@ -29,7 +29,6 @@
                         <thead>
                             <tr>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Variable)</th>
-                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].SetupUnitName)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Expression)</th>
                                 <th></th>
                             </tr>
@@ -39,7 +38,6 @@
                             {
                                 <tr>
                                     <td>@Html.DisplayFor(modelItem => record!.Variable)</td>
-                                    <td>@Html.DisplayFor(modelItem => record!.SetupUnitName)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Expression)</td>
                                     <td>
                                         <a asp-page="Edit" asp-route-id="@record!.Id" class="btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i></a>

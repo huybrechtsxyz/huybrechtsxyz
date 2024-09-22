@@ -1,52 +1,358 @@
-﻿
-            <div class="form-floating mb-3">
-                <select id="sourceType" 
-                        asp-for="Data.SourceType"
-                        asp-items="Html.GetEnumSelectList<Huybrechts.Core.Project.SourceType>()"
-                        class="form-select"></select>
-                <label asp-for="Data.SourceType" class="form-label"></label>
-                <span asp-validation-for="Data.SourceType" class="text-danger"></span>
-            </div>
+﻿/// <summary>
+    /// Gets or sets the name of the project scenario.
+    /// </summary>
+    /// <remarks>
+    /// This field represents the name given to this specific scenario for identification and display purposes.
+    /// </remarks>
+    [Required]
+    [MaxLength(128)]
+    [Comment("Gets or sets the name of the scenario scenario.")]
+    public string ScenarioName { get; set; } = string.Empty;
 
-            <div id="platformSection" class="form-floating mb-3" style="display:none;">
-                <select id="platforms"
-                        asp-for="Data.PlatformInfoId"
-                        class="form-select">
-                    <option value="@Ulid.Empty">@SL["Select a platform"]</option>
-                </select>
-                <label asp-for="Data.PlatformInfoId" class="form-label"></label>
-            </div>
+    
 
-            <div id="productSection" class="form-floating mb-3" style="display:none;">
-                <select id="products"
-                        asp-for="Data.PlatformProductId"
-                        class="form-select">
-                    <option value="@Ulid.Empty">@SL["Select a product"]</option>
-                </select>
-                <label asp-for="Data.PlatformProductId" class="form-label"></label>
-            </div>
+    /// <summary>
+    /// Gets or sets the name of the project design.
+    /// </summary>
+    /// <remarks>
+    /// This field represents the name given to this specific design for identification and display purposes.
+    /// </remarks>
+    [Required]
+    [MaxLength(128)]
+    [Comment("Gets or sets the name of the project design.")]
+    public string DesignName { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the ID of the parent component, if any.
+    /// </summary>
+    /// <remarks>
+    /// If this component is part of a larger component, 
+    /// this property refers to the parent component.
+    /// </remarks>
+    [Comment("Gets or sets the ID of the parent component, if any.")]
+    public Ulid ComponentParentId { get; set; } = Ulid.Empty;
 
-            <div class="form-floating mb-3">
-                <select id="sourceType"
-                        asp-for="Data.SourceType"
-                        asp-items="Html.GetEnumSelectList<Huybrechts.Core.Project.SourceType>()"
-                        class="form-select"></select>
-                <label asp-for="Data.SourceType" class="form-label"></label>
-            </div>
-            <div id="platformSection" class="form-floating mb-3" style="display:none;">
-                <select id="platforms"
-                        asp-for="Data.PlatformInfoId"
-                        class="form-select">
-                    <option value="@Ulid.Empty">@SL["Select a platform"]</option>
-                </select>
-                <label asp-for="Data.PlatformInfoId" class="form-label"></label>
-            </div>
-            <div id="productSection" class="form-floating mb-3" style="display:none;">
-                <select id="products"
-                        asp-for="Data.PlatformProductId"
-                        class="form-select">
-                    <option value="@Ulid.Empty">@SL["Select a product"]</option>
-                </select>
-                <label asp-for="Data.PlatformProductId" class="form-label"></label>
-            </div>
+    /// <summary>
+    /// Gets or sets the sequence order of this component within its parent design or component.
+    /// </summary>
+    /// <remarks>
+    /// Used to determine the order in which components should be arranged or processed.
+    /// </remarks>
+    [Comment("Gets or sets the sequence order of this component within its parent design or component.")]
+    public int Sequence { get; set; } = 0;
+
+    
+
+    /// <summary>
+    /// Gets or sets the name of the component.
+    /// </summary>
+    /// <remarks>
+    /// Represents the human-readable name of the component, 
+    /// such as "Kitchen" or "Dishwasher".
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the name of the component.")]
+    public string ComponentName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Specifies the level of the component (e.g., Component, Configuration, Module, Variant).
+    /// </summary>
+    /// <remarks>
+    /// Defines whether the component is a high-level entity (like a room), 
+    /// a configuration option, or a smaller part (like a module or variant).
+    /// </remarks>
+    [Comment("Specifies the level of the component (e.g., Component, Configuration, Module, Variant).")]
+    public ComponentLevel ComponentLevel { get; set; } = ComponentLevel.Component;
+
+    /// <summary>
+    /// Specifies the type of variant for this component (Standard, Option, Exceptional).
+    /// </summary>
+    /// <remarks>
+    /// Defines whether this component is a standard part, an optional upgrade, 
+    /// or an exceptional case for the design.
+    /// </remarks>
+    [Comment("Specifies the type of variant for this component (Standard, Option, Exceptional).")]
+    public VariantType VariantType { get; set; } = VariantType.Standard;
+
+    /// <summary>
+    /// Gets or sets the proposal associated with the component.
+    /// </summary>
+    /// <remarks>
+    /// Represents the proposal or solution being suggested for this component.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the proposal associated with the component.")]
+    public string? Proposal { get; set; }
+
+    /// <summary>
+    /// Gets or sets the account under which this component is managed.
+    /// </summary>
+    /// <remarks>
+    /// The account represents the platform or service under which the component is linked.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the account under which this component is managed.")]
+    public string? Account { get; set; }
+
+    /// <summary>
+    /// Gets or sets the account under which this component is managed.
+    /// </summary>
+    /// <remarks>
+    /// The Organization represents the platform or service under which the component is linked.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the organization under which this component is managed.")]
+    public string? Organization { get; set; }
+
+    /// <summary>
+    /// Gets or sets the account under which this component is managed.
+    /// </summary>
+    /// <remarks>
+    /// The subscription represents the platform or service under which the component is linked.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the account under which this component is managed.")]
+    public string? OrganizationalUnit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the location associated with this component.
+    /// </summary>
+    /// <remarks>
+    /// This field specifies the physical or logical location relevant to the component.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the location associated with the component.")]
+    public string? Location { get; set; }
+
+    /// <summary>
+    /// Gets or sets the group to which this component belongs.
+    /// </summary>
+    /// <remarks>
+    /// This is used to categorize the component into different groups, making it easier to organize and manage.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the group to which this component belongs.")]
+    public string? Group { get; set; }
+
+    /// <summary>
+    /// Gets or sets the environment associated with this component.
+    /// </summary>
+    /// <remarks>
+    /// This field specifies the environment relevant to the component.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the environment associated with the component.")]
+    public string? Environment { get; set; }
+
+    /// <summary>
+    /// Gets or sets the responsible to which this component belongs.
+    /// </summary>
+    /// <remarks>
+    /// This field specifies whop is responsible for the component.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("Gets or sets the responsible to which this component belongs.")]
+    public string? Responsible { get; set; }
+
+    /// <summary>
+    /// Gets or sets the percentage of ownership for this component.
+    /// </summary>
+    /// <remarks>
+    /// Indicates the ownership share of this component, default is 100%.
+    /// </remarks>
+    [Comment("Gets or sets the percentage of ownership for this component.")]
+    public int OwnershipPercentage { get; set; } = 100;
+
+    /// <summary>
+    /// Specifies the source type of this component (None, Platform).
+    /// </summary>
+    /// <remarks>
+    /// This property determines if the component is sourced from a platform (like Azure) 
+    /// or if it's custom-created without any platform association.
+    /// </remarks>
+    [Comment("Specifies the source type of this component (None, Platform).")]
+    public SourceType SourceType { get; set; } = SourceType.None;
+
+    /// <summary>
+    /// Optional field to store the source of this component.
+    /// </summary>
+    /// <remarks>
+    /// This can include external references or URLs that provide additional 
+    /// context or details for the component.
+    /// </remarks>
+    [Comment("Optional field to store the source of this component.")]
+    public string? Source { get; set; }
+
+    // PLATFORM RESOURCE
+
+    
+
+    /// <summary>
+    /// The name of the platform (e.g., Azure, Google Cloud, On-Premise).
+    /// </summary>
+    [Required]
+    [MaxLength(128)]
+    [Comment("Name of the platform.")]
+    public string PlatformName { get; set; } = string.Empty;
+
+    
+
+    /// <summary>
+    /// The label of the product, often used in user interfaces.
+    /// </summary>
+    [Required]
+    [MaxLength(128)]
+    [Comment("A label representing the product, often used for display purposes.")]
+    public string PlatformProductLabel { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Category of the product
+    /// </summary>
+    [MaxLength(128)]
+    [Comment("Category of the product")]
+    public string? PlatformProductCategory { get; set; }
+
+    /// <summary>
+    /// The name of the service.
+    /// Provides a human-readable identifier for the service associated with this rate.
+    /// </summary>
+    [MaxLength(128)]
+    [Comment("The name of the service.")]
+    public string ServiceName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The category or family of the service.
+    /// Groups related services together under a common category.
+    /// </summary>
+    [MaxLength(128)]
+    [Comment("Service family or category.")]
+    public string ServiceFamily { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The name of the product associated with this rate.
+    /// Typically refers to the overarching product category the service belongs to, ensuring clarity in billing.
+    /// </summary>
+    [MaxLength(128)]
+    [Comment("Product name.")]
+    public string ProductName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The SKU (Stock Keeping Unit) name associated with this rate.
+    /// Identifies the specific version or configuration of the product.
+    /// </summary>
+    [MaxLength(128)]
+    [Comment("SKU name.")]
+    public string SkuName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The meter name associated with this rate.
+    /// Typically refers to the specific resource or unit being measured for billing purposes.
+    /// </summary>
+    [MaxLength(128)]
+    [Comment("Meter name.")]
+    public string MeterName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The type of rate (e.g., consumption, subscription).
+    /// Categorizes the rate for different billing models, allowing for flexibility in pricing.
+    /// </summary>
+    [MaxLength(128)]
+    [Comment("Rate type.")]
+    public string RateType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The currency code in which the rate is expressed.
+    /// Follows standard ISO currency codes (e.g., USD, EUR) to ensure clarity in multi-currency environments.
+    /// </summary>
+    [Required]
+    [MaxLength(10)]
+    [Comment("Currency code.")]
+    public string CurrencyCode { get; set; } = string.Empty;
+
+    
+
+    /// <summary>
+    /// Gets or sets the code representing the unit (e.g., HOUR, KG).
+    /// </summary>
+    /// <remarks>
+    /// The code is unique within its type and is used to standardize the representation of units.
+    /// </remarks>
+    [Required]
+    [MaxLength(10)]
+    [Comment("A unique code representing the unit, standard across all instances.")]
+    public string SetupUnitCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the name of the unit.
+    /// </summary>
+    /// <remarks>
+    /// Name provides a human-readable description of the unit, which is unique within its type.
+    /// </remarks>
+    [Required]
+    [MaxLength(128)]
+    [Comment("The unique name of the unit within its type.")]
+    public string SetupUnitName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The unit of measure for the rate (e.g., per hour, per GB).
+    /// Describes what the rate applies to, ensuring clarity in billing metrics.
+    /// </summary>
+    [MaxLength(64)]
+    [Comment("Unit of measure.")]
+    public string UnitOfMeasure { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The retail price of the service in the specified currency.
+    /// This is the price that customers will typically see.
+    /// </summary>
+    [Precision(12, 6)]
+    [Comment("Retail price.")]
+    public decimal RetailPrice { get; set; }
+
+    /// <summary>
+    /// The unit price of the service in the specified currency.
+    /// This is the price per unit of the service, providing granularity in pricing.
+    /// </summary>
+    [Precision(12, 6)]
+    [Comment("Unit price.")]
+    public decimal UnitPrice { get; set; }
+
+    /// <summary>
+    /// Gets or sets the subtotal cost of the component for this simulation entry.
+    /// </summary>
+    /// <remarks>
+    /// This cost represents the total before ownership costs are applied.
+    /// </remarks>
+    [Precision(12, 6)]
+    [Comment("Gets or sets the subtotal cost of the component for this simulation entry.")]
+    public decimal SubtotalRetailCost { get; set; } = decimal.Zero;
+
+    /// <summary>
+    /// Gets or sets the ownership cost of the component for this simulation entry.
+    /// </summary>
+    /// <remarks>
+    /// This cost is calculated based on the ownership percentage and other factors.
+    /// </remarks>
+    [Precision(12, 6)]
+    [Comment("Gets or sets the ownership cost of the component for this simulation entry.")]
+    public decimal OwnershipRetailCost { get; set; } = decimal.Zero;
+
+    /// <summary>
+    /// Gets or sets the subtotal cost of the component for this simulation entry.
+    /// </summary>
+    /// <remarks>
+    /// This cost represents the total before ownership costs are applied.
+    /// </remarks>
+    [Precision(12, 6)]
+    [Comment("Gets or sets the subtotal cost of the component for this simulation entry.")]
+    public decimal SubtotalUnitCost { get; set; } = decimal.Zero;
+
+    /// <summary>
+    /// Gets or sets the ownership cost of the component for this simulation entry.
+    /// </summary>
+    /// <remarks>
+    /// This cost is calculated based on the ownership percentage and other factors.
+    /// </remarks>
+    [Precision(12, 6)]
+    [Comment("Gets or sets the ownership cost of the component for this simulation entry.")]
+    public decimal OwnershipUnitCost { get; set; } = decimal.Zero;

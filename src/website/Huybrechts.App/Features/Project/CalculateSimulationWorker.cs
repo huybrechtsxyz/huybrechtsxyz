@@ -1,7 +1,11 @@
 ﻿using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
+using FluentResults;
 using Huybrechts.App.Data;
+using Huybrechts.Core.Platform;
+using Huybrechts.Core.Project;
 using MediatR;
+using static Huybrechts.App.Features.EntityListFlow;
 
 namespace Huybrechts.App.Features.Project;
 
@@ -28,21 +32,20 @@ public class CalculateSimulationWorker
 
         try
         {
+            // Getting the right tenant and setting the right context
             var tenant = await _applicationContext.ApplicationTenants.FindAsync([tenantId], cancellationToken: token) ??
                 throw new Exception($"Tenant with ID {tenantId} not found.");
-            
             _contextSetter.MultiTenantContext = new MultiTenantContext<TenantInfo> { TenantInfo = tenant.ToTenantInfo() };
-            
-            // Set IsCalculating
 
-            // CALCULATE
-
-            // Reset IsCalculation
-            
+            // Running the calculation
+            ProjectSimulationFlow.CalculationCommand command = new() { Id = projectSimulationId };
+            var result = await _mediator.Send(command, token);
+            if (result.IsFailed) 
+                throw new ApplicationException(result.Errors.First().Message);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            var message = ex.Message;
+            throw new ApplicationException(ex.Message);
         }
     }
 }

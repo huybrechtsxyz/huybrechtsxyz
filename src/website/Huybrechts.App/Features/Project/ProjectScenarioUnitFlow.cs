@@ -3,10 +3,12 @@ using AutoMapper.QueryableExtensions;
 using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
+using Huybrechts.App.Features.Setup.SetupUnitFlow;
 using Huybrechts.Core.Project;
 using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Converters;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
 
@@ -18,6 +20,7 @@ public static class ProjectScenarioUnitFlowHelper
     {
         entity.Remark = model.Remark?.Trim();
 
+        entity.Sequence = model.Sequence;
         entity.SetupUnit = model.SetupUnit;
         entity.Variable = model.Variable;
         entity.Expression = model.Expression;
@@ -30,13 +33,6 @@ public static class ProjectScenarioUnitFlowHelper
         ProjectScenarioId = Scenario.Id,
         ProjectScenario = Scenario
     };
-
-    public static async Task<List<SetupUnit>> GetSetupUnitsAsync(FeatureContext dbcontext, CancellationToken token)
-    {
-        return await dbcontext.Set<SetupUnit>()
-            .OrderBy(o => o.Name)
-            .ToListAsync(cancellationToken: token);
-    }
 
     internal static Result ProjectNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
 
@@ -63,6 +59,9 @@ public record Model
 
     [Display(Name = "Unit", ResourceType = typeof(Localization))]
     public SetupUnit? SetupUnit { get; set; } = new();
+
+    [Display(Name = nameof(Sequence), ResourceType = typeof(Localization))]
+    public int Sequence { get; set; } = 0;
 
     [Display(Name = nameof(Variable), ResourceType = typeof(Localization))]
     public string Variable { get; set; } = string.Empty;
@@ -154,7 +153,7 @@ internal sealed class ListHandler :
 
         query = query.Where(q => q.ProjectScenarioId == message.ProjectScenarioId);
 
-        query = query.OrderBy(o => o.Variable);
+        query = query.OrderBy(o => o.Sequence).ThenBy(o => o.Variable);
 
         var results = await query
             .Include(i => i.ProjectScenario)
@@ -233,7 +232,7 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
 
         command.ProjectInfo = project;
         command.ProjectScenario = Scenario;
-        command.SetupUnitList = await ProjectScenarioUnitFlowHelper.GetSetupUnitsAsync(_dbcontext, token);
+        command.SetupUnitList = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(command);
     }
@@ -354,7 +353,7 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
 
         command.ProjectInfo = project;
         command.ProjectScenario = Scenario;
-        command.SetupUnitList = await ProjectScenarioUnitFlowHelper.GetSetupUnitsAsync(_dbcontext, token);
+        command.SetupUnitList = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(command);
     }
@@ -494,3 +493,4 @@ internal class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
         return Result.Ok();
     }
 }
+

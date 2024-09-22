@@ -60,13 +60,6 @@ public static class PlatformDefaultUnitHelper
         return defaultUnits;
     }
 
-    public static async Task<List<SetupUnit>> GetSetupUnitsAsync(FeatureContext dbcontext, CancellationToken token)
-    {
-        return await dbcontext.Set<SetupUnit>()
-            .OrderBy(o => o.Name)
-            .ToListAsync(cancellationToken: token);
-    }
-
     public static string GetSearchIndex(string unitOfMeasure, string setupUnit, string description)
         => $"{unitOfMeasure}~{setupUnit}~{description}".ToLowerInvariant();
 
@@ -268,7 +261,7 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
             return PlatformDefaultUnitHelper.PlatformNotFound(message.PlatformInfoId);
 
         var record = PlatformDefaultUnitHelper.CreateNew(platform);
-        record.SetupUnits = await PlatformDefaultUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        record.SetupUnits = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(record);
     }
@@ -380,7 +373,7 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
             return PlatformDefaultUnitHelper.PlatformNotFound(record.PlatformInfoId);
 
         record.Platform = platform;
-        record.SetupUnits = await PlatformDefaultUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        record.SetupUnits = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(record);
     }
@@ -481,7 +474,7 @@ internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<D
             return PlatformDefaultUnitHelper.PlatformNotFound(record.PlatformInfoId);
 
         record.Platform = platform;
-        record.SetupUnits = await PlatformDefaultUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        record.SetupUnits = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(record);
     }

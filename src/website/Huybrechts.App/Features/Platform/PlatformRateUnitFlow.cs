@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
+using Huybrechts.App.Features.Setup.SetupUnitFlow;
 using Huybrechts.Core.Platform;
 using Huybrechts.Core.Setup;
 using MediatR;
@@ -18,15 +19,9 @@ public static class PlatformRateUnitHelper
         Id = Ulid.NewUlid(),
         PlatformInfoId = rate.PlatformInfoId,
         PlatformProductId = rate.PlatformProductId,
-        PlatformRateId = rate.Id
+        PlatformRateId = rate.Id,
+        Description = rate.MeterName
     };
-
-    public static async Task<List<SetupUnit>> GetSetupUnitsAsync(FeatureContext dbcontext, CancellationToken token)
-    {
-        return await dbcontext.Set<SetupUnit>()
-            .OrderBy(o => o.Name)
-            .ToListAsync(cancellationToken: token);
-    }
 
     internal static Result PlatformNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORM_ID.Replace("{0}", id.ToString()));
 
@@ -85,6 +80,7 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
         RuleFor(m => m.PlatformRateId).NotEmpty().NotEqual(Ulid.Empty);
         RuleFor(m => m.Description).NotEmpty().Length(1, 128);
 
+        RuleFor(m => m.SetupUnitId).NotEmpty().NotEqual(Ulid.Empty);
         RuleFor(m => m.UnitFactor).NotNull();
         RuleFor(m => m.DefaultValue).NotNull();
     }
@@ -264,7 +260,7 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
         record.Product = product;
         record.PlatformRate = rate;
         record.Rate = rate;
-        record.SetupUnits = await PlatformRateUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        record.SetupUnits = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(record);
     }
@@ -391,7 +387,7 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
         record.Platform = platform;
         record.Product = product;
         record.Rate = rate; 
-        record.SetupUnits = await PlatformRateUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        record.SetupUnits = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(record);
     }
@@ -506,7 +502,7 @@ internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<D
         record.Platform = platform;
         record.Product = product;
         record.Rate = rate;
-        record.SetupUnits = await PlatformRateUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        record.SetupUnits = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(record);
     }

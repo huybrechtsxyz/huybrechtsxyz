@@ -143,7 +143,8 @@ public static class ProjectComponentHelper
         ProjectDesignId = design.Id,
         ProjectDesignName = design.Name,
         ParentId = parent?.Id,
-        ParentName = parent?.Name
+        ParentName = parent?.Name,
+        Environment = parent?.Environment ?? design.Environment
     };
 
     public static string GetSearchIndex
@@ -327,10 +328,10 @@ internal sealed class ListHandler :
 }
 
 //
-//
+// GET FIELD VALUES
 //
 
-public sealed class DistinctFieldQuery : IRequest<Result<List<string>>>
+public sealed record DistinctFieldQuery : IRequest<Result<List<string>>>
 {
     public Ulid ProjectInfoId { get; set; } = Ulid.Empty;
 

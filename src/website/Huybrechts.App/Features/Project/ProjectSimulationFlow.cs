@@ -4,6 +4,7 @@ using FluentResults;
 using FluentValidation;
 using Hangfire;
 using Huybrechts.App.Data;
+using Huybrechts.Core.Platform;
 using Huybrechts.Core.Project;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -175,46 +176,48 @@ internal sealed class ListHandler :
 }
 
 //
-// CALC
+// DETAILS
 //
 
-public sealed record CalculationQuery : IRequest<Result> 
-{
-    public string TenantId { get; init; } = string.Empty;
+public sealed record DetailQuery : IRequest<Result<DetailResult>> { public Ulid Id { get; init; } }
 
-    public Ulid ProjectSimulationId { get; init; }
-}
-
-public class CalculationValidator : AbstractValidator<CalculationQuery>
+public sealed class DetailQueryValidator : AbstractValidator<DeleteQuery>
 {
-    public CalculationValidator(FeatureContext dbContext)
+    public DetailQueryValidator()
     {
-        RuleFor(x => x.ProjectSimulationId).MustAsync(async (id, cancellation) =>
-        {
-            bool exists = await dbContext.Set<ProjectSimulation>().AnyAsync(x => x.Id == id, cancellation);
-            return exists;
-        })
-        .WithMessage(m => Messages.INVALID_PROJECTSIMULATION_ID.Replace("{0}", m.ProjectSimulationId.ToString()));
+        RuleFor(m => m.Id).NotNull().NotEqual(Ulid.Empty);
     }
 }
 
-internal class CalculationHandler : IRequestHandler<CalculationQuery, Result>
+public sealed record DetailResult : Model { }
+
+public sealed class DetailHandler : IRequestHandler<DetailQuery, Result<DetailResult>>
 {
     private readonly FeatureContext _dbcontext;
+    private readonly IConfigurationProvider _configuration;
 
-    public CalculationHandler(FeatureContext dbcontext)
+    public DetailHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
     {
         _dbcontext = dbcontext;
+        _configuration = configuration;
     }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    public async Task<Result> Handle(CalculationQuery message, CancellationToken token)
+    public async Task<Result<DetailResult>> Handle(DetailQuery message, CancellationToken token)
     {
-        BackgroundJob.Enqueue<CalculateSimulationWorker>(x => x.StartAsync(message.TenantId, message.ProjectSimulationId, token));
+        var command = await _dbcontext.Set<ProjectSimulation>()
+            .Include(i => i.SimulationEntries)
+            .ProjectTo<DetailResult>(_configuration)
+            .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
 
-        return Result.Ok();
+        if (command == null)
+            return ProjectSimulationHelper.EntityNotFound(message.Id);
+
+        var project = await _dbcontext.Set<ProjectInfo>().FindAsync([command.ProjectInfoId], cancellationToken: token);
+        if (project is null)
+            return ProjectSimulationHelper.ProjectNotFound(command.ProjectInfoId);
+
+        return Result.Ok(command);
     }
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 }
 
 //
@@ -474,6 +477,227 @@ internal class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
             return ProjectSimulationHelper.EntityNotFound(message.Id);
 
         _dbcontext.Set<ProjectSimulation>().Remove(entity);
+        await _dbcontext.SaveChangesAsync(token);
+        return Result.Ok();
+    }
+}
+
+//
+// CALCULATE
+//
+
+public sealed record CalculationQuery : IRequest<Result>
+{
+    public string TenantId { get; init; } = string.Empty;
+
+    public Ulid ProjectSimulationId { get; init; }
+}
+
+public class CalculationValidator : AbstractValidator<CalculationQuery>
+{
+    public CalculationValidator(FeatureContext dbContext)
+    {
+        RuleFor(x => x.ProjectSimulationId).MustAsync(async (id, cancellation) =>
+        {
+            bool exists = await dbContext.Set<ProjectSimulation>().AnyAsync(x => x.Id == id, cancellation);
+            return exists;
+        })
+        .WithMessage(m => Messages.INVALID_PROJECTSIMULATION_ID.Replace("{0}", m.ProjectSimulationId.ToString()));
+    }
+}
+
+internal class CalculationQueryHandler : IRequestHandler<CalculationQuery, Result>
+{
+    public CalculationQueryHandler() { }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+    public async Task<Result> Handle(CalculationQuery message, CancellationToken token)
+    {
+        BackgroundJob.Enqueue<CalculateSimulationWorker>(x => x.StartAsync(message.TenantId, message.ProjectSimulationId, token));
+
+        return Result.Ok();
+    }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+}
+
+public sealed record CalculationCommand : IRequest<Result>
+{
+    public Ulid Id { get; set; } = Ulid.Empty;
+}
+
+public sealed class CalculationCommandHandler : IRequestHandler<CalculationCommand, Result>
+{
+    private readonly FeatureContext _dbcontext;
+
+    public CalculationCommandHandler(FeatureContext dbcontext)
+    {
+        _dbcontext = dbcontext;
+    }
+
+    public async Task<Result> Handle(CalculationCommand command, CancellationToken token)
+    {
+        // Retrieving the simulation
+        var simulation = await _dbcontext.Set<ProjectSimulation>().FindAsync([command.Id], cancellationToken: token);
+        if (simulation is null) return ProjectSimulationHelper.EntityNotFound(command.Id);
+
+        // Making sure we do not start the same job twice
+        if (simulation.IsCalculating) return Result.Ok();
+        simulation.IsCalculating = true;
+        _dbcontext.Set<ProjectSimulation>().Update(simulation);
+        await _dbcontext.SaveChangesAsync(token);
+
+        // Remove all existing entries
+        List<ProjectSimulationEntry> entries = await _dbcontext.Set<ProjectSimulationEntry>().Where(q => q.ProjectSimulationId == simulation.Id).ToListAsync(token);
+        _dbcontext.Set<ProjectSimulationEntry>().RemoveRange(entries);
+        await _dbcontext.SaveChangesAsync(token);
+
+        // Preparing the calculation engine
+        Jace.CalculationEngine calculationEngine = new();
+        calculationEngine.AddFunction("roundup", ((Func<double, double>)((a) => (double)decimal.Ceiling((decimal)a))));
+        calculationEngine.AddFunction("rounddown", ((Func<double, double>)((a) => (double)decimal.Floor((decimal)a))));
+
+        // Get the project, design, components, scenario
+        ProjectInfo? project = await _dbcontext.Set<ProjectInfo>().FindAsync([simulation.ProjectInfoId], cancellationToken: token);
+        if (project is null) return ProjectSimulationHelper.ProjectNotFound(simulation.ProjectInfoId);
+
+        List<ProjectScenario> scenarioList = await _dbcontext.Set<ProjectScenario>()
+            .Where(q => q.ProjectInfoId == project.Id)
+            .OrderBy(o => o.Name)
+            .Include(i => i.Units)
+            .ThenInclude(i => i.SetupUnit)
+            .ToListAsync(token);
+
+        List<ProjectDesign> designList = await _dbcontext.Set<ProjectDesign>()
+            .Where(q => q.ProjectInfoId == project.Id)
+            .OrderBy(o => o.Name)
+            .ToListAsync(token);
+
+        foreach (var scenario in scenarioList)
+        {
+            foreach (var design in designList)
+            {
+                List<ProjectComponent> componentList = await _dbcontext.Set<ProjectComponent>()
+                    .Where(q => q.ProjectDesignId == design.Id)
+                    .OrderBy(o => o.Sequence).ThenBy(o => o.Name)
+                    .Include(i => i.ProjectComponentUnits)
+                    .ThenInclude(i => i.SetupUnit)
+                    .ToListAsync(cancellationToken: token) ?? [];
+
+                foreach (var component in componentList)
+                {
+                    // Variables
+                    Dictionary<string, double> variables = [];
+
+                    // Variables : Metrics
+                    foreach(var metric in scenario.Units)
+                    {
+                        if (string.IsNullOrEmpty(metric.Variable) || string.IsNullOrEmpty(metric.Expression))
+                            continue;
+                        double value = calculationEngine.Calculate(metric.Expression.ToLower(), variables);
+                        if (!variables.ContainsKey(metric.Variable.ToLower()))
+                            variables.Add(metric.Variable.ToLower(), value);
+                        else
+                            variables[metric.Variable.ToLower()] = value;
+                    }
+
+                    // Variables : Measures
+                    foreach (var measure in component.ProjectComponentUnits)
+                    {
+                        if (string.IsNullOrEmpty(measure.Variable))
+                            measure.Variable = measure.SetupUnit?.Name ?? string.Empty;
+
+                        if (string.IsNullOrEmpty(measure.Variable) || string.IsNullOrEmpty(measure.Expression))
+                            continue;
+
+                        double value = calculationEngine.Calculate(measure.Expression.ToLower(), variables);
+
+                        if (!variables.ContainsKey(measure.Variable.ToLower()))
+                            variables.Add(measure.Variable.ToLower(), value);
+                        else
+                            variables[measure.Variable.ToLower()] = value;
+                    }
+
+                    // ProjectSimulationEntry entry = new();
+                    // Add standard cost
+                    // entry.Calculate();
+                    // _dbcontext.Set<ProjectSimulationEntry>().Add(entry);
+
+                    if (component.SourceType == SourceType.Platform && component.PlatformProductId is not null && component.PlatformProductId != Ulid.Empty)
+                    {
+                        PlatformInfo platform = await _dbcontext.Set<PlatformInfo>().FirstAsync(e => e.Id == component.PlatformInfoId, token);
+                        PlatformProduct product = await _dbcontext.Set<PlatformProduct>().FirstAsync(e => e.Id == component.PlatformProductId, token);
+                        List<PlatformRate> rates = await _dbcontext.Set<PlatformRate>()
+                            .Where(e => e.PlatformProductId == component.PlatformProductId)
+                            .Include(e => e.RateUnits)
+                            .ToListAsync(token);
+
+                        for (int idex = 0; idex < rates.Count; ++idex)
+                        {
+                            PlatformRate platformRate = rates.ElementAt(idex);
+
+                            PlatformRate? peekRate = null;
+                            if (idex + 1 < rates.Count)
+                                peekRate = rates.ElementAt(idex + 1);
+
+                            ProjectSimulationEntry platformEntry = new(
+                                simulation, 
+                                project,
+                                scenario,
+                                design,
+                                component,
+                                platform, 
+                                product, 
+                                platformRate)
+                            {
+                                Quantity = 1
+                            };
+
+                            if (platformRate.RateUnits is not null && platformRate.RateUnits.Count > 0)
+                            {
+                                foreach (var rateUnit in platformRate.RateUnits)
+                                {
+                                    if (rateUnit.UnitFactor != 0)
+                                        platformEntry.Quantity *= rateUnit.UnitFactor;
+
+                                    var applied = component.ProjectComponentUnits.Where(q => q.SetupUnitId == rateUnit.SetupUnitId).ToList();
+                                    if (applied is not null && applied.Count > 0)
+                                    {
+                                        foreach (var measureunit in applied)
+                                        {
+                                            platformEntry.Quantity *= (decimal)variables[measureunit.Variable];
+                                        }
+                                    }
+                                    else
+                                        platformEntry.Quantity *= rateUnit.DefaultValue;
+                                }
+                            }
+
+                            if (platformRate.MinimumUnits > 0)
+                                platformEntry.Quantity -= platformRate.MinimumUnits;
+
+                            if (platformEntry.Quantity < 0)
+                                platformEntry.Quantity = 0;
+
+                            if (peekRate is not null && peekRate.MinimumUnits != 0 && platformEntry.Quantity > peekRate.MinimumUnits)
+                                platformEntry.Quantity = peekRate.MinimumUnits;
+
+                            // Add costs
+                            platformEntry.Calculate();
+                            _dbcontext.Set<ProjectSimulationEntry>().Add(platformEntry);
+                        }
+                    }
+                }
+
+                // save after completing each design
+                await _dbcontext.SaveChangesAsync(token);
+            }
+        }
+
+        // Releasing the simulation
+        simulation = await _dbcontext.Set<ProjectSimulation>().FindAsync([command.Id], cancellationToken: token);
+        if (simulation is null) return ProjectSimulationHelper.EntityNotFound(command.Id);
+        simulation.IsCalculating = false;
+        _dbcontext.Set<ProjectSimulation>().Update(simulation);
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok();
     }

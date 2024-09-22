@@ -66,8 +66,10 @@ public record ProjectComponent : Entity, IEntity
     [Comment("A list of subcomponents that belong to this component, allowing for hierarchical nesting.")]
     public List<ProjectComponent> Children { get; set; } = [];
 
-    // navigation to unitss
-    public List<ProjectComponentUnit> ProjectComponentUnits { get; set; } = [];
+    /// <summary>
+    /// Navigation to the units
+    /// </summary>
+    public virtual List<ProjectComponentUnit> ProjectComponentUnits { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the sequence order of this component within its parent design or component.

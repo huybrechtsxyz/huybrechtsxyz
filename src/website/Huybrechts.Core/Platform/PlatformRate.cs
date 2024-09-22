@@ -123,7 +123,7 @@ public record PlatformRate : Entity, IEntity
     /// The retail price of the service in the specified currency.
     /// This is the price that customers will typically see.
     /// </summary>
-    [Precision(12, 6)]
+    [Precision(18, 6)]
     [Comment("Retail price.")]
     public decimal RetailPrice { get; set; }
 
@@ -131,7 +131,7 @@ public record PlatformRate : Entity, IEntity
     /// The unit price of the service in the specified currency.
     /// This is the price per unit of the service, providing granularity in pricing.
     /// </summary>
-    [Precision(12, 6)]
+    [Precision(18, 6)]
     [Comment("Unit price.")]
     public decimal UnitPrice { get; set; }
 
@@ -139,7 +139,7 @@ public record PlatformRate : Entity, IEntity
     /// The minimum number of units for which this rate applies.
     /// Useful for tiered pricing models where different rates apply to different usage levels.
     /// </summary>
-    [Precision(12, 6)]
+    [Precision(18, 6)]
     [Comment("Tier minimum units.")]
     public decimal MinimumUnits { get; set; } = 0;
 
