@@ -31,6 +31,21 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
 
         // call the base library implementation AFTER the above
         base.OnModelCreating(modelBuilder);
+
+        #region ProjectSimulationEntry
+        // Configure the relationship between ProjectSimulationEntry and others
+        modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.ProjectInfo).WithMany().HasForeignKey(p => p.ProjectInfoId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.ProjectScenario).WithMany().HasForeignKey(p => p.ProjectScenarioId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.ProjectDesign).WithMany().HasForeignKey(p => p.ProjectDesignId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.ProjectComponent).WithMany().HasForeignKey(p => p.ProjectComponentId).OnDelete(DeleteBehavior.Restrict);
+        //modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.SetupUnit).WithMany().HasForeignKey(p => p.SetupUnitId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.PlatformInfo).WithMany().HasForeignKey(p => p.PlatformInfoId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.PlatformProduct).WithMany().HasForeignKey(p => p.PlatformProductId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.PlatformRegion).WithMany().HasForeignKey(p => p.PlatformRegionId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.PlatformService).WithMany().HasForeignKey(p => p.PlatformServiceId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.PlatformRate).WithMany().HasForeignKey(p => p.PlatformRateId).OnDelete(DeleteBehavior.Restrict);
+        #endregion ProjectSimulationEntry
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -62,23 +77,23 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
         }
     }
 
-    public async Task BeginTransactionAsync()
+    public async Task BeginTransactionAsync(CancellationToken token = default)
     {
         if (_currentTransaction != null)
         {
             return;
         }
 
-        _currentTransaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+        _currentTransaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted, token);
     }
 
-    public async Task CommitTransactionAsync()
+    public async Task CommitTransactionAsync(CancellationToken token = default)
     {
         try
         {
-            await SaveChangesAsync();
+            await SaveChangesAsync(token);
 
-            await (_currentTransaction?.CommitAsync() ?? Task.CompletedTask);
+            await (_currentTransaction?.CommitAsync(token) ?? Task.CompletedTask);
         }
         catch
         {
@@ -160,4 +175,6 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
     public DbSet<ProjectScenarioUnit> ProjectScenarioUnits { get; set; }
 
     public DbSet<ProjectSimulation> ProjectSimulations { get; set; }
+
+    public DbSet<ProjectSimulationEntry> ProjectSimulationEntries { get; set; }
 }

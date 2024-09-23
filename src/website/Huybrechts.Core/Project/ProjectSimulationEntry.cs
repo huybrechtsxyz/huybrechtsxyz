@@ -1,4 +1,6 @@
-﻿using Huybrechts.Core.Platform;
+﻿using Finbuckle.MultiTenant;
+using Huybrechts.Core.Platform;
+using Huybrechts.Core.Setup;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,6 +10,9 @@ namespace Huybrechts.Core.Project;
 /// <summary>
 /// Represents a single entry in a project simulation, containing detailed information about project components, design, scenarios, and associated costs.
 /// </summary>
+[MultiTenant]
+[Table(nameof(ProjectSimulationEntry))]
+[Comment(" Represents a single entry in a project simulation")]
 public record ProjectSimulationEntry : Entity, IEntity
 {
     /// <summary>
@@ -32,6 +37,8 @@ public record ProjectSimulationEntry : Entity, IEntity
     /// </summary>
     public Ulid ProjectInfoId { get; set; }
 
+    public ProjectInfo ProjectInfo { get; set; } = new();
+
     /// <summary>
     /// Gets or sets the foreign key to the ProjectScenario.
     /// </summary>
@@ -41,12 +48,16 @@ public record ProjectSimulationEntry : Entity, IEntity
     [Required]
     public Ulid ProjectScenarioId { get; set; } = Ulid.Empty;
 
+    public ProjectScenario ProjectScenario { get; set; } = new();
+
     /// <summary>
     /// Gets or sets the ID of the project design this component belongs to.
     /// </summary>
     [Required]
     [Comment("Gets or sets the ID of the project design this component belongs to.")]
     public Ulid ProjectDesignId { get; set; } = Ulid.Empty;
+
+    public ProjectDesign ProjectDesign { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the ID of the associated project component.
@@ -59,12 +70,16 @@ public record ProjectSimulationEntry : Entity, IEntity
     [Comment("The ID of the project component to which this unit belongs.")]
     public Ulid ProjectComponentId { get; set; }
 
-    /// <summary>
-    /// Foreign key linking to the SetupUnit entity.
-    /// </summary>
-    [Required]
-    [Comment("Foreign key linking to the SetupUnit entity.")]
-    public Ulid SetupUnitId { get; set; }
+    public ProjectComponent ProjectComponent { get; set; } = new();
+
+    ///// <summary>
+    ///// Foreign key linking to the SetupUnit entity.
+    ///// </summary>
+    //[Required]
+    //[Comment("Foreign key linking to the SetupUnit entity.")]
+    //public Ulid? SetupUnitId { get; set; }
+
+    //public SetupUnit? SetupUnit { get; set; }
 
     //
     // PLATFORM LINKS
@@ -76,11 +91,15 @@ public record ProjectSimulationEntry : Entity, IEntity
     [Comment("Gets or sets the optional ID of the platform information associated with this component.")]
     public Ulid? PlatformInfoId { get; set; }
 
+    public PlatformInfo? PlatformInfo { get; set; }
+
     /// <summary>
     /// Gets or sets the optional ID of the platform product associated with this component.
     /// </summary>
     [Comment("Gets or sets the optional ID of the platform product associated with this component.")]
     public Ulid? PlatformProductId { get; set; }
+
+    public PlatformProduct? PlatformProduct { get; set; }
 
     /// <summary>
     /// Foreign key referencing the PlatformRegion entity.
@@ -90,6 +109,8 @@ public record ProjectSimulationEntry : Entity, IEntity
     [Comment("Foreign key referencing the PlatformRegion entity.")]
     public Ulid PlatformRegionId { get; set; }
 
+    public PlatformRegion? PlatformRegion { get; set; }
+
     /// <summary>
     /// Foreign key referencing the PlatformService entity.
     /// Links the rate to a specific service category, ensuring accurate pricing across products.
@@ -97,6 +118,8 @@ public record ProjectSimulationEntry : Entity, IEntity
     [Required]
     [Comment("Foreign key referencing the PlatformService entity.")]
     public Ulid PlatformServiceId { get; set; }
+
+    public PlatformService? PlatformService { get; set; }
 
     /// <summary>
     /// Foreign key referencing the PlatformRate table.
@@ -106,6 +129,8 @@ public record ProjectSimulationEntry : Entity, IEntity
     [Comment("Foreign key referencing the PlatformProduct entity.")]
     public Ulid PlatformRateId { get; set; } = Ulid.Empty;
 
+    public PlatformRate? PlatformRate { get; set; }
+
     /// <summary>
     /// The currency code in which the rate is expressed.
     /// Follows standard ISO currency codes (e.g., USD, EUR) to ensure clarity in multi-currency environments.
@@ -114,6 +139,14 @@ public record ProjectSimulationEntry : Entity, IEntity
     [MaxLength(10)]
     [Comment("Currency code.")]
     public string CurrencyCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The unit of measure for the rate (e.g., per hour, per GB).
+    /// Describes what the rate applies to, ensuring clarity in billing metrics.
+    /// </summary>
+    [MaxLength(64)]
+    [Comment("Unit of measure.")]
+    public string UnitOfMeasure { get; set; } = string.Empty;
 
     /// <summary>
     /// The quantity of units for the service. 
@@ -221,14 +254,21 @@ public record ProjectSimulationEntry : Entity, IEntity
         ProjectSimulation = simulation;
         ProjectSimulationId = simulation.Id;
 
+        ProjectInfo = project;
         ProjectInfoId = project.Id;
 
+        ProjectScenario = scenario;
         ProjectScenarioId = scenario.Id;
 
+        ProjectDesign = design;
         ProjectDesignId = design.Id;
 
+        ProjectComponent = component;
         ProjectComponentId = component.Id;
         OwnershipPercentage = component.OwnershipPercentage;
+
+        //SetupUnit = setupUnit;
+        //SetupUnitId = setupUnit.Id;
     }
 
     public ProjectSimulationEntry(
@@ -239,18 +279,29 @@ public record ProjectSimulationEntry : Entity, IEntity
         ProjectComponent component,
         PlatformInfo platform,
         PlatformProduct product,
-        PlatformRate platformRate
+        PlatformRate platformRate,
+        PlatformRegion platformRegion,
+        PlatformService platformService
         )
         : this(simulation, project, scenario, design, component)
     {
+        PlatformInfo = platform;
         PlatformInfoId = platform.Id;
 
+        PlatformProduct = product;
         PlatformProductId = product.Id;
 
+        PlatformRate = platformRate;
         PlatformRateId = platformRate.Id;
-        PlatformRegionId = platformRate.PlatformRegionId;
-        PlatformServiceId = platformRate.PlatformServiceId;
+
+        PlatformRegion = platformRegion;
+        PlatformRegionId = platformRegion.Id;
+
+        PlatformService = platformService;
+        PlatformServiceId = platformService.Id;
+
         CurrencyCode = platformRate.CurrencyCode;
+        UnitOfMeasure = platformRate.UnitOfMeasure;
         RetailPrice = platformRate.RetailPrice;
         UnitPrice = platformRate.UnitPrice;
     }

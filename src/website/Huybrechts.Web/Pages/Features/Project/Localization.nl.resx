@@ -354,6 +354,12 @@
   <data name="SimulationDeleteTitle" xml:space="preserve">
     <value>Verwijder Project Simulatie</value>
   </data>
+  <data name="SimulationDetailsInfo" xml:space="preserve">
+    <value>De gegenereerde project simulatie.</value>
+  </data>
+  <data name="SimulationDetailsTitle" xml:space="preserve">
+    <value>Project Simulatie Details</value>
+  </data>
   <data name="SimulationEditInfo" xml:space="preserve">
     <value>Stel een nieuwe project simulatie in door de vereiste gegevens en configuraties in te voeren.</value>
   </data>

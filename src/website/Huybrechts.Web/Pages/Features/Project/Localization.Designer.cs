@@ -763,6 +763,24 @@ namespace Huybrechts.Web.Pages.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The project simulation entries..
+        /// </summary>
+        public static string SimulationDetailsInfo {
+            get {
+                return ResourceManager.GetString("SimulationDetailsInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project simulation details.
+        /// </summary>
+        public static string SimulationDetailsTitle {
+            get {
+                return ResourceManager.GetString("SimulationDetailsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Modify the details of an existing project simulation. Make adjustments to parameters and scenarios as needed..
         /// </summary>
         public static string SimulationEditInfo {

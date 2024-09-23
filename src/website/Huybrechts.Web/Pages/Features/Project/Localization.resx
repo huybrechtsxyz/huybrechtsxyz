@@ -351,6 +351,12 @@
   <data name="SimulationDeleteTitle" xml:space="preserve">
     <value>Delete Project Simulation</value>
   </data>
+  <data name="SimulationDetailsInfo" xml:space="preserve">
+    <value>The project simulation entries.</value>
+  </data>
+  <data name="SimulationDetailsTitle" xml:space="preserve">
+    <value>Project simulation details</value>
+  </data>
   <data name="SimulationEditInfo" xml:space="preserve">
     <value>Modify the details of an existing project simulation. Make adjustments to parameters and scenarios as needed.</value>
   </data>

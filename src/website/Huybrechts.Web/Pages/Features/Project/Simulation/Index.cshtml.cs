@@ -60,7 +60,7 @@ public class IndexModel : PageModel
         }
         catch (Exception ex)
         {
-            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
+            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError, message = ex.Message });
         }
     }
 }

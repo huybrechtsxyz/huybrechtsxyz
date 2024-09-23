@@ -89,5 +89,5 @@ public record ProjectSimulation : Entity, IEntity
     /// <summary>
     /// Navigation property to the simulation entries
     /// </summary>
-    public List<ProjectSimulationEntry> SimulationEntries { get; set; } = [];
+    public virtual List<ProjectSimulationEntry> SimulationEntries { get; set; } = [];
 }
