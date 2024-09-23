@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 {
     [DbContext(typeof(FeatureContext))]
-    [Migration("20240906212643_CreateProjectSchema")]
-    partial class CreateProjectSchema
+    [Migration("20240923194119_CreatePlatformSchema")]
+    partial class CreatePlatformSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,8 +36,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasComment("Date time created");
 
                     b.Property<decimal>("DefaultValue")
-                        .HasPrecision(12, 4)
-                        .HasColumnType("numeric(12,4)")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
                         .HasComment("Default rate for the unit, representing a base measurement standard.");
 
                     b.Property<string>("Description")
@@ -75,8 +75,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasColumnType("bytea");
 
                     b.Property<decimal>("UnitFactor")
-                        .HasPrecision(12, 6)
-                        .HasColumnType("numeric(12,6)")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Conversion factor for the unit rate, translating platform units to standard units.");
 
                     b.Property<string>("UnitOfMeasure")
@@ -300,8 +300,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasComment("Meter name.");
 
                     b.Property<decimal>("MinimumUnits")
-                        .HasPrecision(12, 6)
-                        .HasColumnType("numeric(12,6)")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Tier minimum units.");
 
                     b.Property<DateTime?>("ModifiedDT")
@@ -345,8 +345,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasComment("Additional remarks or comments about the rate.");
 
                     b.Property<decimal>("RetailPrice")
-                        .HasPrecision(12, 6)
-                        .HasColumnType("numeric(12,6)")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Retail price.");
 
                     b.Property<string>("SearchIndex")
@@ -389,8 +389,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasComment("Unit of measure.");
 
                     b.Property<decimal>("UnitPrice")
-                        .HasPrecision(12, 6)
-                        .HasColumnType("numeric(12,6)")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Unit price.");
 
                     b.Property<DateTime>("ValidFrom")
@@ -424,8 +424,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasComment("Date time created");
 
                     b.Property<decimal>("DefaultValue")
-                        .HasPrecision(12, 4)
-                        .HasColumnType("numeric(12,4)")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
                         .HasComment("Default rate for the unit, representing a base measurement standard.");
 
                     b.Property<string>("Description")
@@ -474,8 +474,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasColumnType("bytea");
 
                     b.Property<decimal>("UnitFactor")
-                        .HasPrecision(12, 6)
-                        .HasColumnType("numeric(12,6)")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Conversion factor for the unit rate, translating platform units to standard units.");
 
                     b.Property<string>("UnitOfMeasure")
@@ -649,6 +649,235 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectComponent", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<string>("Account")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the account under which this component is managed.");
+
+                    b.Property<int>("ComponentLevel")
+                        .HasColumnType("integer")
+                        .HasComment("Specifies the level of the component (e.g., Component, Configuration, Module, Variant).");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasComment("Gets or sets the description of the component.");
+
+                    b.Property<string>("Environment")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the environment associated with the component.");
+
+                    b.Property<string>("Group")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the group to which this component belongs.");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the location associated with the component.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the name of the component.");
+
+                    b.Property<string>("Organization")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the organization under which this component is managed.");
+
+                    b.Property<string>("OrganizationalUnit")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the account under which this component is managed.");
+
+                    b.Property<int>("OwnershipPercentage")
+                        .HasColumnType("integer")
+                        .HasComment("Gets or sets the percentage of ownership for this component.");
+
+                    b.Property<string>("ParentId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the ID of the parent component, if any.");
+
+                    b.Property<string>("PlatformInfoId")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the optional ID of the platform information associated with this component.");
+
+                    b.Property<string>("PlatformProductId")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the optional ID of the platform product associated with this component.");
+
+                    b.Property<string>("ProjectComponentId")
+                        .HasColumnType("character varying(26)");
+
+                    b.Property<string>("ProjectDesignId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the ID of the project design this component belongs to.");
+
+                    b.Property<string>("ProjectInfoId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the ID of the project this component belongs to.");
+
+                    b.Property<string>("Proposal")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the proposal associated with the component.");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("text")
+                        .HasComment("Gets or sets any additional remarks or notes about the component.");
+
+                    b.Property<string>("Responsible")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the responsible to which this component belongs.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("text")
+                        .HasComment("A normalized search index to optimize searching through components.");
+
+                    b.Property<int>("Sequence")
+                        .HasColumnType("integer")
+                        .HasComment("Gets or sets the sequence order of this component within its parent design or component.");
+
+                    b.Property<string>("Source")
+                        .HasColumnType("text")
+                        .HasComment("Optional field to store the source of this component.");
+
+                    b.Property<int>("SourceType")
+                        .HasColumnType("integer")
+                        .HasComment("Specifies the source type of this component (None, Platform).");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
+                    b.Property<int>("VariantType")
+                        .HasColumnType("integer")
+                        .HasComment("Specifies the type of variant for this component (Standard, Option, Exceptional).");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectComponentId");
+
+                    b.HasIndex("ProjectDesignId");
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "ProjectInfoId", "ProjectDesignId", "Sequence");
+
+                    b.ToTable("ProjectComponent", t =>
+                        {
+                            t.HasComment("Represents a part of the design for a project.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectComponentUnit", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Expression")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasComment("The formula used to calculate the value of the variable for this component unit.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("ProjectComponentId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("The ID of the project component to which this unit belongs.");
+
+                    b.Property<string>("ProjectDesignId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("The design ID of the project this component unit belongs to.");
+
+                    b.Property<string>("ProjectInfoId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("The project ID this component unit is part of.");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("text")
+                        .HasComment("Gets or sets any additional remarks or notes about the component unit.");
+
+                    b.Property<int>("Sequence")
+                        .HasColumnType("integer")
+                        .HasComment("Gets or sets the sequence order of this component within its parent design or component unit.");
+
+                    b.Property<string>("SetupUnitId")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("The ID of the measuring unit used for this component.");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Variable")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("The variable name used in the metrics calculations for this component unit.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectComponentId");
+
+                    b.HasIndex("SetupUnitId");
+
+                    b.ToTable("ProjectComponentUnit", t =>
+                        {
+                            t.HasComment("Links a project component to a measuring unit, allowing for cost calculation using metrics.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectDesign", b =>
                 {
                     b.Property<string>("Id")
@@ -664,7 +893,9 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasComment("List of dependencies for the design");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasComment("Gets or sets the description of the project design.");
 
                     b.Property<string>("Environment")
                         .HasMaxLength(128)
@@ -678,7 +909,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the name of the project design.");
 
                     b.Property<string>("Priority")
                         .HasMaxLength(32)
@@ -687,7 +919,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.Property<string>("ProjectInfoId")
                         .IsRequired()
-                        .HasColumnType("character varying(26)");
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the unique identifier for the project associated with this design.");
 
                     b.Property<int?>("Rating")
                         .HasColumnType("integer")
@@ -739,9 +972,11 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("ProjectInfoId");
 
-                    b.HasIndex("ProjectInfoId", "Name")
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "ProjectInfoId", "Name")
                         .IsUnique();
 
                     b.ToTable("ProjectDesign", t =>
@@ -792,7 +1027,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasComment("Name of the Project.");
 
                     b.Property<string>("ParentId")
-                        .HasColumnType("character varying(26)");
+                        .HasColumnType("character varying(26)")
+                        .HasComment("The project ID this component unit is part of.");
 
                     b.Property<string>("Priority")
                         .HasMaxLength(32)
@@ -853,14 +1089,373 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("TenantId", "Code")
                         .IsUnique();
 
-                    b.HasIndex("SearchIndex");
+                    b.HasIndex("TenantId", "SearchIndex");
 
                     b.ToTable("Project", t =>
                         {
                             t.HasComment("Table storing information about Projects that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectScenario", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasComment("Gets or sets the description of the project scenario.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the name of the scenario scenario.");
+
+                    b.Property<string>("ProjectInfoId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the unique identifier for the project associated with this scenario.");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("text")
+                        .HasComment("Additional remarks or comments about the project scenario.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("text")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("text")
+                        .HasComment("Keywords or categories for the scenario");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectInfoId");
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "ProjectInfoId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ProjectScenario", t =>
+                        {
+                            t.HasComment("Represents different scenarios used to calculate design components and measures based on varying metrics.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectScenarioUnit", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Expression")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("ProjectInfoId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the ID of the project this scenario metric belongs to.");
+
+                    b.Property<string>("ProjectScenarioId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("text")
+                        .HasComment("Gets or sets any additional remarks or notes about the scenario unit.");
+
+                    b.Property<int>("Sequence")
+                        .HasColumnType("integer")
+                        .HasComment("Gets or sets the sequence order of this unit within its parent scenario.");
+
+                    b.Property<string>("SetupUnitId")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("The ID of the measuring unit used for this component.");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Variable")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectScenarioId");
+
+                    b.HasIndex("SetupUnitId");
+
+                    b.ToTable("ProjectScenarioUnit", t =>
+                        {
+                            t.HasComment("Represents a unit of measurement or metric used in a project scenario for calculating values over design components.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectSimulation", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasComment("Gets or sets the description of the project simulation.");
+
+                    b.Property<bool>("IsCalculating")
+                        .HasColumnType("boolean")
+                        .HasComment("Gets or sets if the project simulation is being calculated on this moment.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Modified time created");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the name of the simulation.");
+
+                    b.Property<string>("ProjectInfoId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the unique identifier for the project associated with this simulation.");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("text")
+                        .HasComment("Additional remarks or comments about the project simulation.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("text")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("text")
+                        .HasComment("Keywords or categories for the simulation");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectInfoId");
+
+                    b.ToTable("ProjectSimulation", t =>
+                        {
+                            t.HasComment("Represents a simulation for a given project, containing various details and configurations related to the project's estimation.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectSimulationEntry", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Primary Key");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("CurrencyCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasComment("Currency code.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Modified time created");
+
+                    b.Property<decimal>("OwnRetailCost")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasComment("Ownership-adjusted retail cost in the specified currency.");
+
+                    b.Property<decimal>("OwnUnitCost")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasComment("Ownership-adjusted unit cost per service unit in the specified currency.");
+
+                    b.Property<int>("OwnershipPercentage")
+                        .HasColumnType("integer")
+                        .HasComment("Percentage of ownership for this component or service.");
+
+                    b.Property<string>("PlatformInfoId")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the optional ID of the platform information associated with this component.");
+
+                    b.Property<string>("PlatformProductId")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the optional ID of the platform product associated with this component.");
+
+                    b.Property<string>("PlatformRateId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Foreign key referencing the PlatformProduct entity.");
+
+                    b.Property<string>("PlatformRegionId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Foreign key referencing the PlatformRegion entity.");
+
+                    b.Property<string>("PlatformServiceId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Foreign key referencing the PlatformService entity.");
+
+                    b.Property<string>("ProjectComponentId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("The ID of the project component to which this unit belongs.");
+
+                    b.Property<string>("ProjectDesignId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the ID of the project design this component belongs to.");
+
+                    b.Property<string>("ProjectInfoId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)");
+
+                    b.Property<string>("ProjectScenarioId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)");
+
+                    b.Property<string>("ProjectSimulationId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasComment("Quantity of service units.");
+
+                    b.Property<decimal>("RetailCost")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasComment("Internal retail cost in the specified currency.");
+
+                    b.Property<decimal>("RetailPrice")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
+                        .HasComment("Retail price in the specified currency.");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasComment("The tenant identifier");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
+                    b.Property<decimal>("UnitCost")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasComment("Internal unit cost per service unit in the specified currency.");
+
+                    b.Property<string>("UnitOfMeasure")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasComment("Unit of measure.");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
+                        .HasComment("Unit price per service unit in the specified currency.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlatformInfoId");
+
+                    b.HasIndex("PlatformProductId");
+
+                    b.HasIndex("PlatformRateId");
+
+                    b.HasIndex("PlatformRegionId");
+
+                    b.HasIndex("PlatformServiceId");
+
+                    b.HasIndex("ProjectComponentId");
+
+                    b.HasIndex("ProjectDesignId");
+
+                    b.HasIndex("ProjectInfoId");
+
+                    b.HasIndex("ProjectScenarioId");
+
+                    b.HasIndex("ProjectSimulationId");
+
+                    b.ToTable("ProjectSimulationEntry", t =>
+                        {
+                            t.HasComment(" Represents a single entry in a project simulation");
                         });
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
@@ -1301,6 +1896,38 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.Navigation("PlatformInfo");
                 });
 
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectComponent", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Project.ProjectComponent", null)
+                        .WithMany("Children")
+                        .HasForeignKey("ProjectComponentId");
+
+                    b.HasOne("Huybrechts.Core.Project.ProjectDesign", "ProjectDesign")
+                        .WithMany()
+                        .HasForeignKey("ProjectDesignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectDesign");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectComponentUnit", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Project.ProjectComponent", "ProjectComponent")
+                        .WithMany("ProjectComponentUnits")
+                        .HasForeignKey("ProjectComponentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Huybrechts.Core.Setup.SetupUnit", "SetupUnit")
+                        .WithMany()
+                        .HasForeignKey("SetupUnitId");
+
+                    b.Navigation("ProjectComponent");
+
+                    b.Navigation("SetupUnit");
+                });
+
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectDesign", b =>
                 {
                     b.HasOne("Huybrechts.Core.Project.ProjectInfo", "ProjectInfo")
@@ -1310,6 +1937,126 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .IsRequired();
 
                     b.Navigation("ProjectInfo");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectScenario", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Project.ProjectInfo", "ProjectInfo")
+                        .WithMany()
+                        .HasForeignKey("ProjectInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectInfo");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectScenarioUnit", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Project.ProjectScenario", "ProjectScenario")
+                        .WithMany("Units")
+                        .HasForeignKey("ProjectScenarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Huybrechts.Core.Setup.SetupUnit", "SetupUnit")
+                        .WithMany()
+                        .HasForeignKey("SetupUnitId");
+
+                    b.Navigation("ProjectScenario");
+
+                    b.Navigation("SetupUnit");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectSimulation", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Project.ProjectInfo", "ProjectInfo")
+                        .WithMany()
+                        .HasForeignKey("ProjectInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectInfo");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectSimulationEntry", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")
+                        .WithMany()
+                        .HasForeignKey("PlatformInfoId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Huybrechts.Core.Platform.PlatformProduct", "PlatformProduct")
+                        .WithMany()
+                        .HasForeignKey("PlatformProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Huybrechts.Core.Platform.PlatformRate", "PlatformRate")
+                        .WithMany()
+                        .HasForeignKey("PlatformRateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Huybrechts.Core.Platform.PlatformRegion", "PlatformRegion")
+                        .WithMany()
+                        .HasForeignKey("PlatformRegionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Huybrechts.Core.Platform.PlatformService", "PlatformService")
+                        .WithMany()
+                        .HasForeignKey("PlatformServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Huybrechts.Core.Project.ProjectComponent", "ProjectComponent")
+                        .WithMany()
+                        .HasForeignKey("ProjectComponentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Huybrechts.Core.Project.ProjectDesign", "ProjectDesign")
+                        .WithMany()
+                        .HasForeignKey("ProjectDesignId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Huybrechts.Core.Project.ProjectInfo", "ProjectInfo")
+                        .WithMany()
+                        .HasForeignKey("ProjectInfoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Huybrechts.Core.Project.ProjectScenario", "ProjectScenario")
+                        .WithMany()
+                        .HasForeignKey("ProjectScenarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Huybrechts.Core.Project.ProjectSimulation", "ProjectSimulation")
+                        .WithMany("SimulationEntries")
+                        .HasForeignKey("ProjectSimulationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlatformInfo");
+
+                    b.Navigation("PlatformProduct");
+
+                    b.Navigation("PlatformRate");
+
+                    b.Navigation("PlatformRegion");
+
+                    b.Navigation("PlatformService");
+
+                    b.Navigation("ProjectComponent");
+
+                    b.Navigation("ProjectDesign");
+
+                    b.Navigation("ProjectInfo");
+
+                    b.Navigation("ProjectScenario");
+
+                    b.Navigation("ProjectSimulation");
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupCountry", b =>
@@ -1330,6 +2077,23 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>
                 {
                     b.Navigation("RateUnits");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectComponent", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("ProjectComponentUnits");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectScenario", b =>
+                {
+                    b.Navigation("Units");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectSimulation", b =>
+                {
+                    b.Navigation("SimulationEntries");
                 });
 #pragma warning restore 612, 618
         }

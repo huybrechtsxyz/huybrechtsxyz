@@ -37,7 +37,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
-                    ParentId = table.Column<string>(type: "character varying(26)", nullable: true),
+                    ParentId = table.Column<string>(type: "character varying(26)", nullable: true, comment: "The project ID this component unit is part of."),
                     Code = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false, comment: "Code of the Project."),
                     Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false, comment: "Name of the Project."),
                     Description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true, comment: "Detailed description of the Project."),
@@ -250,9 +250,9 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
-                    ProjectInfoId = table.Column<string>(type: "character varying(26)", nullable: false),
-                    Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    ProjectInfoId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Gets or sets the unique identifier for the project associated with this design."),
+                    Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false, comment: "Gets or sets the name of the project design."),
+                    Description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true, comment: "Gets or sets the description of the project design."),
                     Remark = table.Column<string>(type: "text", nullable: true, comment: "Additional remarks or comments about the project design."),
                     Tags = table.Column<string>(type: "text", nullable: true, comment: "Keywords or categories for the design"),
                     State = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false, comment: "Gets or sets the current state of the project design."),
@@ -280,6 +280,63 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         onDelete: ReferentialAction.Cascade);
                 },
                 comment: "Represents a specific design or solution proposal for a project.");
+
+            migrationBuilder.CreateTable(
+                name: "ProjectScenario",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
+                    ProjectInfoId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Gets or sets the unique identifier for the project associated with this scenario."),
+                    Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false, comment: "Gets or sets the name of the scenario scenario."),
+                    Description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true, comment: "Gets or sets the description of the project scenario."),
+                    Remark = table.Column<string>(type: "text", nullable: true, comment: "Additional remarks or comments about the project scenario."),
+                    Tags = table.Column<string>(type: "text", nullable: true, comment: "Keywords or categories for the scenario"),
+                    SearchIndex = table.Column<string>(type: "text", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    CreatedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectScenario", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectScenario_Project_ProjectInfoId",
+                        column: x => x.ProjectInfoId,
+                        principalTable: "Project",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                },
+                comment: "Represents different scenarios used to calculate design components and measures based on varying metrics.");
+
+            migrationBuilder.CreateTable(
+                name: "ProjectSimulation",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
+                    ProjectInfoId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Gets or sets the unique identifier for the project associated with this simulation."),
+                    Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false, comment: "Gets or sets the name of the simulation."),
+                    Description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true, comment: "Gets or sets the description of the project simulation."),
+                    IsCalculating = table.Column<bool>(type: "boolean", nullable: false, comment: "Gets or sets if the project simulation is being calculated on this moment."),
+                    Remark = table.Column<string>(type: "text", nullable: true, comment: "Additional remarks or comments about the project simulation."),
+                    Tags = table.Column<string>(type: "text", nullable: true, comment: "Keywords or categories for the simulation"),
+                    SearchIndex = table.Column<string>(type: "text", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
+                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    CreatedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectSimulation", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectSimulation_Project_ProjectInfoId",
+                        column: x => x.ProjectInfoId,
+                        principalTable: "Project",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                },
+                comment: "Represents a simulation for a given project, containing various details and configurations related to the project's estimation.");
 
             migrationBuilder.CreateTable(
                 name: "SetupCountry",
@@ -322,8 +379,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     PlatformInfoId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Foreign key referencing the PlatformInfo."),
                     SetupUnitId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Foreign key linking to the SetupUnit entity."),
                     UnitOfMeasure = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "Unit of measure."),
-                    UnitFactor = table.Column<decimal>(type: "numeric(12,6)", precision: 12, scale: 6, nullable: false, comment: "Conversion factor for the unit rate, translating platform units to standard units."),
-                    DefaultValue = table.Column<decimal>(type: "numeric(12,4)", precision: 12, scale: 4, nullable: false, comment: "Default rate for the unit, representing a base measurement standard."),
+                    UnitFactor = table.Column<decimal>(type: "numeric(18,6)", precision: 18, scale: 6, nullable: false, comment: "Conversion factor for the unit rate, translating platform units to standard units."),
+                    DefaultValue = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false, comment: "Default rate for the unit, representing a base measurement standard."),
                     Description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true, comment: "A brief description providing additional details about the region."),
                     SearchIndex = table.Column<string>(type: "text", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
                     TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
@@ -366,9 +423,9 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     RateType = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false, comment: "Rate type."),
                     CurrencyCode = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false, comment: "Currency code."),
                     ValidFrom = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Rate is valid from."),
-                    RetailPrice = table.Column<decimal>(type: "numeric(12,6)", precision: 12, scale: 6, nullable: false, comment: "Retail price."),
-                    UnitPrice = table.Column<decimal>(type: "numeric(12,6)", precision: 12, scale: 6, nullable: false, comment: "Unit price."),
-                    MinimumUnits = table.Column<decimal>(type: "numeric(12,6)", precision: 12, scale: 6, nullable: false, comment: "Tier minimum units."),
+                    RetailPrice = table.Column<decimal>(type: "numeric(18,6)", precision: 18, scale: 6, nullable: false, comment: "Retail price."),
+                    UnitPrice = table.Column<decimal>(type: "numeric(18,6)", precision: 18, scale: 6, nullable: false, comment: "Unit price."),
+                    MinimumUnits = table.Column<decimal>(type: "numeric(18,6)", precision: 18, scale: 6, nullable: false, comment: "Tier minimum units."),
                     UnitOfMeasure = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "Unit of measure."),
                     IsPrimaryRegion = table.Column<bool>(type: "boolean", nullable: false, comment: "Indicates whether this is the primary rate for the region."),
                     Remark = table.Column<string>(type: "text", nullable: true, comment: "Additional remarks or comments about the rate."),
@@ -391,6 +448,91 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                 comment: "Represents the pricing rate of a service on a platform, including details such as the currency, price, and validity period.");
 
             migrationBuilder.CreateTable(
+                name: "ProjectComponent",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
+                    ProjectInfoId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Gets or sets the ID of the project this component belongs to."),
+                    ProjectDesignId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Gets or sets the ID of the project design this component belongs to."),
+                    ParentId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Gets or sets the ID of the parent component, if any."),
+                    Sequence = table.Column<int>(type: "integer", nullable: false, comment: "Gets or sets the sequence order of this component within its parent design or component."),
+                    Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false, comment: "Gets or sets the name of the component."),
+                    Description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true, comment: "Gets or sets the description of the component."),
+                    Remark = table.Column<string>(type: "text", nullable: true, comment: "Gets or sets any additional remarks or notes about the component."),
+                    SearchIndex = table.Column<string>(type: "text", nullable: true, comment: "A normalized search index to optimize searching through components."),
+                    ComponentLevel = table.Column<int>(type: "integer", nullable: false, comment: "Specifies the level of the component (e.g., Component, Configuration, Module, Variant)."),
+                    VariantType = table.Column<int>(type: "integer", nullable: false, comment: "Specifies the type of variant for this component (Standard, Option, Exceptional)."),
+                    Proposal = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true, comment: "Gets or sets the proposal associated with the component."),
+                    Account = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true, comment: "Gets or sets the account under which this component is managed."),
+                    Organization = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true, comment: "Gets or sets the organization under which this component is managed."),
+                    OrganizationalUnit = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true, comment: "Gets or sets the account under which this component is managed."),
+                    Location = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true, comment: "Gets or sets the location associated with the component."),
+                    Group = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true, comment: "Gets or sets the group to which this component belongs."),
+                    Environment = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true, comment: "Gets or sets the environment associated with the component."),
+                    Responsible = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true, comment: "Gets or sets the responsible to which this component belongs."),
+                    OwnershipPercentage = table.Column<int>(type: "integer", nullable: false, comment: "Gets or sets the percentage of ownership for this component."),
+                    SourceType = table.Column<int>(type: "integer", nullable: false, comment: "Specifies the source type of this component (None, Platform)."),
+                    Source = table.Column<string>(type: "text", nullable: true, comment: "Optional field to store the source of this component."),
+                    PlatformInfoId = table.Column<string>(type: "character varying(26)", nullable: true, comment: "Gets or sets the optional ID of the platform information associated with this component."),
+                    PlatformProductId = table.Column<string>(type: "character varying(26)", nullable: true, comment: "Gets or sets the optional ID of the platform product associated with this component."),
+                    ProjectComponentId = table.Column<string>(type: "character varying(26)", nullable: true),
+                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    CreatedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectComponent", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectComponent_ProjectComponent_ProjectComponentId",
+                        column: x => x.ProjectComponentId,
+                        principalTable: "ProjectComponent",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProjectComponent_ProjectDesign_ProjectDesignId",
+                        column: x => x.ProjectDesignId,
+                        principalTable: "ProjectDesign",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                },
+                comment: "Represents a part of the design for a project.");
+
+            migrationBuilder.CreateTable(
+                name: "ProjectScenarioUnit",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
+                    ProjectInfoId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Gets or sets the ID of the project this scenario metric belongs to."),
+                    ProjectScenarioId = table.Column<string>(type: "character varying(26)", nullable: false),
+                    SetupUnitId = table.Column<string>(type: "character varying(26)", nullable: true, comment: "The ID of the measuring unit used for this component."),
+                    Sequence = table.Column<int>(type: "integer", nullable: false, comment: "Gets or sets the sequence order of this unit within its parent scenario."),
+                    Variable = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Expression = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                    Remark = table.Column<string>(type: "text", nullable: true, comment: "Gets or sets any additional remarks or notes about the scenario unit."),
+                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    CreatedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectScenarioUnit", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectScenarioUnit_ProjectScenario_ProjectScenarioId",
+                        column: x => x.ProjectScenarioId,
+                        principalTable: "ProjectScenario",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectScenarioUnit_SetupUnit_SetupUnitId",
+                        column: x => x.SetupUnitId,
+                        principalTable: "SetupUnit",
+                        principalColumn: "Id");
+                },
+                comment: "Represents a unit of measurement or metric used in a project scenario for calculating values over design components.");
+
+            migrationBuilder.CreateTable(
                 name: "PlatformRateUnit",
                 columns: table => new
                 {
@@ -400,8 +542,8 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     PlatformRateId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Foreign key referencing the PlatformProduct entity."),
                     UnitOfMeasure = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "Unit of measure."),
                     SetupUnitId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Foreign key linking to the SetupUnit entity."),
-                    UnitFactor = table.Column<decimal>(type: "numeric(12,6)", precision: 12, scale: 6, nullable: false, comment: "Conversion factor for the unit rate, translating platform units to standard units."),
-                    DefaultValue = table.Column<decimal>(type: "numeric(12,4)", precision: 12, scale: 4, nullable: false, comment: "Default rate for the unit, representing a base measurement standard."),
+                    UnitFactor = table.Column<decimal>(type: "numeric(18,6)", precision: 18, scale: 6, nullable: false, comment: "Conversion factor for the unit rate, translating platform units to standard units."),
+                    DefaultValue = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false, comment: "Default rate for the unit, representing a base measurement standard."),
                     Description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false, comment: "Description of the measuring unit, providing additional context for users."),
                     SearchIndex = table.Column<string>(type: "text", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
                     TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
@@ -426,6 +568,137 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         onDelete: ReferentialAction.Cascade);
                 },
                 comment: "Table representing a unit of measurement for a rate within a platform's product offering, translating platform-specific units into standard project metrics.");
+
+            migrationBuilder.CreateTable(
+                name: "ProjectComponentUnit",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
+                    ProjectInfoId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "The project ID this component unit is part of."),
+                    ProjectDesignId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "The design ID of the project this component unit belongs to."),
+                    ProjectComponentId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "The ID of the project component to which this unit belongs."),
+                    SetupUnitId = table.Column<string>(type: "character varying(26)", nullable: true, comment: "The ID of the measuring unit used for this component."),
+                    Sequence = table.Column<int>(type: "integer", nullable: false, comment: "Gets or sets the sequence order of this component within its parent design or component unit."),
+                    Variable = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false, comment: "The variable name used in the metrics calculations for this component unit."),
+                    Expression = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true, comment: "The formula used to calculate the value of the variable for this component unit."),
+                    Remark = table.Column<string>(type: "text", nullable: true, comment: "Gets or sets any additional remarks or notes about the component unit."),
+                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    CreatedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectComponentUnit", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectComponentUnit_ProjectComponent_ProjectComponentId",
+                        column: x => x.ProjectComponentId,
+                        principalTable: "ProjectComponent",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectComponentUnit_SetupUnit_SetupUnitId",
+                        column: x => x.SetupUnitId,
+                        principalTable: "SetupUnit",
+                        principalColumn: "Id");
+                },
+                comment: "Links a project component to a measuring unit, allowing for cost calculation using metrics.");
+
+            migrationBuilder.CreateTable(
+                name: "ProjectSimulationEntry",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Primary Key"),
+                    ProjectSimulationId = table.Column<string>(type: "character varying(26)", nullable: false),
+                    ProjectInfoId = table.Column<string>(type: "character varying(26)", nullable: false),
+                    ProjectScenarioId = table.Column<string>(type: "character varying(26)", nullable: false),
+                    ProjectDesignId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Gets or sets the ID of the project design this component belongs to."),
+                    ProjectComponentId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "The ID of the project component to which this unit belongs."),
+                    PlatformInfoId = table.Column<string>(type: "character varying(26)", nullable: true, comment: "Gets or sets the optional ID of the platform information associated with this component."),
+                    PlatformProductId = table.Column<string>(type: "character varying(26)", nullable: true, comment: "Gets or sets the optional ID of the platform product associated with this component."),
+                    PlatformRegionId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Foreign key referencing the PlatformRegion entity."),
+                    PlatformServiceId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Foreign key referencing the PlatformService entity."),
+                    PlatformRateId = table.Column<string>(type: "character varying(26)", nullable: false, comment: "Foreign key referencing the PlatformProduct entity."),
+                    CurrencyCode = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false, comment: "Currency code."),
+                    UnitOfMeasure = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "Unit of measure."),
+                    Quantity = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false, comment: "Quantity of service units."),
+                    RetailPrice = table.Column<decimal>(type: "numeric(18,6)", precision: 18, scale: 6, nullable: false, comment: "Retail price in the specified currency."),
+                    UnitPrice = table.Column<decimal>(type: "numeric(18,6)", precision: 18, scale: 6, nullable: false, comment: "Unit price per service unit in the specified currency."),
+                    OwnershipPercentage = table.Column<int>(type: "integer", nullable: false, comment: "Percentage of ownership for this component or service."),
+                    RetailCost = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false, comment: "Internal retail cost in the specified currency."),
+                    UnitCost = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false, comment: "Internal unit cost per service unit in the specified currency."),
+                    OwnRetailCost = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false, comment: "Ownership-adjusted retail cost in the specified currency."),
+                    OwnUnitCost = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false, comment: "Ownership-adjusted unit cost per service unit in the specified currency."),
+                    TenantId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    CreatedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Date time created"),
+                    ModifiedDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, comment: "Modified time created"),
+                    TimeStamp = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectSimulationEntry", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectSimulationEntry_PlatformProduct_PlatformProductId",
+                        column: x => x.PlatformProductId,
+                        principalTable: "PlatformProduct",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjectSimulationEntry_PlatformRate_PlatformRateId",
+                        column: x => x.PlatformRateId,
+                        principalTable: "PlatformRate",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjectSimulationEntry_PlatformRegion_PlatformRegionId",
+                        column: x => x.PlatformRegionId,
+                        principalTable: "PlatformRegion",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjectSimulationEntry_PlatformService_PlatformServiceId",
+                        column: x => x.PlatformServiceId,
+                        principalTable: "PlatformService",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjectSimulationEntry_Platform_PlatformInfoId",
+                        column: x => x.PlatformInfoId,
+                        principalTable: "Platform",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjectSimulationEntry_ProjectComponent_ProjectComponentId",
+                        column: x => x.ProjectComponentId,
+                        principalTable: "ProjectComponent",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjectSimulationEntry_ProjectDesign_ProjectDesignId",
+                        column: x => x.ProjectDesignId,
+                        principalTable: "ProjectDesign",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjectSimulationEntry_ProjectScenario_ProjectScenarioId",
+                        column: x => x.ProjectScenarioId,
+                        principalTable: "ProjectScenario",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjectSimulationEntry_ProjectSimulation_ProjectSimulationId",
+                        column: x => x.ProjectSimulationId,
+                        principalTable: "ProjectSimulation",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectSimulationEntry_Project_ProjectInfoId",
+                        column: x => x.ProjectInfoId,
+                        principalTable: "Project",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                },
+                comment: " Represents a single entry in a project simulation");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Platform_TenantId_Name",
@@ -537,26 +810,142 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                 columns: new[] { "TenantId", "SearchIndex" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Project_Code",
+                name: "IX_Project_TenantId_Code",
                 table: "Project",
-                column: "Code",
+                columns: new[] { "TenantId", "Code" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Project_SearchIndex",
+                name: "IX_Project_TenantId_SearchIndex",
                 table: "Project",
-                column: "SearchIndex");
+                columns: new[] { "TenantId", "SearchIndex" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectDesign_ProjectInfoId_Name",
+                name: "IX_ProjectComponent_ProjectComponentId",
+                table: "ProjectComponent",
+                column: "ProjectComponentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectComponent_ProjectDesignId",
+                table: "ProjectComponent",
+                column: "ProjectDesignId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectComponent_TenantId_ProjectInfoId_ProjectDesignId_Seq~",
+                table: "ProjectComponent",
+                columns: new[] { "TenantId", "ProjectInfoId", "ProjectDesignId", "Sequence" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectComponent_TenantId_SearchIndex",
+                table: "ProjectComponent",
+                columns: new[] { "TenantId", "SearchIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectComponentUnit_ProjectComponentId",
+                table: "ProjectComponentUnit",
+                column: "ProjectComponentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectComponentUnit_SetupUnitId",
+                table: "ProjectComponentUnit",
+                column: "SetupUnitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectDesign_ProjectInfoId",
                 table: "ProjectDesign",
-                columns: new[] { "ProjectInfoId", "Name" },
+                column: "ProjectInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectDesign_TenantId_ProjectInfoId_Name",
+                table: "ProjectDesign",
+                columns: new[] { "TenantId", "ProjectInfoId", "Name" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectDesign_SearchIndex",
+                name: "IX_ProjectDesign_TenantId_SearchIndex",
                 table: "ProjectDesign",
-                column: "SearchIndex");
+                columns: new[] { "TenantId", "SearchIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectScenario_ProjectInfoId",
+                table: "ProjectScenario",
+                column: "ProjectInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectScenario_TenantId_ProjectInfoId_Name",
+                table: "ProjectScenario",
+                columns: new[] { "TenantId", "ProjectInfoId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectScenario_TenantId_SearchIndex",
+                table: "ProjectScenario",
+                columns: new[] { "TenantId", "SearchIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectScenarioUnit_ProjectScenarioId",
+                table: "ProjectScenarioUnit",
+                column: "ProjectScenarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectScenarioUnit_SetupUnitId",
+                table: "ProjectScenarioUnit",
+                column: "SetupUnitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectSimulation_ProjectInfoId",
+                table: "ProjectSimulation",
+                column: "ProjectInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectSimulationEntry_PlatformInfoId",
+                table: "ProjectSimulationEntry",
+                column: "PlatformInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectSimulationEntry_PlatformProductId",
+                table: "ProjectSimulationEntry",
+                column: "PlatformProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectSimulationEntry_PlatformRateId",
+                table: "ProjectSimulationEntry",
+                column: "PlatformRateId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectSimulationEntry_PlatformRegionId",
+                table: "ProjectSimulationEntry",
+                column: "PlatformRegionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectSimulationEntry_PlatformServiceId",
+                table: "ProjectSimulationEntry",
+                column: "PlatformServiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectSimulationEntry_ProjectComponentId",
+                table: "ProjectSimulationEntry",
+                column: "ProjectComponentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectSimulationEntry_ProjectDesignId",
+                table: "ProjectSimulationEntry",
+                column: "ProjectDesignId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectSimulationEntry_ProjectInfoId",
+                table: "ProjectSimulationEntry",
+                column: "ProjectInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectSimulationEntry_ProjectScenarioId",
+                table: "ProjectSimulationEntry",
+                column: "ProjectScenarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectSimulationEntry_ProjectSimulationId",
+                table: "ProjectSimulationEntry",
+                column: "ProjectSimulationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SetupCountry_SetupCurrencyId",
@@ -658,13 +1047,13 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                 name: "PlatformRateUnit");
 
             migrationBuilder.DropTable(
-                name: "PlatformRegion");
+                name: "ProjectComponentUnit");
 
             migrationBuilder.DropTable(
-                name: "PlatformService");
+                name: "ProjectScenarioUnit");
 
             migrationBuilder.DropTable(
-                name: "ProjectDesign");
+                name: "ProjectSimulationEntry");
 
             migrationBuilder.DropTable(
                 name: "SetupCountry");
@@ -673,13 +1062,25 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                 name: "SetupState");
 
             migrationBuilder.DropTable(
-                name: "PlatformRate");
-
-            migrationBuilder.DropTable(
                 name: "SetupUnit");
 
             migrationBuilder.DropTable(
-                name: "Project");
+                name: "PlatformRate");
+
+            migrationBuilder.DropTable(
+                name: "PlatformRegion");
+
+            migrationBuilder.DropTable(
+                name: "PlatformService");
+
+            migrationBuilder.DropTable(
+                name: "ProjectComponent");
+
+            migrationBuilder.DropTable(
+                name: "ProjectScenario");
+
+            migrationBuilder.DropTable(
+                name: "ProjectSimulation");
 
             migrationBuilder.DropTable(
                 name: "SetupCurrency");
@@ -691,7 +1092,13 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                 name: "PlatformProduct");
 
             migrationBuilder.DropTable(
+                name: "ProjectDesign");
+
+            migrationBuilder.DropTable(
                 name: "Platform");
+
+            migrationBuilder.DropTable(
+                name: "Project");
         }
     }
 }
