@@ -130,11 +130,16 @@ jobs:
               || docker network create --driver overlay traefik
             #Create the docker secrets
             createsecret "Google Mail" "APP_AUTH_GOOGLE" '${{ secrets.APP_AUTH_GOOGLE }}'
+            createsecret "Database Name" "APP_DATA_NAME" '${{ secrets.APP_DATA_NAME }}'
+            createsecret "Database User" "APP_DATA_USERNAME" '${{ secrets.APP_DATA_USERNAME }}'
+            createsecret "Database Pass" "APP_DATA_PASSWORD" '${{ secrets.APP_DATA_PASSWORD }}'
+            createsecret "Database URL" "APP_DATA_URL" '${{ secrets.APP_DATA_URL }}'
             createsecret "Server Email" "APP_HOST_EMAIL" '${{ secrets.APP_HOST_EMAIL }}'
             createsecret "Server Password" "APP_HOST_PASSWORD" '${{ secrets.APP_HOST_PASSWORD }}'
             createsecret "Server Port" "APP_HOST_PORT" '${{ secrets.APP_HOST_PORT }}'
             createsecret "Server Server" "APP_HOST_SERVER" '${{ secrets.APP_HOST_SERVER }}'
             createsecret "Server Username" "APP_HOST_USERNAME" '${{ secrets.APP_HOST_USERNAME }}'
+            createsecret "SMTP Options" "APP_SMTP_OPTIONS" '${{ secrets.APP_SMTP_OPTIONS }}'
   
   build-website:
     name: Build Website Image
