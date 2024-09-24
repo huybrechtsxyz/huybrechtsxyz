@@ -4,12 +4,6 @@ name: Deploy To Staging
 on:
   workflow_dispatch:
 
-  push:
-    branches: [ "main" ]
-    paths:
-      - 'src/website/**'
-      - '!src/website/*.yml'
-
 jobs:
   deploy_components:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_pipeline.yml@main
