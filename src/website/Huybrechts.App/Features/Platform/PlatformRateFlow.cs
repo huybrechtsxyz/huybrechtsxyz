@@ -834,6 +834,7 @@ internal sealed class ImportQueryHandler :
                 SortOrder = message.SortOrder,
                 Platform = platform,
                 Product = product,
+                Currencies = currencies,
                 Regions = regions.ToList(),
                 Services = services.ToList(),
                 Results = []

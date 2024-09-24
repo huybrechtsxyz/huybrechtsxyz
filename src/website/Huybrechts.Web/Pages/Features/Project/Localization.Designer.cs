@@ -511,6 +511,24 @@ namespace Huybrechts.Web.Pages.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use this form to copy an existing scenario for your project..
+        /// </summary>
+        public static string ScenarioCopyInfo {
+            get {
+                return ResourceManager.GetString("ScenarioCopyInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy Existing Scenario.
+        /// </summary>
+        public static string ScenarioCopyTitle {
+            get {
+                return ResourceManager.GetString("ScenarioCopyTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Use this form to create a new scenario for your project. A scenario allows you to define a set of metrics that can be applied to the design components. This is useful for performing comparisons and estimates under different assumptions. Provide a name, description, and any remarks that will help you understand the context of this scenario..
         /// </summary>
         public static string ScenarioCreateInfo {

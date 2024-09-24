@@ -3,8 +3,8 @@ using AutoMapper.QueryableExtensions;
 using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
+using Huybrechts.App.Features.Setup.SetupUnitFlow;
 using Huybrechts.Core.Project;
-using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -457,6 +457,151 @@ internal class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
 
         _dbcontext.Set<ProjectScenario>().Remove(entity);
         await _dbcontext.SaveChangesAsync(token);
+        return Result.Ok();
+    }
+}
+
+//
+// COPY
+//
+
+public sealed record CopyQuery : IRequest<Result<CopyCommand>> { public Ulid Id { get; init; } }
+
+public class CopyQueryValidator : AbstractValidator<CopyQuery>
+{
+    public CopyQueryValidator()
+    {
+        RuleFor(m => m.Id).NotNull().NotEmpty().NotEqual(Ulid.Empty);
+    }
+}
+
+public sealed record CopyCommand : Model, IRequest<Result>
+{
+    public ProjectInfo ProjectInfo { get; set; } = new();
+}
+
+public sealed class CopyCommandValidator : AbstractValidator<CopyCommand>
+{
+    public CopyCommandValidator()
+    {
+        RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
+    }
+}
+
+internal sealed class CopyCommandMapping : Profile
+{
+    public CopyCommandMapping() =>
+        CreateProjection<ProjectScenario, CopyCommand>()
+        .ForMember(dest => dest.ProjectInfoName, opt => opt.MapFrom(src => src.ProjectInfo.Name));
+}
+
+internal sealed class CopyEntityMapping : Profile
+{
+    public CopyEntityMapping()
+    {
+        // Map Scenario to Scenario (can be another entity as well)
+        CreateMap<ProjectScenario, ProjectScenario>()
+            .ForMember(dst => dst.ProjectInfo, opt => opt.Ignore())
+            .ForMember(dst => dst.Units, opt => opt.Ignore())
+            .ForMember(dst => dst.CreatedDT, opt => opt.Ignore())
+            .ForMember(dst => dst.ModifiedDT, opt => opt.Ignore())
+            .ForMember(dst => dst.TimeStamp, opt => opt.Ignore());
+    }
+}
+
+internal sealed class CopyEntityUnitMapping : Profile
+{
+    public CopyEntityUnitMapping()
+    {
+        // Map Scenario to Scenario (can be another entity as well)
+        CreateMap<ProjectScenarioUnit, ProjectScenarioUnit>()
+            .ForMember(dst => dst.ProjectScenario, opt => opt.Ignore())
+            .ForMember(dst => dst.ProjectScenarioId, opt => opt.Ignore())
+            .ForMember(dst => dst.SetupUnit, opt => opt.Ignore())
+            .ForMember(dst => dst.SetupUnitId, opt => opt.Ignore())
+            .ForMember(dst => dst.CreatedDT, opt => opt.Ignore())
+            .ForMember(dst => dst.ModifiedDT, opt => opt.Ignore())
+            .ForMember(dst => dst.TimeStamp, opt => opt.Ignore());
+    }
+}
+
+internal sealed class CopyQueryHandler : IRequestHandler<CopyQuery, Result<CopyCommand>>
+{
+    private readonly FeatureContext _dbcontext;
+    private readonly IConfigurationProvider _configuration;
+
+    public CopyQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
+    {
+        _dbcontext = dbcontext;
+        _configuration = configuration;
+    }
+
+    public async Task<Result<CopyCommand>> Handle(CopyQuery message, CancellationToken token)
+    {
+        var command = await _dbcontext.Set<ProjectScenario>()
+            .Include(i => i.ProjectInfo)
+            .ProjectTo<CopyCommand>(_configuration)
+            .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
+
+        if (command == null)
+            return ProjectScenarioHelper.EntityNotFound(message.Id);
+
+        var Project = await _dbcontext.Set<ProjectInfo>().FindAsync([command.ProjectInfoId], cancellationToken: token);
+        if (Project is null)
+            return ProjectScenarioHelper.ProjectNotFound(command.ProjectInfoId);
+
+        command.ProjectInfo = Project;
+
+        return Result.Ok(command);
+    }
+}
+
+internal class CopyCommandHandler : IRequestHandler<CopyCommand, Result>
+{
+    private readonly FeatureContext _dbcontext;
+    private readonly IMapper _mapper;
+
+    public CopyCommandHandler(FeatureContext dbcontext, IMapper mapper)
+    {
+        _dbcontext = dbcontext;
+        _mapper = mapper;
+    }
+
+    public async Task<Result> Handle(CopyCommand message, CancellationToken token)
+    {
+        await _dbcontext.BeginTransactionAsync(token);
+
+        var entity = await _dbcontext.Set<ProjectScenario>()
+            .Include(i => i.ProjectInfo)
+            .Include(i => i.Units)
+            .FirstOrDefaultAsync(f => f.Id == message.Id, token);
+        if (entity is null)
+            return ProjectScenarioHelper.EntityNotFound(message.Id);
+
+        var setupUnits = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+
+        ProjectScenario newEntity = _mapper.Map<ProjectScenario>(entity);
+        newEntity.Id = Ulid.NewUlid();
+        newEntity.ProjectInfo = entity.ProjectInfo;
+        newEntity.CreatedDT = DateTime.UtcNow;
+        newEntity.Name = (newEntity.Name.Length > 128 - " (Copy)".Length ? newEntity.Name[..(128 - 7)] : newEntity.Name) + " (Copy)";
+        await _dbcontext.Set<ProjectScenario>().AddAsync(newEntity, token);
+
+        foreach(var unit in entity.Units)
+        {
+            ProjectScenarioUnit newUnit = _mapper.Map<ProjectScenarioUnit>(unit);
+            newUnit.Id = Ulid.NewUlid();
+            newUnit.ProjectScenario = newEntity;
+            newUnit.CreatedDT = DateTime.UtcNow;
+
+            newUnit.SetupUnit = setupUnits.FirstOrDefault(f => f.Id == unit.SetupUnitId);
+
+            await _dbcontext.Set<ProjectScenarioUnit>().AddAsync(newUnit, token);
+        }
+
+        await _dbcontext.SaveChangesAsync(token);
+        await _dbcontext.CommitTransactionAsync(token);
+
         return Result.Ok();
     }
 }

@@ -28,6 +28,7 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].Sequence)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Variable)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Expression)</th>
                                 <th></th>
@@ -37,6 +38,7 @@
                             @foreach (var record in Model.Data.Results)
                             {
                                 <tr>
+                                    <td>@Html.DisplayFor(modelItem => record!.Sequence)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Variable)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Expression)</td>
                                     <td>

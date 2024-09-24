@@ -267,6 +267,12 @@
   <data name="Scenario" xml:space="preserve">
     <value>Scenario</value>
   </data>
+  <data name="ScenarioCopyInfo" xml:space="preserve">
+    <value>Gebruik dit formulier om een bestaand scenario te kopiëren</value>
+  </data>
+  <data name="ScenarioCopyTitle" xml:space="preserve">
+    <value>Scenario Kopiëren</value>
+  </data>
   <data name="ScenarioCreateInfo" xml:space="preserve">
     <value>Gebruik dit formulier om een nieuw scenario voor uw project aan te maken. Een scenario stelt u in staat om een reeks maatstaven te definiëren die kunnen worden toegepast op ontwerpcomponenten. Dit is nuttig om vergelijkingen en schattingen te maken onder verschillende aannames. Geef een naam, beschrijving en eventuele opmerkingen om de context van dit scenario beter te begrijpen.</value>
   </data>
