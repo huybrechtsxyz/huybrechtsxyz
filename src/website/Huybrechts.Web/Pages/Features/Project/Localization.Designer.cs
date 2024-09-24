@@ -511,6 +511,105 @@ namespace Huybrechts.Web.Pages.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bill of Quantities.
+        /// </summary>
+        public static string Quantities {
+            get {
+                return ResourceManager.GetString("Quantities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bill of Quantity.
+        /// </summary>
+        public static string Quantity {
+            get {
+                return ResourceManager.GetString("Quantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a new bill of quantities to outline the materials and labor required for the project..
+        /// </summary>
+        public static string QuantityCreateInfo {
+            get {
+                return ResourceManager.GetString("QuantityCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Bill of Quantities.
+        /// </summary>
+        public static string QuantityCreateTitle {
+            get {
+                return ResourceManager.GetString("QuantityCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm deletion of the selected bill of quantities. This action cannot be undone..
+        /// </summary>
+        public static string QuantityDeleteInfo {
+            get {
+                return ResourceManager.GetString("QuantityDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Bill of Quantities.
+        /// </summary>
+        public static string QuantityDeleteTitle {
+            get {
+                return ResourceManager.GetString("QuantityDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify the details of the selected bill of quantities, including materials and labor requirements..
+        /// </summary>
+        public static string QuantityEditInfo {
+            get {
+                return ResourceManager.GetString("QuantityEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Bill of Quantities.
+        /// </summary>
+        public static string QuantityEditTitle {
+            get {
+                return ResourceManager.GetString("QuantityEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View and manage the bills of quantities for your project. Each bill of quantities contains detailed material and labor requirements..
+        /// </summary>
+        public static string QuantityIndexInfo {
+            get {
+                return ResourceManager.GetString("QuantityIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bill of Quantities.
+        /// </summary>
+        public static string QuantityIndexTitle {
+            get {
+                return ResourceManager.GetString("QuantityIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string QuantityNoResults {
+            get {
+                return ResourceManager.GetString("QuantityNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Scenario.
         /// </summary>
         public static string Scenario {

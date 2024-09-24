@@ -1,0 +1,65 @@
+﻿@page
+@inject IStringLocalizer<Localization> SL
+@model Huybrechts.Web.Pages.Features.Project.Quantity.EditModel
+@{
+    ViewData["CardTitle"] = Model.Data.ProjectInfoName + " | " + SL["QuantityEditTitle"];
+}
+
+<partial name="_StatusResult" for="StatusMessage" />
+<p class="text-info">
+    @SL["QuantityEditInfo"]
+</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <form id="create-form" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input type="hidden" asp-for="Data.Id" />
+            <div class="form-floating mb-3">
+                <input type="hidden" asp-for="Data.ProjectInfoId" />
+                <input asp-for="Data.ProjectInfoName" class="form-control" disabled/>
+                <label asp-for="Data.ProjectInfoName" class="form-label"></label>
+                <span asp-validation-for="Data.ProjectInfoName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Name" class="form-control border-info" required />
+                <label asp-for="Data.Name" class="form-label"></label>
+                <span asp-validation-for="Data.Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Description" class="form-control" />
+                <label asp-for="Data.Description" class="form-label"></label>
+                <span asp-validation-for="Data.Description" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" id="tagsInput" name="tags" class="form-control" placeholder="Enter tags" />
+                <label asp-for="Data.Tags" class="form-label"></label>
+                <input type="hidden" asp-for="Data.Tags" id="tagsHiddenInput" />
+                <span asp-validation-for="Data.Tags" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Remark" class="form-control" />
+                <label asp-for="Data.Remark" class="form-label"></label>
+                <span asp-validation-for="Data.Remark" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <a class="w-30 btn btn-lg btn-secondary" asp-page="Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfoId"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                <button id="edit-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Breadcrumb {
+    <li class="breadcrumb-item">@Model.Data.ProjectInfoName</li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Project/Quantity/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfoId">@SL["Quantities"]</a></li>
+}
+
+@section Links {
+    <link rel="stylesheet" href="/lib/tagify/tagify.min.css">
+}
+
+@section Scripts {
+    <script src="/lib/tagify/tagify.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -26,6 +26,7 @@ public static class ProjectComponentUnitFlowHelper
         entity.Sequence = model.Sequence;
         entity.SetupUnit = model.SetupUnit;
         entity.Variable = model.Variable;
+        entity.Category = model.Category;
         entity.Expression = model.Expression;
     }
 
@@ -75,6 +76,9 @@ public record Model
     [Display(Name = nameof(Variable), ResourceType = typeof(Localization))]
     public string Variable { get; set; } = string.Empty;
 
+    [Display(Name = nameof(Category), ResourceType = typeof(Localization))]
+    public string? Category { get; set; }
+
     [Display(Name = nameof(Expression), ResourceType = typeof(Localization))]
     public string? Expression { get; set; }
 
@@ -92,6 +96,7 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
         RuleFor(m => m.ProjectComponentId).NotNull().NotEmpty();
 
         RuleFor(m => m.Variable).NotEmpty().Length(1, 128);
+        RuleFor(m => m.Category).Length(0, 64);
         RuleFor(m => m.Expression).Length(0, 256);
     }
 }

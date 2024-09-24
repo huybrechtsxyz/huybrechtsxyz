@@ -4,61 +4,12 @@ using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
 using Huybrechts.Core.Project;
-using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
 
-namespace Huybrechts.App.Features.Project.ProjectDesignFlow;
-
-public static class ProjectDesignHelper
-{
-    public static string GetSearchIndex
-        (string name, string? description, string? tags)
-        => $"{name}~{description}~{tags}".ToLowerInvariant();
-
-    public static void CopyFields(Model model, ProjectDesign entity)
-    {
-        entity.Name = model.Name.Trim();
-        entity.Description = model.Description?.Trim();
-        entity.Remark = model.Remark?.Trim();
-        entity.Tags = model.Tags?.Trim();
-        entity.SearchIndex = model.SearchIndex;
-
-        entity.State = model.State.Trim();
-        entity.Reason = model.Reason?.Trim();
-        entity.Environment = model.Environment?.Trim();
-        entity.Version = model.Version?.Trim();
-        entity.Dependencies = model.Dependencies?.Trim();
-        entity.Priority = model.Priority?.Trim();
-        entity.Risk = model.Risk?.Trim();
-        entity.Rating = model.Rating;
-    }
-
-    public static CreateCommand CreateNew(ProjectInfo Project) => new()
-    {
-        Id = Ulid.NewUlid(),
-        ProjectInfoId = Project.Id,
-        ProjectInfoName = Project.Name
-    };
-
-    internal static Result ProjectNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
-
-    internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTDESIGN_ID.Replace("{0}", id.ToString()));
-
-    internal static Result DuplicateEntityFound(string name) => Result.Fail(Messages.DUPLICATE_PROJECTDESIGN_NAME.Replace("{0}", name.ToString()));
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
-    public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid ProjectInfoId, Ulid? currentId = null)
-    {
-        name = name.ToLower().Trim();
-        return await context.Set<ProjectDesign>()
-            .AnyAsync(pr => pr.Name.ToLower() == name
-                            && pr.ProjectInfoId == ProjectInfoId
-                            && (!currentId.HasValue || pr.Id != currentId.Value));
-    }
-}
+namespace Huybrechts.App.Features.Project.ProjectQuantityFlow;
 
 public record Model
 {
@@ -82,33 +33,7 @@ public record Model
     [Display(Name = nameof(Tags), ResourceType = typeof(Localization))]
     public string? Tags { get; set; }
 
-    [Display(Name = nameof(State), ResourceType = typeof(Localization))]
-    public string State { get; set; } = string.Empty;
-
-    [Display(Name = nameof(Reason), ResourceType = typeof(Localization))]
-    public string? Reason { get; set; }
-
-    [Display(Name = nameof(Environment), ResourceType = typeof(Localization))]
-    public string? Environment { get; set; }
-
-    [DataType(DataType.Url)]
-    [Display(Name = nameof(Version), ResourceType = typeof(Localization))]
-    public string? Version { get; set; }
-
-    [DataType(DataType.Url)]
-    [Display(Name = nameof(Dependencies), ResourceType = typeof(Localization))]
-    public string? Dependencies { get; set; }
-
-    [Display(Name = nameof(Priority), ResourceType = typeof(Localization))]
-    public string? Priority { get; set; }
-
-    [Display(Name = nameof(Risk), ResourceType = typeof(Localization))]
-    public string? Risk { get; set; }
-
-    [Display(Name = nameof(Rating), ResourceType = typeof(Localization))]
-    public int? Rating { get; set; }
-
-    public string SearchIndex => ProjectDesignHelper.GetSearchIndex(Name, Description, Tags);
+    public string SearchIndex => ProjectQuantityHelper.GetSearchIndex(Name, Description, Tags);
 }
 
 public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -119,13 +44,45 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
         RuleFor(m => m.ProjectInfoId).NotNull().NotEmpty();
         RuleFor(m => m.Name).NotEmpty().Length(1, 128);
         RuleFor(m => m.Description).Length(0, 256);
+    }
+}
 
-        RuleFor(m => m.State).Length(0, 32);
-        RuleFor(m => m.Reason).Length(0, 256);
-        RuleFor(m => m.Environment).Length(0, 128);
-        RuleFor(m => m.Version).Length(0, 32);
-        RuleFor(m => m.Priority).Length(0, 32);
-        RuleFor(m => m.Risk).Length(0, 32);
+public static class ProjectQuantityHelper
+{
+    public static string GetSearchIndex
+        (string name, string? description, string? tags)
+        => $"{name}~{description}~{tags}".ToLowerInvariant();
+
+    public static void CopyFields(Model model, ProjectQuantity entity)
+    {
+        entity.Name = model.Name.Trim();
+        entity.Description = model.Description?.Trim();
+        entity.Remark = model.Remark?.Trim();
+        entity.Tags = model.Tags?.Trim();
+        entity.SearchIndex = model.SearchIndex;
+    }
+
+    public static CreateCommand CreateNew(ProjectInfo Project) => new()
+    {
+        Id = Ulid.NewUlid(),
+        ProjectInfoId = Project.Id,
+        ProjectInfoName = Project.Name
+    };
+
+    internal static Result ProjectNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
+
+    internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTQUANTITY_ID.Replace("{0}", id.ToString()));
+
+    internal static Result DuplicateEntityFound(string name) => Result.Fail(Messages.DUPLICATE_PROJECTQUANTITY_NAME.Replace("{0}", name.ToString()));
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
+    public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid ProjectInfoId, Ulid? currentId = null)
+    {
+        name = name.ToLower().Trim();
+        return await context.Set<ProjectQuantity>()
+            .AnyAsync(pr => pr.Name.ToLower() == name
+                    && pr.ProjectInfoId == ProjectInfoId
+                    && (!currentId.HasValue || pr.Id != currentId.Value));
     }
 }
 
@@ -138,7 +95,7 @@ public sealed record ListModel : Model { }
 internal sealed class ListMapping : Profile
 {
     public ListMapping() =>
-        CreateProjection<ProjectDesign, ListModel>()
+        CreateProjection<ProjectQuantity, ListModel>()
         .ForMember(dest => dest.ProjectInfoName, opt => opt.MapFrom(src => src.ProjectInfo.Name));
 }
 
@@ -147,12 +104,12 @@ public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResul
     public Ulid? ProjectInfoId { get; set; } = Ulid.Empty;
 }
 
-public sealed class ListValidator : AbstractValidator<ListQuery> 
+public sealed class ListValidator : AbstractValidator<ListQuery>
 {
-    public ListValidator() 
-    { 
-        RuleFor(x => x.ProjectInfoId).NotEmpty().NotEqual(Ulid.Empty); 
-    } 
+    public ListValidator()
+    {
+        RuleFor(x => x.ProjectInfoId).NotEmpty().NotEqual(Ulid.Empty);
+    }
 }
 
 public sealed record ListResult : EntityListFlow.Result<ListModel>
@@ -163,7 +120,7 @@ public sealed record ListResult : EntityListFlow.Result<ListModel>
 }
 
 internal sealed class ListHandler :
-    EntityListFlow.Handler<ProjectDesign, ListModel>,
+    EntityListFlow.Handler<ProjectQuantity, ListModel>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
     public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -175,9 +132,9 @@ internal sealed class ListHandler :
     {
         var Project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == message.ProjectInfoId, cancellationToken: token);
         if (Project == null)
-            return ProjectDesignHelper.ProjectNotFound(message.ProjectInfoId ?? Ulid.Empty);
+            return ProjectQuantityHelper.ProjectNotFound(message.ProjectInfoId ?? Ulid.Empty);
 
-        IQueryable<ProjectDesign> query = _dbcontext.Set<ProjectDesign>();
+        IQueryable<ProjectQuantity> query = _dbcontext.Set<ProjectQuantity>();
 
         var searchString = message.SearchText ?? message.CurrentFilter;
         if (!string.IsNullOrEmpty(searchString))
@@ -236,10 +193,7 @@ public sealed class CreateQueryValidator : AbstractValidator<CreateQuery>
     }
 }
 
-public sealed record CreateCommand : Model, IRequest<Result<Ulid>>
-{
-    public List<SetupState> States { get; set; } = [];
-}
+public sealed record CreateCommand : Model, IRequest<Result<Ulid>> { }
 
 public sealed class CreateCommandValidator : ModelValidator<CreateCommand>
 {
@@ -254,10 +208,10 @@ public sealed class CreateCommandValidator : ModelValidator<CreateCommand>
 
         RuleFor(x => x).MustAsync(async (model, cancellation) =>
         {
-            bool exists = await ProjectDesignHelper.IsDuplicateNameAsync(dbContext, model.Name, model.ProjectInfoId);
+            bool exists = await ProjectQuantityHelper.IsDuplicateNameAsync(dbContext, model.Name, model.ProjectInfoId);
             return !exists;
         })
-        .WithMessage(x => Messages.DUPLICATE_PROJECTDESIGN_NAME.Replace("{0}", x.Name.ToString()))
+        .WithMessage(x => Messages.DUPLICATE_PROJECTQUANTITY_NAME.Replace("{0}", x.Name.ToString()))
         .WithName(nameof(CreateCommand.Name));
     }
 }
@@ -275,11 +229,9 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
     {
         var Project = await _dbcontext.Set<ProjectInfo>().FindAsync([message.ProjectInfoId], cancellationToken: token);
         if (Project is null)
-            return ProjectDesignHelper.ProjectNotFound(message.ProjectInfoId);
+            return ProjectQuantityHelper.ProjectNotFound(message.ProjectInfoId);
 
-        var command = ProjectDesignHelper.CreateNew(Project);
-
-        command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext);
+        var command = ProjectQuantityHelper.CreateNew(Project);
 
         return Result.Ok(command);
     }
@@ -298,20 +250,20 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
     {
         var Project = await _dbcontext.Set<ProjectInfo>().FindAsync([message.ProjectInfoId], cancellationToken: token);
         if (Project is null)
-            return ProjectDesignHelper.ProjectNotFound(message.ProjectInfoId);
+            return ProjectQuantityHelper.ProjectNotFound(message.ProjectInfoId);
 
-        if (await ProjectDesignHelper.IsDuplicateNameAsync(_dbcontext, message.Name, message.ProjectInfoId))
-            return ProjectDesignHelper.DuplicateEntityFound(message.Name);
+        if (await ProjectQuantityHelper.IsDuplicateNameAsync(_dbcontext, message.Name, message.ProjectInfoId))
+            return ProjectQuantityHelper.DuplicateEntityFound(message.Name);
 
-        var entity = new ProjectDesign
+        var entity = new ProjectQuantity
         {
             Id = message.Id,
             ProjectInfo = Project,
             CreatedDT = DateTime.UtcNow
         };
-        ProjectDesignHelper.CopyFields(message, entity);
-            
-        await _dbcontext.Set<ProjectDesign>().AddAsync(entity, token);
+        ProjectQuantityHelper.CopyFields(message, entity);
+
+        await _dbcontext.Set<ProjectQuantity>().AddAsync(entity, token);
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok(entity.Id);
     }
@@ -331,14 +283,12 @@ public sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
     }
 }
 
-public record UpdateCommand : Model, IRequest<Result> 
+public record UpdateCommand : Model, IRequest<Result>
 {
     public ProjectInfo ProjectInfo { get; set; } = new();
-
-    public List<SetupState> States { get; set; } = [];
 }
 
-public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
+public class UpdateCommandValidator : ModelValidator<UpdateCommand>
 {
     public UpdateCommandValidator(FeatureContext dbContext)
     {
@@ -351,18 +301,18 @@ public class UpdateCommandValidator : ModelValidator<UpdateCommand>
 
         RuleFor(x => x).MustAsync(async (model, cancellation) =>
         {
-            bool exists = await ProjectDesignHelper.IsDuplicateNameAsync(dbContext, model.Name, model.ProjectInfoId, model.Id);
+            bool exists = await ProjectQuantityHelper.IsDuplicateNameAsync(dbContext, model.Name, model.ProjectInfoId, model.Id);
             return !exists;
         })
-        .WithMessage(x => Messages.DUPLICATE_PROJECTDESIGN_NAME.Replace("{0}", x.Name.ToString()))
+        .WithMessage(x => Messages.DUPLICATE_PROJECTQUANTITY_NAME.Replace("{0}", x.Name.ToString()))
         .WithName(nameof(CreateCommand.Name));
     }
 }
 
 internal class UpdateCommandMapping : Profile
 {
-    public UpdateCommandMapping() => 
-        CreateProjection<ProjectDesign, UpdateCommand>()
+    public UpdateCommandMapping() =>
+        CreateProjection<ProjectQuantity, UpdateCommand>()
         .ForMember(dest => dest.ProjectInfoName, opt => opt.MapFrom(src => src.ProjectInfo.Name));
 }
 
@@ -379,20 +329,19 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
 
     public async Task<Result<UpdateCommand>> Handle(UpdateQuery message, CancellationToken token)
     {
-        var command = await _dbcontext.Set<ProjectDesign>()
+        var command = await _dbcontext.Set<ProjectQuantity>()
             .Include(i => i.ProjectInfo)
             .ProjectTo<UpdateCommand>(_configuration)
             .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
 
-        if (command == null) 
-            return ProjectDesignHelper.EntityNotFound(message.Id);
+        if (command == null)
+            return ProjectQuantityHelper.EntityNotFound(message.Id);
 
         var project = await _dbcontext.Set<ProjectInfo>().FindAsync([command.ProjectInfoId], cancellationToken: token);
         if (project is null)
-            return ProjectDesignHelper.ProjectNotFound(command.ProjectInfoId);
+            return ProjectQuantityHelper.ProjectNotFound(command.ProjectInfoId);
 
         command.ProjectInfo = project;
-        command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext);
 
         return Result.Ok(command);
     }
@@ -409,17 +358,17 @@ internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
 
     public async Task<Result> Handle(UpdateCommand message, CancellationToken token)
     {
-        var entity = await _dbcontext.Set<ProjectDesign>().FindAsync([message.Id], cancellationToken: token);
+        var entity = await _dbcontext.Set<ProjectQuantity>().FindAsync([message.Id], cancellationToken: token);
         if (entity is null)
-            return ProjectDesignHelper.EntityNotFound(message.Id);
+            return ProjectQuantityHelper.EntityNotFound(message.Id);
 
-        if (await ProjectDesignHelper.IsDuplicateNameAsync(_dbcontext, message.Name, message.ProjectInfoId, entity.Id))
-            return ProjectDesignHelper.DuplicateEntityFound(message.Name);
+        if (await ProjectQuantityHelper.IsDuplicateNameAsync(_dbcontext, message.Name, message.ProjectInfoId, entity.Id))
+            return ProjectQuantityHelper.DuplicateEntityFound(message.Name);
 
         entity.ModifiedDT = DateTime.UtcNow;
-        ProjectDesignHelper.CopyFields(message, entity);
-            
-        _dbcontext.Set<ProjectDesign>().Update(entity);
+        ProjectQuantityHelper.CopyFields(message, entity);
+
+        _dbcontext.Set<ProjectQuantity>().Update(entity);
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok();
     }
@@ -454,8 +403,8 @@ public sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
 
 internal sealed class DeleteCommandMapping : Profile
 {
-    public DeleteCommandMapping() => 
-        CreateProjection<ProjectDesign, DeleteCommand>()
+    public DeleteCommandMapping() =>
+        CreateProjection<ProjectQuantity, DeleteCommand>()
         .ForMember(dest => dest.ProjectInfoName, opt => opt.MapFrom(src => src.ProjectInfo.Name));
 }
 
@@ -472,17 +421,17 @@ internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<D
 
     public async Task<Result<DeleteCommand>> Handle(DeleteQuery message, CancellationToken token)
     {
-        var command = await _dbcontext.Set<ProjectDesign>()
+        var command = await _dbcontext.Set<ProjectQuantity>()
             .Include(i => i.ProjectInfo)
             .ProjectTo<DeleteCommand>(_configuration)
             .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
 
         if (command == null)
-            return ProjectDesignHelper.EntityNotFound(message.Id);
+            return ProjectQuantityHelper.EntityNotFound(message.Id);
 
         var Project = await _dbcontext.Set<ProjectInfo>().FindAsync([command.ProjectInfoId], cancellationToken: token);
         if (Project is null)
-            return ProjectDesignHelper.ProjectNotFound(command.ProjectInfoId);
+            return ProjectQuantityHelper.ProjectNotFound(command.ProjectInfoId);
 
         command.ProjectInfo = Project;
 
@@ -501,11 +450,11 @@ internal class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
 
     public async Task<Result> Handle(DeleteCommand message, CancellationToken token)
     {
-        var entity = await _dbcontext.Set<ProjectDesign>().FindAsync([message.Id], cancellationToken: token);
+        var entity = await _dbcontext.Set<ProjectQuantity>().FindAsync([message.Id], cancellationToken: token);
         if (entity is null)
-            return ProjectDesignHelper.EntityNotFound(message.Id);
+            return ProjectQuantityHelper.EntityNotFound(message.Id);
 
-        _dbcontext.Set<ProjectDesign>().Remove(entity);
+        _dbcontext.Set<ProjectQuantity>().Remove(entity);
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok();
     }

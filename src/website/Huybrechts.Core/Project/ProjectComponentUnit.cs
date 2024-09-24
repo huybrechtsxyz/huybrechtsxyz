@@ -81,6 +81,13 @@ public record ProjectComponentUnit : Entity, IEntity
     public string Variable { get; set; } = string.Empty;
 
     /// <summary>
+    /// Category of the component unit (example: forfait, per unit, ...)
+    /// </summary>
+    [MaxLength(64)]
+    [Comment("Category of the component unit (example: forfait, per unit, ...)")]
+    public string? Category { get; set; }
+
+    /// <summary>
     /// Gets or sets the formula expression used to calculate the variable's value.
     /// </summary>
     /// <remarks>

@@ -37,6 +37,7 @@
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].SetupUnitName)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Variable)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Expression)</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].Category)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Remark)</th>
                                 <th></th>
                             </tr>
@@ -49,6 +50,7 @@
                                     <td>@Html.DisplayFor(modelItem => record!.SetupUnitName)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Variable)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Expression)</td>
+                                    <td>@Html.DisplayFor(modelItem => record!.Category)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Remark)</td>
                                     <td>
                                         <a asp-page="Edit" asp-route-id="@record!.Id" class="btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i></a>

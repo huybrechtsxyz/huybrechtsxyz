@@ -79,6 +79,15 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate project bill of quantity with name for {0}.
+        /// </summary>
+        public static string DUPLICATE_PROJECTQUANTITY_NAME {
+            get {
+                return ResourceManager.GetString("DUPLICATE_PROJECTQUANTITY_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate project scenario name for {0}.
         /// </summary>
         public static string DUPLICATE_PROJECTSCENARIO_NAME {
@@ -129,6 +138,15 @@ namespace Huybrechts.App.Features.Project {
         public static string INVALID_PROJECTDESIGN_ID {
             get {
                 return ResourceManager.GetString("INVALID_PROJECTDESIGN_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find bill of quantity with ID {0}.
+        /// </summary>
+        public static string INVALID_PROJECTQUANTITY_ID {
+            get {
+                return ResourceManager.GetString("INVALID_PROJECTQUANTITY_ID", resourceCulture);
             }
         }
         

@@ -670,7 +670,7 @@ public sealed class CalculationCommandHandler : IRequestHandler<CalculationComma
                         foreach (var measure in component.ProjectComponentUnits.OrderBy(o => o.Sequence).ThenBy(o => o.Variable))
                         {
                             if (string.IsNullOrEmpty(measure.Variable))
-                                measure.Variable = measure.SetupUnit?.Name ?? string.Empty;
+                                measure.Variable = measure.SetupUnit?.Name.ToLower().Trim() ?? string.Empty;
 
                             if (string.IsNullOrEmpty(measure.Variable) || string.IsNullOrEmpty(measure.Expression))
                                 continue;
@@ -738,6 +738,8 @@ public sealed class CalculationCommandHandler : IRequestHandler<CalculationComma
                                         {
                                             foreach (var measureunit in applied)
                                             {
+                                                if (string.IsNullOrEmpty(measureunit.Variable))
+                                                    measureunit.Variable = measureunit.SetupUnit?.Name.ToLower().Trim() ?? string.Empty;
                                                 platformEntry.Quantity *= (decimal)variables[measureunit.Variable];
                                             }
                                         }

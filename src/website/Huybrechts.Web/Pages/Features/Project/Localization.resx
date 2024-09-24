@@ -267,6 +267,39 @@
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
   </data>
+  <data name="Quantities" xml:space="preserve">
+    <value>Bill of Quantities</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Bill of Quantity</value>
+  </data>
+  <data name="QuantityCreateInfo" xml:space="preserve">
+    <value>Add a new bill of quantities to outline the materials and labor required for the project.</value>
+  </data>
+  <data name="QuantityCreateTitle" xml:space="preserve">
+    <value>Create Bill of Quantities</value>
+  </data>
+  <data name="QuantityDeleteInfo" xml:space="preserve">
+    <value>Confirm deletion of the selected bill of quantities. This action cannot be undone.</value>
+  </data>
+  <data name="QuantityDeleteTitle" xml:space="preserve">
+    <value>Delete Bill of Quantities</value>
+  </data>
+  <data name="QuantityEditInfo" xml:space="preserve">
+    <value>Modify the details of the selected bill of quantities, including materials and labor requirements.</value>
+  </data>
+  <data name="QuantityEditTitle" xml:space="preserve">
+    <value>Edit Bill of Quantities</value>
+  </data>
+  <data name="QuantityIndexInfo" xml:space="preserve">
+    <value>View and manage the bills of quantities for your project. Each bill of quantities contains detailed material and labor requirements.</value>
+  </data>
+  <data name="QuantityIndexTitle" xml:space="preserve">
+    <value>Bill of Quantities</value>
+  </data>
+  <data name="QuantityNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
   <data name="Scenario" xml:space="preserve">
     <value>Scenario</value>
   </data>

@@ -120,6 +120,9 @@
   <data name="DUPLICATE_PROJECTDESIGN_NAME" xml:space="preserve">
     <value>Duplicate project design name for {0}</value>
   </data>
+  <data name="DUPLICATE_PROJECTQUANTITY_NAME" xml:space="preserve">
+    <value>Duplicate project bill of quantity with name for {0}</value>
+  </data>
   <data name="DUPLICATE_PROJECTSCENARIO_NAME" xml:space="preserve">
     <value>Duplicate project scenario name for {0}</value>
   </data>
@@ -134,6 +137,9 @@
   </data>
   <data name="INVALID_PROJECTDESIGN_ID" xml:space="preserve">
     <value>Unable to find design with ID {0}</value>
+  </data>
+  <data name="INVALID_PROJECTQUANTITY_ID" xml:space="preserve">
+    <value>Unable to find bill of quantity with ID {0}</value>
   </data>
   <data name="INVALID_PROJECTSCENARIOUNIT_ID" xml:space="preserve">
     <value>Unable to find scenario metric with ID {0}</value>
