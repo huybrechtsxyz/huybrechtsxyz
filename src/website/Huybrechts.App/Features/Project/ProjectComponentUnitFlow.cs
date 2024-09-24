@@ -308,6 +308,82 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
 }
 
 //
+// CREATE DEFAULT UNITS
+//
+
+public sealed record DefaultQuery : IRequest<Result<DefaultCommand>>
+{
+    public Ulid ProjectComponentId { get; set; } = Ulid.Empty;
+}
+
+public sealed class DefaultQueryValidator : AbstractValidator<DefaultQuery>
+{
+    public DefaultQueryValidator()
+    {
+        RuleFor(m => m.ProjectComponentId).NotEmpty().NotEqual(Ulid.Empty);
+    }
+}
+
+public sealed record DefaultCommand : Model, IRequest<Result<Ulid>>
+{
+    public ProjectInfo ProjectInfo { get; set; } = new();
+
+    public ProjectDesign ProjectDesign { get; set; } = new();
+
+    public List<SetupUnit> SetupUnitList { get; set; } = [];
+}
+
+public sealed class DefaultCommandValidator : ModelValidator<CreateCommand>
+{
+    public DefaultCommandValidator(FeatureContext dbContext) : base()
+    {
+        RuleFor(x => x.ProjectComponentId).MustAsync(async (id, cancellation) =>
+        {
+            bool exists = await dbContext.Set<ProjectComponent>().AnyAsync(x => x.Id == id, cancellation);
+            return exists;
+        })
+        .WithMessage(m => Messages.INVALID_PROJECTCOMPONENT_ID.Replace("{0}", m.ProjectComponentId.ToString()));
+    }
+}
+
+internal class DefaultQueryHandler : IRequestHandler<DefaultQuery, Result<DefaultCommand>>
+{
+    private readonly FeatureContext _dbcontext;
+
+    public DefaultQueryHandler(FeatureContext dbcontext)
+    {
+        _dbcontext = dbcontext;
+    }
+
+    public async Task<Result<DefaultCommand>> Handle(DefaultQuery message, CancellationToken token)
+    {
+        var component = await _dbcontext.Set<ProjectComponent>().FirstOrDefaultAsync(q => q.Id == message.ProjectComponentId, cancellationToken: token);
+        if (component == null)
+            return ProjectComponentUnitFlowHelper.ComponentNotFound(message.ProjectComponentId);
+
+        var design = await _dbcontext.Set<ProjectDesign>().FirstOrDefaultAsync(q => q.Id == component.ProjectDesignId, cancellationToken: token);
+        if (design == null)
+            return ProjectComponentUnitFlowHelper.DesignNotFound(component.ProjectDesignId);
+
+        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == component.ProjectInfoId, cancellationToken: token);
+        if (project == null)
+            return ProjectComponentUnitFlowHelper.ProjectNotFound(component.ProjectInfoId);
+
+        DefaultCommand command = new()
+        {
+            ProjectInfo = project,
+            ProjectDesign = design,
+            ProjectComponent = component,
+            SetupUnitList = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token)
+        };
+
+        return Result.Ok(command);
+    }
+}
+
+//TODO create default units
+
+//
 // UPDATE
 //
 

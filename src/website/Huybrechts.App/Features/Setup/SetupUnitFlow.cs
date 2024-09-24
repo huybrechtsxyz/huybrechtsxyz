@@ -19,6 +19,22 @@ public static class SetuptUnitHelper
 {
     private static SetupUnit? _defaultSetupUnit;
 
+    public static decimal ConvertUnit(decimal value, SetupUnit fromUnit, SetupUnit toUnit)
+    {
+        // Ensure the units are of the same UnitType
+        if (fromUnit.UnitType != toUnit.UnitType)
+            throw new ArgumentException("Incompatible unit types");
+
+        // Convert the value to the base unit by dividing by the fromUnit factor
+        decimal baseValue = value * fromUnit.Factor;
+
+        // Convert from the base unit to the target unit by multiplying by the toUnit factor
+        decimal convertedValue = baseValue / toUnit.Factor;
+
+        // Apply precision settings
+        return Math.Round(convertedValue, toUnit.Precision, toUnit.PrecisionType);
+    }
+
     public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
 
     public static async Task<List<SetupUnit>> GetSetupUnitsAsync(FeatureContext dbcontext, CancellationToken token)

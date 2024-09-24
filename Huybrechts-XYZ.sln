@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.SqlServer"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.Npgsql", "src\website\Huybrechts.Infra.Npgsql\Huybrechts.Infra.Npgsql.csproj", "{BF18CDC1-0963-4BA2-A692-4D4079F17563}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.App.Tests", "tests\website\Huybrechts.App.Tests\Huybrechts.App.Tests.csproj", "{8F9F7300-5944-4A34-B47D-3383EA681178}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{BF18CDC1-0963-4BA2-A692-4D4079F17563}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF18CDC1-0963-4BA2-A692-4D4079F17563}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF18CDC1-0963-4BA2-A692-4D4079F17563}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F9F7300-5944-4A34-B47D-3383EA681178}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F9F7300-5944-4A34-B47D-3383EA681178}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F9F7300-5944-4A34-B47D-3383EA681178}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F9F7300-5944-4A34-B47D-3383EA681178}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
