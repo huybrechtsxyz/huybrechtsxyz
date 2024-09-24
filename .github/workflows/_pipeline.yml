@@ -129,6 +129,7 @@ jobs:
             docker network inspect traefik --format {{.Id}} 2>/dev/null \
               || docker network create --driver overlay traefik
             #Create the docker secrets
+            createsecret "Google Mail" "APP_AUTH_GOOGLE" '${{ secrets.APP_AUTH_GOOGLE }}'
             createsecret "Server Email" "APP_HOST_EMAIL" '${{ secrets.APP_HOST_EMAIL }}'
             createsecret "Server Password" "APP_HOST_PASSWORD" '${{ secrets.APP_HOST_PASSWORD }}'
             createsecret "Server Port" "APP_HOST_PORT" '${{ secrets.APP_HOST_PORT }}'
