@@ -117,11 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Add Defaults" xml:space="preserve">
+    <value>Slim Toevoegen</value>
+  </data>
   <data name="Add New" xml:space="preserve">
     <value>Toevoegen</value>
   </data>
   <data name="Add Selection" xml:space="preserve">
-    <value>Add Selection</value>
+    <value>Selectie Toevoegen</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Annuleer</value>

@@ -4,12 +4,16 @@ using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
 using Huybrechts.App.Features.Setup.SetupUnitFlow;
+using Huybrechts.Core.Platform;
 using Huybrechts.Core.Project;
 using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
+using Microsoft.Win32.SafeHandles;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 
 namespace Huybrechts.App.Features.Project.ProjectComponentUnitFlow;
 
@@ -311,51 +315,31 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
 // CREATE DEFAULT UNITS
 //
 
-public sealed record DefaultQuery : IRequest<Result<DefaultCommand>>
+public sealed record DefaultCommand : IRequest<Result>
 {
     public Ulid ProjectComponentId { get; set; } = Ulid.Empty;
 }
 
-public sealed class DefaultQueryValidator : AbstractValidator<DefaultQuery>
+public sealed class DefaultCommandValidator : AbstractValidator<DefaultCommand>
 {
-    public DefaultQueryValidator()
+    public DefaultCommandValidator()
     {
         RuleFor(m => m.ProjectComponentId).NotEmpty().NotEqual(Ulid.Empty);
     }
 }
 
-public sealed record DefaultCommand : Model, IRequest<Result<Ulid>>
-{
-    public ProjectInfo ProjectInfo { get; set; } = new();
-
-    public ProjectDesign ProjectDesign { get; set; } = new();
-
-    public List<SetupUnit> SetupUnitList { get; set; } = [];
-}
-
-public sealed class DefaultCommandValidator : ModelValidator<CreateCommand>
-{
-    public DefaultCommandValidator(FeatureContext dbContext) : base()
-    {
-        RuleFor(x => x.ProjectComponentId).MustAsync(async (id, cancellation) =>
-        {
-            bool exists = await dbContext.Set<ProjectComponent>().AnyAsync(x => x.Id == id, cancellation);
-            return exists;
-        })
-        .WithMessage(m => Messages.INVALID_PROJECTCOMPONENT_ID.Replace("{0}", m.ProjectComponentId.ToString()));
-    }
-}
-
-internal class DefaultQueryHandler : IRequestHandler<DefaultQuery, Result<DefaultCommand>>
+internal class DefaultQueryHandler : IRequestHandler<DefaultCommand, Result>
 {
     private readonly FeatureContext _dbcontext;
+    private readonly IMapper _mapper;
 
-    public DefaultQueryHandler(FeatureContext dbcontext)
+    public DefaultQueryHandler(FeatureContext dbcontext, IMapper mapper)
     {
         _dbcontext = dbcontext;
+        _mapper = mapper;
     }
 
-    public async Task<Result<DefaultCommand>> Handle(DefaultQuery message, CancellationToken token)
+    public async Task<Result> Handle(DefaultCommand message, CancellationToken token)
     {
         var component = await _dbcontext.Set<ProjectComponent>().FirstOrDefaultAsync(q => q.Id == message.ProjectComponentId, cancellationToken: token);
         if (component == null)
@@ -369,15 +353,77 @@ internal class DefaultQueryHandler : IRequestHandler<DefaultQuery, Result<Defaul
         if (project == null)
             return ProjectComponentUnitFlowHelper.ProjectNotFound(component.ProjectInfoId);
 
-        DefaultCommand command = new()
-        {
-            ProjectInfo = project,
-            ProjectDesign = design,
-            ProjectComponent = component,
-            SetupUnitList = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token)
-        };
+        var units = await _dbcontext.Set<ProjectComponentUnit>()
+            .Where(q => q.ProjectComponentId == component.Id)
+            .Include(i => i.SetupUnit)
+            .ToListAsync(token);
+        var index = units.Count * 10 + 10;
 
-        return Result.Ok(command);
+        if (component.SourceType == SourceType.Platform) 
+        {
+            if (component.PlatformInfoId.HasValue && component.PlatformInfoId != Ulid.Empty)
+            {
+                var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(f => f.Id == component.PlatformInfoId, token);
+                if(platform is not null && component.PlatformProductId.HasValue && component.PlatformProductId != Ulid.Empty)
+                {
+                    var product = await _dbcontext.Set<PlatformProduct>().FirstOrDefaultAsync(f => f.Id == component.PlatformProductId, token);
+                    if (product is not null)
+                    {
+                        var rates = await _dbcontext.Set<PlatformRate>()
+                            .Where(q => q.PlatformProductId == product.Id)
+                            .Include(i => i.RateUnits)
+                            .ThenInclude(j => j.SetupUnit)
+                            .ToListAsync(token);
+
+                        await _dbcontext.BeginTransactionAsync(token);
+
+                        if (rates is not null && rates.Count > 0)
+                        {
+                            // Get all SetupUnit IDs associated with the current component units
+                            var existingUnitIds = units.Select(u => u.SetupUnit!.Id).ToHashSet();
+
+                            // Get all SetupUnits from the rates
+                            var allSetupUnitsFromRates = rates.SelectMany(r => r.RateUnits)
+                                .Select(ru => ru.SetupUnit)
+                                .Distinct()
+                                .ToList();
+
+                            foreach (var rate in rates)
+                            {
+                                foreach (var rateUnit in rate.RateUnits)
+                                {
+                                    if (existingUnitIds.Contains(rateUnit.SetupUnit.Id))
+                                        continue;
+
+                                    ProjectComponentUnit newComponentUnit = new()
+                                    {
+                                        Id = Ulid.NewUlid(),
+                                        CreatedDT = DateTime.UtcNow,
+                                        ProjectInfoId = project.Id,
+                                        ProjectDesignId = design.Id,
+                                        ProjectComponent = component,
+
+                                        Sequence = index,
+                                        SetupUnit = rateUnit.SetupUnit,
+                                        Variable = rateUnit.SetupUnit.Name.ToLower().Trim(),
+                                        Expression = "1"
+                                    };
+
+                                    await _dbcontext.Set<ProjectComponentUnit>().AddAsync(newComponentUnit, token);
+                                    existingUnitIds.Add(rateUnit.SetupUnit.Id);
+                                    index += 10;
+                                }
+                            }
+                        }
+
+                        await _dbcontext.SaveChangesAsync(token);
+                        await _dbcontext.CommitTransactionAsync(token);
+                    }
+                }
+            }
+        }
+
+        return Result.Ok();
     }
 }
 
