@@ -57,12 +57,12 @@ public class ApplicationSeedWorker : IHostedService
 	private async Task<HealthStatus> MigrateAsync(int maxRetries, int initialDelaySeconds, CancellationToken cancellationToken)
 	{
 		HealthStatus healthCheckResult = HealthStatus.Unhealthy;
-		int retryCount = 0;
+		int retryCount = 1;
 
 		if (_dbcontext is null)
 			return healthCheckResult;
 
-		while (retryCount < maxRetries)
+		while (retryCount <= maxRetries)
 		{
 			try
 			{
