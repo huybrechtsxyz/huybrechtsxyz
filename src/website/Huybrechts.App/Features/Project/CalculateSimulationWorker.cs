@@ -1,11 +1,7 @@
 ﻿using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
-using FluentResults;
 using Huybrechts.App.Data;
-using Huybrechts.Core.Platform;
-using Huybrechts.Core.Project;
 using MediatR;
-using static Huybrechts.App.Features.EntityListFlow;
 
 namespace Huybrechts.App.Features.Project;
 

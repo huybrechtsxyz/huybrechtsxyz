@@ -13,6 +13,7 @@ public class StatusResult
         else
             return new()
             {
+                IsException = false,
                 IsFailed = false,
                 IsSuccess = false,
                 Message = json
@@ -22,8 +23,10 @@ public class StatusResult
     private static bool IsProbablyJson(string input)
     {
         input = input.Trim();
-        return (input.StartsWith("{") && input.EndsWith("}")) || (input.StartsWith("[") && input.EndsWith("]"));
+        return (input.StartsWith('{') && input.EndsWith('}')) || (input.StartsWith('[') && input.EndsWith(']'));
     }
+
+    public bool IsException { get; set; } = false;
 
     public bool IsFailed { get; set; } = false;
 

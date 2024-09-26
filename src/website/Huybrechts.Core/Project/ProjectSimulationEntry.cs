@@ -72,6 +72,17 @@ public record ProjectSimulationEntry : Entity, IEntity
 
     public ProjectComponent ProjectComponent { get; set; } = new();
 
+    /// <summary>
+    /// Gets or sets the unique identifier for the Project Quantity.
+    /// </summary>
+    /// <remarks>
+    /// This is a foreign key linking to the <c>ProjectQuantity</c> entity.
+    /// </remarks>
+    [Comment("Gets or sets the unique identifier for the Project Quantity.")]
+    public Ulid? ProjectQuantityId { get; set; }
+
+    public ProjectQuantity? ProjectQuantity { get; set; }
+
     ///// <summary>
     ///// Foreign key linking to the SetupUnit entity.
     ///// </summary>
@@ -131,6 +142,27 @@ public record ProjectSimulationEntry : Entity, IEntity
 
     public PlatformRate? PlatformRate { get; set; }
 
+    //
+    // LINE DETAILS
+    //
+
+    /// <summary>
+    /// Gets or sets the description of the unit.
+    /// </summary>
+    /// <remarks>
+    /// Provides a detailed description of the unit or its usage in the project.
+    /// </remarks>
+    [StringLength(256)]
+    [Comment("Gets or sets the description of the unit.")]
+    public string? UnitDescription { get; set; }
+
+    /// <summary>
+    /// Category of the component unit (example: forfait, per unit, ...)
+    /// </summary>
+    [MaxLength(64)]
+    [Comment("Category of the component unit (example: forfait, per unit, ...)")]
+    public string? UnitCategory { get; set; }
+
     /// <summary>
     /// The currency code in which the rate is expressed.
     /// Follows standard ISO currency codes (e.g., USD, EUR) to ensure clarity in multi-currency environments.
@@ -158,6 +190,16 @@ public record ProjectSimulationEntry : Entity, IEntity
     [Precision(18, 4)]
     [Comment("Quantity of service units.")]
     public decimal Quantity { get; set; }
+
+    /// <summary>
+    /// Gets or sets the sales price for a service.
+    /// </summary>
+    /// <remarks>
+    /// The price of the unit as sold to the customer
+    /// </remarks>
+    [Precision(18, 6)]
+    [Comment("Gets or sets the sales price for a unit.")]
+    public decimal SalesPrice { get; set; }
 
     /// <summary>
     /// The retail price of the service in the specified currency. 
@@ -200,7 +242,18 @@ public record ProjectSimulationEntry : Entity, IEntity
     /// </remarks>
     [Precision(18, 4)]
     [Comment("Internal retail cost in the specified currency.")]
-    public decimal RetailCost { get; set; }
+    public decimal SalesAmount { get; set; }
+
+    /// <summary>
+    /// The retail cost of the service in the specified currency. 
+    /// This is the internal cost used for calculating profit margins.
+    /// </summary>
+    /// <remarks>
+    /// Stored with a precision of up to 4 decimal places.
+    /// </remarks>
+    [Precision(18, 4)]
+    [Comment("Internal retail cost in the specified currency.")]
+    public decimal RetailAmount { get; set; }
 
     /// <summary>
     /// The unit cost of the service in the specified currency. 
@@ -211,7 +264,17 @@ public record ProjectSimulationEntry : Entity, IEntity
     /// </remarks>
     [Precision(18, 4)]
     [Comment("Internal unit cost per service unit in the specified currency.")]
-    public decimal UnitCost { get; set; }
+    public decimal UnitAmount { get; set; }
+
+    /// <summary>
+    /// The sales revenue adjusted for the ownership percentage. 
+    /// </summary>
+    /// <remarks>
+    /// Stored with a precision of up to 4 decimal places.
+    /// </remarks>
+    [Precision(18, 4)]
+    [Comment("The sales revenue adjusted for the ownership percentage.")]
+    public decimal OwnSalesAmount { get; set; }
 
     /// <summary>
     /// The retail cost adjusted for the ownership percentage. 
@@ -223,7 +286,7 @@ public record ProjectSimulationEntry : Entity, IEntity
     /// </remarks>
     [Precision(18, 4)]
     [Comment("Ownership-adjusted retail cost in the specified currency.")]
-    public decimal OwnRetailCost { get; set; }
+    public decimal OwnRetailAmount { get; set; }
 
     /// <summary>
     /// The unit cost adjusted for the ownership percentage. 
@@ -235,82 +298,5 @@ public record ProjectSimulationEntry : Entity, IEntity
     /// </remarks>
     [Precision(18, 4)]
     [Comment("Ownership-adjusted unit cost per service unit in the specified currency.")]
-    public decimal OwnUnitCost { get; set; }
-
-    public ProjectSimulationEntry() { }
-
-    public ProjectSimulationEntry(
-        ProjectSimulation simulation,
-        ProjectInfo project,
-        ProjectScenario scenario,
-        ProjectDesign design,
-        ProjectComponent component
-        )
-        : base()
-    {
-        Id = Ulid.NewUlid();
-        CreatedDT = DateTime.Now;
-
-        ProjectSimulation = simulation;
-        ProjectSimulationId = simulation.Id;
-
-        ProjectInfo = project;
-        ProjectInfoId = project.Id;
-
-        ProjectScenario = scenario;
-        ProjectScenarioId = scenario.Id;
-
-        ProjectDesign = design;
-        ProjectDesignId = design.Id;
-
-        ProjectComponent = component;
-        ProjectComponentId = component.Id;
-        OwnershipPercentage = component.OwnershipPercentage;
-
-        //SetupUnit = setupUnit;
-        //SetupUnitId = setupUnit.Id;
-    }
-
-    public ProjectSimulationEntry(
-        ProjectSimulation simulation,
-        ProjectInfo project,
-        ProjectScenario scenario,
-        ProjectDesign design,
-        ProjectComponent component,
-        PlatformInfo platform,
-        PlatformProduct product,
-        PlatformRate platformRate,
-        PlatformRegion platformRegion,
-        PlatformService platformService
-        )
-        : this(simulation, project, scenario, design, component)
-    {
-        PlatformInfo = platform;
-        PlatformInfoId = platform.Id;
-
-        PlatformProduct = product;
-        PlatformProductId = product.Id;
-
-        PlatformRate = platformRate;
-        PlatformRateId = platformRate.Id;
-
-        PlatformRegion = platformRegion;
-        PlatformRegionId = platformRegion.Id;
-
-        PlatformService = platformService;
-        PlatformServiceId = platformService.Id;
-
-        CurrencyCode = platformRate.CurrencyCode;
-        UnitOfMeasure = platformRate.UnitOfMeasure;
-        RetailPrice = platformRate.RetailPrice;
-        UnitPrice = platformRate.UnitPrice;
-    }
-
-    public void Calculate()
-    {
-        this.RetailCost = decimal.Round(this.Quantity * this.RetailPrice, 4);
-        this.UnitCost = decimal.Round(this.Quantity * this.UnitPrice, 4);
-        this.OwnRetailCost = decimal.Round(this.RetailCost * (this.OwnershipPercentage / 100), 4);
-        this.OwnUnitCost = decimal.Round(this.UnitCost * (this.OwnershipPercentage / 100), 4);
-    }
+    public decimal OwnUnitAmount{ get; set; }
 }

@@ -120,8 +120,14 @@
   <data name="Account" xml:space="preserve">
     <value>Account</value>
   </data>
+  <data name="BillOfQuantity" xml:space="preserve">
+    <value>Bill of quantities</value>
+  </data>
   <data name="BusinessValue" xml:space="preserve">
     <value>Business value</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
   </data>
   <data name="Code" xml:space="preserve">
     <value>Code</value>
@@ -195,6 +201,9 @@
   <data name="Proposal" xml:space="preserve">
     <value>Proposal</value>
   </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
   <data name="Rating" xml:space="preserve">
     <value>Rating</value>
   </data>
@@ -207,8 +216,14 @@
   <data name="Responsible" xml:space="preserve">
     <value>Responsible</value>
   </data>
+  <data name="RetailPrice" xml:space="preserve">
+    <value>Retail price</value>
+  </data>
   <data name="Risk" xml:space="preserve">
     <value>Risk</value>
+  </data>
+  <data name="SalesPrice" xml:space="preserve">
+    <value>Sales price</value>
   </data>
   <data name="Scenario" xml:space="preserve">
     <value>Scenario</value>
@@ -236,6 +251,9 @@
   </data>
   <data name="Unit" xml:space="preserve">
     <value>Unit</value>
+  </data>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>Unit price</value>
   </data>
   <data name="Variable" xml:space="preserve">
     <value>Variable</value>

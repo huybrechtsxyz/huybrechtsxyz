@@ -120,8 +120,14 @@
   <data name="Account" xml:space="preserve">
     <value>Account</value>
   </data>
+  <data name="BillOfQuantity" xml:space="preserve">
+    <value>Meetstaat</value>
+  </data>
   <data name="BusinessValue" xml:space="preserve">
     <value>Zakelijke Waarde</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Categorie</value>
   </data>
   <data name="Code" xml:space="preserve">
     <value>Kode</value>
@@ -195,6 +201,9 @@
   <data name="Proposal" xml:space="preserve">
     <value>Voorstel</value>
   </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Hoeveelheid</value>
+  </data>
   <data name="Rating" xml:space="preserve">
     <value>Beoordeling</value>
   </data>
@@ -207,8 +216,14 @@
   <data name="Responsible" xml:space="preserve">
     <value>Verantwoordelijke</value>
   </data>
+  <data name="RetailPrice" xml:space="preserve">
+    <value>Aankoopprijs</value>
+  </data>
   <data name="Risk" xml:space="preserve">
     <value>Risico</value>
+  </data>
+  <data name="SalesPrice" xml:space="preserve">
+    <value>Verkoopprijs</value>
   </data>
   <data name="Scenario" xml:space="preserve">
     <value>Scenario</value>
@@ -236,6 +251,9 @@
   </data>
   <data name="Unit" xml:space="preserve">
     <value>Eenheid</value>
+  </data>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>Eenheidsprijs</value>
   </data>
   <data name="Variable" xml:space="preserve">
     <value>Variable</value>

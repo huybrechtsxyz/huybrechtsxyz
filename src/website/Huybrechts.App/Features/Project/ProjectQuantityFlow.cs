@@ -4,6 +4,7 @@ using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
 using Huybrechts.Core.Project;
+using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -68,6 +69,13 @@ public static class ProjectQuantityHelper
         ProjectInfoId = Project.Id,
         ProjectInfoName = Project.Name
     };
+
+    public static async Task<List<ProjectQuantity>> GetBillOfQuantitiesAsync(FeatureContext dbcontext, CancellationToken token)
+    {
+        return await dbcontext.Set<ProjectQuantity>()
+            .OrderBy(o => o.Name)
+            .ToListAsync(token);
+    }
 
     internal static Result ProjectNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
 

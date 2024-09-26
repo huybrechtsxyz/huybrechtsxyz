@@ -29,6 +29,11 @@
                 <span asp-validation-for="Data.Sequence" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
+                <input asp-for="Data.Description" class="form-control border-info" disabled />
+                <label asp-for="Data.Description" class="form-label"></label>
+                <span asp-validation-for="Data.Description" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
                 <input asp-for="Data.SetupUnitName" class="form-control" disabled />
                 <label asp-for="Data.SetupUnitName" class="form-label"></label>
                 <span asp-validation-for="Data.SetupUnitName" class="text-danger"></span>

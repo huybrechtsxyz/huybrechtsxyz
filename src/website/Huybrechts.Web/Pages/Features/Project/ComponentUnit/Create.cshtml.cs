@@ -76,9 +76,9 @@ public class CreateModel : PageModel
 
             return RedirectToPage(nameof(Index), new { Data.ProjectComponentId });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
+            return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError, message = ex.Message });
         }
     }
 }

@@ -32,14 +32,17 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
         // call the base library implementation AFTER the above
         base.OnModelCreating(modelBuilder);
 
-        #region ProjectSimulationEntry
+        // Configure the relationship between ProjectComponentUnit and others
+        #region ProjectComponentUnit
+        modelBuilder.Entity<ProjectComponentUnit>().HasOne(p => p.ProjectQuantity).WithMany().HasForeignKey(p => p.ProjectQuantityId).OnDelete(DeleteBehavior.Restrict);
+        #endregion ProjectComponentUnit
+
         // Configure the relationship between ProjectSimulationEntry and others
+        #region ProjectSimulationEntry
         modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.ProjectInfo).WithMany().HasForeignKey(p => p.ProjectInfoId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.ProjectScenario).WithMany().HasForeignKey(p => p.ProjectScenarioId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.ProjectDesign).WithMany().HasForeignKey(p => p.ProjectDesignId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.ProjectComponent).WithMany().HasForeignKey(p => p.ProjectComponentId).OnDelete(DeleteBehavior.Restrict);
-        //modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.SetupUnit).WithMany().HasForeignKey(p => p.SetupUnitId).OnDelete(DeleteBehavior.Restrict);
-
         modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.PlatformInfo).WithMany().HasForeignKey(p => p.PlatformInfoId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.PlatformProduct).WithMany().HasForeignKey(p => p.PlatformProductId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.PlatformRegion).WithMany().HasForeignKey(p => p.PlatformRegionId).OnDelete(DeleteBehavior.Restrict);
@@ -171,8 +174,6 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
     public DbSet<ProjectComponentUnit> ProjectComponentUnits { get; set; }
 
     public DbSet<ProjectQuantity> ProjectQuantities { get; set; }
-
-    public DbSet<ProjectQuantityUnit> ProjectQuantityUnits { get; set; }
 
     public DbSet<ProjectScenario> ProjectScenarios { get; set; }
 

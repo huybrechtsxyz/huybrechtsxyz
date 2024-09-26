@@ -24,9 +24,14 @@
                 <span asp-validation-for="Data.ProjectComponentId" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Sequence" class="form-control border-info" required />
+                <input asp-for="Data.Sequence" class="form-control" />
                 <label asp-for="Data.Sequence" class="form-label"></label>
                 <span asp-validation-for="Data.Sequence" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Description" class="form-control" />
+                <label asp-for="Data.Description" class="form-label"></label>
+                <span asp-validation-for="Data.Description" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <select asp-for="Data.SetupUnitId"
@@ -35,15 +40,37 @@
                                     Value = p.Id.ToString(),
                                     Text = p.Name
                                 }).ToList()"
-                        class="form-select border-info" required>
+                        class="form-select">
                     <option id="@Ulid.Empty">@SL["Select"]</option>
                 </select>
                 <label asp-for="Data.SetupUnitId" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Variable" class="form-control border-info" required />
+                <select asp-for="Data.ProjectQuantityId"
+                        asp-items="Model.Data.ProjectQuantityList?.Select(p => new SelectListItem
+                                {
+                                    Value = p.Id.ToString(),
+                                    Text = p.Name
+                                }).ToList()"
+                        class="form-select">
+                    <option id="@Ulid.Empty">@SL["Select"]</option>
+                </select>
+                <label asp-for="Data.ProjectQuantityId" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Category" class="form-control" />
+                <label asp-for="Data.Category" class="form-label"></label>
+                <span asp-validation-for="Data.Category" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Variable" class="form-control" />
                 <label asp-for="Data.Variable" class="form-label"></label>
                 <span asp-validation-for="Data.Variable" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Quantity" class="form-control" />
+                <label asp-for="Data.Quantity" class="form-label"></label>
+                <span asp-validation-for="Data.Quantity" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Expression" class="form-control" />
@@ -51,9 +78,19 @@
                 <span asp-validation-for="Data.Expression" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Category" class="form-control" />
-                <label asp-for="Data.Category" class="form-label"></label>
-                <span asp-validation-for="Data.Category" class="text-danger"></span>
+                <input asp-for="Data.UnitPrice" class="form-control" />
+                <label asp-for="Data.UnitPrice" class="form-label"></label>
+                <span asp-validation-for="Data.UnitPrice" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.RetailPrice" class="form-control" />
+                <label asp-for="Data.RetailPrice" class="form-label"></label>
+                <span asp-validation-for="Data.RetailPrice" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.SalesPrice" class="form-control" />
+                <label asp-for="Data.SalesPrice" class="form-label"></label>
+                <span asp-validation-for="Data.SalesPrice" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Remark" class="form-control" />

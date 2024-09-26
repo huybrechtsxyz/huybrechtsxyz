@@ -3,50 +3,17 @@ using AutoMapper.QueryableExtensions;
 using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
+using Huybrechts.App.Features.Project.ProjectQuantityFlow;
 using Huybrechts.App.Features.Setup.SetupUnitFlow;
 using Huybrechts.Core.Platform;
 using Huybrechts.Core.Project;
 using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
-using Microsoft.Win32.SafeHandles;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
-using System.Linq.Expressions;
 
 namespace Huybrechts.App.Features.Project.ProjectComponentUnitFlow;
-
-public static class ProjectComponentUnitFlowHelper
-{
-    public static void CopyFields(Model model, ProjectComponentUnit entity)
-    {
-        entity.Remark = model.Remark?.Trim();
-
-        entity.Sequence = model.Sequence;
-        entity.SetupUnit = model.SetupUnit;
-        entity.Variable = model.Variable;
-        entity.Category = model.Category;
-        entity.Expression = model.Expression;
-    }
-
-    public static CreateCommand CreateNew(ProjectComponent component) => new()
-    {
-        Id = Ulid.NewUlid(),
-        ProjectInfoId = component.ProjectInfoId,
-        ProjectDesignId = component.ProjectDesignId,
-        ProjectComponentId = component.Id,
-        ProjectComponent = component
-    };
-
-    internal static Result ProjectNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
-
-    internal static Result DesignNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTDESIGN_ID.Replace("{0}", id.ToString()));
-
-    internal static Result ComponentNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTCOMPONENT_ID.Replace("{0}", id.ToString()));
-
-    internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTCOMPONENTUNIT_ID.Replace("{0}", id.ToString()));
-}
 
 public record Model
 {
@@ -70,17 +37,42 @@ public record Model
     [Display(Name = "Unit", ResourceType = typeof(Localization))]
     public SetupUnit? SetupUnit { get; set; } = new();
 
+    [Display(Name = "BillOfQuantity", ResourceType = typeof(Localization))]
+    public Ulid? ProjectQuantityId { get; set; }
+
+    [Display(Name = "BillOfQuantity", ResourceType = typeof(Localization))]
+    public ProjectQuantity? ProjectQuantity { get; set; }
+
     [Display(Name = nameof(Sequence), ResourceType = typeof(Localization))]
     public int Sequence { get; set; } = 0;
 
+    [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
+    public string? Description { get; set; }
+
     [Display(Name = nameof(Variable), ResourceType = typeof(Localization))]
-    public string Variable { get; set; } = string.Empty;
+    public string? Variable { get; set; }
 
     [Display(Name = nameof(Category), ResourceType = typeof(Localization))]
     public string? Category { get; set; }
 
     [Display(Name = nameof(Expression), ResourceType = typeof(Localization))]
     public string? Expression { get; set; }
+
+    [Precision(18, 6)]
+    [Display(Name = nameof(Quantity), ResourceType = typeof(Localization))]
+    public decimal Quantity { get; set; }
+
+    [Precision(18, 6)]
+    [Display(Name = nameof(SalesPrice), ResourceType = typeof(Localization))]
+    public decimal SalesPrice { get; set; }
+
+    [Precision(18, 6)]
+    [Display(Name = nameof(RetailPrice), ResourceType = typeof(Localization))]
+    public decimal RetailPrice { get; set; }
+
+    [Precision(18, 6)]
+    [Display(Name = nameof(UnitPrice), ResourceType = typeof(Localization))]
+    public decimal UnitPrice { get; set; }
 
     [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
     public string? Remark { get; set; }
@@ -95,10 +87,52 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
         RuleFor(m => m.ProjectDesignId).NotNull().NotEmpty();
         RuleFor(m => m.ProjectComponentId).NotNull().NotEmpty();
 
-        RuleFor(m => m.Variable).NotEmpty().Length(1, 128);
+        RuleFor(m => m.Description).Length(0, 256);
+        RuleFor(m => m.Variable).Length(0, 128);
         RuleFor(m => m.Category).Length(0, 64);
         RuleFor(m => m.Expression).Length(0, 256);
     }
+}
+
+public static class ProjectComponentUnitFlowHelper
+{
+    public static void CopyFields(Model model, ProjectComponentUnit entity)
+    {
+        entity.ProjectQuantity = model.ProjectQuantity;
+        if (model.ProjectQuantity is null)
+            entity.ProjectQuantityId = null;
+        entity.SetupUnit = model.SetupUnit;
+        if (model.SetupUnit is null)
+            entity.SetupUnitId = null;
+        entity.Remark = model.Remark?.Trim();
+
+        entity.Sequence = model.Sequence;
+        entity.Description = model.Description;
+        entity.Variable = model.Variable;
+        entity.Category = model.Category;
+        entity.Expression = model.Expression;
+        entity.Quantity = model.Quantity;
+        entity.SalesPrice = model.SalesPrice;
+        entity.RetailPrice = model.RetailPrice;
+        entity.UnitPrice = model.UnitPrice;
+    }
+
+    public static CreateCommand CreateNew(ProjectComponent component) => new()
+    {
+        Id = Ulid.NewUlid(),
+        ProjectInfoId = component.ProjectInfoId,
+        ProjectDesignId = component.ProjectDesignId,
+        ProjectComponentId = component.Id,
+        ProjectComponent = component
+    };
+
+    internal static Result ProjectNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
+
+    internal static Result DesignNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTDESIGN_ID.Replace("{0}", id.ToString()));
+
+    internal static Result ComponentNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTCOMPONENT_ID.Replace("{0}", id.ToString()));
+
+    internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTCOMPONENTUNIT_ID.Replace("{0}", id.ToString()));
 }
 
 //
@@ -112,6 +146,9 @@ public sealed record ListModel : Model
 
     [Display(Name = "Unit", ResourceType = typeof(Localization))]
     public string? SetupUnitName { get; set; }
+
+    [Display(Name = "BillOfQuantity", ResourceType = typeof(Localization))]
+    public string? ProjectQuantityName { get; set; }
 }
 
 internal sealed class ListMapping : Profile
@@ -179,6 +216,7 @@ internal sealed class ListHandler :
 
         var results = await query
             .Include(i => i.ProjectComponent)
+            .Include(i => i.ProjectQuantity)
             .ProjectTo<ListModel>(_configuration)
             .ToListAsync(token);
 
@@ -219,6 +257,8 @@ public sealed record CreateCommand : Model, IRequest<Result<Ulid>>
     public ProjectDesign ProjectDesign { get; set; } = new();
 
     public List<SetupUnit> SetupUnitList { get; set; } = [];
+
+    public List<ProjectQuantity> ProjectQuantityList { get; set; } = [];
 }
 
 public sealed class CreateCommandValidator : ModelValidator<CreateCommand>
@@ -263,6 +303,7 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
         command.ProjectDesign = design;
         command.ProjectComponent = component;
         command.SetupUnitList = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        command.ProjectQuantityList = await ProjectQuantityHelper.GetBillOfQuantitiesAsync(_dbcontext, token);
 
         return Result.Ok(command);
     }
@@ -279,28 +320,35 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
 
     public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
     {
-        var component = await _dbcontext.Set<ProjectComponent>().FirstOrDefaultAsync(q => q.Id == message.ProjectComponentId, cancellationToken: token);
-        if (component == null)
+        var component = await _dbcontext.Set<ProjectComponent>().FirstOrDefaultAsync(q => q.Id == message.ProjectComponentId, token);
+        if (component is null)
             return ProjectComponentUnitFlowHelper.ComponentNotFound(message.ProjectComponentId);
 
-        var design = await _dbcontext.Set<ProjectDesign>().FirstOrDefaultAsync(q => q.Id == component.ProjectDesignId, cancellationToken: token);
-        if (design == null)
+        var design = await _dbcontext.Set<ProjectDesign>().FirstOrDefaultAsync(q => q.Id == component.ProjectDesignId, token);
+        if (design is null)
             return ProjectComponentUnitFlowHelper.DesignNotFound(component.ProjectDesignId);
 
-        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == component.ProjectInfoId, cancellationToken: token);
-        if (project == null)
+        var project = await _dbcontext.Set<ProjectInfo>().FirstOrDefaultAsync(q => q.Id == component.ProjectInfoId, token);
+        if (project is null)
             return ProjectComponentUnitFlowHelper.ProjectNotFound(component.ProjectInfoId);
 
-        var setupUnit = await _dbcontext.Set<SetupUnit>().FirstOrDefaultAsync(q => q.Id == message.SetupUnitId, cancellationToken: token);
-        if (setupUnit is null)
+        var setupUnit = await _dbcontext.Set<SetupUnit>().FirstOrDefaultAsync(q => q.Id == message.SetupUnitId, token);
+        if (setupUnit is not null)
         {
-            message.SetupUnit = null;
-            message.SetupUnitId = Ulid.Empty;
+            message.SetupUnit = setupUnit;
         }
         else
-            message.SetupUnit = setupUnit;
+            message.SetupUnit = null;
 
-        var entity = new ProjectComponentUnit
+        var quantity = await _dbcontext.Set<ProjectQuantity>().FirstOrDefaultAsync(q => q.Id == message.ProjectQuantityId, token);
+        if (quantity is not null)
+        {
+            message.ProjectQuantity = quantity;
+        }
+        else
+            message.ProjectQuantity = null;
+
+        ProjectComponentUnit entity = new()
         {
             Id = message.Id,
             ProjectInfoId = message.ProjectInfoId,
@@ -411,7 +459,8 @@ internal class DefaultQueryHandler : IRequestHandler<DefaultCommand, Result>
                                         Sequence = index,
                                         SetupUnit = rateUnit.SetupUnit,
                                         Variable = rateUnit.SetupUnit.Name.ToLower().Trim(),
-                                        Expression = "1"
+                                        Quantity = 1,
+                                        Expression = string.Empty
                                     };
 
                                     await _dbcontext.Set<ProjectComponentUnit>().AddAsync(newComponentUnit, token);
@@ -431,8 +480,6 @@ internal class DefaultQueryHandler : IRequestHandler<DefaultCommand, Result>
         return Result.Ok();
     }
 }
-
-//TODO create default units
 
 //
 // UPDATE
@@ -455,6 +502,8 @@ public record UpdateCommand : Model, IRequest<Result>
     public ProjectDesign ProjectDesign { get; set; } = new();
 
     public List<SetupUnit> SetupUnitList { get; set; } = [];
+
+    public List<ProjectQuantity> ProjectQuantityList { get; set; } = [];
 }
 
 public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
@@ -514,6 +563,7 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
         command.ProjectDesign = design;
         command.ProjectComponent = component;
         command.SetupUnitList = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        command.ProjectQuantityList = await ProjectQuantityHelper.GetBillOfQuantitiesAsync(_dbcontext, token);
 
         return Result.Ok(command);
     }
@@ -553,7 +603,22 @@ internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
             message.SetupUnitId = Ulid.Empty;
         }
         else
+        {
             message.SetupUnit = setupUnit;
+            message.SetupUnitId = setupUnit.Id;
+        }
+
+        var quantity = await _dbcontext.Set<ProjectQuantity>().FirstOrDefaultAsync(q => q.Id == message.ProjectQuantityId, cancellationToken: token);
+        if (quantity is null)
+        {
+            message.ProjectQuantity = null;
+            message.ProjectQuantityId = Ulid.Empty;
+        }
+        else
+        {
+            message.ProjectQuantity = quantity;
+            message.ProjectQuantityId = quantity.Id;
+        }
 
         entity.ModifiedDT = DateTime.UtcNow;
         ProjectComponentUnitFlowHelper.CopyFields(message, entity);
@@ -585,6 +650,8 @@ public sealed record DeleteCommand : Model, IRequest<Result>
     public ProjectDesign ProjectDesign { get; set; } = new();
 
     public string SetupUnitName { get; set; } = string.Empty;
+
+    public string ProjectQuantityName { get; set; } = string.Empty;
 }
 
 public sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
@@ -599,7 +666,8 @@ internal sealed class DeleteCommandMapping : Profile
 {
     public DeleteCommandMapping() => 
         CreateProjection<ProjectComponentUnit, DeleteCommand>()
-        .ForMember(dest => dest.SetupUnitName, opt => opt.MapFrom(src => (src.SetupUnit ?? new()).Name));
+        .ForMember(dest => dest.SetupUnitName, opt => opt.MapFrom(src => (src.SetupUnit ?? new()).Name))
+        .ForMember(dest => dest.ProjectQuantityName, opt => opt.MapFrom(src => (src.ProjectQuantity ?? new()).Name));
 }
 
 internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<DeleteCommand>>
@@ -618,6 +686,7 @@ internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<D
         var command = await _dbcontext.Set<ProjectComponentUnit>()
             .Include(i => i.ProjectComponent)
             .Include(i => i.SetupUnit)
+            .Include(i => i.ProjectQuantity)
             .ProjectTo<DeleteCommand>(_configuration)
             .FirstOrDefaultAsync(s => s.Id == message.Id, cancellationToken: token);
 
