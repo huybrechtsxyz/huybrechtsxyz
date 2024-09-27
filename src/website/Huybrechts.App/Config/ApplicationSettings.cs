@@ -40,6 +40,8 @@ public static class ApplicationSettings
 
     public static CultureInfo GetDefaultCulture() => new("EN");
 
+    public static TimeSpan GetCacheExpirationTime() => TimeSpan.FromMinutes(30);
+
     public static string GetContextConnectionString(IConfiguration configuration)
     {
         var dataUrl = configuration.GetValue<string>(ENV_APP_DATA_URL) ?? string.Empty;

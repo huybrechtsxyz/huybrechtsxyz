@@ -26,7 +26,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -42,9 +47,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(256)")
                         .HasComment("A brief description providing additional details about the region.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
@@ -64,12 +74,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<decimal>("UnitFactor")
                         .HasPrecision(18, 6)
@@ -92,7 +103,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "PlatformInfoId", "UnitOfMeasure");
 
-                    b.ToTable("PlatformDefaultUnit", null, t =>
+                    b.ToTable("PlatformDefaultUnit", t =>
                         {
                             t.HasComment("Represents a default unit of measure for a platform, linking to a setup unit and a specific platform.");
                         });
@@ -104,7 +115,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -115,9 +131,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(256)")
                         .HasComment("Detailed description of the platform.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -141,12 +162,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
 
@@ -155,7 +177,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.ToTable("Platform", null, t =>
+                    b.ToTable("Platform", t =>
                         {
                             t.HasComment("Table storing information about platforms that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.");
                         });
@@ -167,7 +189,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("AboutURL")
                         .HasMaxLength(512)
@@ -189,6 +211,11 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(256)")
                         .HasComment("The cost driver or factor that influences the pricing of the product.");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
+
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
                         .HasComment("Date time created");
@@ -209,9 +236,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(512)")
                         .HasComment("Limitations or constraints related to the product.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -246,12 +278,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
 
@@ -262,7 +295,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
-                    b.ToTable("PlatformProduct", null, t =>
+                    b.ToTable("PlatformProduct", t =>
                         {
                             t.HasComment("Represents a product offered on a specific platform, detailing attributes such as the product's name, description, and other relevant metadata.");
                         });
@@ -274,7 +307,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -301,9 +339,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("decimal(18,6)")
                         .HasComment("Tier minimum units.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
@@ -372,12 +415,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("UnitOfMeasure")
                         .IsRequired()
@@ -402,7 +446,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "PlatformInfoId", "PlatformProductId", "ValidFrom");
 
-                    b.ToTable("PlatformRate", null, t =>
+                    b.ToTable("PlatformRate", t =>
                         {
                             t.HasComment("Represents the pricing rate of a service on a platform, including details such as the currency, price, and validity period.");
                         });
@@ -414,7 +458,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -431,9 +480,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(200)")
                         .HasComment("Description of the measuring unit, providing additional context for users.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
@@ -463,12 +517,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<decimal>("UnitFactor")
                         .HasPrecision(18, 6)
@@ -489,7 +544,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "PlatformInfoId", "PlatformProductId", "PlatformRateId", "UnitOfMeasure");
 
-                    b.ToTable("PlatformRateUnit", null, t =>
+                    b.ToTable("PlatformRateUnit", t =>
                         {
                             t.HasComment("Table representing a unit of measurement for a rate within a platform's product offering, translating platform-specific units into standard project metrics.");
                         });
@@ -501,7 +556,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -518,9 +578,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(128)")
                         .HasComment("A label representing the region, often the location name.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -545,12 +610,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
 
@@ -561,7 +627,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
-                    b.ToTable("PlatformRegion", null, t =>
+                    b.ToTable("PlatformRegion", t =>
                         {
                             t.HasComment("Regions supported by the platform, representing data center locations.");
                         });
@@ -573,12 +639,17 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Category")
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)")
                         .HasComment("The category or family of the service, helping to classify it among similar offerings.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -595,9 +666,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(128)")
                         .HasComment("A label representing the service, often used in the user interface.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -622,12 +698,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
 
@@ -638,7 +715,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
-                    b.ToTable("PlatformService", null, t =>
+                    b.ToTable("PlatformService", t =>
                         {
                             t.HasComment("Services offered by the platform, such as compute, storage, or networking resources.");
                         });
@@ -650,7 +727,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Account")
                         .HasMaxLength(128)
@@ -660,6 +737,11 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.Property<int>("ComponentLevel")
                         .HasColumnType("int")
                         .HasComment("Specifies the level of the component (e.g., Component, Configuration, Module, Variant).");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -685,9 +767,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(128)")
                         .HasComment("Gets or sets the location associated with the component.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -769,12 +856,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<int>("VariantType")
                         .HasColumnType("int")
@@ -790,7 +878,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "ProjectInfoId", "ProjectDesignId", "Sequence");
 
-                    b.ToTable("ProjectComponent", null, t =>
+                    b.ToTable("ProjectComponent", t =>
                         {
                             t.HasComment("Represents a part of the design for a project.");
                         });
@@ -802,20 +890,40 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Category of the component unit (example: forfait, per unit, ...)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
                         .HasComment("Date time created");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Gets or sets the description of the unit.");
+
                     b.Property<string>("Expression")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)")
-                        .HasComment("The formula used to calculate the value of the variable for this component unit.");
+                        .HasComment("The formula used to calculate the value of the quantity for this component unit.");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("ProjectComponentId")
                         .IsRequired()
@@ -832,9 +940,28 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(26)")
                         .HasComment("The project ID this component unit is part of.");
 
+                    b.Property<string>("ProjectQuantityId")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Gets or sets the unique identifier for the Project Quantity.");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)")
+                        .HasComment("Gets or sets the quantity of the unit used.");
+
                     b.Property<string>("Remark")
                         .HasColumnType("nvarchar(max)")
                         .HasComment("Gets or sets any additional remarks or notes about the component unit.");
+
+                    b.Property<decimal>("RetailPrice")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)")
+                        .HasComment("Gets or sets the standard price for a unit.");
+
+                    b.Property<decimal>("SalesPrice")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)")
+                        .HasComment("Gets or sets the sales price for a unit.");
 
                     b.Property<int>("Sequence")
                         .HasColumnType("int")
@@ -848,15 +975,20 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)")
+                        .HasComment("Gets or sets the actual price you pay for a unit.");
 
                     b.Property<string>("Variable")
-                        .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)")
                         .HasComment("The variable name used in the metrics calculations for this component unit.");
@@ -865,9 +997,11 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("ProjectComponentId");
 
+                    b.HasIndex("ProjectQuantityId");
+
                     b.HasIndex("SetupUnitId");
 
-                    b.ToTable("ProjectComponentUnit", null, t =>
+                    b.ToTable("ProjectComponentUnit", t =>
                         {
                             t.HasComment("Links a project component to a measuring unit, allowing for cost calculation using metrics.");
                         });
@@ -879,7 +1013,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -899,9 +1038,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(128)")
                         .HasComment("The environment in which the project design is implemented.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -955,12 +1099,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("Version")
                         .HasMaxLength(32)
@@ -976,7 +1121,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "ProjectInfoId", "Name")
                         .IsUnique();
 
-                    b.ToTable("ProjectDesign", null, t =>
+                    b.ToTable("ProjectDesign", t =>
                         {
                             t.HasComment("Represents a specific design or solution proposal for a project.");
                         });
@@ -988,7 +1133,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<int?>("BusinessValue")
                         .HasColumnType("int")
@@ -999,6 +1144,11 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)")
                         .HasComment("Code of the Project.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -1013,9 +1163,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("int")
                         .HasComment("Gets or sets the effort required for the project.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1077,12 +1232,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
 
@@ -1091,9 +1247,93 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.ToTable("Project", null, t =>
+                    b.ToTable("Project", t =>
                         {
                             t.HasComment("Table storing information about Projects that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectQuantity", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)")
+                        .HasComment("Gets or sets a description of the bill of quantities.");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Gets or sets the name of the bill of quantities.");
+
+                    b.Property<string>("ProjectInfoId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Gets or sets the unique identifier for the project associated with this bill of quantities.");
+
+                    b.Property<string>("Remark")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)")
+                        .HasComment("Gets or sets any additional remarks for the bill of quantities.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasComment("Gets or sets the search index for the bill of quantities.");
+
+                    b.Property<string>("Tags")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Gets or sets the tags associated with the bill of quantities.");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Gets or sets the tenant identifier.");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectInfoId");
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "ProjectInfoId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ProjectQuantity", t =>
+                        {
+                            t.HasComment("Represents a bill of quantities for a project, detailing the materials, parts, and labor required.");
                         });
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
@@ -1103,7 +1343,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -1114,9 +1359,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(256)")
                         .HasComment("Gets or sets the description of the project scenario.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1145,12 +1395,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
 
@@ -1161,7 +1412,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "ProjectInfoId", "Name")
                         .IsUnique();
 
-                    b.ToTable("ProjectScenario", null, t =>
+                    b.ToTable("ProjectScenario", t =>
                         {
                             t.HasComment("Represents different scenarios used to calculate design components and measures based on varying metrics.");
                         });
@@ -1173,7 +1424,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -1183,9 +1439,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("ProjectInfoId")
                         .IsRequired()
@@ -1212,12 +1473,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("Variable")
                         .IsRequired()
@@ -1230,7 +1492,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("SetupUnitId");
 
-                    b.ToTable("ProjectScenarioUnit", null, t =>
+                    b.ToTable("ProjectScenarioUnit", t =>
                         {
                             t.HasComment("Represents a unit of measurement or metric used in a project scenario for calculating values over design components.");
                         });
@@ -1242,7 +1504,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -1257,9 +1524,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("bit")
                         .HasComment("Gets or sets if the project simulation is being calculated on this moment.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1288,18 +1560,19 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectInfoId");
 
-                    b.ToTable("ProjectSimulation", null, t =>
+                    b.ToTable("ProjectSimulation", t =>
                         {
                             t.HasComment("Represents a simulation for a given project, containing various details and configurations related to the project's estimation.");
                         });
@@ -1311,7 +1584,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -1323,16 +1601,26 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(10)")
                         .HasComment("Currency code.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
-                    b.Property<decimal>("OwnRetailCost")
+                    b.Property<decimal>("OwnRetailAmount")
                         .HasPrecision(18, 4)
                         .HasColumnType("decimal(18,4)")
                         .HasComment("Ownership-adjusted retail cost in the specified currency.");
 
-                    b.Property<decimal>("OwnUnitCost")
+                    b.Property<decimal>("OwnSalesAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasComment("The sales revenue adjusted for the ownership percentage.");
+
+                    b.Property<decimal>("OwnUnitAmount")
                         .HasPrecision(18, 4)
                         .HasColumnType("decimal(18,4)")
                         .HasComment("Ownership-adjusted unit cost per service unit in the specified currency.");
@@ -1378,6 +1666,10 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasColumnType("nvarchar(26)");
 
+                    b.Property<string>("ProjectQuantityId")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Gets or sets the unique identifier for the Project Quantity.");
+
                     b.Property<string>("ProjectScenarioId")
                         .IsRequired()
                         .HasColumnType("nvarchar(26)");
@@ -1391,7 +1683,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("decimal(18,4)")
                         .HasComment("Quantity of service units.");
 
-                    b.Property<decimal>("RetailCost")
+                    b.Property<decimal>("RetailAmount")
                         .HasPrecision(18, 4)
                         .HasColumnType("decimal(18,4)")
                         .HasComment("Internal retail cost in the specified currency.");
@@ -1401,21 +1693,42 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("decimal(18,6)")
                         .HasComment("Retail price in the specified currency.");
 
+                    b.Property<decimal>("SalesAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasComment("Internal retail cost in the specified currency.");
+
+                    b.Property<decimal>("SalesPrice")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)")
+                        .HasComment("Gets or sets the sales price for a unit.");
+
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
-                    b.Property<decimal>("UnitCost")
+                    b.Property<decimal>("UnitAmount")
                         .HasPrecision(18, 4)
                         .HasColumnType("decimal(18,4)")
                         .HasComment("Internal unit cost per service unit in the specified currency.");
+
+                    b.Property<string>("UnitCategory")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Category of the component unit (example: forfait, per unit, ...)");
+
+                    b.Property<string>("UnitDescription")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Gets or sets the description of the unit.");
 
                     b.Property<string>("UnitOfMeasure")
                         .IsRequired()
@@ -1446,11 +1759,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("ProjectInfoId");
 
+                    b.HasIndex("ProjectQuantityId");
+
                     b.HasIndex("ProjectScenarioId");
 
                     b.HasIndex("ProjectSimulationId");
 
-                    b.ToTable("ProjectSimulationEntry", null, t =>
+                    b.ToTable("ProjectSimulationEntry", t =>
                         {
                             t.HasComment(" Represents a single entry in a project simulation");
                         });
@@ -1462,12 +1777,17 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -1476,9 +1796,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1499,12 +1824,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("TranslatedName")
                         .IsRequired()
@@ -1525,7 +1851,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.ToTable("SetupCountry", null, t =>
+                    b.ToTable("SetupCountry", t =>
                         {
                             t.HasComment("Represents information about different countries, including their codes, names, and associated details.");
                         });
@@ -1537,12 +1863,17 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -1552,9 +1883,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1569,12 +1905,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
 
@@ -1586,7 +1923,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.ToTable("SetupCurrency", null, t =>
+                    b.ToTable("SetupCurrency", t =>
                         {
                             t.HasComment("Represents a currency entity with detailed information such as code, name, description, and associated country code.");
                         });
@@ -1598,12 +1935,17 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -1613,9 +1955,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1630,12 +1977,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("TranslatedName")
                         .IsRequired()
@@ -1652,7 +2000,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.ToTable("SetupLanguage", null, t =>
+                    b.ToTable("SetupLanguage", t =>
                         {
                             t.HasComment("Represents a currency entity with detailed information such as code, name, description, and associated country code.");
                         });
@@ -1664,7 +2012,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -1674,9 +2027,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1700,12 +2058,13 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
 
@@ -1714,7 +2073,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "ObjectType", "Name")
                         .IsUnique();
 
-                    b.ToTable("SetupState", null, t =>
+                    b.ToTable("SetupState", t =>
                         {
                             t.HasComment("Represents a custom state that can be applied to various objects, such as projects, constraints, requirements, and more.");
                         });
@@ -1726,13 +2085,18 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(26)")
-                        .HasComment("Primary Key");
+                        .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
-                        .HasComment("A unique code representing the unit, standard across all instances.");
+                        .HasComment("A unique code representing the unit, standardized across all instances.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
                         .HasColumnType("datetime2")
@@ -1752,9 +2116,14 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("bit")
                         .HasComment("Indicates whether this unit is the base unit for its type.");
 
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
                     b.Property<DateTime?>("ModifiedDT")
                         .HasColumnType("datetime2")
-                        .HasComment("Modified time created");
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1776,22 +2145,23 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.Property<string>("SearchIndex")
                         .HasColumnType("nvarchar(450)")
-                        .HasComment("This field will store the normalized, concatenated values for searching");
+                        .HasComment("This field will store the normalized, concatenated values for searching.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)")
-                        .HasComment("The tenant identifier");
+                        .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<int>("UnitType")
                         .HasColumnType("int")
-                        .HasComment("Gets or sets the type of the unit (e.g., Height, Weight, Volume, System, etc.).");
+                        .HasComment("Gets or sets the type of the unit (e.g., Length, Mass, Volume, System, etc.).");
 
                     b.HasKey("Id");
 
@@ -1803,9 +2173,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.ToTable("SetupUnit", null, t =>
+                    b.ToTable("SetupUnit", t =>
                         {
-                            t.HasComment("Represents a measurement unit used for different types such as height, weight, volume, etc.");
+                            t.HasComment("Represents a measurement unit used for different types such as length, mass, volume, etc.");
                         });
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
@@ -1916,16 +2286,34 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Huybrechts.Core.Project.ProjectQuantity", "ProjectQuantity")
+                        .WithMany()
+                        .HasForeignKey("ProjectQuantityId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Huybrechts.Core.Setup.SetupUnit", "SetupUnit")
                         .WithMany()
                         .HasForeignKey("SetupUnitId");
 
                     b.Navigation("ProjectComponent");
 
+                    b.Navigation("ProjectQuantity");
+
                     b.Navigation("SetupUnit");
                 });
 
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectDesign", b =>
+                {
+                    b.HasOne("Huybrechts.Core.Project.ProjectInfo", "ProjectInfo")
+                        .WithMany()
+                        .HasForeignKey("ProjectInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectInfo");
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Project.ProjectQuantity", b =>
                 {
                     b.HasOne("Huybrechts.Core.Project.ProjectInfo", "ProjectInfo")
                         .WithMany()
@@ -2023,6 +2411,10 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Huybrechts.Core.Project.ProjectQuantity", "ProjectQuantity")
+                        .WithMany()
+                        .HasForeignKey("ProjectQuantityId");
+
                     b.HasOne("Huybrechts.Core.Project.ProjectScenario", "ProjectScenario")
                         .WithMany()
                         .HasForeignKey("ProjectScenarioId")
@@ -2050,6 +2442,8 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.Navigation("ProjectDesign");
 
                     b.Navigation("ProjectInfo");
+
+                    b.Navigation("ProjectQuantity");
 
                     b.Navigation("ProjectScenario");
 

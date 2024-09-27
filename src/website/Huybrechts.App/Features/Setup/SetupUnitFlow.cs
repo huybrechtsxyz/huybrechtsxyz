@@ -2,12 +2,14 @@
 using AutoMapper.QueryableExtensions;
 using FluentResults;
 using FluentValidation;
+using Huybrechts.App.Config;
 using Huybrechts.App.Data;
 using Huybrechts.App.Features.EntityFlow;
 using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
@@ -15,7 +17,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Huybrechts.App.Features.Setup.SetupUnitFlow;
-
 
 /// <summary>
 /// Represents the data model for a measurement unit.
@@ -135,12 +136,11 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel: Mo
 }
 
 /// <summary>
-/// Provides helper methods for managing SetupUnit entities.
+/// Provides helper methods for working with <see cref="SetupUnit"/> entities,
+/// including unit conversion, retrieval, and validation.
 /// </summary>
-public static class SetupUnitHelper
+public class SetupUnitHelper
 {
-    private static SetupUnit? _defaultSetupUnit;
-
     /// <summary>
     /// Converts a value from one measurement unit to another.
     /// </summary>
@@ -164,58 +164,6 @@ public static class SetupUnitHelper
     /// Creates a new command for creating a SetupUnit.
     /// </summary>
     public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
-
-    /// <summary>
-    /// Retrieves all SetupUnit records from the database, ordered by UnitType and Name.
-    /// </summary>
-    /// <param name="dbcontext">The database context.</param>
-    /// <param name="token">A cancellation token.</param>
-    /// <returns>A list of SetupUnits.</returns>
-    public static async Task<List<SetupUnit>> GetSetupUnitsAsync(FeatureContext dbcontext, CancellationToken token)
-    {
-        return await dbcontext.Set<SetupUnit>()
-            .OrderBy(o => o.UnitType).ThenBy(o => o.Name)
-            .ToListAsync(cancellationToken: token);
-    }
-
-    /// <summary>
-    /// Finds or creates the default SetupUnit.
-    /// </summary>
-    /// <param name="context">The database context.</param>
-    /// <param name="save">Indicates whether to save changes.</param>
-    /// <param name="token">A cancellation token.</param>
-    /// <returns>The default SetupUnit.</returns>
-    public static async Task<SetupUnit> GetOrCreateDefaultSetupUnitAsync(FeatureContext context, bool save, CancellationToken token)
-    {
-        if (_defaultSetupUnit is not null)
-            return _defaultSetupUnit;
-
-        SetupUnit? record = await context.Set<SetupUnit>().FirstOrDefaultAsync(f => f.Code == "DEFAULT", cancellationToken: token);
-        if (record is not null)
-            return record;
-
-        record = new()
-        {
-            Id = Ulid.NewUlid(),
-            Code = "DEFAULT",
-            Name = "Default",
-            Factor = 1,
-            IsBase = false,
-            Precision = 0,
-            PrecisionType = MidpointRounding.ToEven,
-            UnitType = SetupUnitType.System,
-            Remark = null,
-            SearchIndex = "default",
-            Description = "Default unit",
-            CreatedDT = DateTime.UtcNow,
-        };
-
-        context.Set<SetupUnit>().Add(record);
-        if (save)
-            await context.SaveChangesAsync(token);
-        _defaultSetupUnit = record;
-        return record;
-    }
 
     /// <summary>
     /// Creates a failure result indicating that a setup unit with the specified ID was not found.
@@ -249,6 +197,64 @@ public static class SetupUnitHelper
         return await context.Set<SetupUnit>()
             .AnyAsync(pr => pr.Name.ToLower() == name
                             && (!currentId.HasValue || pr.Id != currentId.Value));
+    }
+
+    //
+    // OBJECT
+    //
+    private static readonly object _cacheLock = new();
+
+    private readonly FeatureContext _context;
+    private readonly IMemoryCache _cache;
+    private readonly TimeSpan _expiration;
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="cache"></param>
+    /// <param name="context"></param>
+    public SetupUnitHelper(IMemoryCache cache, FeatureContext context)
+    {
+        _expiration = ApplicationSettings.GetCacheExpirationTime();
+        _cache = cache;
+        _context = context;
+    }
+
+    /// <summary>
+    /// Retrieves all SetupUnit records from the database, ordered by UnitType and Name.
+    /// </summary>
+    /// <param name="refresh">Whether to refresh the cache and fetch a fresh value from the database.</param>
+    /// <param name="token">A cancellation token.</param>
+    /// <returns>A list of SetupUnits.</returns>
+    public List<SetupUnit> GetSetupUnitsAsync(bool refresh = false, CancellationToken token = default!)
+    {
+        async Task<List<SetupUnit>> FetchFromDatabaseAsync()
+        {
+            return await _context.Set<SetupUnit>().OrderBy(o => o.UnitType).ThenBy(o => o.Name).ToListAsync(cancellationToken: token);
+        }
+
+        const string cacheKey = "SetupUnitList";
+
+        if (!refresh)
+        {
+            var setupUnitListR = Task.Run(async () => await FetchFromDatabaseAsync()).Result;
+            _cache.Set(cacheKey, setupUnitListR, new MemoryCacheEntryOptions().SetSlidingExpiration(_expiration));
+            return setupUnitListR ?? [];
+        }
+
+        if (!_cache.TryGetValue(cacheKey, out List<SetupUnit>? setupUnitListC))
+        {
+            lock (_cacheLock) // Ensure thread-safety
+            {
+                if (!_cache.TryGetValue(cacheKey, out setupUnitListC))
+                {
+                    setupUnitListC = Task.Run(async () => await FetchFromDatabaseAsync()).Result;
+                    _cache.Set(cacheKey, setupUnitListC, new MemoryCacheEntryOptions().SetSlidingExpiration(_expiration));
+                }
+            }
+        }
+
+        return setupUnitListC ?? [];
     }
 }
 

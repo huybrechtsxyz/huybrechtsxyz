@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 {
     /// <inheritdoc />
-    public partial class CreatePlatformSchema : Migration
+    public partial class CreateProjectPlatformSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,16 +15,18 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "Platform",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "Name of the platform."),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "Detailed description of the platform."),
                     Provider = table.Column<int>(type: "int", nullable: false, comment: "The platform's supported automation provider, enabling automated resource management."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or comments about the platform."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -36,7 +38,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "Project",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     ParentId = table.Column<string>(type: "nvarchar(26)", nullable: true, comment: "The project ID this component unit is part of."),
                     Code = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false, comment: "Code of the Project."),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "Name of the Project."),
@@ -53,10 +55,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     Effort = table.Column<int>(type: "int", nullable: true, comment: "Gets or sets the effort required for the project."),
                     BusinessValue = table.Column<int>(type: "int", nullable: true, comment: "Gets or sets the business value of the project."),
                     Rating = table.Column<int>(type: "int", nullable: true, comment: "Gets or sets the rating of the project, reflecting its priority, quality, or stakeholder approval."),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -68,15 +72,17 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "SetupCurrency",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -88,16 +94,18 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "SetupLanguage",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     TranslatedName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -109,17 +117,19 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "SetupState",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     ObjectType = table.Column<int>(type: "int", nullable: false),
                     StateType = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Sequence = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -131,9 +141,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "SetupUnit",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
-                    UnitType = table.Column<int>(type: "int", nullable: false, comment: "Gets or sets the type of the unit (e.g., Height, Weight, Volume, System, etc.)."),
-                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, comment: "A unique code representing the unit, standard across all instances."),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
+                    UnitType = table.Column<int>(type: "int", nullable: false, comment: "Gets or sets the type of the unit (e.g., Length, Mass, Volume, System, etc.)."),
+                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, comment: "A unique code representing the unit, standardized across all instances."),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "The unique name of the unit within its type."),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true, comment: "A detailed description of the unit."),
                     IsBase = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates whether this unit is the base unit for its type."),
@@ -141,23 +151,25 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     PrecisionType = table.Column<int>(type: "int", nullable: false, comment: "Determines how values are rounded according to the System.Decimal Rounding enum."),
                     Factor = table.Column<decimal>(type: "decimal(18,10)", precision: 18, scale: 10, nullable: false, comment: "A multiplication factor used to convert this unit to the base unit."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or comments about the unit."),
-                    SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching."),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SetupUnit", x => x.Id);
                 },
-                comment: "Represents a measurement unit used for different types such as height, weight, volume, etc.");
+                comment: "Represents a measurement unit used for different types such as length, mass, volume, etc.");
 
             migrationBuilder.CreateTable(
                 name: "PlatformProduct",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     PlatformInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformInfo entity."),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "The name of the product offered by the platform."),
                     Label = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "A label representing the product, often used for display purposes."),
@@ -171,10 +183,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     PricingTier = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true, comment: "Size or pricing tier associated with the product."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or notes regarding the product."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -192,17 +206,19 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "PlatformRegion",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     PlatformInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformInfo."),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "The unique name identifier of the region."),
                     Label = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "A label representing the region, often the location name."),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "A brief description providing additional details about the region."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or notes regarding the region."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -220,7 +236,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "PlatformService",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     PlatformInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformInfo entity."),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "The name of the service or service offered by the platform."),
                     Label = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "A label representing the service, often used in the user interface."),
@@ -228,10 +244,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "A brief description providing additional details about the service."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or notes regarding the service."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -249,7 +267,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "ProjectDesign",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     ProjectInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the unique identifier for the project associated with this design."),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "Gets or sets the name of the project design."),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "Gets or sets the description of the project design."),
@@ -264,10 +282,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     Risk = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true, comment: "Gets or sets the risk of the project."),
                     Rating = table.Column<int>(type: "int", nullable: true, comment: "Gets or sets the rating of the project, reflecting its priority, quality, or stakeholder approval."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -282,20 +302,52 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 comment: "Represents a specific design or solution proposal for a project.");
 
             migrationBuilder.CreateTable(
+                name: "ProjectQuantity",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
+                    ProjectInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the unique identifier for the project associated with this bill of quantities."),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false, comment: "Gets or sets the name of the bill of quantities."),
+                    Description = table.Column<string>(type: "nvarchar(1024)", maxLength: 1024, nullable: true, comment: "Gets or sets a description of the bill of quantities."),
+                    Remark = table.Column<string>(type: "nvarchar(1024)", maxLength: 1024, nullable: true, comment: "Gets or sets any additional remarks for the bill of quantities."),
+                    Tags = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "Gets or sets the tags associated with the bill of quantities."),
+                    SearchIndex = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true, comment: "Gets or sets the search index for the bill of quantities."),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
+                    CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectQuantity", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectQuantity_Project_ProjectInfoId",
+                        column: x => x.ProjectInfoId,
+                        principalTable: "Project",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                },
+                comment: "Represents a bill of quantities for a project, detailing the materials, parts, and labor required.");
+
+            migrationBuilder.CreateTable(
                 name: "ProjectScenario",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     ProjectInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the unique identifier for the project associated with this scenario."),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "Gets or sets the name of the scenario scenario."),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "Gets or sets the description of the project scenario."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or comments about the project scenario."),
                     Tags = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Keywords or categories for the scenario"),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -313,7 +365,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "ProjectSimulation",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     ProjectInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the unique identifier for the project associated with this simulation."),
                     Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "Gets or sets the name of the simulation."),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "Gets or sets the description of the project simulation."),
@@ -321,10 +373,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or comments about the project simulation."),
                     Tags = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Keywords or categories for the simulation"),
                     SearchIndex = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -342,7 +396,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "SetupCountry",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     SetupLanguageId = table.Column<string>(type: "nvarchar(26)", nullable: true),
                     SetupCurrencyId = table.Column<string>(type: "nvarchar(26)", nullable: true),
                     Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
@@ -350,10 +404,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     TranslatedName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -375,7 +431,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "PlatformDefaultUnit",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     PlatformInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformInfo."),
                     SetupUnitId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key linking to the SetupUnit entity."),
                     UnitOfMeasure = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Unit of measure."),
@@ -383,10 +439,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     DefaultValue = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "Default rate for the unit, representing a base measurement standard."),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "A brief description providing additional details about the region."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -410,7 +468,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "PlatformRate",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     PlatformInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformInfo entity."),
                     PlatformProductId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformProduct entity."),
                     PlatformRegionId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformRegion entity."),
@@ -430,10 +488,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     IsPrimaryRegion = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates whether this is the primary rate for the region."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Additional remarks or comments about the rate."),
                     SearchIndex = table.Column<string>(type: "nvarchar(450)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -451,7 +511,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "ProjectComponent",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     ProjectInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the ID of the project this component belongs to."),
                     ProjectDesignId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the ID of the project design this component belongs to."),
                     ParentId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the ID of the parent component, if any."),
@@ -476,10 +536,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     PlatformInfoId = table.Column<string>(type: "nvarchar(26)", nullable: true, comment: "Gets or sets the optional ID of the platform information associated with this component."),
                     PlatformProductId = table.Column<string>(type: "nvarchar(26)", nullable: true, comment: "Gets or sets the optional ID of the platform product associated with this component."),
                     ProjectComponentId = table.Column<string>(type: "nvarchar(26)", nullable: true),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -502,7 +564,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "ProjectScenarioUnit",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     ProjectInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the ID of the project this scenario metric belongs to."),
                     ProjectScenarioId = table.Column<string>(type: "nvarchar(26)", nullable: false),
                     SetupUnitId = table.Column<string>(type: "nvarchar(26)", nullable: true, comment: "The ID of the measuring unit used for this component."),
@@ -510,10 +572,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     Variable = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Expression = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Gets or sets any additional remarks or notes about the scenario unit."),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -536,7 +600,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "PlatformRateUnit",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     PlatformInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformInfo entity."),
                     PlatformProductId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformProduct entity."),
                     PlatformRateId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformProduct entity."),
@@ -546,10 +610,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     DefaultValue = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "Default rate for the unit, representing a base measurement standard."),
                     Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, comment: "Description of the measuring unit, providing additional context for users."),
                     SearchIndex = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "This field will store the normalized, concatenated values for searching"),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -573,19 +639,28 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "ProjectComponentUnit",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     ProjectInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "The project ID this component unit is part of."),
                     ProjectDesignId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "The design ID of the project this component unit belongs to."),
                     ProjectComponentId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "The ID of the project component to which this unit belongs."),
                     SetupUnitId = table.Column<string>(type: "nvarchar(26)", nullable: true, comment: "The ID of the measuring unit used for this component."),
+                    ProjectQuantityId = table.Column<string>(type: "nvarchar(26)", nullable: true, comment: "Gets or sets the unique identifier for the Project Quantity."),
                     Sequence = table.Column<int>(type: "int", nullable: false, comment: "Gets or sets the sequence order of this component within its parent design or component unit."),
-                    Variable = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, comment: "The variable name used in the metrics calculations for this component unit."),
-                    Expression = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "The formula used to calculate the value of the variable for this component unit."),
+                    Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "Gets or sets the description of the unit."),
+                    Variable = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true, comment: "The variable name used in the metrics calculations for this component unit."),
+                    Category = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true, comment: "Category of the component unit (example: forfait, per unit, ...)"),
+                    Expression = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "The formula used to calculate the value of the quantity for this component unit."),
+                    Quantity = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false, comment: "Gets or sets the quantity of the unit used."),
+                    SalesPrice = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false, comment: "Gets or sets the sales price for a unit."),
+                    RetailPrice = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false, comment: "Gets or sets the standard price for a unit."),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false, comment: "Gets or sets the actual price you pay for a unit."),
                     Remark = table.Column<string>(type: "nvarchar(max)", nullable: true, comment: "Gets or sets any additional remarks or notes about the component unit."),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -596,6 +671,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         principalTable: "ProjectComponent",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectComponentUnit_ProjectQuantity_ProjectQuantityId",
+                        column: x => x.ProjectQuantityId,
+                        principalTable: "ProjectQuantity",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProjectComponentUnit_SetupUnit_SetupUnitId",
                         column: x => x.SetupUnitId,
@@ -608,31 +689,39 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "ProjectSimulationEntry",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Primary Key"),
+                    Id = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the primary key for the entity."),
                     ProjectSimulationId = table.Column<string>(type: "nvarchar(26)", nullable: false),
                     ProjectInfoId = table.Column<string>(type: "nvarchar(26)", nullable: false),
                     ProjectScenarioId = table.Column<string>(type: "nvarchar(26)", nullable: false),
                     ProjectDesignId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Gets or sets the ID of the project design this component belongs to."),
                     ProjectComponentId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "The ID of the project component to which this unit belongs."),
+                    ProjectQuantityId = table.Column<string>(type: "nvarchar(26)", nullable: true, comment: "Gets or sets the unique identifier for the Project Quantity."),
                     PlatformInfoId = table.Column<string>(type: "nvarchar(26)", nullable: true, comment: "Gets or sets the optional ID of the platform information associated with this component."),
                     PlatformProductId = table.Column<string>(type: "nvarchar(26)", nullable: true, comment: "Gets or sets the optional ID of the platform product associated with this component."),
                     PlatformRegionId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformRegion entity."),
                     PlatformServiceId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformService entity."),
                     PlatformRateId = table.Column<string>(type: "nvarchar(26)", nullable: false, comment: "Foreign key referencing the PlatformProduct entity."),
+                    UnitDescription = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true, comment: "Gets or sets the description of the unit."),
+                    UnitCategory = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true, comment: "Category of the component unit (example: forfait, per unit, ...)"),
                     CurrencyCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, comment: "Currency code."),
                     UnitOfMeasure = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Unit of measure."),
                     Quantity = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "Quantity of service units."),
+                    SalesPrice = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false, comment: "Gets or sets the sales price for a unit."),
                     RetailPrice = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false, comment: "Retail price in the specified currency."),
                     UnitPrice = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false, comment: "Unit price per service unit in the specified currency."),
                     OwnershipPercentage = table.Column<int>(type: "int", nullable: false, comment: "Percentage of ownership for this component or service."),
-                    RetailCost = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "Internal retail cost in the specified currency."),
-                    UnitCost = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "Internal unit cost per service unit in the specified currency."),
-                    OwnRetailCost = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "Ownership-adjusted retail cost in the specified currency."),
-                    OwnUnitCost = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "Ownership-adjusted unit cost per service unit in the specified currency."),
-                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "The tenant identifier"),
+                    SalesAmount = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "Internal retail cost in the specified currency."),
+                    RetailAmount = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "Internal retail cost in the specified currency."),
+                    UnitAmount = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "Internal unit cost per service unit in the specified currency."),
+                    OwnSalesAmount = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "The sales revenue adjusted for the ownership percentage."),
+                    OwnRetailAmount = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "Ownership-adjusted retail cost in the specified currency."),
+                    OwnUnitAmount = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false, comment: "Ownership-adjusted unit cost per service unit in the specified currency."),
+                    TenantId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false, comment: "Gets or sets the tenant identifier."),
                     CreatedDT = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "Date time created"),
-                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Modified time created"),
-                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who created the entity."),
+                    ModifiedDT = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "Gets or sets the last modified date and time for the entity."),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true, comment: "Gets or sets the ID of the user who last modified the entity."),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true, comment: "Gets or sets the concurrency timestamp for the entity.")
                 },
                 constraints: table =>
                 {
@@ -679,6 +768,11 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         principalTable: "ProjectDesign",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjectSimulationEntry_ProjectQuantity_ProjectQuantityId",
+                        column: x => x.ProjectQuantityId,
+                        principalTable: "ProjectQuantity",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ProjectSimulationEntry_ProjectScenario_ProjectScenarioId",
                         column: x => x.ProjectScenarioId,
@@ -846,6 +940,11 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 column: "ProjectComponentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProjectComponentUnit_ProjectQuantityId",
+                table: "ProjectComponentUnit",
+                column: "ProjectQuantityId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjectComponentUnit_SetupUnitId",
                 table: "ProjectComponentUnit",
                 column: "SetupUnitId");
@@ -864,6 +963,22 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectDesign_TenantId_SearchIndex",
                 table: "ProjectDesign",
+                columns: new[] { "TenantId", "SearchIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectQuantity_ProjectInfoId",
+                table: "ProjectQuantity",
+                column: "ProjectInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectQuantity_TenantId_ProjectInfoId_Name",
+                table: "ProjectQuantity",
+                columns: new[] { "TenantId", "ProjectInfoId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectQuantity_TenantId_SearchIndex",
+                table: "ProjectQuantity",
                 columns: new[] { "TenantId", "SearchIndex" });
 
             migrationBuilder.CreateIndex(
@@ -936,6 +1051,11 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                 name: "IX_ProjectSimulationEntry_ProjectInfoId",
                 table: "ProjectSimulationEntry",
                 column: "ProjectInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectSimulationEntry_ProjectQuantityId",
+                table: "ProjectSimulationEntry",
+                column: "ProjectQuantityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectSimulationEntry_ProjectScenarioId",
@@ -1075,6 +1195,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
             migrationBuilder.DropTable(
                 name: "ProjectComponent");
+
+            migrationBuilder.DropTable(
+                name: "ProjectQuantity");
 
             migrationBuilder.DropTable(
                 name: "ProjectScenario");

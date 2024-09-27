@@ -41,19 +41,16 @@ public static class PlatformDefaultUnitHelper
         if (defaultUnits is not null && defaultUnits.Count > 0)
             return defaultUnits;
 
-        var setupUnit = await SetupUnitHelper.GetOrCreateDefaultSetupUnitAsync(context, save, token);
         defaultUnits = [];
         defaultUnits.Add(new PlatformDefaultUnit()
         {
             Id = Ulid.NewUlid(),
             PlatformInfoId = rate.PlatformInfoId,
-            SetupUnit = setupUnit,
-            SetupUnitId = setupUnit.Id,
             UnitOfMeasure = rate.UnitOfMeasure,
             UnitFactor = 1,
             DefaultValue = 1,
             Description = rate.UnitOfMeasure,
-            SearchIndex = GetSearchIndex(rate.UnitOfMeasure, setupUnit.Name, rate.UnitOfMeasure),
+            SearchIndex = GetSearchIndex(rate.UnitOfMeasure, string.Empty, rate.UnitOfMeasure),
             CreatedDT = DateTime.UtcNow,
         });
 
@@ -248,10 +245,12 @@ public sealed class CreateCommandValidator : ModelValidator<CreateCommand>
 internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCommand>>
 {
     private readonly FeatureContext _dbcontext;
+    private readonly Microsoft.Extensions.Caching.Memory.IMemoryCache _cache;
 
-    public CreateQueryHandler(FeatureContext dbcontext)
+    public CreateQueryHandler(FeatureContext dbcontext, Microsoft.Extensions.Caching.Memory.IMemoryCache cache)
     {
         _dbcontext = dbcontext;
+        _cache = cache;
     }
 
     public async Task<Result<CreateCommand>> Handle(CreateQuery message, CancellationToken token)
@@ -261,7 +260,7 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
             return PlatformDefaultUnitHelper.PlatformNotFound(message.PlatformInfoId);
 
         var record = PlatformDefaultUnitHelper.CreateNew(platform);
-        record.SetupUnits = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        record.SetupUnits = new SetupUnitHelper(_cache, _dbcontext).GetSetupUnitsAsync(token: token);
 
         return Result.Ok(record);
     }
@@ -351,11 +350,13 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
 {
     private readonly FeatureContext _dbcontext;
     private readonly IConfigurationProvider _configuration;
+    private readonly Microsoft.Extensions.Caching.Memory.IMemoryCache _cache;
 
-    public UpdateQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
+    public UpdateQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration, Microsoft.Extensions.Caching.Memory.IMemoryCache cache)
     {
         _dbcontext = dbcontext;
         _configuration = configuration;
+        _cache = cache;
     }
 
     public async Task<Result<UpdateCommand>> Handle(UpdateQuery message, CancellationToken token)
@@ -373,7 +374,7 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
             return PlatformDefaultUnitHelper.PlatformNotFound(record.PlatformInfoId);
 
         record.Platform = platform;
-        record.SetupUnits = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        record.SetupUnits = new SetupUnitHelper(_cache, _dbcontext).GetSetupUnitsAsync(token: token);
 
         return Result.Ok(record);
     }
@@ -452,11 +453,13 @@ internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<D
 {
     private readonly FeatureContext _dbcontext;
     private readonly IConfigurationProvider _configuration;
+    private readonly Microsoft.Extensions.Caching.Memory.IMemoryCache _cache;
 
-    public DeleteQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
+    public DeleteQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration, Microsoft.Extensions.Caching.Memory.IMemoryCache cache)
     {
         _dbcontext = dbcontext;
         _configuration = configuration;
+        _cache = cache;
     }
 
     public async Task<Result<DeleteCommand>> Handle(DeleteQuery message, CancellationToken token)
@@ -474,7 +477,7 @@ internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<D
             return PlatformDefaultUnitHelper.PlatformNotFound(record.PlatformInfoId);
 
         record.Platform = platform;
-        record.SetupUnits = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        record.SetupUnits = new SetupUnitHelper(_cache, _dbcontext).GetSetupUnitsAsync(token: token);
 
         return Result.Ok(record);
     }
@@ -638,8 +641,6 @@ internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
         if (platform is null)
             return PlatformDefaultUnitHelper.PlatformNotFound(message.PlatformInfoId);
 
-        var setupUnit = await SetupUnitHelper.GetOrCreateDefaultSetupUnitAsync(_dbcontext, false, token);
-
         bool changes = false;
         foreach (var item in message.Items)
         {
@@ -650,8 +651,6 @@ internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
                 PlatformInfoId = item.PlatformInfoId,
                 Description = item.Description?.Trim(),
                 CreatedDT = DateTime.UtcNow,
-                //SetupUnit = setupUnit,
-                SetupUnitId = setupUnit.Id,
                 DefaultValue = item.DefaultValue,
                 UnitFactor = item.UnitFactor,
                 UnitOfMeasure = item.UnitOfMeasure,

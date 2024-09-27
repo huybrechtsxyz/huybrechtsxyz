@@ -560,11 +560,13 @@ internal class CopyCommandHandler : IRequestHandler<CopyCommand, Result>
 {
     private readonly FeatureContext _dbcontext;
     private readonly IMapper _mapper;
+    private readonly Microsoft.Extensions.Caching.Memory.IMemoryCache _cache;
 
-    public CopyCommandHandler(FeatureContext dbcontext, IMapper mapper)
+    public CopyCommandHandler(FeatureContext dbcontext, IMapper mapper, Microsoft.Extensions.Caching.Memory.IMemoryCache cache)
     {
         _dbcontext = dbcontext;
         _mapper = mapper;
+        _cache = cache;
     }
 
     public async Task<Result> Handle(CopyCommand message, CancellationToken token)
@@ -578,7 +580,7 @@ internal class CopyCommandHandler : IRequestHandler<CopyCommand, Result>
         if (entity is null)
             return ProjectScenarioHelper.EntityNotFound(message.Id);
 
-        var setupUnits = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        var setupUnits = new SetupUnitHelper(_cache, _dbcontext).GetSetupUnitsAsync(token: token);
 
         ProjectScenario newEntity = _mapper.Map<ProjectScenario>(entity);
         newEntity.Id = Ulid.NewUlid();

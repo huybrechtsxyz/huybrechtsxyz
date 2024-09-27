@@ -212,10 +212,12 @@ public sealed class CreateCommandValidator : ModelValidator<CreateCommand>
 internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCommand>>
 {
     private readonly FeatureContext _dbcontext;
+    private readonly Microsoft.Extensions.Caching.Memory.IMemoryCache _cache;
 
-    public CreateQueryHandler(FeatureContext dbcontext)
+    public CreateQueryHandler(FeatureContext dbcontext, Microsoft.Extensions.Caching.Memory.IMemoryCache cache)
     {
         _dbcontext = dbcontext;
+        _cache = cache;
     }
 
     public async Task<Result<CreateCommand>> Handle(CreateQuery message, CancellationToken token)
@@ -232,7 +234,7 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
 
         command.ProjectInfo = project;
         command.ProjectScenario = Scenario;
-        command.SetupUnitList = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        command.SetupUnitList = new SetupUnitHelper(_cache, _dbcontext).GetSetupUnitsAsync(token: token);
 
         return Result.Ok(command);
     }
@@ -325,11 +327,13 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
 {
     private readonly FeatureContext _dbcontext;
     private readonly IConfigurationProvider _configuration;
+    private readonly Microsoft.Extensions.Caching.Memory.IMemoryCache _cache;
 
-    public UpdateQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
+    public UpdateQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration, Microsoft.Extensions.Caching.Memory.IMemoryCache cache)
     {
         _dbcontext = dbcontext;
         _configuration = configuration;
+        _cache = cache;
     }
 
     public async Task<Result<UpdateCommand>> Handle(UpdateQuery message, CancellationToken token)
@@ -353,7 +357,7 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
 
         command.ProjectInfo = project;
         command.ProjectScenario = Scenario;
-        command.SetupUnitList = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        command.SetupUnitList = new SetupUnitHelper(_cache, _dbcontext).GetSetupUnitsAsync(token: token);
 
         return Result.Ok(command);
     }

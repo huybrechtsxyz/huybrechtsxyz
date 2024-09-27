@@ -282,6 +282,8 @@ public static class WebHostExtensions
 
     public static WebApplicationBuilder AddConfigurationServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddMemoryCache();
+
         builder.Services.AddAutoMapper(typeof(ApplicationContext));
 
         builder.Services.AddMediatR(config =>
