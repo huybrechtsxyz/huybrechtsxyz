@@ -203,7 +203,7 @@ jobs:
     environment: ${{ inputs.environment }}
     strategy:
       matrix:
-        component: [traefik, whoami, sqlite, website]
+        component: [traefik, whoami, sqlite, postgres, website]
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -257,4 +257,4 @@ jobs:
             cd /
             cd /app
             echo DOCKER DEPLOY
-            docker stack deploy -c <(docker-compose -f compose.yml --env-file ${{ inputs.environment }}.env config) app &> /dev/null
+            docker stack deploy -c <(docker-compose -f compose.yml --profile ${{ inputs.environment }} --env-file ${{ inputs.environment }}.env config) app &> /dev/null

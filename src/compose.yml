@@ -15,6 +15,15 @@ services:
     extends:
       file: sqlite.yml
       service: sqlite
+    profiles:
+      - test
+      - staging
+  postgres:
+    extends:
+      file: postgres.yml
+      service: postgres
+    profiles:
+      - production
   website:
     extends:
       file: website.yml

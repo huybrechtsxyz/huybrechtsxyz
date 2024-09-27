@@ -17,14 +17,14 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${WEB_ENVIRONMENT}
       - DOTNET_RUNNING_IN_CONTAINER=1
-      - APP_HOST_USERNAME=/run/secrets/APP_HOST_USERNAME
-      - APP_HOST_PASSWORD=/run/secrets/APP_HOST_PASSWORD
-      - APP_HOST_EMAIL=/run/secrets/APP_HOST_EMAIL
-      - APP_DATA_URL=/run/secrets/APP_DATA_URL
+      - APP_AUTH_GOOGLE=/run/secrets/APP_AUTH_GOOGLE
       - APP_DATA_NAME=/run/secrets/APP_DATA_NAME
       - APP_DATA_USERNAME=/run/secrets/APP_DATA_USERNAME
       - APP_DATA_PASSWORD=/run/secrets/APP_DATA_PASSWORD
-      - APP_AUTH_GOOGLE=/run/secrets/APP_AUTH_GOOGLE
+      - APP_DATA_URL=/run/secrets/APP_DATA_URL
+      - APP_HOST_EMAIL=/run/secrets/APP_HOST_EMAIL
+      - APP_HOST_USERNAME=/run/secrets/APP_HOST_USERNAME
+      - APP_HOST_PASSWORD=/run/secrets/APP_HOST_PASSWORD
       - APP_SMTP_OPTIONS=/run/secrets/APP_SMTP_OPTIONS
     networks:
       - traefik
