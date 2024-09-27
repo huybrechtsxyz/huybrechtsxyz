@@ -264,7 +264,7 @@ public class SetupUnitHelper
 
 public sealed record ListModel : Model { }
 
-internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<SetupUnit, ListModel>(); }
+public sealed class ListMapping : Profile { public ListMapping() => CreateProjection<SetupUnit, ListModel>(); }
 
 public sealed record ListQuery : EntityFlow.ListQuery, IRequest<Result<ListResult>> 
 {
@@ -275,7 +275,7 @@ public sealed class ListValidator : AbstractValidator<ListQuery> { public ListVa
 
 public sealed record ListResult : EntityFlow.ListResult<ListModel> { }
 
-internal sealed class ListHandler :
+public sealed class ListHandler :
     EntityFlow.ListHandler<SetupUnit, ListModel>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
@@ -348,7 +348,7 @@ public sealed class CreateValidator : ModelValidator<CreateCommand>
     }
 }
 
-internal sealed class CreateHandler : IRequestHandler<CreateCommand, Result<Ulid>>
+public sealed class CreateHandler : IRequestHandler<CreateCommand, Result<Ulid>>
 {
     private readonly FeatureContext _dbcontext;
 
@@ -411,12 +411,12 @@ public class UpdateCommandValidator : ModelValidator<UpdateCommand>
     }
 }
 
-internal class UpdateCommandMapping : Profile 
+public class UpdateCommandMapping : Profile 
 { 
     public UpdateCommandMapping() => CreateProjection<SetupUnit, UpdateCommand>(); 
 }
 
-internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
+public class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
 {
     private readonly FeatureContext _dbcontext;
     private readonly IConfigurationProvider _configuration;
@@ -440,7 +440,7 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
     }
 }
 
-internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
+public class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
 {
     private readonly FeatureContext _dbcontext;
 
@@ -500,7 +500,7 @@ public sealed class DeleteCommandValidator : AbstractValidator<DeleteCommand>
     }
 }
 
-internal sealed class DeleteCommandMapping : Profile
+public sealed class DeleteCommandMapping : Profile
 {
     public DeleteCommandMapping()
     {
@@ -508,7 +508,7 @@ internal sealed class DeleteCommandMapping : Profile
     }
 }
 
-internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<DeleteCommand>>
+public sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<DeleteCommand>>
 {
     private readonly FeatureContext _dbcontext;
     private readonly IConfigurationProvider _configuration;
@@ -532,7 +532,7 @@ internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<D
     }
 }
 
-internal class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
+public class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
 {
     private readonly FeatureContext _dbcontext;
 
@@ -579,7 +579,7 @@ public sealed record ImportCommand : IRequest<Result>
 
 public sealed class ImportCommandValidator : AbstractValidator<ImportCommand> { public ImportCommandValidator() { } }
 
-internal sealed class ImportQueryHandler :
+public sealed class ImportQueryHandler :
     EntityFlow.ListHandler<SetupUnit, ImportModel>,
     IRequestHandler<ImportQuery, Result<ImportResult>>
 {
@@ -630,7 +630,7 @@ internal sealed class ImportQueryHandler :
     }
 }
 
-internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
+public class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
 {
     private readonly FeatureContext _dbcontext;
 

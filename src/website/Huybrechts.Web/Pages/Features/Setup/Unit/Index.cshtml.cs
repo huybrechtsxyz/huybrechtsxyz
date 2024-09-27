@@ -15,47 +15,54 @@ public class IndexModel : PageModel
 {
     private readonly IMediator _mediator;
     private readonly IValidator<Flow.ListQuery> _validator;
+    private readonly ILogger<IndexModel> _logger;
 
     public Flow.ListResult Data { get; set; } = new();
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    public IndexModel(IMediator mediator, IValidator<Flow.ListQuery> validator)
+    public IndexModel(IMediator mediator, IValidator<Flow.ListQuery> validator, ILogger<IndexModel> logger)
     {
         _mediator = mediator;
         _validator = validator;
+        _logger = logger;
     }
 
     public async Task<IActionResult> OnGetAsync(
-        string currentFilter,
-        string searchText,
-        string sortOrder,
+        string? currentFilter,
+        string? searchText,
+        string? sortOrder,
         int? pageIndex)
     {
         try
         {
-            var message = new Flow.ListQuery()
+            var request = new Flow.ListQuery()
             {
-                CurrentFilter = currentFilter,
-                SearchText = searchText,
-                SortOrder = sortOrder,
+                CurrentFilter = currentFilter ?? string.Empty,
+                SearchText = searchText ?? string.Empty,
+                SortOrder = sortOrder ?? string.Empty,
                 Page = pageIndex
             };
 
-            ValidationResult state = await _validator.ValidateAsync(message);
-            if (!state.IsValid)
-                return BadRequest(state);
+            ValidationResult validationResult = await _validator.ValidateAsync(request);
+            if (!validationResult.IsValid)
+            {
+                foreach (var error in validationResult.Errors)
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                return Page();
+            }
 
-            var result = await _mediator.Send(message);
-            if (result.HasStatusMessage())
-                StatusMessage = result.ToStatusMessage();
+            var response = await _mediator.Send(request);
+            if (response.HasStatusMessage())
+                StatusMessage = response.ToStatusMessage();
 
-            Data = result.Value;
+            Data = response.Value;
             return Page();
         }
-        catch(Exception)
+        catch(Exception ex)
         {
+            _logger.LogError(ex, "An error occurred while processing the request.");
             return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
         }
     }
