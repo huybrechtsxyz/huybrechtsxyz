@@ -1,5 +1,5 @@
-# This workflow deploys all components to the staging environment
-name: Deploy To Staging
+# This workflow deploys all components to the test environment
+name: Deploy To Test (No Build)
 
 on:
   workflow_dispatch:
@@ -8,9 +8,9 @@ jobs:
   deploy_components:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_pipeline.yml@main
     with:
-      environment: staging
+      environment: test
       initialize: 'false'
-      rebuild: 'true'
+      rebuild: 'false'
     secrets:
       APP_AUTH_GOOGLE: ${{ secrets.APP_AUTH_GOOGLE }}
       APP_DATA_NAME: ${{ secrets.APP_DATA_NAME }}

@@ -14,6 +14,18 @@ on:
         required: true
         type: string
     secrets:
+      APP_AUTH_GOOGLE:
+        required: true
+      APP_DATA_NAME:
+        required: true
+      APP_DATA_USERNAME:
+        required: true
+      APP_DATA_PASSWORD:
+        required: true
+      APP_DATA_URL:
+        required: true
+      APP_HOST_EMAIL:
+        required: true
       APP_HOST_SERVER:
         required: true
       APP_HOST_PORT:
@@ -22,13 +34,13 @@ on:
         required: true
       APP_HOST_PASSWORD:
         required: true
-      APP_HOST_EMAIL:
+      APP_SMTP_OPTIONS:
         required: true
       REGISTRY_USERNAME:
         required: true
       REGISTRY_PASSWORD:
         required: true
-
+        
 jobs:
   init-server:
     name: Initialize Server Job
@@ -135,10 +147,10 @@ jobs:
             createsecret "Database Pass" "APP_DATA_PASSWORD" '${{ secrets.APP_DATA_PASSWORD }}'
             createsecret "Database URL" "APP_DATA_URL" '${{ secrets.APP_DATA_URL }}'
             createsecret "Server Email" "APP_HOST_EMAIL" '${{ secrets.APP_HOST_EMAIL }}'
-            createsecret "Server Password" "APP_HOST_PASSWORD" '${{ secrets.APP_HOST_PASSWORD }}'
-            createsecret "Server Port" "APP_HOST_PORT" '${{ secrets.APP_HOST_PORT }}'
             createsecret "Server Server" "APP_HOST_SERVER" '${{ secrets.APP_HOST_SERVER }}'
+            createsecret "Server Port" "APP_HOST_PORT" '${{ secrets.APP_HOST_PORT }}'
             createsecret "Server Username" "APP_HOST_USERNAME" '${{ secrets.APP_HOST_USERNAME }}'
+            createsecret "Server Password" "APP_HOST_PASSWORD" '${{ secrets.APP_HOST_PASSWORD }}'
             createsecret "SMTP Options" "APP_SMTP_OPTIONS" '${{ secrets.APP_SMTP_OPTIONS }}'
   
   build-website:
