@@ -72,14 +72,14 @@ public sealed record ListModel : Model { }
 
 internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<SetupLanguage, ListModel>(); }
 
-public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
+public sealed record ListQuery : EntityFlow.ListQuery, IRequest<Result<ListResult>> { }
 
 public sealed class ListValidator : AbstractValidator<ListQuery> { public ListValidator() { } }
 
-public sealed record ListResult : EntityListFlow.Result<ListModel> { }
+public sealed record ListResult : EntityFlow.ListResult<ListModel> { }
 
 internal sealed class ListHandler :
-    EntityListFlow.Handler<SetupLanguage, ListModel>,
+    EntityFlow.ListHandler<SetupLanguage, ListModel>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
     public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -104,7 +104,7 @@ internal sealed class ListHandler :
         }
         else query = query.OrderBy(o => o.Name);
 
-        int pageSize = EntityListFlow.PageSize;
+        int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
         var results = await query
             .ProjectTo<ListModel>(_configuration)
@@ -361,13 +361,13 @@ public sealed record ImportModel : Model
     public bool IsSelected { get; set; }
 }
 
-public sealed record ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
+public sealed record ImportQuery : EntityFlow.ListQuery, IRequest<Result<ImportResult>>
 {
 }
 
 public sealed class ImportQueryValidator : AbstractValidator<ImportQuery> { public ImportQueryValidator() { } }
 
-public sealed record ImportResult : EntityListFlow.Result<ImportModel>
+public sealed record ImportResult : EntityFlow.ListResult<ImportModel>
 {
 }
 
@@ -379,7 +379,7 @@ public sealed record ImportCommand : IRequest<Result>
 public sealed class ImportCommandValidator : AbstractValidator<ImportCommand> { public ImportCommandValidator() { } }
 
 internal sealed class ImportQueryHandler :
-    EntityListFlow.Handler<SetupLanguage, ImportModel>,
+    EntityFlow.ListHandler<SetupLanguage, ImportModel>,
     IRequestHandler<ImportQuery, Result<ImportResult>>
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
@@ -412,7 +412,7 @@ internal sealed class ImportQueryHandler :
         }
 
         records = [.. records.OrderBy(o => o.Name)];
-        int pageSize = EntityListFlow.PageSize;
+        int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
 
         return new ImportResult()

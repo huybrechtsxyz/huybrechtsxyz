@@ -213,7 +213,7 @@ internal sealed class ListMapping : Profile
         .ForMember(dest => dest.PlatformProductLabel, opt => opt.MapFrom(src => src.PlatformProduct.Label));
 }
 
-public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
+public sealed record ListQuery : EntityFlow.ListQuery, IRequest<Result<ListResult>>
 {
     public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
 
@@ -232,7 +232,7 @@ public sealed class ListValidator : AbstractValidator<ListQuery>
     } 
 }
 
-public sealed record ListResult : EntityListFlow.Result<ListModel>
+public sealed record ListResult : EntityFlow.ListResult<ListModel>
 {
     public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
 
@@ -254,7 +254,7 @@ public sealed record ListResult : EntityListFlow.Result<ListModel>
 }
 
 internal sealed class ListHandler :
-    EntityListFlow.Handler<PlatformRate, ListModel>,
+    EntityFlow.ListHandler<PlatformRate, ListModel>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
     public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -313,7 +313,7 @@ internal sealed class ListHandler :
         var services = await PlatformRateHelper.GetServicesAsync(_dbcontext, platform.Id, token);
         var currencies = await PlatformRateHelper.GetCurrenciesAsync(_dbcontext, token);
 
-        int pageSize = EntityListFlow.PageSize;
+        int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
         var results = await query
             .Include(i => i.PlatformProduct)
@@ -731,7 +731,7 @@ internal sealed class ImportModelMapping : Profile
         ;
 }
 
-public sealed record ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
+public sealed record ImportQuery : EntityFlow.ListQuery, IRequest<Result<ImportResult>>
 {
     public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
 
@@ -750,7 +750,7 @@ public sealed class ImportQueryValidator : AbstractValidator<ImportQuery>
     }
 }
 
-public sealed record ImportResult : EntityListFlow.Result<ImportModel>
+public sealed record ImportResult : EntityFlow.ListResult<ImportModel>
 {
     public Ulid? PlatformProductId { get; set; } = Ulid.Empty;
 
@@ -793,7 +793,7 @@ public sealed class ImportCommandValidator : AbstractValidator<ImportCommand>
 }
 
 internal sealed class ImportQueryHandler :
-    EntityListFlow.Handler<PlatformRate, ImportModel>,
+    EntityFlow.ListHandler<PlatformRate, ImportModel>,
     IRequestHandler<ImportQuery, Result<ImportResult>>
 {
     private readonly PlatformImportOptions _options;
@@ -861,7 +861,7 @@ internal sealed class ImportQueryHandler :
             .ThenBy(o => o.CurrencyCode)
             .ThenBy(o => o.MinimumUnits)
             ];
-        int pageSize = EntityListFlow.PageSize;
+        int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
 
         return new ImportResult()

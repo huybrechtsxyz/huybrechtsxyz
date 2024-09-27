@@ -36,7 +36,7 @@ public class SetupUnitConversionTests
         };
 
         // Convert 150 centimeters to meters
-        decimal result = SetuptUnitHelper.ConvertUnit(150, centimeterModel, meterModel);
+        decimal result = SetupUnitHelper.ConvertUnit(150, centimeterModel, meterModel);
         Assert.That(result, Is.EqualTo(1.5));
     }
 }

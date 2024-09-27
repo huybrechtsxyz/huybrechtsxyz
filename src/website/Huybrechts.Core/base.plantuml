@@ -1,0 +1,13 @@
+@startuml
+
+class Entity {
+    + Ulid Id
+    + string TenantId
+    + DateTime CreatedDT
+    + DateTime? ModifiedDT
+    + byte[]? TimeStamp
+    + string CreatedBy
+    + string ModifiedBy
+}
+
+@enduml

@@ -100,7 +100,7 @@ internal sealed class ListMapping : Profile
         .ForMember(dest => dest.ProjectInfoName, opt => opt.MapFrom(src => src.ProjectInfo.Name));
 }
 
-public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
+public sealed record ListQuery : EntityFlow.ListQuery, IRequest<Result<ListResult>>
 {
     public Ulid? ProjectInfoId { get; set; } = Ulid.Empty;
 }
@@ -113,7 +113,7 @@ public sealed class ListValidator : AbstractValidator<ListQuery>
     } 
 }
 
-public sealed record ListResult : EntityListFlow.Result<ListModel>
+public sealed record ListResult : EntityFlow.ListResult<ListModel>
 {
     public Ulid? ProjectInfoId { get; set; } = Ulid.Empty;
 
@@ -121,7 +121,7 @@ public sealed record ListResult : EntityListFlow.Result<ListModel>
 }
 
 internal sealed class ListHandler :
-    EntityListFlow.Handler<ProjectScenario, ListModel>,
+    EntityFlow.ListHandler<ProjectScenario, ListModel>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
     public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -156,7 +156,7 @@ internal sealed class ListHandler :
         }
         else query = query.OrderBy(o => o.Name);
 
-        int pageSize = EntityListFlow.PageSize;
+        int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
         var results = await query
             .Include(i => i.ProjectInfo)
@@ -578,7 +578,7 @@ internal class CopyCommandHandler : IRequestHandler<CopyCommand, Result>
         if (entity is null)
             return ProjectScenarioHelper.EntityNotFound(message.Id);
 
-        var setupUnits = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        var setupUnits = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         ProjectScenario newEntity = _mapper.Map<ProjectScenario>(entity);
         newEntity.Id = Ulid.NewUlid();

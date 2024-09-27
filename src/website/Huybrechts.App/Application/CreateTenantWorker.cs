@@ -42,14 +42,8 @@ public class CreateTenantWorker
             
             _contextSetter.MultiTenantContext = new MultiTenantContext<TenantInfo> { TenantInfo = tenant.ToTenantInfo() };
             
-            // SETUP
-            await CreateSetupStates(token);
-            await CreateSetupUnits(token);
-            await CreateSetupLanguages(token);
-            await CreateSetupCurrencies(token);
-            await CreateSetupCountries(token);
-
-            // PLATFORM
+            // DEFAULT DATA FOR TENANT
+            await CreateSetup(token);
             await CreatePlatform(token);
         }
         catch(Exception ex)
@@ -62,7 +56,16 @@ public class CreateTenantWorker
     // SETUP
     //
 
-    private async Task CreateSetupStates(CancellationToken token = default)
+    private async Task CreateSetup(CancellationToken token)
+    {
+        await CreateSetupStates(token);
+        await CreateSetupUnits(token);
+        await CreateSetupLanguages(token);
+        await CreateSetupCurrencies(token);
+        await CreateSetupCountries(token);
+    }
+
+    private async Task CreateSetupStates(CancellationToken token)
     {
         Features.Setup.SetupStateFlow.ImportQuery query = new() { };
         var request = await _mediator.Send(query, token);
@@ -75,7 +78,7 @@ public class CreateTenantWorker
         _ = await _mediator.Send(command, token);
     }
 
-    private async Task CreateSetupUnits(CancellationToken token = default)
+    private async Task CreateSetupUnits(CancellationToken token)
     {
         Features.Setup.SetupUnitFlow.ImportQuery query = new() { };
         var request = await _mediator.Send(query, token);
@@ -88,7 +91,7 @@ public class CreateTenantWorker
         _ = await _mediator.Send(command, token);
     }
 
-    private async Task CreateSetupLanguages(CancellationToken token = default)
+    private async Task CreateSetupLanguages(CancellationToken token)
     {
         List<string> defaults = ["EN", "NL"];
 
@@ -103,7 +106,7 @@ public class CreateTenantWorker
         _ = await _mediator.Send(command, token);
     }
 
-    private async Task CreateSetupCurrencies(CancellationToken token = default)
+    private async Task CreateSetupCurrencies(CancellationToken token)
     {
         List<string> defaults = ["EUR", "USD"];
 
@@ -118,7 +121,7 @@ public class CreateTenantWorker
         _ = await _mediator.Send(command, token);
     }
 
-    private async Task CreateSetupCountries(CancellationToken token = default)
+    private async Task CreateSetupCountries(CancellationToken token)
     {
         List<string> defaults = ["BE", "US"];
 
@@ -137,13 +140,13 @@ public class CreateTenantWorker
     // PLATFORM
     //
 
-    private async Task CreatePlatform(CancellationToken token = default)
+    private async Task CreatePlatform(CancellationToken token)
     {
         await CreatePlatformAzure(token);
         await CreatePlatformOnPremise(token);
     }
 
-    private async Task CreatePlatformAzure(CancellationToken token = default)
+    private async Task CreatePlatformAzure(CancellationToken token)
     {
         Features.Platform.PlatformInfoFlow.CreateCommand platformCommand = new()
         {
@@ -259,7 +262,7 @@ public class CreateTenantWorker
         _ = await _mediator.Send(rateCommand, token);
     }
 
-    private async Task CreatePlatformOnPremise(CancellationToken token = default)
+    private async Task CreatePlatformOnPremise(CancellationToken token )
     {
         Features.Platform.PlatformInfoFlow.CreateCommand platformCommand = new()
         {

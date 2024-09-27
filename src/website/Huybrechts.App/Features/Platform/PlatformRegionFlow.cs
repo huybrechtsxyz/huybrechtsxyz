@@ -91,7 +91,7 @@ internal sealed class ListMapping : Profile
         .ForMember(dest => dest.PlatformInfoName, opt => opt.MapFrom(src => src.PlatformInfo.Name));
 }
 
-public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
+public sealed record ListQuery : EntityFlow.ListQuery, IRequest<Result<ListResult>>
 {
     public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
 }
@@ -104,7 +104,7 @@ public sealed class ListValidator : AbstractValidator<ListQuery>
     } 
 }
 
-public sealed record ListResult : EntityListFlow.Result<ListModel>
+public sealed record ListResult : EntityFlow.ListResult<ListModel>
 {
     public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
 
@@ -112,7 +112,7 @@ public sealed record ListResult : EntityListFlow.Result<ListModel>
 }
 
 internal sealed class ListHandler :
-    EntityListFlow.Handler<PlatformRegion, ListModel>,
+    EntityFlow.ListHandler<PlatformRegion, ListModel>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
     public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -147,7 +147,7 @@ internal sealed class ListHandler :
         }
         else query = query.OrderBy(o => o.Name);
 
-        int pageSize = EntityListFlow.PageSize;
+        int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
         var results = await query
             .Include(i => i.PlatformInfo)
@@ -474,7 +474,7 @@ public sealed record ImportModel : Model
     public bool IsSelected { get; set; }
 }
 
-public sealed record ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
+public sealed record ImportQuery : EntityFlow.ListQuery, IRequest<Result<ImportResult>>
 {
     public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
 }
@@ -487,7 +487,7 @@ public sealed class ImportQueryValidator : AbstractValidator<ImportQuery>
     }
 }
 
-public sealed record ImportResult : EntityListFlow.Result<ImportModel>
+public sealed record ImportResult : EntityFlow.ListResult<ImportModel>
 {
     public PlatformInfo Platform { get; set; } = new();
 }
@@ -508,7 +508,7 @@ public sealed class ImportCommandValidator : AbstractValidator<ImportCommand>
 }
 
 internal sealed class ImportQueryHandler :
-    EntityListFlow.Handler<PlatformRegion, ImportModel>,
+    EntityFlow.ListHandler<PlatformRegion, ImportModel>,
     IRequestHandler<ImportQuery, Result<ImportResult>>
 {
     private readonly PlatformImportOptions _options;
@@ -535,7 +535,7 @@ internal sealed class ImportQueryHandler :
         }
 
         records = [.. records.OrderBy(o => o.Name)];
-        int pageSize = EntityListFlow.PageSize;
+        int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
 
         return new ImportResult()

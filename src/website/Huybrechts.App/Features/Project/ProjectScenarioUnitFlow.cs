@@ -131,7 +131,7 @@ public sealed record ListResult
 }
 
 internal sealed class ListHandler :
-    EntityListFlow.Handler<ProjectScenarioUnit, ListModel>,
+    EntityFlow.ListHandler<ProjectScenarioUnit, ListModel>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
     public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -232,7 +232,7 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
 
         command.ProjectInfo = project;
         command.ProjectScenario = Scenario;
-        command.SetupUnitList = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        command.SetupUnitList = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(command);
     }
@@ -353,7 +353,7 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
 
         command.ProjectInfo = project;
         command.ProjectScenario = Scenario;
-        command.SetupUnitList = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        command.SetupUnitList = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(command);
     }

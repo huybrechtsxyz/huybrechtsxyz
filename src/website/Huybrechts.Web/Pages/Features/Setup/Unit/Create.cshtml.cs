@@ -31,7 +31,7 @@ public class CreateModel : PageModel
 
     public void OnGet()
     {
-        Data = Flow.SetuptUnitHelper.CreateNew();
+        Data = Flow.SetupUnitHelper.CreateNew();
     }
 
     public async Task<IActionResult> OnPostAsync()

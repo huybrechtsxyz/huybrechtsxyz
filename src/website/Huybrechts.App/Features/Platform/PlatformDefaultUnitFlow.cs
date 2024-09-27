@@ -41,7 +41,7 @@ public static class PlatformDefaultUnitHelper
         if (defaultUnits is not null && defaultUnits.Count > 0)
             return defaultUnits;
 
-        var setupUnit = await SetuptUnitHelper.FindOrCreateDefaultSetupUnitAsync(context, save, token);
+        var setupUnit = await SetupUnitHelper.GetOrCreateDefaultSetupUnitAsync(context, save, token);
         defaultUnits = [];
         defaultUnits.Add(new PlatformDefaultUnit()
         {
@@ -129,7 +129,7 @@ internal sealed class ListMapping : Profile
         CreateProjection<PlatformDefaultUnit, ListModel>();
 }
 
-public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>>
+public sealed record ListQuery : EntityFlow.ListQuery, IRequest<Result<ListResult>>
 {
     public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
 }
@@ -142,7 +142,7 @@ public sealed class ListValidator : AbstractValidator<ListQuery>
     } 
 }
 
-public sealed record ListResult : EntityListFlow.Result<ListModel>
+public sealed record ListResult : EntityFlow.ListResult<ListModel>
 {
     public Ulid? PlatformInfoId { get; set; } = Ulid.Empty;
 
@@ -150,7 +150,7 @@ public sealed record ListResult : EntityListFlow.Result<ListModel>
 }
 
 internal sealed class ListHandler :
-    EntityListFlow.Handler<PlatformRate, ListModel>,
+    EntityFlow.ListHandler<PlatformRate, ListModel>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
     public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -187,7 +187,7 @@ internal sealed class ListHandler :
             .OrderBy(o => o.UnitOfMeasure)
             .ThenBy(o => o.SetupUnit.Name);
 
-        int pageSize = EntityListFlow.PageSize;
+        int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
         var results = await query
             .Include(i => i.SetupUnit)
@@ -261,7 +261,7 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
             return PlatformDefaultUnitHelper.PlatformNotFound(message.PlatformInfoId);
 
         var record = PlatformDefaultUnitHelper.CreateNew(platform);
-        record.SetupUnits = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        record.SetupUnits = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(record);
     }
@@ -373,7 +373,7 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
             return PlatformDefaultUnitHelper.PlatformNotFound(record.PlatformInfoId);
 
         record.Platform = platform;
-        record.SetupUnits = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        record.SetupUnits = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(record);
     }
@@ -474,7 +474,7 @@ internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<D
             return PlatformDefaultUnitHelper.PlatformNotFound(record.PlatformInfoId);
 
         record.Platform = platform;
-        record.SetupUnits = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        record.SetupUnits = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
 
         return Result.Ok(record);
     }
@@ -512,7 +512,7 @@ public sealed record ImportModel : Model
     public bool IsSelected { get; set; }
 }
 
-public sealed record ImportQuery : EntityListFlow.Query, IRequest<Result<ImportResult>>
+public sealed record ImportQuery : EntityFlow.ListQuery, IRequest<Result<ImportResult>>
 {
     public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
 }
@@ -525,7 +525,7 @@ public sealed class ImportQueryValidator : AbstractValidator<ImportQuery>
     }
 }
 
-public sealed record ImportResult : EntityListFlow.Result<ImportModel>
+public sealed record ImportResult : EntityFlow.ListResult<ImportModel>
 {
     public PlatformInfo Platform { get; set; } = new();
 }
@@ -546,7 +546,7 @@ public sealed class ImportCommandValidator : AbstractValidator<ImportCommand>
 }
 
 internal sealed class ImportQueryHandler :
-    EntityListFlow.Handler<PlatformDefaultUnit, ImportModel>,
+    EntityFlow.ListHandler<PlatformDefaultUnit, ImportModel>,
     IRequestHandler<ImportQuery, Result<ImportResult>>
 {
     private readonly PlatformImportOptions _options;
@@ -573,7 +573,7 @@ internal sealed class ImportQueryHandler :
         }
 
         records = [.. records.OrderBy(o => o.UnitOfMeasure)];
-        int pageSize = EntityListFlow.PageSize;
+        int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
 
         return new ImportResult()
@@ -638,7 +638,7 @@ internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
         if (platform is null)
             return PlatformDefaultUnitHelper.PlatformNotFound(message.PlatformInfoId);
 
-        var setupUnit = await SetuptUnitHelper.FindOrCreateDefaultSetupUnitAsync(_dbcontext, false, token);
+        var setupUnit = await SetupUnitHelper.GetOrCreateDefaultSetupUnitAsync(_dbcontext, false, token);
 
         bool changes = false;
         foreach (var item in message.Items)

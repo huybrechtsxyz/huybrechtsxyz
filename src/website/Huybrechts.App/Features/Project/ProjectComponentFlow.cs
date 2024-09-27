@@ -268,7 +268,7 @@ public sealed record ListResult
 }
 
 internal sealed class ListHandler :
-    EntityListFlow.Handler<ProjectComponent, Model>,
+    EntityFlow.ListHandler<ProjectComponent, Model>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
     private readonly IMapper _mapper;

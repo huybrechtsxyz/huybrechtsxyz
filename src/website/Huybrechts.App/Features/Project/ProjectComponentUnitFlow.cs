@@ -186,7 +186,7 @@ public sealed record ListResult
 }
 
 internal sealed class ListHandler :
-    EntityListFlow.Handler<ProjectComponentUnit, ListModel>,
+    EntityFlow.ListHandler<ProjectComponentUnit, ListModel>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
     public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -302,7 +302,7 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
         command.ProjectInfo = project;
         command.ProjectDesign = design;
         command.ProjectComponent = component;
-        command.SetupUnitList = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        command.SetupUnitList = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
         command.ProjectQuantityList = await ProjectQuantityHelper.GetBillOfQuantitiesAsync(_dbcontext, token);
 
         return Result.Ok(command);
@@ -384,12 +384,10 @@ public sealed class DefaultCommandValidator : AbstractValidator<DefaultCommand>
 internal class DefaultQueryHandler : IRequestHandler<DefaultCommand, Result>
 {
     private readonly FeatureContext _dbcontext;
-    private readonly IMapper _mapper;
 
-    public DefaultQueryHandler(FeatureContext dbcontext, IMapper mapper)
+    public DefaultQueryHandler(FeatureContext dbcontext)
     {
         _dbcontext = dbcontext;
-        _mapper = mapper;
     }
 
     public async Task<Result> Handle(DefaultCommand message, CancellationToken token)
@@ -562,7 +560,7 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
         command.ProjectInfo = project;
         command.ProjectDesign = design;
         command.ProjectComponent = component;
-        command.SetupUnitList = await SetuptUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
+        command.SetupUnitList = await SetupUnitHelper.GetSetupUnitsAsync(_dbcontext, token);
         command.ProjectQuantityList = await ProjectQuantityHelper.GetBillOfQuantitiesAsync(_dbcontext, token);
 
         return Result.Ok(command);

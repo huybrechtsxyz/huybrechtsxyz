@@ -19,6 +19,7 @@ public static class PlatformInfoHelper
 
     internal static Result DuplicateFound(string name) => Result.Fail(Messages.DUPLICATE_PLATFORM_NAME.Replace("{0}", name.ToString()));
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
     public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid? currentId = null)
     {
         name = name.ToLower().Trim();
@@ -66,14 +67,14 @@ public sealed record ListModel : Model { }
 
 internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<PlatformInfo, ListModel>(); }
 
-public sealed record ListQuery : EntityListFlow.Query, IRequest<Result<ListResult>> { }
+public sealed record ListQuery : EntityFlow.ListQuery, IRequest<Result<ListResult>> { }
 
 public sealed class ListValidator : AbstractValidator<ListQuery> { public ListValidator() { } }
 
-public sealed record ListResult : EntityListFlow.Result<ListModel> { }
+public sealed record ListResult : EntityFlow.ListResult<ListModel> { }
 
 internal sealed class ListHandler :
-    EntityListFlow.Handler<PlatformInfo, ListModel>,
+    EntityFlow.ListHandler<PlatformInfo, ListModel>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
     public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -98,7 +99,7 @@ internal sealed class ListHandler :
         }
         else query = query.OrderBy(o => o.Name);
 
-        int pageSize = EntityListFlow.PageSize;
+        int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
         var results = await query
             .ProjectTo<ListModel>(_configuration)
@@ -147,13 +148,14 @@ internal sealed class CreateHandler : IRequestHandler<CreateCommand, Result<Ulid
         _dbcontext = dbcontext;
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
     public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
     {
         if (await PlatformInfoHelper.IsDuplicateNameAsync(_dbcontext, message.Name))
             if (message.SkipIfExists)
             {
                 var name = message.Name.ToLower().Trim();
-                var item = await _dbcontext.Set<PlatformInfo>().FirstAsync(pr => pr.Name.ToLower() == name);
+                var item = await _dbcontext.Set<PlatformInfo>().FirstAsync(pr => pr.Name.ToLower() == name, token);
                 return Result.Ok(item.Id);
             }
             else
