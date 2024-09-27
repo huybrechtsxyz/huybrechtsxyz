@@ -22,7 +22,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.SqlServer"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.Npgsql", "src\website\Huybrechts.Infra.Npgsql\Huybrechts.Infra.Npgsql.csproj", "{BF18CDC1-0963-4BA2-A692-4D4079F17563}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.App.Tests", "tests\website\Huybrechts.App.Tests\Huybrechts.App.Tests.csproj", "{8F9F7300-5944-4A34-B47D-3383EA681178}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{933F4344-29B5-4764-AE79-A99E62499411}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.App.Tests", "tests\website\Huybrechts.App.Tests\Huybrechts.App.Tests.csproj", "{4591B6CF-2104-48DF-A22F-ADD1C8BBFEA5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Web.Tests", "tests\website\Huybrechts.Web.Tests\Huybrechts.Web.Tests.csproj", "{2E5F7E60-9B8F-4D71-89D6-8334CFF44EFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,13 +58,21 @@ Global
 		{BF18CDC1-0963-4BA2-A692-4D4079F17563}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF18CDC1-0963-4BA2-A692-4D4079F17563}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF18CDC1-0963-4BA2-A692-4D4079F17563}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F9F7300-5944-4A34-B47D-3383EA681178}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F9F7300-5944-4A34-B47D-3383EA681178}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F9F7300-5944-4A34-B47D-3383EA681178}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F9F7300-5944-4A34-B47D-3383EA681178}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4591B6CF-2104-48DF-A22F-ADD1C8BBFEA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4591B6CF-2104-48DF-A22F-ADD1C8BBFEA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4591B6CF-2104-48DF-A22F-ADD1C8BBFEA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4591B6CF-2104-48DF-A22F-ADD1C8BBFEA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E5F7E60-9B8F-4D71-89D6-8334CFF44EFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E5F7E60-9B8F-4D71-89D6-8334CFF44EFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E5F7E60-9B8F-4D71-89D6-8334CFF44EFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E5F7E60-9B8F-4D71-89D6-8334CFF44EFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4591B6CF-2104-48DF-A22F-ADD1C8BBFEA5} = {933F4344-29B5-4764-AE79-A99E62499411}
+		{2E5F7E60-9B8F-4D71-89D6-8334CFF44EFA} = {933F4344-29B5-4764-AE79-A99E62499411}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {436387A2-5AFF-4E7F-AD8C-80ED0A43D324}

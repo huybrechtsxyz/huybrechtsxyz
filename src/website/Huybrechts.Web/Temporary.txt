@@ -1,76 +1,102 @@
-﻿
-public static class SetuptUnitHelper2
-{
-    private static SetupUnit? _defaultSetupUnit;
-
-    public static decimal ConvertUnit(decimal value, SetupUnit fromUnit, SetupUnit toUnit)
+﻿[Fact]
+    public void GetSetupUnitsAsync_ShouldFetchFromDatabase_WhenCacheIsEmpty()
     {
-        // Ensure the units are of the same UnitType
-        if (fromUnit.UnitType != toUnit.UnitType)
-            throw new ArgumentException("Incompatible unit types");
-
-        // Convert the value to the base unit by dividing by the fromUnit factor
-        decimal baseValue = value * fromUnit.Factor;
-
-        // Convert from the base unit to the target unit by multiplying by the toUnit factor
-        decimal convertedValue = baseValue / toUnit.Factor;
-
-        // Apply precision settings
-        return Math.Round(convertedValue, toUnit.Precision, toUnit.PrecisionType);
-    }
-
-    public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
-
-    public static async Task<List<SetupUnit>> GetSetupUnitsAsync(FeatureContext dbcontext, CancellationToken token)
-    {
-        return await dbcontext.Set<SetupUnit>()
-            .OrderBy(o => o.UnitType).ThenBy(o => o.Name)
-            .ToListAsync(cancellationToken: token);
-    }
-
-    public static async Task<SetupUnit> FindOrCreateDefaultSetupUnitAsync(FeatureContext context, bool save, CancellationToken token)
-    {
-        if (_defaultSetupUnit is not null)
-            return _defaultSetupUnit;
-
-        SetupUnit? record = await context.Set<SetupUnit>().FirstOrDefaultAsync(f => f.Code == "DEFAULT", cancellationToken: token);
-        if (record is not null)
-            return record;
-
-        record = new()
+        var tenantInfo = new TenantInfo()
         {
-            Id = Ulid.NewUlid(),
-            Code = "DEFAULT",
-            Name = "Default",
-            Factor = 1,
-            IsBase = false,
-            Precision = 0,
-            PrecisionType = MidpointRounding.ToEven,
-            UnitType = SetupUnitType.System,
-            Remark = null,
-            SearchIndex = "default",
-            Description = "Default unit",
-            CreatedDT = DateTime.UtcNow,
+            Id = "tenant-id",
+            Identifier = "tenant-identifier",
+            Name = "Tenant Name",
         };
 
-        context.Set<SetupUnit>().Add(record);
-        if (save)
-            await context.SaveChangesAsync(token);
-        _defaultSetupUnit = record;
-        return record;
+
+
+        var mockMultiTenantContext = new Mock<IMultiTenantContext<TenantInfo>>();
+        mockMultiTenantContext.Setup(x => x.TenantInfo).Returns(tenantInfo);
+
+        var mockMultiTenantContextAccessor = new Mock<IMultiTenantContextAccessor<TenantInfo>>();
+        mockMultiTenantContextAccessor.Setup(x => x.MultiTenantContext).Returns(mockMultiTenantContext.Object);
+
+        var mockOptions = new DbContextOptionsBuilder<FeatureContext>()
+            .UseInMemoryDatabase(databaseName: "TestDb")
+            .Options;
+
+        FeatureContext mockContext = new(mockMultiTenantContextAccessor.Object, mockOptions);
+
+        // Arrange
+        var mockCache = new Mock<IMemoryCache>();
+        var token = new CancellationToken();
+
+        var setupUnitList = new List<SetupUnit>
+        {
+            new() { Name = "Unit1", UnitType = SetupUnitType.Length }
+        };
+        mockContext.Set<SetupUnit>().AddRange(setupUnitList);
+
+        //mockContext.Setup(x => x.Set<SetupUnit>()).ReturnsDbSet(setupUnitList);
+        //mockCache.Setup(x => x.TryGetValue(It.IsAny<object>(), out It.Ref<List<SetupUnit>>.IsAny!)).Returns(false);
+
+        var helper = new SetupUnitHelper(mockCache.Object, mockContext);
+
+        // Act
+        var result = helper.GetSetupUnitsAsync(false, token);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Single(result);
     }
 
-    internal static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPUNIT_ID.Replace("{0}", id.ToString()));
-
-    internal static Result DuplicateFound(string name) => Result.Fail(Messages.DUPLICATE_SETUPUNIT_NAME.Replace("{0}", name.ToString()));
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
-    public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid? currentId = null)
+    [Fact]
+    public void GetSetupUnitsAsync_ReturnsCachedValues_WhenNotRefreshed()
     {
-        name = name.ToLower().Trim();
+        // Arrange
+        var mockCache = new Mock<IMemoryCache>();
+        var mockContext = new Mock<FeatureContext>();
 
-        return await context.Set<SetupUnit>()
-            .AnyAsync(pr => pr.Name.ToLower() == name
-                            && (!currentId.HasValue || pr.Id != currentId.Value));
+        var setupUnits = new List<SetupUnit>
+        {
+            new() { Id = Ulid.NewUlid(), Code = "DEFAULT", Name = "Default Unit", Factor = 1 }
+        };
+
+        mockCache.Setup(m => m.TryGetValue(It.IsAny<object>(), out It.Ref<List<SetupUnit>>.IsAny!))
+        .Returns((object key, out List<SetupUnit> value) =>
+        {
+            value = setupUnits; // Assign the test data
+            return true; // Indicate success
+        });
+
+        var setupUnitHelper = new SetupUnitHelper(mockCache.Object, mockContext.Object);
+
+        // Act
+        var result = setupUnitHelper.GetSetupUnitsAsync(refresh: false);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(setupUnits.Count, result.Count);
+        Assert.Equal(setupUnits[0].Name, result[0].Name);
     }
-}
+
+    [Fact]
+    public void GetSetupUnitsAsync_ShouldFetchFromDatabase_WhenCacheIsEmpty()
+    {
+        // Arrange
+        var mockCache = new Mock<IMemoryCache>();
+        var mockContext = new Mock<FeatureContext>();
+        var token = new CancellationToken();
+
+        var setupUnitList = new List<SetupUnit>
+        {
+            new() { Name = "Unit1", UnitType = SetupUnitType.Length }
+        };
+
+        mockContext.Setup(x => x.Set<SetupUnit>()).ReturnsDbSet(setupUnitList);
+        mockCache.Setup(x => x.TryGetValue(It.IsAny<object>(), out It.Ref<List<SetupUnit>>.IsAny!)).Returns(false);
+
+        var helper = new SetupUnitHelper(mockCache.Object, mockContext.Object);
+
+        // Act
+        var result = helper.GetSetupUnitsAsync(false, token);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Single(result);
+    }
