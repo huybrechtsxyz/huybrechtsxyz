@@ -216,9 +216,32 @@ jobs:
           source: "src/compose.${{ inputs.environment }}.yml,src/${{ inputs.environment }}.env"
           target: /app
 
-  deploy-stack:
+  deploy-stack-build:
     name: Deploy Docker Swarm Stack
+    if: inputs.rebuild == 'true'
     needs: [build-website, deploy-generic]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Update docker stack
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APP_HOST_PORT }}
+          script_stop: true
+          script: |
+            cd /
+            cd /app
+            echo DOCKER DEPLOY
+            export $(cat ${{ inputs.environment }}.env | xargs)
+            docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
+
+  deploy-stack-nobuild:
+    name: Deploy Docker Swarm Stack
+    if: inputs.rebuild != 'true'
+    needs: [deploy-generic]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
