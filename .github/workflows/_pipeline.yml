@@ -196,29 +196,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  deploy-component:
-    name: Deploy Component Configuration
-    needs: [update-server]
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    strategy:
-      matrix:
-        component: [traefik, whoami, sqlite, postgres, website]
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4
-      - name: Deploy configuration files
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.APP_HOST_SERVER }}
-          username: ${{ secrets.APP_HOST_USERNAME }}
-          password: ${{ secrets.APP_HOST_PASSWORD }}
-          port: ${{ secrets.APP_HOST_PORT }}
-          strip_components: 2
-          overwrite: true
-          source: "src/${{ matrix.component }}/${{ matrix.component }}.yml"
-          target: /app
-  
   deploy-generic:
     name: Deploy Generic Configuration
     needs: [update-server]
@@ -236,12 +213,12 @@ jobs:
           port: ${{ secrets.APP_HOST_PORT }}
           strip_components: 1
           overwrite: true
-          source: "src/compose.yml,src/${{ inputs.environment }}.env"
+          source: "src/compose.${{ inputs.environment }}.yml,src/${{ inputs.environment }}.env"
           target: /app
 
   deploy-stack:
     name: Deploy Docker Swarm Stack
-    needs: [build-website, deploy-component, deploy-generic]
+    needs: [build-website, deploy-generic]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
@@ -257,4 +234,4 @@ jobs:
             cd /
             cd /app
             echo DOCKER DEPLOY
-            docker stack deploy -c <(docker-compose -f compose.yml --profile ${{ inputs.environment }} --env-file ${{ inputs.environment }}.env config) app &> /dev/null
+            docker stack deploy -c compose.${{ inputs.environment }}.yml --env-file ${{ inputs.environment }}.env app &> /app/logs/deploy-stack.log
