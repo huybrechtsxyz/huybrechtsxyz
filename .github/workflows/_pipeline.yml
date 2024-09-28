@@ -234,4 +234,5 @@ jobs:
             cd /
             cd /app
             echo DOCKER DEPLOY
-            docker stack deploy -c compose.${{ inputs.environment }}.yml --env-file ${{ inputs.environment }}.env app &> /app/logs/deploy-stack.log
+            export $(cat ${{ inputs.environment }}.env | xargs)
+            docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
