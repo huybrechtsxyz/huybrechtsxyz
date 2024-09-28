@@ -1,8 +1,9 @@
+# Docker Compose for the staging environment
 version: '3.9'
 
 services:
   traefik:
-    image: "traefik:v3.0"
+    image: "traefik:v3.1"
     command:
       # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
       # Enable the Traefik log, for configurations and errors
@@ -81,6 +82,9 @@ services:
       retries: 3
       start_period: 5s
     deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
       labels:
         # Dashboard
         - "traefik.enable=true"
@@ -96,3 +100,117 @@ services:
         - "traefik.http.middlewares.authadmin.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
         # middleware redirect
         - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+  whoami:
+    image: traefik/whoami:latest
+    command:
+      - --port=8080
+    networks:
+      - traefik
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=${APP_ENVIRONMENT}"
+        - "traefik.http.routers.whoami.rule=Host(`${APP_HOST_URL}`) && PathPrefix(`/whoami`)"
+        - "traefik.http.services.whoami.loadbalancer.server.port=8080"
+        - "traefik.http.routers.whoami.middlewares=authadmin"
+        - "traefik.http.routers.whoami.entrypoints=websecure"
+        - "traefik.http.routers.whoami.tls=true"
+        - "traefik.http.routers.whoami.tls.certresolver=leresolver"
+
+  sqlite:
+    image: keinos/sqlite3:latest
+    command: [ "sqlite3", "/db/xyz.db" ]
+    networks:
+      - traefik
+    volumes:
+      - /app/data:/db
+    working_dir: /db
+    stdin_open: true
+    tty: true
+    healthcheck:
+      test: ["CMD-SHELL", "sqlite3 /db/xyz.db -line '.tables'"]
+      interval: 30s
+      retries: 3
+      timeout: 10s
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+
+  website:
+    image: huybrechts/website:${APP_ENVIRONMENT}
+    secrets:
+      - APP_HOST_USERNAME
+      - APP_HOST_PASSWORD
+      - APP_HOST_EMAIL
+      - APP_DATA_URL
+      - APP_DATA_NAME
+      - APP_DATA_USERNAME
+      - APP_DATA_PASSWORD
+      - APP_AUTH_GOOGLE
+      - APP_SMTP_OPTIONS
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${WEB_ENVIRONMENT}
+      - DOTNET_RUNNING_IN_CONTAINER=1
+      - APP_AUTH_GOOGLE=/run/secrets/APP_AUTH_GOOGLE
+      - APP_DATA_NAME=/run/secrets/APP_DATA_NAME
+      - APP_DATA_USERNAME=/run/secrets/APP_DATA_USERNAME
+      - APP_DATA_PASSWORD=/run/secrets/APP_DATA_PASSWORD
+      - APP_DATA_URL=/run/secrets/APP_DATA_URL
+      - APP_HOST_EMAIL=/run/secrets/APP_HOST_EMAIL
+      - APP_HOST_USERNAME=/run/secrets/APP_HOST_USERNAME
+      - APP_HOST_PASSWORD=/run/secrets/APP_HOST_PASSWORD
+      - APP_SMTP_OPTIONS=/run/secrets/APP_SMTP_OPTIONS
+    networks:
+      - traefik
+    volumes:
+      - "/app/data:/app/data"
+      - "/app/logs:/app/logs"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=${APP_ENVIRONMENT}"
+        - "traefik.http.routers.website.rule=Host(`${APP_HOST_URL}`)"
+        - "traefik.http.services.website.loadbalancer.server.port=8080"
+        - "traefik.http.routers.website.entrypoints=websecure"
+        - "traefik.http.routers.website.tls=true"
+        - "traefik.http.routers.website.tls.certresolver=leresolver"
+
+networks:
+  traefik:
+    external: true
+
+secrets:
+  APP_AUTH_GOOGLE:
+    external: true
+  APP_DATA_URL:
+    external: true
+  APP_DATA_NAME:
+    external: true
+  APP_DATA_USERNAME:
+    external: true
+  APP_DATA_PASSWORD:
+    external: true
+  APP_HOST_SERVER:
+    external: true
+  APP_HOST_PORT:
+    external: true
+  APP_HOST_EMAIL:
+    external: true
+  APP_HOST_USERNAME:
+    external: true
+  APP_HOST_PASSWORD:
+    external: true
+  APP_SMTP_OPTIONS:
+    external: true
+  REGISTRY_USERNAME:
+    external: true
+  REGISTRY_PASSWORD:
+    external: true
