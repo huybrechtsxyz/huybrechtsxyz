@@ -49,7 +49,7 @@ services:
       - --providers.docker.exposedbydefault=false
       - --providers.docker.network=traefik
       - --providers.swarm
-      - --providers.swarm.constraints=Label(`traefik.tags`, `${APP_ENVIRONMENT}`)
+      - --providers.swarm.constraints=Label(`traefik.tags`, `test`)
       # Dashboard. Optional. Default: true. 
       - --api
       - --api.dashboard=true
@@ -60,8 +60,8 @@ services:
       # File or key used for certificates storage. Required
       # Make sure the this file is available and permission is set correctly
       # Use a TLS-ALPN-01 ACME challenge. Optional (but recommended). 
-      - --certificatesresolvers.leresolver.acme.caserver=${APP_CERT_SERVER}
-      - --certificatesresolvers.leresolver.acme.email=${APP_CERT_EMAIL}
+      - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.leresolver.acme.email=webmaster@huybrechts.xyz
       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
       - --certificatesresolvers.leresolver.acme.tlschallenge=true
     ports:
@@ -88,9 +88,9 @@ services:
       labels:
         # Dashboard
         - "traefik.enable=true"
-        - "traefik.tags=${APP_ENVIRONMENT}"
+        - "traefik.tags=test"
         # Change the host url here
-        - "traefik.http.routers.traefik.rule=Host(`${APP_HOST_URL}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        - "traefik.http.routers.traefik.rule=Host(`test.huybrechts.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
         - "traefik.http.routers.traefik.tls.certresolver=leresolver"
@@ -113,8 +113,8 @@ services:
         condition: any
       labels:
         - "traefik.enable=true"
-        - "traefik.tags=${APP_ENVIRONMENT}"
-        - "traefik.http.routers.whoami.rule=Host(`${APP_HOST_URL}`) && PathPrefix(`/whoami`)"
+        - "traefik.tags=test"
+        - "traefik.http.routers.whoami.rule=Host(`test.huybrechts.xyz`) && PathPrefix(`/whoami`)"
         - "traefik.http.services.whoami.loadbalancer.server.port=8080"
         - "traefik.http.routers.whoami.middlewares=authadmin"
         - "traefik.http.routers.whoami.entrypoints=websecure"
@@ -142,7 +142,7 @@ services:
         condition: any
 
   website:
-    image: huybrechts/website:${APP_ENVIRONMENT}
+    image: huybrechts/website:test
     secrets:
       - APP_HOST_USERNAME
       - APP_HOST_PASSWORD
@@ -154,7 +154,7 @@ services:
       - APP_AUTH_GOOGLE
       - APP_SMTP_OPTIONS
     environment:
-      - ASPNETCORE_ENVIRONMENT=${WEB_ENVIRONMENT}
+      - ASPNETCORE_ENVIRONMENT=Test
       - DOTNET_RUNNING_IN_CONTAINER=1
       - APP_AUTH_GOOGLE=/run/secrets/APP_AUTH_GOOGLE
       - APP_DATA_NAME=/run/secrets/APP_DATA_NAME
@@ -176,8 +176,8 @@ services:
         condition: any
       labels:
         - "traefik.enable=true"
-        - "traefik.tags=${APP_ENVIRONMENT}"
-        - "traefik.http.routers.website.rule=Host(`${APP_HOST_URL}`)"
+        - "traefik.tags=test"
+        - "traefik.http.routers.website.rule=Host(`test.huybrechts.xyz`)"
         - "traefik.http.services.website.loadbalancer.server.port=8080"
         - "traefik.http.routers.website.entrypoints=websecure"
         - "traefik.http.routers.website.tls=true"

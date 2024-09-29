@@ -325,7 +325,7 @@ public static class WebHostExtensions
             app.UseStatusCodePagesWithRedirects("/Error?status={0}");
         }
         else
-            throw new Exception("Invalid application environment");
+            throw new Exception("Invalid application environment for " + app.Environment.EnvironmentName);
 
         return app;
     }

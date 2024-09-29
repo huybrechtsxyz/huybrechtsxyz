@@ -134,6 +134,8 @@ jobs:
             createpath "/app"
             createpath "/app/cert"
             createpath "/app/data"
+            createpath "/app/data/pgdata"
+            createpath "/app/data/pgadmin"
             createpath "/app/logs"
             sudo chown -R 5050:5050 /app/data/*
             #Create the traefik network on docker
@@ -235,7 +237,6 @@ jobs:
             cd /
             cd /app
             echo DOCKER DEPLOY
-            export $(cat ${{ inputs.environment }}.env | xargs)
             docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
 
   deploy-stack-nobuild:
@@ -257,5 +258,4 @@ jobs:
             cd /
             cd /app
             echo DOCKER DEPLOY
-            export $(cat ${{ inputs.environment }}.env | xargs)
             docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
