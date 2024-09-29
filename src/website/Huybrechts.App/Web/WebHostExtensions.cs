@@ -318,7 +318,7 @@ public static class WebHostExtensions
             app.UseExceptionHandler("/Error?status={0}", createScopeForErrors: true);
             app.UseStatusCodePagesWithRedirects("/Error?status={0}");
         }
-        else if (app.Environment.IsDevelopment())
+        else if (app.Environment.IsProduction())
         {
             log.Information("Configure the HTTP request pipeline for staging");
             app.UseExceptionHandler("/Error?status={0}", createScopeForErrors: true);

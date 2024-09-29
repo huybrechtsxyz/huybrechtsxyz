@@ -215,7 +215,7 @@ jobs:
           port: ${{ secrets.APP_HOST_PORT }}
           strip_components: 1
           overwrite: true
-          source: "src/compose.${{ inputs.environment }}.yml,src/${{ inputs.environment }}.env"
+          source: "src/compose.${{ inputs.environment }}.yml"
           target: /app
 
   deploy-stack-build:
