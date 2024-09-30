@@ -617,9 +617,9 @@ public sealed class CalculationCommandHandler : IRequestHandler<CalculationComma
                 // Get new entries
                 List<ProjectSimulationEntry> newEntries = result.Value;
                 await _dbcontext.Set<ProjectSimulationEntry>().AddRangeAsync(newEntries, token);
-
-                // save after completing each design
                 await _dbcontext.SaveChangesAsync(token);
+
+                // Commit the transation
                 await _dbcontext.CommitTransactionAsync(token);
                 return Result.Ok();
             }

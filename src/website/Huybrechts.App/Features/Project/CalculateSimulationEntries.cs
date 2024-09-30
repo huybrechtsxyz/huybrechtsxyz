@@ -239,13 +239,18 @@ internal class CalculateSimulationEntries
         List<PlatformRate> rates = await _dbcontext.Set<PlatformRate>()
             .Where(e => e.PlatformProductId == productInfo.Id)
             .Include(e => e.RateUnits)
+            .OrderBy(o => o.ServiceName)
+            .ThenBy(o => o.ProductName)
+            .ThenBy(o => o.SkuName)
+            .ThenBy(o => o.MeterName)
+            .ThenBy(o => o.RateType)
+            .ThenBy(o => o.CurrencyCode)
+            .ThenBy(o => o.ValidFrom)
             .ToListAsync(token);
 
         for (int idex = 0; idex < rates.Count; ++idex)
         {
             PlatformRate rateInfo = rates.ElementAt(idex);
-            decimal rateQuantity = 0;
-
             PlatformRate? ratePeek = null;
             if (idex + 1 < rates.Count)
                 ratePeek = rates.ElementAt(idex + 1);
@@ -258,8 +263,12 @@ internal class CalculateSimulationEntries
             SetSimulationEntry(entity, scenarioInfo, designInfo, componentInfo, quantityInfo);
             SetSimulationEntry(entity, platformInfo, productInfo, regionInfo, serviceInfo, rateInfo);
 
+            decimal rateQuantity = 0;
+
             if (rateInfo.RateUnits is not null && rateInfo.RateUnits.Count > 0)
             {
+                var rateUnits = rateInfo.RateUnits.OrderBy(o => o.SetupUnit.Name);
+
                 foreach (var rateUnit in rateInfo.RateUnits)
                 {
                     if (rateUnit.UnitFactor != 0)
@@ -289,6 +298,7 @@ internal class CalculateSimulationEntries
             else
             {
                 // NO QUANTITY CAN BE CALCULATED : NO UNIT / QTY TO DERIVE
+                rateQuantity = 1;
             }
 
             if (rateInfo.MinimumUnits > 0)
