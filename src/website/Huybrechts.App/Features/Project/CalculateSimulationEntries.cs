@@ -263,7 +263,7 @@ internal class CalculateSimulationEntries
             SetSimulationEntry(entity, scenarioInfo, designInfo, componentInfo, quantityInfo);
             SetSimulationEntry(entity, platformInfo, productInfo, regionInfo, serviceInfo, rateInfo);
 
-            decimal rateQuantity = 0;
+            decimal rateQuantity = 1;
 
             if (rateInfo.RateUnits is not null && rateInfo.RateUnits.Count > 0)
             {
@@ -303,10 +303,10 @@ internal class CalculateSimulationEntries
 
             if (rateInfo.MinimumUnits > 0)
                 rateQuantity -= rateInfo.MinimumUnits;
-            if (entity.Quantity < 0)
+            if (rateQuantity < 0)
                 rateQuantity = 0;
 
-            if (ratePeek is not null && ratePeek.MinimumUnits != 0 && entity.Quantity > ratePeek.MinimumUnits)
+            if (ratePeek is not null && ratePeek.MinimumUnits != 0 && rateQuantity > ratePeek.MinimumUnits)
                 rateQuantity = ratePeek.MinimumUnits;
 
             CalculateEntry(entity, rateQuantity);
