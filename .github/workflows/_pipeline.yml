@@ -259,3 +259,4 @@ jobs:
             cd /app
             echo DOCKER DEPLOY
             docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
+            chmod 777 *
