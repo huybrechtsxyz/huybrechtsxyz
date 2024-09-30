@@ -947,7 +947,7 @@ internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
                 MeterName = item.MeterName,
                 RateType = item.RateType,
                 CurrencyCode = item.CurrencyCode,
-                ValidFrom = item.ValidFrom,
+                ValidFrom = item.ValidFrom.Date.ToUniversalTime(),
                 RetailPrice = item.RetailPrice,
                 UnitPrice = item.UnitPrice,
                 MinimumUnits = item.MinimumUnits,
