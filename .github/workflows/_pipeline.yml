@@ -56,8 +56,61 @@ jobs:
           password: ${{ secrets.APP_HOST_PASSWORD }}
           port: ${{ secrets.APP_HOST_PORT }}
           script: |
+            set -e
             cd /;
             echo "Initializing server";
+            echo "Reading package list"
+            apt-get -y update
+            echo "Install Apache utils"
+            if checkgid &>>/dev/null; then
+              echo "Apache utils are already installed"
+            else
+              apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common apache2-utils
+            fi
+            echo "Install Docker"
+            if docker --version &>>/dev/null; then
+              echo "Docker already installed"
+            else
+              if ! grep -q "^deb.*docker" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
+                curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+                add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+              fi
+              apt-get -y install docker-ce docker-ce-cli containerd.io
+              docker --version
+            fi
+            echo "Install Docker-Compose"
+            if docker-compose --version; then
+              echo "Docker-Compose already installed"
+            else
+              curl -L "https://github.com/docker/compose/releases/download/latest/docker-compose-$(uname -s)-$(uname -m)" \
+                -o /usr/local/bin/docker-compose
+              chmod +x /usr/local/bin/docker-compose
+            fi
+            echo "Install json parser"
+            if jq --help; then
+              echo 'JSON parser already installed'
+            else
+              apt-get -y install jq
+              echo 'JSON parser installed'
+            fi
+            echo "Firewall set rules and enable"
+            if ufw --version; then
+              echo "Firewall already installed"
+            else
+              apt-get install ufw
+            fi
+            ufw default deny incoming
+            ufw default deny outgoing
+            ufw allow from 172.16.0.0/24
+            ufw allow to 172.16.0.0/24
+            ufw allow 22/tcp
+            ufw allow 80/tcp
+            ufw allow 443/tcp
+            if ! ufw status | grep -q "active"; then
+              echo "Enable firewall"
+              echo "y" | ufw enable
+            fi
+            ufw reload
 
   update-server:
     name: Update Server Job

@@ -1,5 +1,5 @@
 # This workflow deploys all components to the staging environment
-name: Deploy To Production
+name: Deploy To Production (No Build)
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ jobs:
     with:
       environment: production
       initialize: 'false'
-      rebuild: 'true'
+      rebuild: 'false'
     secrets:
       APP_AUTH_GOOGLE: ${{ secrets.APP_AUTH_GOOGLE }}
       APP_DATA_NAME: ${{ secrets.APP_DATA_NAME }}

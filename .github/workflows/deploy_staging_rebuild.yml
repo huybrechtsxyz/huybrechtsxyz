@@ -1,20 +1,14 @@
-# This workflow deploys all components to the test environment
-name: Deploy To Test (Build)
+# This workflow deploys all components to the staging environment
+name: Deploy To Staging (Rebuild)
 
 on:
   workflow_dispatch:
-
-  push:
-    branches: [ "main" ]
-    paths:
-      - 'src/website/**'
-      - '!src/website/*.yml'
 
 jobs:
   deploy_components:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_pipeline.yml@main
     with:
-      environment: test
+      environment: staging
       initialize: 'false'
       rebuild: 'true'
     secrets:
