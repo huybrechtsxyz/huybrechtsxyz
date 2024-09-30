@@ -1,10 +1,6 @@
-﻿using Finbuckle.MultiTenant;
-using Finbuckle.MultiTenant.Abstractions;
-using Huybrechts.App.Data;
-using Huybrechts.App.Features.Setup.SetupUnitFlow;
+﻿using Huybrechts.App.Features.Setup.SetupUnitFlow;
 using Huybrechts.Core.Setup;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using Moq.EntityFrameworkCore;
 

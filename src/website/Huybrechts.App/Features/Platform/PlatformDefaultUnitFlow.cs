@@ -38,21 +38,21 @@ public static class PlatformDefaultUnitHelper
             .OrderBy(o => o.SetupUnit.Name)
             .ToListAsync(cancellationToken: token);
 
-        if (defaultUnits is not null && defaultUnits.Count > 0)
-            return defaultUnits;
+        //if (defaultUnits is not null && defaultUnits.Count > 0)
+        //    return defaultUnits;
 
-        defaultUnits = [];
-        defaultUnits.Add(new PlatformDefaultUnit()
-        {
-            Id = Ulid.NewUlid(),
-            PlatformInfoId = rate.PlatformInfoId,
-            UnitOfMeasure = rate.UnitOfMeasure,
-            UnitFactor = 1,
-            DefaultValue = 1,
-            Description = rate.UnitOfMeasure,
-            SearchIndex = GetSearchIndex(rate.UnitOfMeasure, string.Empty, rate.UnitOfMeasure),
-            CreatedDT = DateTime.UtcNow,
-        });
+        //defaultUnits = [];
+        //defaultUnits.Add(new PlatformDefaultUnit()
+        //{
+        //    Id = Ulid.NewUlid(),
+        //    PlatformInfoId = rate.PlatformInfoId,
+        //    UnitOfMeasure = rate.UnitOfMeasure,
+        //    UnitFactor = 1,
+        //    DefaultValue = 1,
+        //    Description = rate.UnitOfMeasure,
+        //    SearchIndex = GetSearchIndex(rate.UnitOfMeasure, string.Empty, rate.UnitOfMeasure),
+        //    CreatedDT = DateTime.UtcNow,
+        //});
 
         return defaultUnits;
     }
