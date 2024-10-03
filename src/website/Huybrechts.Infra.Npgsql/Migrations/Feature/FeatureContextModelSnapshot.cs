@@ -2181,6 +2181,88 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
+            modelBuilder.Entity("Huybrechts.Core.Wiki.WikiPage", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("character varying(26)")
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text")
+                        .HasComment("Gets or sets the markdown content for the wiki page.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
+
+                    b.Property<string>("Namespace")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Gets or sets the namespace to which the wiki page belongs (e.g., 'UserGuide').");
+
+                    b.Property<string>("Page")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasComment("Gets or sets the page or URL slug for the wiki page.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("text")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<string>("Tags")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasComment("Keywords or categories for the project");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasComment("Gets or sets the tenant identifier.");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasComment("Gets or sets the title of the wiki page.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "Namespace", "Page")
+                        .IsUnique();
+
+                    b.ToTable("WikiPage", t =>
+                        {
+                            t.HasComment("Represents a wiki page.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformDefaultUnit", b =>
                 {
                     b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")

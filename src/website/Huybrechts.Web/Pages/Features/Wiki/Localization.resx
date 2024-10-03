@@ -117,37 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Accept" xml:space="preserve">
-    <value>Accept</value>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
   </data>
-  <data name="Learn More" xml:space="preserve">
-    <value>Learn More</value>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
   </data>
-  <data name="Logout" xml:space="preserve">
-    <value>Logout</value>
+  <data name="PageInfo" xml:space="preserve">
+    <value>Explore and build your knowledge base</value>
   </data>
-  <data name="NEW" xml:space="preserve">
-    <value>NEW</value>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Wiki</value>
   </data>
-  <data name="Platforms" xml:space="preserve">
-    <value>Platforms</value>
-  </data>
-  <data name="Profile" xml:space="preserve">
-    <value>Profile</value>
-  </data>
-  <data name="Projects" xml:space="preserve">
-    <value>Projects</value>
-  </data>
-  <data name="Setup" xml:space="preserve">
-    <value>Setup</value>
-  </data>
-  <data name="Teams" xml:space="preserve">
-    <value>Teams</value>
-  </data>
-  <data name="This website uses cookies. Learn more about our privacy and cookie use policy." xml:space="preserve">
-    <value>This website uses cookies. Learn more about our privacy and cookie use policy.</value>
+  <data name="TOC" xml:space="preserve">
+    <value>Index</value>
   </data>
   <data name="Wiki" xml:space="preserve">
     <value>Wiki</value>
+  </data>
+  <data name="WikiIndexInfo" xml:space="preserve">
+    <value>The list of available wiki pages</value>
+  </data>
+  <data name="WikiIndexTitle" xml:space="preserve">
+    <value>Wiki Index</value>
+  </data>
+  <data name="WikiNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="WikiPageInfo" xml:space="preserve">
+    <value>Markdown allows you to create HTML content with simple plaint text markup.</value>
   </data>
 </root>

@@ -2181,6 +2181,88 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
+            modelBuilder.Entity("Huybrechts.Core.Wiki.WikiPage", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("Gets or sets the markdown content for the wiki page.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
+
+                    b.Property<string>("Namespace")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasComment("Gets or sets the namespace to which the wiki page belongs (e.g., 'UserGuide').");
+
+                    b.Property<string>("Page")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasComment("Gets or sets the page or URL slug for the wiki page.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<string>("Tags")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Keywords or categories for the project");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Gets or sets the tenant identifier.");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasComment("Gets or sets the title of the wiki page.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "Namespace", "Page")
+                        .IsUnique();
+
+                    b.ToTable("WikiPage", t =>
+                        {
+                            t.HasComment("Represents a wiki page.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformDefaultUnit", b =>
                 {
                     b.HasOne("Huybrechts.Core.Platform.PlatformInfo", "PlatformInfo")

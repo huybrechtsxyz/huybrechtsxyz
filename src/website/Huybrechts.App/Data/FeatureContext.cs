@@ -3,6 +3,7 @@ using Finbuckle.MultiTenant.EntityFrameworkCore;
 using Huybrechts.Core.Platform;
 using Huybrechts.Core.Project;
 using Huybrechts.Core.Setup;
+using Huybrechts.Core.Wiki;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.ComponentModel.DataAnnotations;
@@ -49,6 +50,11 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
         modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.PlatformService).WithMany().HasForeignKey(p => p.PlatformServiceId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<ProjectSimulationEntry>().HasOne(p => p.PlatformRate).WithMany().HasForeignKey(p => p.PlatformRateId).OnDelete(DeleteBehavior.Restrict);
         #endregion ProjectSimulationEntry
+
+        // Configure the search index for wiki
+        if (Database.IsSqlServer()) {}
+        else if (Database.IsNpgsql()) {}
+        else if (Database.IsSqlite()) {}
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -182,4 +188,10 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
     public DbSet<ProjectSimulation> ProjectSimulations { get; set; }
 
     public DbSet<ProjectSimulationEntry> ProjectSimulationEntries { get; set; }
+
+    //
+    // WIKI
+    //
+
+    public DbSet<WikiPage> WikiPages { get; set; }
 }

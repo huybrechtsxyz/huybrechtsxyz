@@ -21,6 +21,7 @@
      <PackageReference Include="Hangfire.SqlServer" Version="1.8.14" />
      <PackageReference Include="Jace" Version="1.0.0" />
      <PackageReference Include="MailKit" Version="4.7.1.1" />
+     <PackageReference Include="Markdig" Version="0.37.0" />
      <PackageReference Include="MediatR" Version="12.4.1" />
      <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.8" />
      <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.8" />
@@ -82,6 +83,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
+    <Compile Update="Features\Wiki\Messages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
    
   <ItemGroup>
@@ -132,6 +138,13 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Features\Setup\Messages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Features\Wiki\Messages.nl.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Features\Wiki\Messages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>

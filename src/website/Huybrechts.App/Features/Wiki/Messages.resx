@@ -117,37 +117,27 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Accept" xml:space="preserve">
-    <value>Accept</value>
+  <data name="DUPLICATE_WIKI_PATH" xml:space="preserve">
+    <value>Wiki with namespace and path already exists</value>
   </data>
-  <data name="Learn More" xml:space="preserve">
-    <value>Learn More</value>
+  <data name="INVALID_WIKI_ID" xml:space="preserve">
+    <value>Unable to find wiki with ID {0}</value>
   </data>
-  <data name="Logout" xml:space="preserve">
-    <value>Logout</value>
-  </data>
-  <data name="NEW" xml:space="preserve">
-    <value>NEW</value>
-  </data>
-  <data name="Platforms" xml:space="preserve">
-    <value>Platforms</value>
-  </data>
-  <data name="Profile" xml:space="preserve">
-    <value>Profile</value>
-  </data>
-  <data name="Projects" xml:space="preserve">
-    <value>Projects</value>
-  </data>
-  <data name="Setup" xml:space="preserve">
-    <value>Setup</value>
-  </data>
-  <data name="Teams" xml:space="preserve">
-    <value>Teams</value>
-  </data>
-  <data name="This website uses cookies. Learn more about our privacy and cookie use policy." xml:space="preserve">
-    <value>This website uses cookies. Learn more about our privacy and cookie use policy.</value>
-  </data>
-  <data name="Wiki" xml:space="preserve">
-    <value>Wiki</value>
+  <data name="NEW_WIKI_CONTENT" xml:space="preserve">
+    <value># New Wiki Page
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+## Key Points
+
+- Sed do eiusmod tempor
+- Ut enim ad minim veniam
+- Duis aute irure dolor
+
+Or create a link to a wiki [[{namespace}:{page}|{linktext}]].
+
+## More Information
+
+For more details, visit [Wikipedia](https://www.wikipedia.org).</value>
   </data>
 </root>
