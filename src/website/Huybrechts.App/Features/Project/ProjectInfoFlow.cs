@@ -19,9 +19,12 @@ public static class ProjectInfoHelper
         (string code, string name, string? description, string? tags)
         => $"{code}~{name}~{description}~{tags}".ToLowerInvariant();
 
-    public static void CopyFields(Model model, ProjectInfo entity)
+    public static void CopyFields(Model model, ProjectInfo entity, bool create)
     {
-        entity.Code = model.Code.Trim().ToUpper();
+        if (create)
+        {
+            entity.Code = model.Code.Trim().ToUpper();
+        }
         entity.Name = model.Name.Trim();
         entity.Description = model.Description?.Trim();
         entity.Remark = model.Remark?.Trim();
@@ -249,7 +252,7 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
             ParentId = Ulid.Empty,
             CreatedDT = DateTime.UtcNow,
         };
-        ProjectInfoHelper.CopyFields(message, entity);
+        ProjectInfoHelper.CopyFields(message, entity, true);
 
         await _dbcontext.Set<ProjectInfo>().AddAsync(entity, token);
         await _dbcontext.SaveChangesAsync(token);
@@ -337,7 +340,7 @@ internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
             return ProjectInfoHelper.EntityNotFound(message.Id);
 
         entity.ModifiedDT = DateTime.UtcNow;
-        ProjectInfoHelper.CopyFields(message, entity);
+        ProjectInfoHelper.CopyFields(message, entity, false);
 
         _dbcontext.Set<ProjectInfo>().Update(entity);
         await _dbcontext.SaveChangesAsync(token);
