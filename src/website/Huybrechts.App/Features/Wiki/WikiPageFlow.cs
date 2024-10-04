@@ -496,16 +496,10 @@ internal class EditCommandHandler : IRequestHandler<EditCommand, Result>
         await _dbcontext.SaveChangesAsync(token);
 
         // Manually update the full-text search vectors
-        // $"UPDATE \"WikiPage\" SET TsvEnglish = {tsvEnglish}, TsvDutch = {tsvDutch} WHERE Id = {entity.Id};"
         if (_dbcontext.Database.IsNpgsql())
         {
-            var sql = $"UPDATE \"WikiPage\" SET \"TsvEnglish\" = @english, \"TsvDutch\" = @dutch WHERE \"Id\" = @id;";
-            var tsvEnglish = $"to_tsvector('english', '{entity.Content}')";
-            var tsvDutch = $"to_tsvector('dutch', '{entity.Content}')";
-            _dbcontext.Database.ExecuteSqlRaw(sql,
-                new NpgsqlParameter("@english", tsvEnglish),
-                new NpgsqlParameter("@dutch", tsvDutch),
-                new NpgsqlParameter("@id", entity.Id.ToString()));
+            var sql = "UPDATE \"WikiPage\" SET \"TsvEnglish\" = to_tsvector('english', \"Content\"), \"TsvDutch\" = to_tsvector('dutch', \"Content\") WHERE \"Id\" = @id;";            
+            _dbcontext.Database.ExecuteSqlRaw(sql, new NpgsqlParameter("@id", entity.Id.ToString()));
         }
 
         await _dbcontext.CommitTransactionAsync(token);
