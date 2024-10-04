@@ -28,6 +28,11 @@ public static class ApplicationSettings
         return value.Equals("true") || value.Equals("1");
     }
 
+    public static string GetProductVersion() =>
+        System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).ProductMajorPart
+        + "." + System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).ProductMinorPart
+        + "." + System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).ProductPrivatePart;
+
     public static string GetApplicationHostUrl(IConfiguration configuration) => configuration.GetValue<string>(ENV_APP_HOST_URL) ?? string.Empty;
 
     public static string GetApplicationHostEmail(IConfiguration configuration) => configuration.GetValue<string>(ENV_APP_HOST_EMAIL) ?? string.Empty;
