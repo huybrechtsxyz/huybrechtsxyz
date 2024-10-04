@@ -1,5 +1,5 @@
 # This reusable workflow
-name: Reusable Build and Deploy Workflow
+name: Reusable Build and Deploy Jobs
 
 on:
   workflow_call:
