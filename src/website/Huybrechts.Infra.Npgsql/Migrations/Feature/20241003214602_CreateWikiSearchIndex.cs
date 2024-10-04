@@ -27,11 +27,6 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
             migrationBuilder.Sql(
                 @"CREATE INDEX IX_WikiPage_FT_Dutch ON ""WikiPage"" USING gin (to_tsvector('dutch', ""Content""));");
-
-            migrationBuilder.Sql(
-                @"UPDATE ""WikiPage"" 
-                  SET TsvEnglish = to_tsvector('english', ""Content""),
-                      TsvDutch = to_tsvector('dutch', ""Content"");");
         }
 
         /// <inheritdoc />
