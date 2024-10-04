@@ -402,7 +402,7 @@ public sealed class EditQueryValidator : AbstractValidator<EditQuery>
 
 public record EditCommand : Model, IRequest<Result> 
 {
-    public bool _IsDeletable { get; set; } = false;
+    public bool IsDeletable { get; set; } = false;
 }
 
 public class EditCommandValidator : ModelValidator<EditCommand>

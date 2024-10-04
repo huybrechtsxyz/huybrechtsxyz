@@ -6,9 +6,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-   <ItemGroup>
-      <ProjectReference Include="..\Huybrechts.App\Huybrechts.App.csproj" />
-      <ProjectReference Include="..\Huybrechts.Core\Huybrechts.Core.csproj" />
-   </ItemGroup>
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
+  </PropertyGroup>
+   
+  <ItemGroup>
+    <ProjectReference Include="..\Huybrechts.App\Huybrechts.App.csproj" />
+    <ProjectReference Include="..\Huybrechts.Core\Huybrechts.Core.csproj" />
+  </ItemGroup>
 
 </Project>
