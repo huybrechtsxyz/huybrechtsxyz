@@ -49,12 +49,12 @@ jobs:
                 echo "Directory '$dir' does not exist. Skipping chmod."
               fi
             }
-            apply_chmod .
-            apply_chmod data
-            apply_chmod data/pgadmin
-            apply_chmod data/pgdata
+            #apply_chmod .
+            #apply_chmod data
+            #apply_chmod data/pgadmin
+            #apply_chmod data/pgdata
             docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
-            apply_chmod .
-            apply_chmod data
-            apply_chmod data/pgadmin
-            apply_chmod data/pgdata
+            #apply_chmod .
+            #apply_chmod data
+            #apply_chmod data/pgadmin
+            #apply_chmod data/pgdata
