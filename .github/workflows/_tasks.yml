@@ -37,6 +37,10 @@ jobs:
             cd /app
             echo DOCKER DEPLOY
             apply_chmod() {
+              if [ "${{ inputs.environment }}" == "test" ]; then
+                echo "Environment is 'test'. Skipping chmod operations for '$dir'."
+                return 0  # Exit the function successfully without applying chmod
+              fi
               local dir="$1"
               if [ -d "$dir" ]; then
                 if [ "$(ls -A "$dir")" ]; then
