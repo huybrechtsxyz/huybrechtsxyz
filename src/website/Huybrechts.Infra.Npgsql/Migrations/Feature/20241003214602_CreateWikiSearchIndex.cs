@@ -23,10 +23,10 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                 nullable: true);
 
             migrationBuilder.Sql(
-                @"CREATE INDEX IX_WikiPage_FT_English ON WikiPage USING gin (to_tsvector('english', ""Content""));");
+                @"CREATE INDEX IX_WikiPage_FT_English ON ""WikiPage"" USING gin (to_tsvector('english', ""Content""));");
 
             migrationBuilder.Sql(
-                @"CREATE INDEX IX_WikiPage_FT_Dutch ON WikiPage USING gin (to_tsvector('dutch', ""Content""));");
+                @"CREATE INDEX IX_WikiPage_FT_Dutch ON ""WikiPage"" USING gin (to_tsvector('dutch', ""Content""));");
 
             migrationBuilder.Sql(
                 @"UPDATE WikiPage 
