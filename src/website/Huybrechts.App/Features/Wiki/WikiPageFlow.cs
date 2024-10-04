@@ -499,7 +499,7 @@ internal class EditCommandHandler : IRequestHandler<EditCommand, Result>
         // $"UPDATE \"WikiPage\" SET TsvEnglish = {tsvEnglish}, TsvDutch = {tsvDutch} WHERE Id = {entity.Id};"
         if (_dbcontext.Database.IsNpgsql())
         {
-            var sql = $"UPDATE \"WikiPage\" SET TsvEnglish = @english, TsvDutch = @dutch WHERE Id = @id;";
+            var sql = $"UPDATE \"WikiPage\" SET \"TsvEnglish\" = @english, \"TsvDutch\" = @dutch WHERE \"Id\" = @id;";
             var tsvEnglish = $"to_tsvector('english', '{entity.Content}')";
             var tsvDutch = $"to_tsvector('dutch', '{entity.Content}')";
             _dbcontext.Database.ExecuteSqlRaw(sql,
