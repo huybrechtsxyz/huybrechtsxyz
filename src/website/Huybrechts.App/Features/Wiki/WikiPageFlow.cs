@@ -8,6 +8,7 @@ using Huybrechts.Core.Wiki;
 using MediatR;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using System.Linq.Dynamic.Core;
 using System.Text;
 
@@ -276,7 +277,7 @@ internal sealed class SearchHandler :
         int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
         var results = await _dbcontext.Set<WikiPage>()
-                .FromSqlRaw(sql, new SqlParameter("@language", message.Language), new SqlParameter("@query", query))
+                .FromSqlRaw(sql, new NpgsqlParameter("@language", message.Language), new SqlParameter("@query", query))
                 .Select(wp => new SearchModel
                 {
                     Id = wp.Id,
@@ -502,9 +503,9 @@ internal class EditCommandHandler : IRequestHandler<EditCommand, Result>
             var tsvEnglish = $"to_tsvector('english', '{entity.Content}')";
             var tsvDutch = $"to_tsvector('dutch', '{entity.Content}')";
             _dbcontext.Database.ExecuteSqlRaw(sql,
-                new SqlParameter("@english", tsvEnglish),
-                new SqlParameter("@dutch", tsvDutch),
-                new SqlParameter("@id", entity.Id));
+                new NpgsqlParameter("@english", tsvEnglish),
+                new NpgsqlParameter("@dutch", tsvDutch),
+                new NpgsqlParameter("@id", entity.Id));
         }
 
         await _dbcontext.CommitTransactionAsync(token);
