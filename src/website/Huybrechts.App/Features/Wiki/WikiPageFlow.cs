@@ -505,7 +505,7 @@ internal class EditCommandHandler : IRequestHandler<EditCommand, Result>
             _dbcontext.Database.ExecuteSqlRaw(sql,
                 new NpgsqlParameter("@english", tsvEnglish),
                 new NpgsqlParameter("@dutch", tsvDutch),
-                new NpgsqlParameter("@id", entity.Id));
+                new NpgsqlParameter("@id", entity.Id.ToString()));
         }
 
         await _dbcontext.CommitTransactionAsync(token);
