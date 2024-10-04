@@ -25,6 +25,18 @@ public record Model : EntityModel
     public string? Tags { get; set; }
 
     public string? Content { get; set; } = string.Empty;
+
+    public string GetWikiUrl() => WikiInfoHelper.GetWikiUrl(
+        WikiInfoHelper.GetUrlPrefix(),
+        WikiInfoHelper.GetDefaultNamespace(),
+        this.Namespace,
+        this.Page);
+
+    public string GetWikiUrl(string tenantid) => WikiInfoHelper.GetWikiUrl(
+        WikiInfoHelper.GetUrlPrefix(tenantid),
+        WikiInfoHelper.GetDefaultNamespace(),
+        this.Namespace,
+        this.Page);
 }
 
 public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -121,14 +133,7 @@ public static class WikiInfoHelper
 // TABLE OF CONTENTS
 //
 
-public sealed record ListModel : Model 
-{
-    public string GetWikiUrl() => WikiInfoHelper.GetWikiUrl(
-        WikiInfoHelper.GetUrlPrefix(),
-        WikiInfoHelper.GetDefaultNamespace(),
-        this.Namespace,
-        this.Page);
-}
+public sealed record ListModel : Model { }
 
 internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<WikiPage, ListModel>(); }
 
@@ -189,12 +194,6 @@ internal sealed class ListHandler :
 public sealed record SearchModel : Model
 {
     public float Rank { get; set; }
-
-    public string GetWikiUrl() => WikiInfoHelper.GetWikiUrl(
-        WikiInfoHelper.GetUrlPrefix(),
-        WikiInfoHelper.GetDefaultNamespace(),
-        this.Namespace,
-        this.Page);
 }
 
 public sealed record SearchQuery : EntityFlow.ListQuery, IRequest<Result<SearchResult>> 
@@ -209,6 +208,8 @@ public sealed class SearchValidator : AbstractValidator<SearchQuery>
         RuleFor(x => x.Language).Must(language => language == "english" || language == "dutch");
     } 
 }
+
+internal sealed class SearchMapping : Profile { public SearchMapping() => CreateProjection<WikiPage, SearchModel>(); }
 
 public sealed record SearchResult : EntityFlow.ListResult<SearchModel> { }
 
@@ -234,7 +235,7 @@ internal sealed class SearchHandler :
             };
         }
 
-        if (string.IsNullOrEmpty(message.CurrentFilter) || string.IsNullOrEmpty(message.SearchText))
+        if (string.IsNullOrEmpty(message.CurrentFilter) && string.IsNullOrEmpty(message.SearchText))
         {
             return new SearchResult
             {

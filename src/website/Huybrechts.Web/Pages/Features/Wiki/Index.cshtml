@@ -42,7 +42,7 @@
                                 <tr>
                                     <td>@Html.DisplayFor(modelItem => record!.Title)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Tags)</td>
-                                    <td>@Html.DisplayFor(modelItem => record!.GetWikiUrl())</td>
+                                    <td><a href="@record!.GetWikiUrl(Model.TenantId)">@record.Page</a></td>
                                 </tr>
                             }
                         </tbody>

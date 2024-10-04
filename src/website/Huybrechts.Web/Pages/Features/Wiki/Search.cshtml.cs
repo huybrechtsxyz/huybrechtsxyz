@@ -1,3 +1,4 @@
+using Finbuckle.MultiTenant.Abstractions;
 using FluentValidation;
 using FluentValidation.Results;
 using Huybrechts.App.Web;
@@ -16,16 +17,23 @@ public class SearchModel : PageModel
 {
     private readonly IMediator _mediator;
     private readonly IValidator<Flow.SearchQuery> _validator;
+    private readonly IMultiTenantContextAccessor _multiTenantAccessor;
 
     public Flow.SearchResult Data { get; set; } = new();
+
+    public string TenantId { get; set; } = string.Empty;
 
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
-    public SearchModel(IMediator mediator, IValidator<Flow.SearchQuery> validator)
+    public SearchModel(
+        IMediator mediator, 
+        IValidator<Flow.SearchQuery> validator,
+        IMultiTenantContextAccessor multiTenantAccessor)
     {
         _mediator = mediator;
         _validator = validator;
+        _multiTenantAccessor = multiTenantAccessor;
     }
 
     public async Task<IActionResult> OnGetAsync(
@@ -59,6 +67,9 @@ public class SearchModel : PageModel
             var result = await _mediator.Send(message);
             if (result.HasStatusMessage())
                 StatusMessage = result.ToStatusMessage();
+
+            if (_multiTenantAccessor.MultiTenantContext.TenantInfo is not null)
+                TenantId = _multiTenantAccessor.MultiTenantContext.TenantInfo.Id ?? string.Empty;
 
             Data = result.Value;
             return Page();
