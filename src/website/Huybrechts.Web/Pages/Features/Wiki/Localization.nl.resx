@@ -147,4 +147,10 @@
   <data name="WikiPageInfo" xml:space="preserve">
     <value>Markdown stelt je in staat om HTML-inhoud te creëren met eenvoudige platte tekst markup.</value>
   </data>
+  <data name="WikiSearchInfo" xml:space="preserve">
+    <value>Zoek in wiki</value>
+  </data>
+  <data name="WikiSearchTitle" xml:space="preserve">
+    <value>Zoeken</value>
+  </data>
 </root>

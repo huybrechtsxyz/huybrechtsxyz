@@ -52,9 +52,11 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
         #endregion ProjectSimulationEntry
 
         // Configure the search index for wiki
-        if (Database.IsSqlServer()) {}
-        else if (Database.IsNpgsql()) {}
+        #region WikiPage
+        if (Database.IsNpgsql()) {}
+        else if (Database.IsSqlServer()) {}
         else if (Database.IsSqlite()) {}
+        #endregion
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -84,6 +86,14 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
             }
         }
+    }
+
+    public bool IsLocalSqlServer()
+    {
+        if (!Database.IsSqlServer()) return false;
+        var connection = this.Database.GetConnectionString();
+        if (string.IsNullOrEmpty(connection)) return false;
+        return connection.Contains(@"mssqllocaldb", StringComparison.InvariantCultureIgnoreCase);
     }
 
     public async Task BeginTransactionAsync(CancellationToken token = default)

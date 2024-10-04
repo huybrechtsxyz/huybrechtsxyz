@@ -124,20 +124,47 @@
     <value>Kan wiki met ID {0} niet vinden</value>
   </data>
   <data name="NEW_WIKI_CONTENT" xml:space="preserve">
-    <value># New Wiki Page
+    <value># Nieuwe wiki-pagina
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Dit is een samenwerkingsruimte waar je pagina's kunt maken en bewerken om kennis te delen. Als je nieuw bent in deze wiki, vind je hier enkele instructies om je op weg te helpen.
 
-## Key Points
+## Hoe de Wiki te Gebruiken
 
-- Sed do eiusmod tempor
-- Ut enim ad minim veniam
-- Duis aute irure dolor
+1. **Navigeren door Pagina's**:
+   - Je kunt naar een pagina navigeren door op de link te klikken. Als de pagina niet bestaat, word je doorgestuurd naar deze standaardpagina.
 
-Or create a link to a wiki [[{namespace}:{page}|{linktext}]].
+2. **Nieuwe Pagina's Maken**:
+   - Om een nieuwe pagina te maken, maak je eenvoudig een link ernaartoe met de syntaxis: 
+     ```markdown
+     [[namespace:NieuwePagina|Link Tekst]]
+     ```
+   - Bijvoorbeeld, om een link te maken naar een pagina over "Inleiding tot de wiki":
+     ```markdown
+     [[tutorials:inleiding-tot-de-wiki|Inleiding tot de Wiki]]
+     ```
 
-## More Information
+3. **Pagina's Bewerken**:
+   - Zodra je naar een nieuwe pagina navigeert, zie je een optie om deze te bewerken. Klik op de bewerkingsknop, maak je wijzigingen en sla de pagina op. De inhoud die je invoert, wordt onderdeel van de wiki!
 
-For more details, visit [Wikipedia](https://www.wikipedia.org).</value>
+4. **Tekst Formatteren**:
+   - Je kunt standaard Markdown gebruiken om je tekst te formatteren:
+     - **Vetgedrukte tekst**: `**Deze tekst is vetgedrukt**`
+     - _Cursieve tekst_: `_Deze tekst is cursief_`
+     - Lijsten:
+       - Item 1
+       - Item 2
+       - Item 3
+
+5. **Wikilinks**:
+   - Je kunt ook interne links naar andere pagina's in de wiki maken met de wikilink-syntaxis:
+     ```markdown
+     [[namespace:ander-pagina|Andere Pagina]]
+     [[namespace:ander-pagina]]
+     ```
+   - Je kunt ook ervoor kiezen om de standaardnamespace 'wiki' te gebruiken:
+     ```markdown
+     [[ander-pagina|Andere Pagina]]
+     [[ander-pagina]]
+     ```</value>
   </data>
 </root>

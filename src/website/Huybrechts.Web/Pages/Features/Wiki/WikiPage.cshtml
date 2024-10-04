@@ -15,26 +15,32 @@
                 <div class="card-header toolbar">
                     <div class="toolbar-start">
                         <div class="col-md-9 d-flex gap-1 align-items-center mb-3">
-                            <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="Index">
-                                <i class="bi bi-list"></i>
-                                <span class="vr"></span>
-                                @SL["TOC"]
-                            </a>
-                            <a class="btn btn-primary hstack gap-2 align-self-center" asp-route-wikispace="@Model.WikiSpace" asp-route-wikipage="@Model.WikiPage" asp-route-edit="true">
-                                <i class="bi bi-pencil-square"></i>
-                                <span class="vr"></span>
-                                @SL["Edit"]
-                            </a>
-                            <a class="btn btn-danger hstack gap-2 align-self-center" asp-route-wikispace="@Model.WikiSpace" asp-route-wikipage="@Model.WikiPage" asp-route-delete="true">
-                                <i class="bi bi-trash2-fill"></i>
-                                <span class="vr"></span>
-                                @SL["Delete"]
-                            </a>
+                            <h3>@Model.Data.Title</h3><h5>@ViewData["CardTags"]</h5>
                         </div>
                     </div>
                     <div class="toolbar-end">
-                        <h3>@Model.Data.Title</h3><h5>@ViewData["CardTags"]</h5>
-                        <button type="button" class="btn btn-icon btn-secondary btn-xs" data-bs-toggle="button" data-nf-toggler="fullpage" data-nf-target=".card" aria-pressed="false" autocomplete="off">
+                        <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="Index">
+                            <i class="bi bi-list"></i>
+                            <span class="vr"></span>
+                            @SL["TOC"]
+                        </a>
+                        <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="Search">
+                            <i class="bi bi-search"></i>
+                            <span class="vr"></span>
+                            @SL["Search"]
+                        </a>
+                        
+                        <a class="btn btn-primary hstack gap-2 align-self-center" asp-route-wikispace="@Model.WikiSpace" asp-route-wikipage="@Model.WikiPage" asp-route-edit="true">
+                            <i class="bi bi-pencil-square"></i>
+                            <span class="vr"></span>
+                            @SL["Edit"]
+                        </a>
+                        <a class="btn btn-danger hstack gap-2 align-self-center" asp-route-wikispace="@Model.WikiSpace" asp-route-wikipage="@Model.WikiPage" asp-route-delete="true">
+                            <i class="bi bi-trash2-fill"></i>
+                            <span class="vr"></span>
+                            @SL["Delete"]
+                        </a>
+                        <button type="button" class="btn btn-icon btn-secondary hstack gap-2" data-bs-toggle="button" data-nf-toggler="fullpage" data-nf-target=".card" aria-pressed="false" autocomplete="off">
                             <i class="icon-active bi bi-arrows-angle-contract"></i>
                             <i class="icon-inactive bi bi-arrows-angle-expand"></i>
                         </button>

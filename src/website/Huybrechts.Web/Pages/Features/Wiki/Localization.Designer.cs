@@ -133,7 +133,7 @@ namespace Huybrechts.Web.Pages.Features.Wiki {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No results found.
+        ///   Looks up a localized string similar to No pages found.
         /// </summary>
         public static string WikiNoResults {
             get {
@@ -147,6 +147,24 @@ namespace Huybrechts.Web.Pages.Features.Wiki {
         public static string WikiPageInfo {
             get {
                 return ResourceManager.GetString("WikiPageInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search in wiki.
+        /// </summary>
+        public static string WikiSearchInfo {
+            get {
+                return ResourceManager.GetString("WikiSearchInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search in wiki.
+        /// </summary>
+        public static string WikiSearchTitle {
+            get {
+                return ResourceManager.GetString("WikiSearchTitle", resourceCulture);
             }
         }
     }

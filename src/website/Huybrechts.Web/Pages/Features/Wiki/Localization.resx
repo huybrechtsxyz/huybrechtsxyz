@@ -142,9 +142,15 @@
     <value>Wiki Index</value>
   </data>
   <data name="WikiNoResults" xml:space="preserve">
-    <value>No results found</value>
+    <value>No pages found</value>
   </data>
   <data name="WikiPageInfo" xml:space="preserve">
     <value>Markdown allows you to create HTML content with simple plaint text markup.</value>
+  </data>
+  <data name="WikiSearchInfo" xml:space="preserve">
+    <value>Search in wiki</value>
+  </data>
+  <data name="WikiSearchTitle" xml:space="preserve">
+    <value>Search in wiki</value>
   </data>
 </root>

@@ -79,21 +79,19 @@ namespace Huybrechts.App.Features.Wiki {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to # New Wiki Page
+        ///   Looks up a localized string similar to # New wiki page
         ///
-        ///Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        ///This is a collaborative space where you can create and edit pages to share knowledge. If you are new to this wiki, here are some instructions to help you get started.
         ///
-        ///## Key Points
+        ///## How to Use the Wiki
         ///
-        ///- Sed do eiusmod tempor
-        ///- Ut enim ad minim veniam
-        ///- Duis aute irure dolor
+        ///1. **Navigating Pages**: 
+        ///   - You can navigate to a page by clicking on its link. If the page does not exist, you will be directed to this default page.
         ///
-        ///Or create a link to a wiki [[{namespace}:{page}|{linktext}]].
-        ///
-        ///## More Information
-        ///
-        ///For more details, visit [Wikipedia](https://www.wikipedia.org)..
+        ///2. **Creating New Pages**:
+        ///   - To create a new page, simply create a link to it using the syntax: 
+        ///     ```markdown
+        ///     [[namespace:Ne [rest of string was truncated]&quot;;.
         /// </summary>
         public static string NEW_WIKI_CONTENT {
             get {

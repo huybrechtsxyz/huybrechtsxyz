@@ -6,6 +6,7 @@ using Huybrechts.App.Data;
 using Huybrechts.App.Features.EntityFlow;
 using Huybrechts.Core.Wiki;
 using MediatR;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Text;
@@ -69,7 +70,7 @@ public static class WikiInfoHelper
 
     public static string GetDefaultNamespace() => "wiki";
 
-    public static string GetSearchIndex(string title, string? tags) => $"{title}~{tags}".ToLowerInvariant();
+    public static string GetSearchIndex(string title, string? tags) => $"{title}~{tags}";
 
     public static void CopyFields(Model model, WikiPage entity)
     {
@@ -169,6 +170,205 @@ internal sealed class ListHandler :
             .PaginatedListAsync(pageNumber, pageSize);
 
         var model = new ListResult
+        {
+            CurrentFilter = searchString,
+            SearchText = searchString,
+            SortOrder = message.SortOrder,
+            Results = results ?? []
+        };
+
+        return model;
+    }
+}
+
+//
+// SEARCH LIST
+//
+
+public sealed record SearchModel : Model
+{
+    public float Rank { get; set; }
+
+    public string GetWikiUrl() => WikiInfoHelper.GetWikiUrl(
+        WikiInfoHelper.GetUrlPrefix(),
+        WikiInfoHelper.GetDefaultNamespace(),
+        this.Namespace,
+        this.Page);
+}
+
+public sealed record SearchQuery : EntityFlow.ListQuery, IRequest<Result<SearchResult>> 
+{
+    public string Language { get; set; } = string.Empty;  // 'english' or 'dutch'
+}
+
+public sealed class SearchValidator : AbstractValidator<SearchQuery> 
+{
+    public SearchValidator() 
+    {
+        RuleFor(x => x.Language).Must(language => language == "english" || language == "dutch");
+    } 
+}
+
+public sealed record SearchResult : EntityFlow.ListResult<SearchModel> { }
+
+internal sealed class SearchHandler :
+    EntityFlow.ListHandler<WikiPage, SearchModel>,
+    IRequestHandler<SearchQuery, Result<SearchResult>>
+{
+    public SearchHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
+        : base(dbcontext, configuration)
+    {
+    }
+
+    public async Task<Result<SearchResult>> Handle(SearchQuery message, CancellationToken token)
+    {
+        if (message is null)
+        {
+            return new SearchResult
+            {
+                CurrentFilter = string.Empty,
+                SearchText = string.Empty,
+                SortOrder = string.Empty,
+                Results = []
+            };
+        }
+
+        if (string.IsNullOrEmpty(message.CurrentFilter) || string.IsNullOrEmpty(message.SearchText))
+        {
+            return new SearchResult
+            {
+                CurrentFilter = string.Empty,
+                SearchText = string.Empty,
+                SortOrder = message.SortOrder,
+                Results = []
+            };
+        }
+
+        if (_dbcontext.Database.IsNpgsql())
+            return await HandleSqlServer(message, token);
+
+        if (_dbcontext.Database.IsSqlite())
+            return await HandleSqlite(message, token);
+
+        if (_dbcontext.Database.IsSqlServer() && !_dbcontext.IsLocalSqlServer())
+            return await HandleSqlServer(message, token);
+
+        if (_dbcontext.Database.IsSqlServer() && _dbcontext.IsLocalSqlServer())
+            return await HandleSqlite(message, token);
+        
+        throw new ApplicationException("Invalid type of database");
+    }
+
+    public async Task<Result<SearchResult>> HandleNpgsql(SearchQuery message, CancellationToken token)
+    {
+        var searchString = message.SearchText ?? message.CurrentFilter;
+
+        var query = message.Language == "english"
+               ? EF.Functions.ToTsQuery("english", searchString)
+               : EF.Functions.ToTsQuery("dutch", searchString);
+
+        string sql = @"SELECT wp.*, 
+                              ts_rank(to_tsvector('@language', COALESCE(wp.""""Content"""", '')), @query) AS RANK
+                       FROM """"WikiPage"""" wp
+                       WHERE to_tsvector('@language', COALESCE(wp.""""Content"""", '')) @@ @query
+                       ORDER BY Rank DESC""";
+
+        int pageSize = EntityFlow.ListQuery.PageSize;
+        int pageNumber = message.Page ?? 1;
+        var results = await _dbcontext.Set<WikiPage>()
+                .FromSqlRaw(sql, new SqlParameter("@language", message.Language), new SqlParameter("@query", query))
+                .Select(wp => new SearchModel
+                {
+                    Id = wp.Id,
+                    Namespace = wp.Namespace,
+                    Page = wp.Page,
+                    Title = wp.Title,
+                    Tags = wp.Tags,
+                    Content = wp.Content,
+                    Rank = EF.Property<float>(wp, "RANK"), // Map RANK manually
+                    CreatedBy = wp.CreatedBy,
+                    CreatedDT = wp.CreatedDT,
+                    ModifiedBy = wp.ModifiedBy,
+                    ModifiedDT = wp.ModifiedDT
+                })
+                .PaginatedListAsync(pageNumber, pageSize);
+
+        var model = new SearchResult
+        {
+            CurrentFilter = searchString,
+            SearchText = searchString,
+            SortOrder = message.SortOrder,
+            Results = results ?? []
+        };
+
+        return model;
+    }
+
+    public async Task<Result<SearchResult>> HandleSqlite(SearchQuery message, CancellationToken token)
+    {
+        IQueryable<WikiPage> query = _dbcontext.Set<WikiPage>();
+
+        var searchString = message.SearchText ?? message.CurrentFilter;
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            var searchFor = searchString.ToLower();
+            query = query.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor));
+        }
+
+        if (!string.IsNullOrEmpty(message.SortOrder))
+        {
+            query = query.OrderBy(message.SortOrder);
+        }
+        else query = query.OrderBy(o => o.Namespace).ThenBy(o => o.Title);
+
+        int pageSize = EntityFlow.ListQuery.PageSize;
+        int pageNumber = message.Page ?? 1;
+        var results = await query
+            .ProjectTo<SearchModel>(_configuration)
+            .PaginatedListAsync(pageNumber, pageSize);
+
+        var model = new SearchResult
+        {
+            CurrentFilter = searchString,
+            SearchText = searchString,
+            SortOrder = message.SortOrder,
+            Results = results ?? []
+        };
+
+        return model;
+    }
+
+    public async Task<Result<SearchResult>> HandleSqlServer(SearchQuery message, CancellationToken token)
+    {
+        var searchString = message.SearchText ?? message.CurrentFilter;
+
+        string sql = @"SELECT wp.*, ft.RANK
+                        FROM WikiPage wp
+                        INNER JOIN FREETEXTTABLE(WikiPage, (Namespace, Page, Title, Tags, Content), @searchTerm) AS ft
+                        ON wp.Id = ft.[KEY]
+                        ORDER BY ft.RANK DESC;";
+
+        int pageSize = EntityFlow.ListQuery.PageSize;
+        int pageNumber = message.Page ?? 1;
+        var results = await _dbcontext.Set<WikiPage>()
+            .FromSqlRaw(sql, new SqlParameter("@searchTerm", searchString))
+            .Select(wp => new SearchModel
+            {
+                Id = wp.Id,
+                Namespace = wp.Namespace,
+                Page = wp.Page,
+                Title = wp.Title,
+                Tags = wp.Tags,
+                Content = wp.Content,
+                Rank = EF.Property<int>(wp, "RANK"), // Map RANK manually
+                CreatedBy = wp.CreatedBy,
+                CreatedDT = wp.CreatedDT,
+                ModifiedBy = wp.ModifiedBy,
+                ModifiedDT = wp.ModifiedDT
+            })
+            .PaginatedListAsync(pageNumber, pageSize);
+
+        var model = new SearchResult
         {
             CurrentFilter = searchString,
             SearchText = searchString,
