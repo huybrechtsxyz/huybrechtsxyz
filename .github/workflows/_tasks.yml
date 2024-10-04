@@ -32,6 +32,7 @@ jobs:
           port: ${{ secrets.APP_HOST_PORT }}
           script_stop: true
           script: |
+            set -e
             cd /
             cd /app
             echo DOCKER DEPLOY
