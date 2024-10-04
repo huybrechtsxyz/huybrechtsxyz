@@ -8,18 +8,6 @@ on:
         required: true
         type: string
     secrets:
-      APP_AUTH_GOOGLE:
-        required: true
-      APP_DATA_NAME:
-        required: true
-      APP_DATA_USERNAME:
-        required: true
-      APP_DATA_PASSWORD:
-        required: true
-      APP_DATA_URL:
-        required: true
-      APP_HOST_EMAIL:
-        required: true
       APP_HOST_SERVER:
         required: true
       APP_HOST_PORT:
@@ -27,12 +15,6 @@ on:
       APP_HOST_USERNAME:
         required: true
       APP_HOST_PASSWORD:
-        required: true
-      APP_SMTP_OPTIONS:
-        required: true
-      REGISTRY_USERNAME:
-        required: true
-      REGISTRY_PASSWORD:
         required: true
 
 jobs:
