@@ -290,15 +290,15 @@ jobs:
             cd /
             cd /app
             echo DOCKER DEPLOY
-            chmod 777 *
-            chmod 777 data/*
-            chmod 777 data/pgdata/*
-            chmod 777 data/pgadmin/*
+            chmod 777 * 2> /dev/null
+            chmod 777 data/* 2> /dev/null
+            chmod 777 data/pgdata/* 2> /dev/null
+            chmod 777 data/pgadmin/* 2> /dev/null
             docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
-            chmod 777 *
-            chmod 777 data/*
-            chmod 777 data/pgdata/*
-            chmod 777 data/pgadmin/*
+            chmod 777 * 2> /dev/null
+            chmod 777 data/* 2> /dev/null
+            chmod 777 data/pgdata/* 2> /dev/null
+            chmod 777 data/pgadmin/* 2> /dev/null
 
   deploy-stack-nobuild:
     name: Deploy Docker Swarm Stack
@@ -319,12 +319,12 @@ jobs:
             cd /
             cd /app
             echo DOCKER DEPLOY
-            chmod 777 *
-            chmod 777 data/*
-            chmod 777 data/pgdata/*
-            chmod 777 data/pgadmin/*
+            chmod 777 * 2> /dev/null
+            chmod 777 data/* 2> /dev/null
+            chmod 777 data/pgdata/* 2> /dev/null
+            chmod 777 data/pgadmin/* 2> /dev/null
             docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
-            chmod 777 *
-            chmod 777 data/*
-            chmod 777 data/pgdata/*
-            chmod 777 data/pgadmin/*
+            chmod 777 * 2> /dev/null
+            chmod 777 data/* 2> /dev/null
+            chmod 777 data/pgdata/* 2 /dev/null
+            chmod 777 data/pgadmin/* 2> /dev/null
