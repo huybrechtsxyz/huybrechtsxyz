@@ -1,0 +1,61 @@
+# This reusable workflow Jobs
+name: Reusable Build and Deploy Jobs
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      APP_HOST_EMAIL:
+        required: true
+      APP_HOST_SERVER:
+        required: true
+      APP_HOST_PORT:
+        required: true
+      APP_HOST_USERNAME:
+        required: true
+      APP_HOST_PASSWORD:
+        required: true
+
+jobs:
+  deploy-stack-task:
+    name: Deploy Docker Swarm Stack Task
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Update docker stack
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APP_HOST_PORT }}
+          script_stop: true
+          script: |
+            cd /
+            cd /app
+            echo DOCKER DEPLOY
+            apply_chmod() {
+              local dir="$1"
+              if [ -d "$dir" ]; then
+                if [ "$(ls -A "$dir")" ]; then
+                  echo "Directory '$dir' exists and contains files. Applying chmod 777."
+                  chmod 777 "$dir"
+                else
+                  echo "Directory '$dir' exists but is empty. Skipping chmod."
+                fi
+              else
+                echo "Directory '$dir' does not exist. Skipping chmod."
+              fi
+            }
+            apply_chmod .
+            apply_chmod data
+            apply_chmod data/pgadmin
+            apply_chmod data/pgdata
+            docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
+            apply_chmod .
+            apply_chmod data
+            apply_chmod data/pgadmin
+            apply_chmod data/pgdata

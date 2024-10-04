@@ -272,59 +272,31 @@ jobs:
           target: /app
 
   deploy-stack-build:
-    name: Deploy Docker Swarm Stack
+    name: Deploy Docker Swarm Stack (Rebuild)
     if: inputs.rebuild == 'true'
     needs: [build-website, deploy-generic]
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    steps:
-      - name: Update docker stack
-        uses: appleboy/ssh-action@v1.0.2
-        with:
-          host: ${{ secrets.APP_HOST_SERVER }}
-          username: ${{ secrets.APP_HOST_USERNAME }}
-          password: ${{ secrets.APP_HOST_PASSWORD }}
-          port: ${{ secrets.APP_HOST_PORT }}
-          script_stop: true
-          script: |
-            cd /
-            cd /app
-            echo DOCKER DEPLOY
-            chmod 777 * 2> /dev/null
-            chmod 777 data/* 2> /dev/null
-            chmod 777 data/pgdata/* 2> /dev/null
-            chmod 777 data/pgadmin/* 2> /dev/null
-            docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
-            chmod 777 * 2> /dev/null
-            chmod 777 data/* 2> /dev/null
-            chmod 777 data/pgdata/* 2> /dev/null
-            chmod 777 data/pgadmin/* 2> /dev/null
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_tasks.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      APP_HOST_EMAIL: ${{ secrets.APP_HOST_EMAIL }}
+      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
 
   deploy-stack-nobuild:
-    name: Deploy Docker Swarm Stack
+    name: Deploy Docker Swarm Stack (Build)
     if: inputs.rebuild != 'true'
     needs: [deploy-generic]
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    steps:
-      - name: Update docker stack
-        uses: appleboy/ssh-action@v1.0.2
-        with:
-          host: ${{ secrets.APP_HOST_SERVER }}
-          username: ${{ secrets.APP_HOST_USERNAME }}
-          password: ${{ secrets.APP_HOST_PASSWORD }}
-          port: ${{ secrets.APP_HOST_PORT }}
-          script_stop: true
-          script: |
-            cd /
-            cd /app
-            echo DOCKER DEPLOY
-            chmod 777 * 2> /dev/null
-            chmod 777 data/* 2> /dev/null
-            chmod 777 data/pgdata/* 2> /dev/null
-            chmod 777 data/pgadmin/* 2> /dev/null
-            docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
-            chmod 777 * 2> /dev/null
-            chmod 777 data/* 2> /dev/null
-            chmod 777 data/pgdata/* 2 /dev/null
-            chmod 777 data/pgadmin/* 2> /dev/null
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_tasks.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      APP_HOST_EMAIL: ${{ secrets.APP_HOST_EMAIL }}
+      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
