@@ -83,7 +83,7 @@ public static class WikiInfoHelper
 
     public static string GetDefaultNamespace() => "wiki";
 
-    public static string GetSearchIndex(string title, string? tags) => $"{title}~{tags}";
+    public static string GetSearchIndex(string title, string? tags) => $"{title}~{tags}".ToLowerInvariant();
 
     public static void CopyFields(Model model, WikiPage entity)
     {
@@ -247,7 +247,7 @@ internal sealed class SearchHandler :
         }
 
         if (_dbcontext.Database.IsNpgsql())
-            return await HandleSqlServer(message, token);
+            return await HandleNpgsql(message, token);
 
         if (_dbcontext.Database.IsSqlite())
             return await HandleSqlite(message, token);
