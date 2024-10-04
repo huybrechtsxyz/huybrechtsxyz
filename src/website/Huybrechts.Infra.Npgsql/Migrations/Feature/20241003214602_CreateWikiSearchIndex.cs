@@ -11,13 +11,13 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "tsv_english",
+                name: "TsvEnglish",
                 table: "WikiPage",
                 type: "tsvector",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "tsv_dutch",
+                name: "TsvDutch",
                 table: "WikiPage",
                 type: "tsvector",
                 nullable: true);
@@ -29,9 +29,9 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                 @"CREATE INDEX IX_WikiPage_FT_Dutch ON ""WikiPage"" USING gin (to_tsvector('dutch', ""Content""));");
 
             migrationBuilder.Sql(
-                @"UPDATE WikiPage 
-                  SET tsv_english = to_tsvector('english', ""Content""),
-                      tsv_dutch = to_tsvector('dutch', ""Content"");");
+                @"UPDATE ""WikiPage"" 
+                  SET TsvEnglish = to_tsvector('english', ""Content""),
+                      TsvDutch = to_tsvector('dutch', ""Content"");");
         }
 
         /// <inheritdoc />
@@ -41,9 +41,9 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
             migrationBuilder.DropIndex(name: "IX_WikiPage_FT_Dutch", table: "WikiPage");
 
-            migrationBuilder.DropColumn(name: "tsv_english", table: "WikiPage");
+            migrationBuilder.DropColumn(name: "TsvEnglish", table: "WikiPage");
 
-            migrationBuilder.DropColumn(name: "tsv_dutch", table: "WikiPage");
+            migrationBuilder.DropColumn(name: "TsvDutch", table: "WikiPage");
         }
     }
 }

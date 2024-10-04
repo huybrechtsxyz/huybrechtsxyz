@@ -473,6 +473,8 @@ internal class EditCommandHandler : IRequestHandler<EditCommand, Result>
 
         WikiPage? entity = await _dbcontext.Set<WikiPage>().FirstOrDefaultAsync(x => x.Namespace == nspace && x.Page == page, token);
 
+        await _dbcontext.BeginTransactionAsync(token);
+
         if (entity is not null)
         {
             entity.ModifiedDT = DateTime.UtcNow;
@@ -491,6 +493,22 @@ internal class EditCommandHandler : IRequestHandler<EditCommand, Result>
         }
 
         await _dbcontext.SaveChangesAsync(token);
+
+        // Manually update the full-text search vectors
+        // $"UPDATE \"WikiPage\" SET TsvEnglish = {tsvEnglish}, TsvDutch = {tsvDutch} WHERE Id = {entity.Id};"
+        if (_dbcontext.Database.IsNpgsql())
+        {
+            var sql = $"UPDATE \"WikiPage\" SET TsvEnglish = @english, TsvDutch = @dutch WHERE Id = @id;";
+            var tsvEnglish = $"to_tsvector('english', '{entity.Content}')";
+            var tsvDutch = $"to_tsvector('dutch', '{entity.Content}')";
+            _dbcontext.Database.ExecuteSqlRaw(sql,
+                new SqlParameter("@english", tsvEnglish),
+                new SqlParameter("@dutch", tsvDutch),
+                new SqlParameter("@id", entity.Id));
+        }
+
+        await _dbcontext.CommitTransactionAsync(token);
+
         return Result.Ok();
     }
 }
