@@ -1,6 +1,8 @@
 ﻿@{
     var databstheme = (Context.Session.GetString("data-bs-theme") ?? string.Empty) == "dark" ? "dark" : "light";
-    var appversion = Huybrechts.App.Config.ApplicationSettings.GetProductVersion();
+    var appversion = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).ProductMajorPart
+        + "." + System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).ProductMinorPart
+        + "." + System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).ProductPrivatePart;
 }
 <!doctype html>
 <html lang="en" data-bs-theme="@databstheme" data-scheme="navy" style="font-size: 18px;">

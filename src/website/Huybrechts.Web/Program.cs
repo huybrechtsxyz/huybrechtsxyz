@@ -1,13 +1,10 @@
-using Elfie.Serialization;
 using Hangfire;
 using Huybrechts.App.Config;
 using Huybrechts.App.Data;
-using Huybrechts.App.Features.Platform;
 using Huybrechts.App.Web;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Localization;
 using Serilog;
-using System.Reflection;
 
 try
 {
