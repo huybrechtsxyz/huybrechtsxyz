@@ -1,5 +1,5 @@
 # This workflow deploys all components to the staging environment
-name: Deploy To Staging (Rebuild)
+name: Deploy To Staging (No Build)
 
 on:
   workflow_dispatch:
