@@ -278,7 +278,9 @@ internal sealed class SearchHandler :
         int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
         var results = await _dbcontext.Set<WikiPage>()
-                .FromSqlRaw(sql, new NpgsqlParameter("@language", message.Language), new SqlParameter("@query", query))
+                .FromSqlRaw(sql,
+                    new NpgsqlParameter("@language", message.Language), 
+                    new NpgsqlParameter("@query", query))
                 .Select(wp => new SearchModel
                 {
                     Id = wp.Id,
@@ -493,8 +495,6 @@ internal class EditCommandHandler : IRequestHandler<EditCommand, Result>
             WikiInfoHelper.CopyFields(message, entity);
             await _dbcontext.Set<WikiPage>().AddAsync(entity, token);
         }
-
-        await _dbcontext.SaveChangesAsync(token);
 
         // Manually update the full-text search vectors
         if (_dbcontext.Database.IsNpgsql())
