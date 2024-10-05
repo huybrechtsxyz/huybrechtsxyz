@@ -103,7 +103,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "PlatformInfoId", "UnitOfMeasure");
 
-                    b.ToTable("PlatformDefaultUnit", t =>
+                    b.ToTable("PlatformDefaultUnit", null, t =>
                         {
                             t.HasComment("Represents a default unit of measure for a platform, linking to a setup unit and a specific platform.");
                         });
@@ -177,7 +177,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.ToTable("Platform", t =>
+                    b.ToTable("Platform", null, t =>
                         {
                             t.HasComment("Table storing information about platforms that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.");
                         });
@@ -295,7 +295,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
-                    b.ToTable("PlatformProduct", t =>
+                    b.ToTable("PlatformProduct", null, t =>
                         {
                             t.HasComment("Represents a product offered on a specific platform, detailing attributes such as the product's name, description, and other relevant metadata.");
                         });
@@ -446,7 +446,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "PlatformInfoId", "PlatformProductId", "ValidFrom");
 
-                    b.ToTable("PlatformRate", t =>
+                    b.ToTable("PlatformRate", null, t =>
                         {
                             t.HasComment("Represents the pricing rate of a service on a platform, including details such as the currency, price, and validity period.");
                         });
@@ -544,7 +544,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "PlatformInfoId", "PlatformProductId", "PlatformRateId", "UnitOfMeasure");
 
-                    b.ToTable("PlatformRateUnit", t =>
+                    b.ToTable("PlatformRateUnit", null, t =>
                         {
                             t.HasComment("Table representing a unit of measurement for a rate within a platform's product offering, translating platform-specific units into standard project metrics.");
                         });
@@ -627,7 +627,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
-                    b.ToTable("PlatformRegion", t =>
+                    b.ToTable("PlatformRegion", null, t =>
                         {
                             t.HasComment("Regions supported by the platform, representing data center locations.");
                         });
@@ -715,7 +715,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "PlatformInfoId", "Name")
                         .IsUnique();
 
-                    b.ToTable("PlatformService", t =>
+                    b.ToTable("PlatformService", null, t =>
                         {
                             t.HasComment("Services offered by the platform, such as compute, storage, or networking resources.");
                         });
@@ -878,7 +878,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "ProjectInfoId", "ProjectDesignId", "Sequence");
 
-                    b.ToTable("ProjectComponent", t =>
+                    b.ToTable("ProjectComponent", null, t =>
                         {
                             t.HasComment("Represents a part of the design for a project.");
                         });
@@ -1001,7 +1001,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("SetupUnitId");
 
-                    b.ToTable("ProjectComponentUnit", t =>
+                    b.ToTable("ProjectComponentUnit", null, t =>
                         {
                             t.HasComment("Links a project component to a measuring unit, allowing for cost calculation using metrics.");
                         });
@@ -1121,7 +1121,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "ProjectInfoId", "Name")
                         .IsUnique();
 
-                    b.ToTable("ProjectDesign", t =>
+                    b.ToTable("ProjectDesign", null, t =>
                         {
                             t.HasComment("Represents a specific design or solution proposal for a project.");
                         });
@@ -1247,7 +1247,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.ToTable("Project", t =>
+                    b.ToTable("Project", null, t =>
                         {
                             t.HasComment("Table storing information about Projects that offer compute resources, including cloud providers like Azure or Google, and on-premise solutions.");
                         });
@@ -1331,7 +1331,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "ProjectInfoId", "Name")
                         .IsUnique();
 
-                    b.ToTable("ProjectQuantity", t =>
+                    b.ToTable("ProjectQuantity", null, t =>
                         {
                             t.HasComment("Represents a bill of quantities for a project, detailing the materials, parts, and labor required.");
                         });
@@ -1412,7 +1412,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "ProjectInfoId", "Name")
                         .IsUnique();
 
-                    b.ToTable("ProjectScenario", t =>
+                    b.ToTable("ProjectScenario", null, t =>
                         {
                             t.HasComment("Represents different scenarios used to calculate design components and measures based on varying metrics.");
                         });
@@ -1492,7 +1492,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("SetupUnitId");
 
-                    b.ToTable("ProjectScenarioUnit", t =>
+                    b.ToTable("ProjectScenarioUnit", null, t =>
                         {
                             t.HasComment("Represents a unit of measurement or metric used in a project scenario for calculating values over design components.");
                         });
@@ -1572,7 +1572,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("ProjectInfoId");
 
-                    b.ToTable("ProjectSimulation", t =>
+                    b.ToTable("ProjectSimulation", null, t =>
                         {
                             t.HasComment("Represents a simulation for a given project, containing various details and configurations related to the project's estimation.");
                         });
@@ -1765,7 +1765,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("ProjectSimulationId");
 
-                    b.ToTable("ProjectSimulationEntry", t =>
+                    b.ToTable("ProjectSimulationEntry", null, t =>
                         {
                             t.HasComment(" Represents a single entry in a project simulation");
                         });
@@ -1851,7 +1851,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.ToTable("SetupCountry", t =>
+                    b.ToTable("SetupCountry", null, t =>
                         {
                             t.HasComment("Represents information about different countries, including their codes, names, and associated details.");
                         });
@@ -1923,7 +1923,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.ToTable("SetupCurrency", t =>
+                    b.ToTable("SetupCurrency", null, t =>
                         {
                             t.HasComment("Represents a currency entity with detailed information such as code, name, description, and associated country code.");
                         });
@@ -2000,7 +2000,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.ToTable("SetupLanguage", t =>
+                    b.ToTable("SetupLanguage", null, t =>
                         {
                             t.HasComment("Represents a currency entity with detailed information such as code, name, description, and associated country code.");
                         });
@@ -2073,7 +2073,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasIndex("TenantId", "ObjectType", "Name")
                         .IsUnique();
 
-                    b.ToTable("SetupState", t =>
+                    b.ToTable("SetupState", null, t =>
                         {
                             t.HasComment("Represents a custom state that can be applied to various objects, such as projects, constraints, requirements, and more.");
                         });
@@ -2173,102 +2173,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.ToTable("SetupUnit", t =>
+                    b.ToTable("SetupUnit", null, t =>
                         {
                             t.HasComment("Represents a measurement unit used for different types such as length, mass, volume, etc.");
-                        });
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Wiki.WikiPage", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
-                        .HasComment("Gets or sets the primary key for the entity.");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasComment("Gets or sets the markdown content for the wiki page.");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
-                        .HasComment("Gets or sets the ID of the user who created the entity.");
-
-                    b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
-                        .HasComment("Date time created");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
-                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
-
-                    b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
-                        .HasComment("Gets or sets the last modified date and time for the entity.");
-
-                    b.Property<string>("Namespace")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
-                        .HasComment("Gets or sets the namespace to which the wiki page belongs (e.g., 'UserGuide').");
-
-                    b.Property<string>("Page")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
-                        .HasComment("Gets or sets the page or URL slug for the wiki page.");
-
-                    b.Property<string>("PreviewText")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasComment("Gets or sets the first characters of the markdown content for the wiki page.");
-
-                    b.Property<float>("Rank")
-                        .HasColumnType("real")
-                        .HasComment("Represents the rank of the search result during specific queries.");
-
-                    b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
-                        .HasComment("This field will store the normalized, concatenated values for searching");
-
-                    b.Property<string>("Tags")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasComment("Keywords or categories for the project");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
-                        .HasComment("Gets or sets the tenant identifier.");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
-                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
-                        .HasComment("Gets or sets the title of the wiki page.");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId", "SearchIndex");
-
-                    b.HasIndex("TenantId", "Namespace", "Page")
-                        .IsUnique();
-
-                    b.ToTable("WikiPage", t =>
-                        {
-                            t.HasComment("Represents a wiki page.");
                         });
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
