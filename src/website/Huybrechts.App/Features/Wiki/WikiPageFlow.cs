@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
 using FluentResults;
 using FluentValidation;
@@ -11,21 +10,27 @@ using MediatR;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
 using System.Text;
-
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 namespace Huybrechts.App.Features.Wiki.WikiInfoFlow;
 
 public record Model : EntityModel
 {
+    [Display(Name = nameof(Namespace), ResourceType = typeof(Localization))]
     public string Namespace { get; set; } = string.Empty;
 
+    [Display(Name = nameof(Page), ResourceType = typeof(Localization))]
     public string Page { get; set; } = string.Empty;
 
+    [Display(Name = nameof(Title), ResourceType = typeof(Localization))]
     public string Title { get; set; } = string.Empty;
 
+    [Display(Name = nameof(Tags), ResourceType = typeof(Localization))]
     public string? Tags { get; set; }
 
+    [Display(Name = nameof(Content), ResourceType = typeof(Localization))]
     public string Content { get; set; } = string.Empty;
 
     public string GetWikiUrl() => WikiInfoHelper.GetWikiUrl(
@@ -86,7 +91,7 @@ public static class WikiInfoHelper
 
     public static string GetDefaultNamespace() => "wiki";
 
-    public static string GetSearchIndex(string title, string? tags) => $"{title}~{tags}".ToLowerInvariant();
+    public static string GetSearchIndex(string title, string? tags, string previewText) => $"{title}~{tags}~?{previewText}".ToLowerInvariant();
 
     public static void CopyFields(Model model, WikiPage entity)
     {
@@ -95,7 +100,8 @@ public static class WikiInfoHelper
         entity.Title = model.Title.Trim();
         entity.Tags = model.Tags?.Trim();
         entity.Content = model.Content;
-        entity.SearchIndex = GetSearchIndex(entity.Title, entity.Tags);
+        entity.PreviewText = model.Content[..(entity.Content.Length > 255 ? 255 : entity.Content.Length)];
+        entity.SearchIndex = GetSearchIndex(entity.Title, entity.Tags, entity.PreviewText);
     }
 
     public static string NormalizeNamespace(string nspace)
@@ -136,7 +142,11 @@ public static class WikiInfoHelper
 // TABLE OF CONTENTS
 //
 
-public sealed record ListModel : Model { }
+public sealed record ListModel : Model 
+{
+    [Display(Name = nameof(PreviewText), ResourceType = typeof(Localization))]
+    public string PreviewText { get; set; } = string.Empty;
+}
 
 internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<WikiPage, ListModel>(); }
 
@@ -196,9 +206,14 @@ internal sealed class ListHandler :
 
 public sealed record SearchModel : Model 
 {
+    [Display(Name = nameof(TenantId), ResourceType = typeof(Localization))]
     public string TenantId { get; set; } = string.Empty;
 
-    public float Rank { get; set; } 
+    [Display(Name = nameof(Rank), ResourceType = typeof(Localization))]
+    public float Rank { get; set; } = 0F;
+
+    [Display(Name = nameof(PreviewText), ResourceType = typeof(Localization))]
+    public string PreviewText { get; set; } = string.Empty;
 }
 
 public sealed record SearchQuery : EntityFlow.ListQuery, IRequest<Result<SearchResult>> 
@@ -290,6 +305,7 @@ internal sealed class SearchHandler :
                    wp.""Title"",
                    wp.""Tags"",
                    wp.""Content"",
+                   wp.""ShortText"",
                    wp.""CreatedBy"",
                    wp.""CreatedDT"",
                    wp.""ModifiedBy"",
@@ -315,12 +331,13 @@ internal sealed class SearchHandler :
                 Page = wp.Page,
                 Title = wp.Title,
                 Tags = wp.Tags,
+                PreviewText = wp.PreviewText,
                 Content = wp.Content,
                 CreatedBy = wp.CreatedBy,
                 CreatedDT = wp.CreatedDT,
                 ModifiedBy = wp.ModifiedBy,
                 ModifiedDT = wp.ModifiedDT,
-                Rank = EF.Property<float>(wp, "Rank"), // Map RANK manually
+                Rank = wp.Rank
             })
             .PaginatedListAsync(pageNumber, pageSize);
 
@@ -343,7 +360,9 @@ internal sealed class SearchHandler :
         if (!string.IsNullOrEmpty(searchString))
         {
             var searchFor = searchString.ToLower();
-            query = query.Where(q => (q.SearchIndex != null && q.SearchIndex.Contains(searchFor)) || q.Content.Contains(searchString));
+            query = query.Where(q => 
+                (q.SearchIndex != null && q.SearchIndex.Contains(searchFor)) 
+                || q.Content.ToLower().Contains(searchString));
         }
 
         if (!string.IsNullOrEmpty(message.SortOrder))
@@ -373,7 +392,20 @@ internal sealed class SearchHandler :
     {
         var searchString = message.SearchText ?? message.CurrentFilter;
 
-        string sql = @"SELECT wp.*, ft.RANK
+        string sql = @"SELECT 
+                         wp.""Id"",
+                         wp.""TenantId"",
+                         wp.""Namespace"",
+                         wp.""Page"",
+                         wp.""Title"",
+                         wp.""Tags"",
+                         wp.""ShortText"",
+                         wp.""Content"",
+                         wp.""CreatedBy"",
+                         wp.""CreatedDT"",
+                         wp.""ModifiedBy"",
+                         wp.""ModifiedDT"",
+                         ft.RANK
                        FROM WikiPage wp
                        INNER JOIN FREETEXTTABLE(WikiPage, (Namespace, Page, Title, Tags, Content), @searchTerm) AS ft
                        ON wp.Id = ft.[KEY]
@@ -390,12 +422,13 @@ internal sealed class SearchHandler :
                 Page = wp.Page,
                 Title = wp.Title,
                 Tags = wp.Tags,
+                PreviewText = wp.PreviewText,
                 Content = wp.Content,
-                Rank = EF.Property<int>(wp, "RANK"), // Map RANK manually
                 CreatedBy = wp.CreatedBy,
                 CreatedDT = wp.CreatedDT,
                 ModifiedBy = wp.ModifiedBy,
-                ModifiedDT = wp.ModifiedDT
+                ModifiedDT = wp.ModifiedDT,
+                Rank = wp.Rank
             })
             .PaginatedListAsync(pageNumber, pageSize);
 
@@ -431,10 +464,7 @@ public sealed class EditQueryValidator : AbstractValidator<EditQuery>
     }
 }
 
-public record EditCommand : Model, IRequest<Result> 
-{
-    //public bool IsDeletable { get; set; } = false;
-}
+public record EditCommand : Model, IRequest<Result> { }
 
 public class EditCommandValidator : ModelValidator<EditCommand>
 {
@@ -483,7 +513,7 @@ internal class EditQueryHandler : IRequestHandler<EditQuery, Result<EditCommand>
                 Content = Messages.NEW_WIKI_CONTENT
                     .Replace("{namespace}", nspace)
                     .Replace("{page}", page)
-    };
+            };
         return Result.Ok(command);
     }
 }

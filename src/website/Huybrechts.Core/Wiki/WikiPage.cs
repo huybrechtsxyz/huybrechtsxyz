@@ -71,6 +71,16 @@ public record WikiPage: Entity, IEntity
     public string? SearchIndex { get; set; }
 
     /// <summary>
+    /// Gets or sets the first characters of the markdown content for the wiki page.
+    /// </summary>
+    /// <remarks>
+    /// The content is stored in markdown format, allowing for rich text editing and display.
+    /// </remarks>
+    [MaxLength(256)]
+    [Comment("Gets or sets the first characters of the markdown content for the wiki page.")]
+    public string PreviewText { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the markdown content for the wiki page.
     /// </summary>
     /// <remarks>
@@ -78,4 +88,17 @@ public record WikiPage: Entity, IEntity
     /// </remarks>
     [Comment("Gets or sets the markdown content for the wiki page.")]
     public string Content { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Represents the rank of the search result for the wiki page.
+    /// This value is calculated dynamically based on the search query
+    /// and is used to order the search results by relevance.
+    /// </summary>
+    /// <remarks>
+    /// The rank is set to a default value of 0 and is updated during specific
+    /// queries (e.g., full-text search queries). It is not a persistent value 
+    /// for the wiki page, but is dynamically calculated and used in searches.
+    /// </remarks>
+    [Comment("Represents the rank of the search result during specific queries.")]
+    public float Rank { get; set; } = 0;
 }

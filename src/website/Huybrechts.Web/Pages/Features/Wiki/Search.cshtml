@@ -34,7 +34,7 @@
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Rank)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Title)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Tags)</th>
-                                <th>URL</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].PreviewText)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -42,9 +42,9 @@
                             {
                                 <tr>
                                     <td>@Html.DisplayFor(modelItem => record!.Rank)</td>
-                                    <td>@Html.DisplayFor(modelItem => record!.Title)</td>
+                                    <td><a href="@record!.GetWikiUrl(Model.TenantId)">@Html.DisplayFor(modelItem => record!.Title)</a></td>
                                     <td>@Html.DisplayFor(modelItem => record!.Tags)</td>
-                                    <td><a href="@record!.GetWikiUrl(Model.TenantId)">@record.Page</a></td>
+                                    <td>@Html.DisplayFor(modelItem => record!.PreviewText)</td>
                                 </tr>
                             }
                         </tbody>

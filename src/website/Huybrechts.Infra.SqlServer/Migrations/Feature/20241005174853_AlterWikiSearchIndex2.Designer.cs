@@ -4,6 +4,7 @@ using Huybrechts.App.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 {
     [DbContext(typeof(FeatureContext))]
-    partial class FeatureContextModelSnapshot : ModelSnapshot
+    [Migration("20241005174853_AlterWikiSearchIndex2")]
+    partial class AlterWikiSearchIndex2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2222,12 +2225,6 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(512)")
                         .HasComment("Gets or sets the page or URL slug for the wiki page.");
 
-                    b.Property<string>("PreviewText")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasComment("Gets or sets the first characters of the markdown content for the wiki page.");
-
                     b.Property<float>("Rank")
                         .HasColumnType("real")
                         .HasComment("Represents the rank of the search result during specific queries.");
@@ -2235,6 +2232,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.Property<string>("SearchIndex")
                         .HasColumnType("nvarchar(450)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
+
+                    b.Property<string>("ShortText")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Gets or sets the first characters of the markdown content for the wiki page.");
 
                     b.Property<string>("Tags")
                         .HasMaxLength(256)

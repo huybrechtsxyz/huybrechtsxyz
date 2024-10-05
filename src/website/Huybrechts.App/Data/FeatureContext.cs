@@ -117,7 +117,11 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
 
     public async Task CommitTransactionAsync(CancellationToken token = default)
     {
-        if (!AllowTransactions()) return;
+        if (!AllowTransactions())
+        {
+            await SaveChangesAsync(token);
+            return;
+        }
 
         try
         {

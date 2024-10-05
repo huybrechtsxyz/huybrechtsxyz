@@ -4,6 +4,7 @@ using Huybrechts.App.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 {
     [DbContext(typeof(FeatureContext))]
-    partial class FeatureContextModelSnapshot : ModelSnapshot
+    [Migration("20241005173201_AlterWikiSearchIndex")]
+    partial class AlterWikiSearchIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2221,12 +2224,6 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)")
                         .HasComment("Gets or sets the page or URL slug for the wiki page.");
-
-                    b.Property<string>("PreviewText")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasComment("Gets or sets the first characters of the markdown content for the wiki page.");
 
                     b.Property<float>("Rank")
                         .HasColumnType("real")
