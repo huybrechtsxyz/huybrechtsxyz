@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Finbuckle.MultiTenant;
+using Finbuckle.MultiTenant.Abstractions;
 using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
@@ -192,7 +194,12 @@ internal sealed class ListHandler :
 // SEARCH LIST
 //
 
-public sealed record SearchModel : Model { public float Rank { get; set; } }
+public sealed record SearchModel : Model 
+{
+    public string TenantId { get; set; } = string.Empty;
+
+    public float Rank { get; set; } 
+}
 
 public sealed record SearchQuery : EntityFlow.ListQuery, IRequest<Result<SearchResult>> 
 {
@@ -215,9 +222,15 @@ internal sealed class SearchHandler :
     EntityFlow.ListHandler<WikiPage, SearchModel>,
     IRequestHandler<SearchQuery, Result<SearchResult>>
 {
-    public SearchHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
+    private readonly IMultiTenantContextAccessor _multiTenantContextAccessor;
+
+    public SearchHandler(
+        FeatureContext dbcontext, 
+        IConfigurationProvider configuration,
+        IMultiTenantContextAccessor multiTenantContextAccessor)
         : base(dbcontext, configuration)
     {
+        _multiTenantContextAccessor = multiTenantContextAccessor;
     }
 
     public async Task<Result<SearchResult>> Handle(SearchQuery message, CancellationToken token)
@@ -263,9 +276,15 @@ internal sealed class SearchHandler :
     {
         var searchString = message.SearchText ?? message.CurrentFilter;
         var language = message.Language == "english" ? "english" : "dutch";
+        var tenantInfo = _multiTenantContextAccessor.MultiTenantContext.TenantInfo;
+        if (tenantInfo is null)
+        {
+            return Result.Fail("Unable to detect tenant");
+        }
 
         string sql = $@"
             SELECT wp.""Id"",
+                   wp.""TenantId"",
                    wp.""Namespace"",
                    wp.""Page"",
                    wp.""Title"",
@@ -278,16 +297,20 @@ internal sealed class SearchHandler :
                    ts_rank(to_tsvector('{language}', wp.""Content""), to_tsquery('{language}', @searchText)) AS ""Rank""
             FROM ""WikiPage"" wp
             WHERE to_tsvector('{language}', wp.""Content"") @@ to_tsquery('{language}', @searchText)
+            AND wp.""TenantId"" = @tenantId
             ORDER BY ""Rank"" DESC";
 
         int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
 
         var results = await _dbcontext.Set<WikiPage>()
-            .FromSqlRaw(sql, new NpgsqlParameter("@searchText", searchString))
+            .FromSqlRaw(sql, 
+                new NpgsqlParameter("@searchText", searchString),
+                new NpgsqlParameter("@tenantId", tenantInfo.Id))
             .Select(wp => new SearchModel
             {
                 Id = wp.Id,
+                TenantId = wp.TenantId,
                 Namespace = wp.Namespace,
                 Page = wp.Page,
                 Title = wp.Title,
