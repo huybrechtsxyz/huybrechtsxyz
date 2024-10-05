@@ -13,7 +13,6 @@ using Npgsql;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
 using System.Text;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 namespace Huybrechts.App.Features.Wiki.WikiInfoFlow;
 
 public record Model : EntityModel
@@ -536,28 +535,36 @@ internal class EditCommandHandler : IRequestHandler<EditCommand, Result>
 
         await _dbcontext.BeginTransactionAsync(token);
 
+        WikiPage? record;
+
+        // UPDATE PAGE
         if (entity is not null)
         {
-            entity.ModifiedDT = DateTime.UtcNow;
-            WikiInfoHelper.CopyFields(message, entity);
-            _dbcontext.Set<WikiPage>().Update(entity);
+            record = await _dbcontext.Set<WikiPage>().FindAsync([message.Id], cancellationToken: token);
+            if (record is null)
+                return WikiInfoHelper.EntityNotFound(message.Id);
+            record.ModifiedDT = DateTime.UtcNow;
+            WikiInfoHelper.CopyFields(message, record);
+            _dbcontext.Set<WikiPage>().Update(record);
         }
+
+        // CREATE PAGE
         else
         {
-            entity = new()
+            record = new()
             {
                 Id = message.Id,
                 CreatedDT = DateTime.UtcNow,
             };
-            WikiInfoHelper.CopyFields(message, entity);
-            await _dbcontext.Set<WikiPage>().AddAsync(entity, token);
+            WikiInfoHelper.CopyFields(message, record);
+            await _dbcontext.Set<WikiPage>().AddAsync(record, token);
         }
 
-        // Manually update the full-text search vectors
+        // Manually update the full-text search vectors for postgress
         if (_dbcontext.Database.IsNpgsql())
         {
-            var sql = "UPDATE \"WikiPage\" SET \"TsvEnglish\" = to_tsvector('english', \"Content\"), \"TsvDutch\" = to_tsvector('dutch', \"Content\") WHERE \"Id\" = @id;";            
-            _dbcontext.Database.ExecuteSqlRaw(sql, new NpgsqlParameter("@id", entity.Id.ToString()));
+            var sql = "UPDATE \"WikiPage\" SET \"TsvEnglish\" = to_tsvector('english', \"Content\"), \"TsvDutch\" = to_tsvector('dutch', \"Content\") WHERE \"Id\" = @id;";
+            _dbcontext.Database.ExecuteSqlRaw(sql, new NpgsqlParameter("@id", record.Id.ToString()));
         }
 
         await _dbcontext.CommitTransactionAsync(token);
@@ -603,7 +610,9 @@ internal class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
         WikiPage? entity = await _dbcontext.Set<WikiPage>().FirstOrDefaultAsync(x => x.Namespace == nspace && x.Page == page, token);
         if (entity is not null)
         {
-            _dbcontext.Set<WikiPage>().Remove(entity);
+            var record = await _dbcontext.Set<WikiPage>().FindAsync([entity.Id], cancellationToken: token);
+            if (record is null) return WikiInfoHelper.EntityNotFound(entity.Id);
+            _dbcontext.Set<WikiPage>().Remove(record);
             await _dbcontext.SaveChangesAsync(token);
         }
 
