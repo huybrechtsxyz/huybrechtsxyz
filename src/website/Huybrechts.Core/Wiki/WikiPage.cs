@@ -77,5 +77,5 @@ public record WikiPage: Entity, IEntity
     /// The content is stored in markdown format, allowing for rich text editing and display.
     /// </remarks>
     [Comment("Gets or sets the markdown content for the wiki page.")]
-    public string? Content { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
 }

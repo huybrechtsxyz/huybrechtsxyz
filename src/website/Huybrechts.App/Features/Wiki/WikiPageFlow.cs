@@ -24,7 +24,7 @@ public record Model : EntityModel
 
     public string? Tags { get; set; }
 
-    public string? Content { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
 
     public string GetWikiUrl() => WikiInfoHelper.GetWikiUrl(
         WikiInfoHelper.GetUrlPrefix(),
@@ -48,6 +48,7 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
         RuleFor(m => m.Page).NotEmpty().Length(1, 512);
         RuleFor(m => m.Title).Length(1, 512);
         RuleFor(m => m.Tags).Length(0, 256);
+        RuleFor(m => m.Content).NotNull();
     }
 }
 
@@ -91,7 +92,7 @@ public static class WikiInfoHelper
         entity.Page = model.Page.Trim().ToLower();
         entity.Title = model.Title.Trim();
         entity.Tags = model.Tags?.Trim();
-        entity.Content = model.Content?.Trim();
+        entity.Content = model.Content;
         entity.SearchIndex = GetSearchIndex(entity.Title, entity.Tags);
     }
 
@@ -191,10 +192,7 @@ internal sealed class ListHandler :
 // SEARCH LIST
 //
 
-public sealed record SearchModel : Model
-{
-    public float Rank { get; set; }
-}
+public sealed record SearchModel : Model { public float Rank { get; set; } }
 
 public sealed record SearchQuery : EntityFlow.ListQuery, IRequest<Result<SearchResult>> 
 {
@@ -264,38 +262,36 @@ internal sealed class SearchHandler :
     public async Task<Result<SearchResult>> HandleNpgsql(SearchQuery message, CancellationToken token)
     {
         var searchString = message.SearchText ?? message.CurrentFilter;
+        var language = message.Language == "english" ? "english" : "dutch";
 
-        var query = message.Language == "english"
-               ? EF.Functions.ToTsQuery("english", searchString)
-               : EF.Functions.ToTsQuery("dutch", searchString);
-
-        string sql = @"SELECT wp.*, 
-                              ts_rank(to_tsvector('@language', COALESCE(wp.""""Content"""", '')), @query) AS RANK
-                       FROM """"WikiPage"""" wp
-                       WHERE to_tsvector('@language', COALESCE(wp.""""Content"""", '')) @@ @query
-                       ORDER BY Rank DESC""";
+        string sql = $@"
+            SELECT wp.*, 
+                   ts_rank(to_tsvector('{language}', wp.""Content""), to_tsquery('{language}', @searchText)) AS RANK
+            FROM ""WikiPage"" wp
+            WHERE to_tsvector('{language}', wp.""Content"") @@ to_tsquery('{language}', @searchText)
+            ORDER BY RANK DESC
+        ";
 
         int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
+
         var results = await _dbcontext.Set<WikiPage>()
-                .FromSqlRaw(sql,
-                    new NpgsqlParameter("@language", message.Language), 
-                    new NpgsqlParameter("@query", query))
-                .Select(wp => new SearchModel
-                {
-                    Id = wp.Id,
-                    Namespace = wp.Namespace,
-                    Page = wp.Page,
-                    Title = wp.Title,
-                    Tags = wp.Tags,
-                    Content = wp.Content,
-                    Rank = EF.Property<float>(wp, "RANK"), // Map RANK manually
-                    CreatedBy = wp.CreatedBy,
-                    CreatedDT = wp.CreatedDT,
-                    ModifiedBy = wp.ModifiedBy,
-                    ModifiedDT = wp.ModifiedDT
-                })
-                .PaginatedListAsync(pageNumber, pageSize);
+        .FromSqlRaw(sql, new NpgsqlParameter("@searchText", searchString))
+        .Select(wp => new SearchModel
+        {
+            Id = wp.Id,
+            Namespace = wp.Namespace,
+            Page = wp.Page,
+            Title = wp.Title,
+            Tags = wp.Tags,
+            Content = wp.Content,
+            Rank = EF.Property<float>(wp, "RANK"), // Map RANK manually
+            CreatedBy = wp.CreatedBy,
+            CreatedDT = wp.CreatedDT,
+            ModifiedBy = wp.ModifiedBy,
+            ModifiedDT = wp.ModifiedDT
+        })
+        .PaginatedListAsync(pageNumber, pageSize);
 
         var model = new SearchResult
         {
@@ -316,7 +312,7 @@ internal sealed class SearchHandler :
         if (!string.IsNullOrEmpty(searchString))
         {
             var searchFor = searchString.ToLower();
-            query = query.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor));
+            query = query.Where(q => (q.SearchIndex != null && q.SearchIndex.Contains(searchFor)) || q.Content.Contains(searchString));
         }
 
         if (!string.IsNullOrEmpty(message.SortOrder))
@@ -347,10 +343,10 @@ internal sealed class SearchHandler :
         var searchString = message.SearchText ?? message.CurrentFilter;
 
         string sql = @"SELECT wp.*, ft.RANK
-                        FROM WikiPage wp
-                        INNER JOIN FREETEXTTABLE(WikiPage, (Namespace, Page, Title, Tags, Content), @searchTerm) AS ft
-                        ON wp.Id = ft.[KEY]
-                        ORDER BY ft.RANK DESC;";
+                       FROM WikiPage wp
+                       INNER JOIN FREETEXTTABLE(WikiPage, (Namespace, Page, Title, Tags, Content), @searchTerm) AS ft
+                       ON wp.Id = ft.[KEY]
+                       ORDER BY ft.RANK DESC;";
 
         int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
@@ -406,7 +402,7 @@ public sealed class EditQueryValidator : AbstractValidator<EditQuery>
 
 public record EditCommand : Model, IRequest<Result> 
 {
-    public bool IsDeletable { get; set; } = false;
+    //public bool IsDeletable { get; set; } = false;
 }
 
 public class EditCommandValidator : ModelValidator<EditCommand>
