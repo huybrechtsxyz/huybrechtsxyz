@@ -88,6 +88,13 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
         }
     }
 
+    public bool AllowTransactions()
+    {
+        if (this.Database.IsNpgsql()) return true;
+        if (this.Database.IsSqlServer() && !IsLocalSqlServer()) return true;
+        return false;
+    }
+
     public bool IsLocalSqlServer()
     {
         if (!Database.IsSqlServer()) return false;
@@ -98,6 +105,8 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
 
     public async Task BeginTransactionAsync(CancellationToken token = default)
     {
+        if (!AllowTransactions()) return;
+
         if (_currentTransaction != null)
         {
             return;
@@ -108,6 +117,8 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
 
     public async Task CommitTransactionAsync(CancellationToken token = default)
     {
+        if (!AllowTransactions()) return;
+
         try
         {
             await SaveChangesAsync(token);
@@ -131,6 +142,8 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
 
     public void RollbackTransaction()
     {
+        if (!AllowTransactions()) return;
+
         try
         {
             _currentTransaction?.Rollback();

@@ -265,33 +265,41 @@ internal sealed class SearchHandler :
         var language = message.Language == "english" ? "english" : "dutch";
 
         string sql = $@"
-            SELECT wp.*, 
-                   ts_rank(to_tsvector('{language}', wp.""Content""), to_tsquery('{language}', @searchText)) AS RANK
+            SELECT wp.""Id"",
+                   wp.""Namespace"",
+                   wp.""Page"",
+                   wp.""Title"",
+                   wp.""Tags"",
+                   wp.""Content"",
+                   wp.""CreatedBy"",
+                   wp.""CreatedDT"",
+                   wp.""ModifiedBy"",
+                   wp.""ModifiedDT"",
+                   ts_rank(to_tsvector('{language}', wp.""Content""), to_tsquery('{language}', @searchText)) AS ""Rank""
             FROM ""WikiPage"" wp
             WHERE to_tsvector('{language}', wp.""Content"") @@ to_tsquery('{language}', @searchText)
-            ORDER BY RANK DESC
-        ";
+            ORDER BY ""Rank"" DESC";
 
         int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
 
         var results = await _dbcontext.Set<WikiPage>()
-        .FromSqlRaw(sql, new NpgsqlParameter("@searchText", searchString))
-        .Select(wp => new SearchModel
-        {
-            Id = wp.Id,
-            Namespace = wp.Namespace,
-            Page = wp.Page,
-            Title = wp.Title,
-            Tags = wp.Tags,
-            Content = wp.Content,
-            Rank = EF.Property<float>(wp, "RANK"), // Map RANK manually
-            CreatedBy = wp.CreatedBy,
-            CreatedDT = wp.CreatedDT,
-            ModifiedBy = wp.ModifiedBy,
-            ModifiedDT = wp.ModifiedDT
-        })
-        .PaginatedListAsync(pageNumber, pageSize);
+            .FromSqlRaw(sql, new NpgsqlParameter("@searchText", searchString))
+            .Select(wp => new SearchModel
+            {
+                Id = wp.Id,
+                Namespace = wp.Namespace,
+                Page = wp.Page,
+                Title = wp.Title,
+                Tags = wp.Tags,
+                Content = wp.Content,
+                CreatedBy = wp.CreatedBy,
+                CreatedDT = wp.CreatedDT,
+                ModifiedBy = wp.ModifiedBy,
+                ModifiedDT = wp.ModifiedDT,
+                Rank = EF.Property<float>(wp, "Rank"), // Map RANK manually
+            })
+            .PaginatedListAsync(pageNumber, pageSize);
 
         var model = new SearchResult
         {
