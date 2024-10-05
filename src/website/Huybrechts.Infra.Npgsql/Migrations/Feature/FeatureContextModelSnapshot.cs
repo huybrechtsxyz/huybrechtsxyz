@@ -2188,6 +2188,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasComment("Gets or sets the markdown content for the wiki page.");
 
@@ -2220,6 +2221,16 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)")
                         .HasComment("Gets or sets the page or URL slug for the wiki page.");
+
+                    b.Property<string>("PreviewText")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasComment("Gets or sets the first characters of the markdown content for the wiki page.");
+
+                    b.Property<float>("Rank")
+                        .HasColumnType("real")
+                        .HasComment("Represents the rank of the search result during specific queries.");
 
                     b.Property<string>("SearchIndex")
                         .HasColumnType("text")

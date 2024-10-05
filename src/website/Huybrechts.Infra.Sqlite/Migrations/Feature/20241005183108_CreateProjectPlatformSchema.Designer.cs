@@ -3,6 +3,7 @@ using System;
 using Huybrechts.App.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.Sqlite.Migrations.Feature
 {
     [DbContext(typeof(FeatureContext))]
-    partial class FeatureContextModelSnapshot : ModelSnapshot
+    [Migration("20241005183108_CreateProjectPlatformSchema")]
+    partial class CreateProjectPlatformSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -2192,100 +2195,6 @@ namespace Huybrechts.Infra.Sqlite.Migrations.Feature
                     b.ToTable("SetupUnit", t =>
                         {
                             t.HasComment("Represents a measurement unit used for different types such as length, mass, volume, etc.");
-                        });
-
-                    b.HasAnnotation("Finbuckle:MultiTenant", true);
-                });
-
-            modelBuilder.Entity("Huybrechts.Core.Wiki.WikiPage", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT")
-                        .HasComment("Gets or sets the primary key for the entity.");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasComment("Gets or sets the markdown content for the wiki page.");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("TEXT")
-                        .HasComment("Gets or sets the ID of the user who created the entity.");
-
-                    b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Date time created");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("TEXT")
-                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
-
-                    b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("TEXT")
-                        .HasComment("Gets or sets the last modified date and time for the entity.");
-
-                    b.Property<string>("Namespace")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT")
-                        .HasComment("Gets or sets the namespace to which the wiki page belongs (e.g., 'UserGuide').");
-
-                    b.Property<string>("Page")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("TEXT")
-                        .HasComment("Gets or sets the page or URL slug for the wiki page.");
-
-                    b.Property<string>("PreviewText")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT")
-                        .HasComment("Gets or sets the first characters of the markdown content for the wiki page.");
-
-                    b.Property<float>("Rank")
-                        .HasColumnType("REAL")
-                        .HasComment("Represents the rank of the search result during specific queries.");
-
-                    b.Property<string>("SearchIndex")
-                        .HasColumnType("TEXT")
-                        .HasComment("This field will store the normalized, concatenated values for searching");
-
-                    b.Property<string>("Tags")
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT")
-                        .HasComment("Keywords or categories for the project");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT")
-                        .HasComment("Gets or sets the tenant identifier.");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("BLOB")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("TEXT")
-                        .HasComment("Gets or sets the title of the wiki page.");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId", "SearchIndex");
-
-                    b.HasIndex("TenantId", "Namespace", "Page")
-                        .IsUnique();
-
-                    b.ToTable("WikiPage", t =>
-                        {
-                            t.HasComment("Represents a wiki page.");
                         });
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);

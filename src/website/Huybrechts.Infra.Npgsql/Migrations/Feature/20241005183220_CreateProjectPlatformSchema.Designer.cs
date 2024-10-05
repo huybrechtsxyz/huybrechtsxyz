@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 {
     [DbContext(typeof(FeatureContext))]
-    [Migration("20240927170441_CreateProjectPlatformSchema")]
+    [Migration("20241005183220_CreateProjectPlatformSchema")]
     partial class CreateProjectPlatformSchema
     {
         /// <inheritdoc />
