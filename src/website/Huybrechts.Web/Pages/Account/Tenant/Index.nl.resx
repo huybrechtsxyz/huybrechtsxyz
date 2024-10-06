@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Do not forget to activate the team above!" xml:space="preserve">
-    <value>Vergeet niet het bovenstaande team te activeren!</value>
+  <data name="Do not forget to activate the team above! Once activated you might need to logoff and logon before access is granted." xml:space="preserve">
+    <value>Vergeet niet om het team hierboven te activeren! Zodra het is geactiveerd, moet je mogelijk uitloggen en opnieuw inloggen voordat de toegang wordt verleend.</value>
   </data>
   <data name="The list of teams you are part of." xml:space="preserve">
     <value>De lijst met teams waarvan u deel uitmaakt.</value>
