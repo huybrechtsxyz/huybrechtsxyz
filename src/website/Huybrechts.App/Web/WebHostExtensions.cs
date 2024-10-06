@@ -341,6 +341,8 @@ public static class WebHostExtensions
 
     public static WebApplication AddStaticFilesMiddleware(this WebApplication app, ILogger log)
     {
+        app.UseMultiTenant();
+
         if (app.Environment.IsStaging() || app.Environment.IsProduction())
         {
             log.Information("Configure using static files with caching");
@@ -358,7 +360,7 @@ public static class WebHostExtensions
             app.UseStaticFiles();
         }
 
-        app.UseMultiTenant();
+        //app.UseMultiTenant();
 
         return app;
     }
