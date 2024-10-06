@@ -30,7 +30,7 @@ This domain map helps visualize how traffic is routed based on the application a
 | Application  | Environment   | Domain                    | Description
 
 | Traefik      | Test          | proxy.test.huybrechts.xyz | Application proxy for test environment
-| PG Admin     | Test          | data.test.huybrechts.xyz  | Database administration service
+| PG Admin     | Test          | admin.test.huybrechts.xyz | Database administration service (/pgadmin)
 | PostgreSql   | Test          | -                         | Database service (private back-end)
 | Website      | Test          | test.huybrechts.xyz       | Main website running in test environment
 
@@ -56,7 +56,7 @@ The table helps illustrate how traffic is managed and directed for different sub
 | test.huybrechts.xyz               | A    | {ip-address}     | Main website running in test environment
 | www.test.huybrechts.xyz           | A    | {ip-address}     | Main website running in test environment
 | proxy.test.huybrechts.xyz         | A    | {ip-address}     | Application proxy in test environment
-| data.test.huybrechts.xyz          | A    | {ip-address}     | Database administration in test environment
+| admin.test.huybrechts.xyz         | A    | {ip-address}     | Database administration in test environment
 
 |===
 
