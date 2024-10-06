@@ -27,12 +27,22 @@ This domain map helps visualize how traffic is routed based on the application a
 
 [cols="1,1,1,2", options="header"]
 |===
-| Application  | Environment   | Domain                    | Description
+| Application  | Environment   | Domain                       | Path        |Description
 
-| Traefik      | Test          | proxy.test.huybrechts.xyz | Application proxy for test environment
-| PG Admin     | Test          | admin.test.huybrechts.xyz | Database administration service (/pgadmin)
-| PostgreSql   | Test          | -                         | Database service (private back-end)
-| Website      | Test          | test.huybrechts.xyz       | Main website running in test environment
+| Traefik      | Test          | proxy.test.huybrechts.xyz    | /dashboard/ | Application proxy for test environment
+| PG Admin     | Test          | admin.test.huybrechts.xyz    | /pgadmin    | Database administration service (/pgadmin)
+| PostgreSql   | Test          | -                            | -           | Database service (private back-end)
+| Website      | Test          | test.huybrechts.xyz          | /           | Main website running in test environment
+
+| Traefik      | Staging       | proxy.staging.huybrechts.xyz | /dashboard/ | Application proxy for test environment
+| PG Admin     | Staging       | admin.staging.huybrechts.xyz | /pgadmin    |  Database administration service (/pgadmin)
+| PostgreSql   | Staging       | -                            | -           | Database service (private back-end)
+| Website      | Staging       | staging.huybrechts.xyz       | /           | Main website running in test environment
+
+| Traefik      | Production    | proxy.huybrechts.xyz         | /dashboard/ | Application proxy for test environment
+| PG Admin     | Production    | admin.huybrechts.xyz         | /pgadmin    | Database administration service (/pgadmin)
+| PostgreSql   | Production    | -                            | -           | Database service (private back-end)
+| Website      | Production    | huybrechts.xyz               | /           | Main website running in test environment
 
 |===
 
@@ -57,6 +67,16 @@ The table helps illustrate how traffic is managed and directed for different sub
 | www.test.huybrechts.xyz           | A    | {ip-address}     | Main website running in test environment
 | proxy.test.huybrechts.xyz         | A    | {ip-address}     | Application proxy in test environment
 | admin.test.huybrechts.xyz         | A    | {ip-address}     | Database administration in test environment
+
+| staging.huybrechts.xyz            | A    | {ip-address}     | Main website running in staging environment
+| www.staging.huybrechts.xyz        | A    | {ip-address}     | Main website running in staging environment
+| proxy.staging.huybrechts.xyz      | A    | {ip-address}     | Application proxy in staging environment
+| admin.staging.huybrechts.xyz      | A    | {ip-address}     | Database administration in staging environment
+
+| huybrechts.xyz                    | A    | {ip-address}     | Main website running in staging environment
+| www.huybrechts.xyz                | A    | {ip-address}     | Main website running in staging environment
+| proxy.huybrechts.xyz              | A    | {ip-address}     | Application proxy in staging environment
+| admin.huybrechts.xyz              | A    | {ip-address}     | Database administration in staging environment
 
 |===
 
