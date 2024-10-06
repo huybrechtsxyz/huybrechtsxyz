@@ -36,25 +36,7 @@ jobs:
             cd /
             cd /app
             echo DOCKER DEPLOY
-            apply_chmod() {
-              if [ "${{ inputs.environment }}" == "test" ]; then
-                echo "Environment is 'test'. Skipping chmod operations for '$dir'."
-                return 0  # Exit the function successfully without applying chmod
-              fi
-              local dir="$1"
-              if [ -d "$dir" ]; then
-                if [ "$(ls -A "$dir")" ]; then
-                  echo "Directory '$dir' exists and contains files. Applying chmod 777."
-                  chmod 777 "$dir"
-                else
-                  echo "Directory '$dir' exists but is empty. Skipping chmod."
-                fi
-              else
-                echo "Directory '$dir' does not exist. Skipping chmod."
-              fi
-            }
-            #apply_chmod .
-            #apply_chmod data
-            #apply_chmod /app/data/pgadmin
-            #apply_chmod /app/data/pgdata
+            sudo chmod -R 777 /app/cert
+            sudo chmod -R 777 /app/data
+            sudo chmod -R 777 /app/logs
             docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log

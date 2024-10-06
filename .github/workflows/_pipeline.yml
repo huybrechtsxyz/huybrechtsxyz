@@ -135,7 +135,8 @@ jobs:
                   echo "Error: Failed to create directory '$newpath'"
                   return 1  # Return non-zero status to indicate failure
                 fi
-                chmod 777 "$newpath"
+                #chmod 777 "$newpath"
+                sudo chmod -R 777 "$newpath"
               fi
               return 0  # Return zero status to indicate success
             }
