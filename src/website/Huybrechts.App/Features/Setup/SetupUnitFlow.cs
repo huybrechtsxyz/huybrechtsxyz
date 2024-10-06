@@ -89,8 +89,9 @@ public record Model : EntityModel
     /// <remarks>
     /// Factor is used to convert values of this unit to the base unit within its type.
     /// </remarks>
-    [Precision(18, 10)]
+    [Precision(18, 6)]
     [Display(Name = nameof(Factor), ResourceType = typeof(Localization))]
+    [DisplayFormat(DataFormatString = "{0:N6}", ApplyFormatInEditMode = true)]
     public decimal Factor { get; set; } = 1.0m;
 
     /// <summary>

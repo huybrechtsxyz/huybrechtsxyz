@@ -88,9 +88,11 @@ public record Model
 
     [Precision(12, 6)]
     [Display(Name = nameof(UnitFactor), ResourceType = typeof(Localization))]
+    [DisplayFormat(DataFormatString = "{0:N6}", ApplyFormatInEditMode = true)]
     public decimal UnitFactor { get; set; } = 0;
 
     [Precision(12, 4)]
+    [DisplayFormat(DataFormatString = "{0:N4}", ApplyFormatInEditMode = true)]
     [Display(Name = nameof(DefaultValue), ResourceType = typeof(Localization))]
     public decimal DefaultValue { get; set; } = 0;
 

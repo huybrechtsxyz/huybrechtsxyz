@@ -60,18 +60,22 @@ public record Model
 
     [Precision(18, 6)]
     [Display(Name = nameof(Quantity), ResourceType = typeof(Localization))]
+    [DisplayFormat(DataFormatString = "{0:N6}", ApplyFormatInEditMode = true)]
     public decimal Quantity { get; set; }
 
     [Precision(18, 6)]
     [Display(Name = nameof(SalesPrice), ResourceType = typeof(Localization))]
+    [DisplayFormat(DataFormatString = "{0:N6}", ApplyFormatInEditMode = true)]
     public decimal SalesPrice { get; set; }
 
     [Precision(18, 6)]
     [Display(Name = nameof(RetailPrice), ResourceType = typeof(Localization))]
+    [DisplayFormat(DataFormatString = "{0:N6}", ApplyFormatInEditMode = true)]
     public decimal RetailPrice { get; set; }
 
     [Precision(18, 6)]
     [Display(Name = nameof(UnitPrice), ResourceType = typeof(Localization))]
+    [DisplayFormat(DataFormatString = "{0:N6}", ApplyFormatInEditMode = true)]
     public decimal UnitPrice { get; set; }
 
     [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
