@@ -2,7 +2,6 @@
 using FluentValidation;
 using Hangfire;
 using Hangfire.PostgreSql;
-using Hangfire.SQLite;
 using Hangfire.SqlServer;
 using Huybrechts.App.Application;
 using Huybrechts.App.Config;
@@ -64,12 +63,6 @@ public static class WebHostExtensions
         log.Information($"Connect to the {contextProviderType} database: {connectionString}");
         switch (contextProviderType)
         {
-            case ContextProviderType.Sqlite:
-                {
-                    builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite")));
-                    builder.Services.AddDbContextFactory<FeatureContext>(options => options.UseSqlite(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.Sqlite"))); 
-                    break;
-                }
             case ContextProviderType.SqlServer:
                 {
                     builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString, x => x.MigrationsAssembly("Huybrechts.Infra.SqlServer")));
@@ -96,18 +89,6 @@ public static class WebHostExtensions
         {
             switch (contextProviderType)
             {
-                case ContextProviderType.Sqlite:
-                    {
-                        SQLiteStorageOptions options = new()
-                        {
-                            PrepareSchemaIfNecessary = true
-                        };
-                        builder.Services.AddHangfire(x => x
-                            .UseSimpleAssemblyNameTypeSerializer()
-                            .UseRecommendedSerializerSettings()
-                            .UseSQLiteStorage(connectionString, options));
-                        break;
-                    }
                 case ContextProviderType.SqlServer:
                     {
                         SqlServerStorageOptions options = new()

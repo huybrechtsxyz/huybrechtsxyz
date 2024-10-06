@@ -274,9 +274,6 @@ internal sealed class SearchHandler :
         if (_dbcontext.Database.IsNpgsql())
             return await HandleNpgsql(message, token);
 
-        if (_dbcontext.Database.IsSqlite())
-            return await HandleSqlite(message, token);
-
         if (_dbcontext.Database.IsSqlServer() && !_dbcontext.IsLocalSqlServer())
             return await HandleSqlServer(message, token);
 

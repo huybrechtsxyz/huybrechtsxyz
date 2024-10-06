@@ -88,10 +88,6 @@ public static class ApplicationSettings
         if (string.IsNullOrWhiteSpace(connectionString))
             return ContextProviderType.None;
 
-        // SQLite connection string pattern
-        if (connectionString.Contains("Data Source=", StringComparison.InvariantCultureIgnoreCase))
-            return ContextProviderType.Sqlite;
-
         // SQL Server connection string pattern
         else if (connectionString.Contains("Server=", StringComparison.InvariantCultureIgnoreCase))
             return ContextProviderType.SqlServer;

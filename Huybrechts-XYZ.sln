@@ -16,8 +16,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Web", "src\websi
 		{27F1A1FB-196E-4A40-9E4F-DEF9C1CD977B} = {27F1A1FB-196E-4A40-9E4F-DEF9C1CD977B}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.Sqlite", "src\website\Huybrechts.Infra.Sqlite\Huybrechts.Infra.Sqlite.csproj", "{E3007397-FD86-4701-AE19-833E2CAAFF0C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.SqlServer", "src\website\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj", "{8CB9F4AE-E2A1-4014-AAB2-288093BF7DB1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Infra.Npgsql", "src\website\Huybrechts.Infra.Npgsql\Huybrechts.Infra.Npgsql.csproj", "{BF18CDC1-0963-4BA2-A692-4D4079F17563}"
@@ -46,10 +44,6 @@ Global
 		{96B892EF-932E-4F7F-8BA9-95C989ACBB51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96B892EF-932E-4F7F-8BA9-95C989ACBB51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96B892EF-932E-4F7F-8BA9-95C989ACBB51}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E3007397-FD86-4701-AE19-833E2CAAFF0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E3007397-FD86-4701-AE19-833E2CAAFF0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E3007397-FD86-4701-AE19-833E2CAAFF0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E3007397-FD86-4701-AE19-833E2CAAFF0C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8CB9F4AE-E2A1-4014-AAB2-288093BF7DB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8CB9F4AE-E2A1-4014-AAB2-288093BF7DB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CB9F4AE-E2A1-4014-AAB2-288093BF7DB1}.Release|Any CPU.ActiveCfg = Release|Any CPU

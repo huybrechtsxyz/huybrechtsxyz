@@ -23,13 +23,6 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // set a global query filter, e.g. to support soft delete
-        //modelBuilder.Entity<Post>().HasQueryFilter(p => !p.IsDeleted);
-        if (Database.IsSqlite())
-        {
-            SetTimeStampForFieldsForSqlite(modelBuilder);
-        }
-
         // call the base library implementation AFTER the above
         base.OnModelCreating(modelBuilder);
 
@@ -55,7 +48,6 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
         #region WikiPage
         if (Database.IsNpgsql()) {}
         else if (Database.IsSqlServer()) {}
-        else if (Database.IsSqlite()) {}
         #endregion
     }
 
@@ -64,28 +56,6 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
         configurationBuilder
             .Properties<Ulid>()
             .HaveConversion<UlidToStringConverter>();
-    }
-
-    protected void SetTimeStampForFieldsForSqlite(ModelBuilder modelBuilder)
-    {
-        if (!Database.IsSqlite())
-            return;
-
-        var entityTypes = modelBuilder.Model.GetEntityTypes();
-        foreach (var entityType in entityTypes)
-        {
-            var clrType = entityType.ClrType;
-            var timestampProperties = clrType.GetProperties()
-                .Where(p => p.GetCustomAttribute<TimestampAttribute>() != null);
-            foreach (var property in timestampProperties)
-            {
-                modelBuilder.Entity(clrType)
-                    .Property(property.Name)
-                    .ValueGeneratedOnAddOrUpdate()
-                    .IsConcurrencyToken()
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
-            }
-        }
     }
 
     public bool AllowTransactions()
