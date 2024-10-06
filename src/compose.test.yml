@@ -105,20 +105,20 @@ services:
     image: postgres
     secrets:
       - APP_DATA_NAME
-      - APP_HOST_USERNAME
-      - APP_HOST_PASSWORD
+      - APP_DATA_USERNAME
+      - APP_DATA_PASSWORD
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_DB_FILE: /run/secrets/APP_DATA_NAME
-      POSTGRES_USER_FILE: /run/secrets/APP_HOST_USERNAME
-      POSTGRES_PASSWORD_FILE: /run/secrets/APP_HOST_PASSWORD
+      POSTGRES_USER_FILE: /run/secrets/APP_DATA_USERNAME
+      POSTGRES_PASSWORD_FILE: /run/secrets/APP_DATA_PASSWORD
     networks:
       - traefik
     volumes:
       - /app/data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d xyzdb -U root"]
-      interval    : 1s
+      interval: 1s
       timeout: 5s
       retries: 10
       start_period: 5s
