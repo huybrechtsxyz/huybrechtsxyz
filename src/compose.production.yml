@@ -182,6 +182,7 @@ services:
     networks:
       - traefik
     volumes:
+      - "/app/cert:/app/cert"
       - "/app/data:/app/data"
       - "/app/logs:/app/logs"
     deploy:
