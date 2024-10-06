@@ -9,6 +9,7 @@ using Huybrechts.App.Data;
 using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -234,6 +235,10 @@ public static class WebHostExtensions
             {
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
+
+            builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(@"/app/cert"))
+                .SetApplicationName("huybrechts.xyz");
         }
 
         builder.Services.AddResponseCaching();
