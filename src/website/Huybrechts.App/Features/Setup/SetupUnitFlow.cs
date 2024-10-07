@@ -70,6 +70,7 @@ public record Model : EntityModel
     /// <remarks>
     /// Precision determines the number of decimal places allowed for the unit's values.
     /// </remarks>
+    [Range(0, 6)]
     [Display(Name = nameof(Precision), ResourceType = typeof(Localization))]
     public int Precision { get; set; } = 2;
 
