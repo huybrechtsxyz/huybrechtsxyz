@@ -237,7 +237,7 @@ public class SetupUnitHelper
 
         const string cacheKey = "SetupUnitList";
 
-        if (!refresh)
+        if (refresh)
         {
             var setupUnitListR = Task.Run(async () => await FetchFromDatabaseAsync()).Result;
             _cache.Set(cacheKey, setupUnitListR, new MemoryCacheEntryOptions().SetSlidingExpiration(_expiration));

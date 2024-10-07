@@ -613,7 +613,7 @@ internal sealed class ImportQueryHandler :
     {
         List<ImportModel> result = [];
 
-        var service = new AzurePricingService(_options);
+        var service = new AzurePricingService(_options, _cache);
         var pricing = await service.GetUnitsAsync(searchString);
 
         if (pricing is null)
