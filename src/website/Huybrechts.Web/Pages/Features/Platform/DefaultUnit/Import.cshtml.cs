@@ -34,17 +34,17 @@ public class ImportModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(
         Ulid? platformInfoId,
-        string currentFilter,
-        string searchText,
-        string sortOrder,
+        string? currentFilter,
+        string? searchText,
+        string? sortOrder,
         int? pageIndex)
     {
         var message = new Flow.ImportQuery()
         {
             PlatformInfoId = platformInfoId ?? Ulid.Empty,
-            CurrentFilter = currentFilter,
-            SearchText = searchText,
-            SortOrder = sortOrder,
+            CurrentFilter = currentFilter ?? string.Empty,
+            SearchText = searchText ?? string.Empty,
+            SortOrder = sortOrder ?? string.Empty,
             Page = pageIndex
         };
         
@@ -74,6 +74,9 @@ public class ImportModel : PageModel
             ValidationResult state = await _postValidator.ValidateAsync(message);
             if (!state.IsValid)
             {
+                var refresh = await _mediator.Send(new Flow.ImportQuery() { PlatformInfoId = Data.Platform.Id, Refresh = true });
+                Data.Platform = refresh.Value.Platform;
+                Data.SetupUnits = refresh.Value.SetupUnits;
                 state.AddToModelState(ModelState, nameof(Data) + ".");
                 return Page();
             }

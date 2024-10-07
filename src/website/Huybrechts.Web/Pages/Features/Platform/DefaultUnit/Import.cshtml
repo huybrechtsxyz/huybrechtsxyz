@@ -45,6 +45,7 @@
                                 <tr>
                                     <th>@SL["Select"]</th>
                                     <th>@Html.DisplayNameFor(model => model.Data.Results[0].UnitOfMeasure)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].SetupUnitName)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -62,6 +63,18 @@
                                         <td>
                                             <input type="hidden" asp-for="@Model.Data.Results[idex].UnitOfMeasure" />
                                             @Html.DisplayFor(model => @Model.Data.Results[idex].UnitOfMeasure)
+                                        </td>
+                                        <td>
+                                            <select asp-for="@Model.Data.Results[idex].SetupUnitId"
+                                                    asp-items="Model.Data.SetupUnits?.Select(p => new SelectListItem
+                                                        {
+                                                            Value = p.Id.ToString(),
+                                                            Text = p.Name
+                                                        }).ToList()"
+                                                    class="form-select border-info" required>
+                                                <option id="@Ulid.Empty">@SL["Select"]</option>
+                                            </select>
+                                            <span asp-validation-for="@Model.Data.Results[idex].SetupUnitId" class="text-danger"></span>
                                         </td>
                                     </tr>
                                 }

@@ -4,68 +4,19 @@ using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Config;
 using Huybrechts.App.Data;
+using Huybrechts.App.Features.Project.ProjectDesignFlow;
 using Huybrechts.App.Features.Setup.SetupUnitFlow;
 using Huybrechts.App.Services;
 using Huybrechts.Core.Platform;
 using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
 
 namespace Huybrechts.App.Features.Platform.PlatformDefaultUnitFlow;
-
-public static class PlatformDefaultUnitHelper
-{
-    public static CreateCommand CreateNew(
-        PlatformInfo platform
-        ) => new()
-    {
-        Id = Ulid.NewUlid(),
-        PlatformInfoId = platform.Id,
-        PlatformInfoName = platform.Name,
-        Platform = platform
-    };
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
-    public static async Task<List<PlatformDefaultUnit>> GetDefaultUnitsFor(FeatureContext context, PlatformRate rate, bool save, CancellationToken token)
-    {
-        string unitOfMeasure = rate.UnitOfMeasure.ToLower().Trim();
-        List<PlatformDefaultUnit> defaultUnits = await context.Set<PlatformDefaultUnit>()
-            .Include(i => i.SetupUnit)
-            .Where(q => q.PlatformInfoId == rate.PlatformInfoId && q.UnitOfMeasure.ToLower() == unitOfMeasure)
-            .OrderBy(o => o.SetupUnit.Name)
-            .ToListAsync(cancellationToken: token);
-
-        //if (defaultUnits is not null && defaultUnits.Count > 0)
-        //    return defaultUnits;
-
-        //defaultUnits = [];
-        //defaultUnits.Add(new PlatformDefaultUnit()
-        //{
-        //    Id = Ulid.NewUlid(),
-        //    PlatformInfoId = rate.PlatformInfoId,
-        //    UnitOfMeasure = rate.UnitOfMeasure,
-        //    UnitFactor = 1,
-        //    DefaultValue = 1,
-        //    Description = rate.UnitOfMeasure,
-        //    SearchIndex = GetSearchIndex(rate.UnitOfMeasure, string.Empty, rate.UnitOfMeasure),
-        //    CreatedDT = DateTime.UtcNow,
-        //});
-
-        return defaultUnits;
-    }
-
-    public static string GetSearchIndex(string unitOfMeasure, string setupUnit, string description)
-        => $"{unitOfMeasure}~{setupUnit}~{description}".ToLowerInvariant();
-
-    internal static Result PlatformNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORM_ID.Replace("{0}", id.ToString()));
-
-    internal static Result UnitNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPUNIT_ID.Replace("{0}", id.ToString()));
-
-    internal static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORMDEFAULTUNIT_ID.Replace("{0}", id.ToString()));
-}
 
 public record Model
 {
@@ -81,7 +32,7 @@ public record Model
     public Ulid SetupUnitId { get; init; } = Ulid.Empty;
 
     [Display(Name = "SetupUnit", ResourceType = typeof(Localization))]
-    public SetupUnit SetupUnit { get; init; } = new();
+    public string SetupUnitName { get; set; } = string.Empty;
 
     [Display(Name = nameof(UnitOfMeasure), ResourceType = typeof(Localization))]
     public string UnitOfMeasure { get; set; } = string.Empty;
@@ -99,7 +50,7 @@ public record Model
     [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
     public string Description { get; set; } = string.Empty;
 
-    public string SearchIndex => PlatformDefaultUnitHelper.GetSearchIndex(UnitOfMeasure, SetupUnit.Name, Description);
+    public string SearchIndex => PlatformDefaultUnitHelper.GetSearchIndex(UnitOfMeasure, SetupUnitName, Description);
 }
 
 public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -114,6 +65,40 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
         RuleFor(m => m.UnitFactor).NotNull();
         RuleFor(m => m.DefaultValue).NotNull();
     }
+}
+
+public static class PlatformDefaultUnitHelper
+{
+    public static CreateCommand CreateNew(
+        PlatformInfo platform
+        ) => new()
+        {
+            Id = Ulid.NewUlid(),
+            PlatformInfoId = platform.Id,
+            PlatformInfoName = platform.Name,
+            Platform = platform
+        };
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
+    public static async Task<List<PlatformDefaultUnit>> GetDefaultUnitsFor(FeatureContext context, PlatformRate rate, CancellationToken token)
+    {
+        string unitOfMeasure = rate.UnitOfMeasure.ToLower().Trim();
+        List<PlatformDefaultUnit> defaultUnits = await context.Set<PlatformDefaultUnit>()
+            .Include(i => i.SetupUnit)
+            .Where(q => q.PlatformInfoId == rate.PlatformInfoId && q.UnitOfMeasure.ToLower() == unitOfMeasure)
+            .OrderBy(o => o.SetupUnit.Name)
+            .ToListAsync(cancellationToken: token);
+        return defaultUnits;
+    }
+
+    public static string GetSearchIndex(string unitOfMeasure, string setupUnit, string description)
+        => $"{unitOfMeasure}~{setupUnit}~{description}".ToLowerInvariant();
+
+    internal static Result PlatformNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORM_ID.Replace("{0}", id.ToString()));
+
+    internal static Result UnitNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPUNIT_ID.Replace("{0}", id.ToString()));
+
+    internal static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_PLATFORMDEFAULTUNIT_ID.Replace("{0}", id.ToString()));
 }
 
 //
@@ -520,6 +505,8 @@ public sealed record ImportModel : Model
 public sealed record ImportQuery : EntityFlow.ListQuery, IRequest<Result<ImportResult>>
 {
     public Ulid PlatformInfoId { get; set; } = Ulid.Empty;
+
+    public bool Refresh { get; set; } = false;
 }
 
 public sealed class ImportQueryValidator : AbstractValidator<ImportQuery>
@@ -533,6 +520,8 @@ public sealed class ImportQueryValidator : AbstractValidator<ImportQuery>
 public sealed record ImportResult : EntityFlow.ListResult<ImportModel>
 {
     public PlatformInfo Platform { get; set; } = new();
+
+    public List<SetupUnit> SetupUnits { get; set; } = [];
 }
 
 public sealed record ImportCommand : IRequest<Result>
@@ -547,6 +536,11 @@ public sealed class ImportCommandValidator : AbstractValidator<ImportCommand>
     public ImportCommandValidator()
     {
         RuleFor(m => m.PlatformInfoId).NotEmpty().NotEqual(Ulid.Empty);
+        RuleForEach(x => x.Items).ChildRules(item =>
+        {
+            item.RuleFor(m => m.SetupUnitId).NotEmpty().NotEqual(Ulid.Empty)
+                .WithMessage("Please select a unit for each selected unit");
+        });
     }
 }
 
@@ -554,11 +548,17 @@ internal sealed class ImportQueryHandler :
     EntityFlow.ListHandler<PlatformDefaultUnit, ImportModel>,
     IRequestHandler<ImportQuery, Result<ImportResult>>
 {
+    private readonly Microsoft.Extensions.Caching.Memory.IMemoryCache _cache;
     private readonly PlatformImportOptions _options;
 
-    public ImportQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration, PlatformImportOptions options)
+    public ImportQueryHandler(
+        FeatureContext dbcontext,
+        IConfigurationProvider configuration,
+        Microsoft.Extensions.Caching.Memory.IMemoryCache cache,
+        PlatformImportOptions options)
         : base(dbcontext, configuration)
     {
+        _cache = cache;
         _options = options;
     }
 
@@ -567,6 +567,19 @@ internal sealed class ImportQueryHandler :
         var platform = await _dbcontext.Set<PlatformInfo>().FindAsync([message.PlatformInfoId], cancellationToken: token);
         if (platform is null)
             return PlatformDefaultUnitHelper.PlatformNotFound(message.PlatformInfoId);
+
+        if (message.Refresh)
+        {
+            return new ImportResult()
+            {
+                Platform = platform,
+                CurrentFilter = message.CurrentFilter,
+                SearchText = message.SearchText,
+                SortOrder = message.SortOrder,
+                SetupUnits = new SetupUnitHelper(_cache, _dbcontext).GetSetupUnitsAsync(token: token),
+                Results = []
+            };
+        }
 
         var searchString = message.SearchText ?? message.CurrentFilter;
         List<ImportModel> records = await GetAzureUnitsAsync(platform.Provider.ToString(), message.PlatformInfoId, searchString);
@@ -587,6 +600,7 @@ internal sealed class ImportQueryHandler :
             CurrentFilter = searchString,
             SearchText = searchString,
             SortOrder = message.SortOrder,
+            SetupUnits = new SetupUnitHelper(_cache, _dbcontext).GetSetupUnitsAsync(token: token),
             Results = new PaginatedList<ImportModel>(
                 records.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
                 records.Count,
@@ -599,7 +613,7 @@ internal sealed class ImportQueryHandler :
     {
         List<ImportModel> result = [];
 
-        var service = new AzurePricingService(_options);
+        var service = new AzurePricingService(_options, _cache);
         var pricing = await service.GetUnitsAsync(searchString);
 
         if (pricing is null)
@@ -646,17 +660,23 @@ internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
         bool changes = false;
         foreach (var item in message.Items)
         {
+            var setupunit = await _dbcontext.Set<SetupUnit>().FindAsync([item.SetupUnitId], cancellationToken: token);
+            if (setupunit is null)
+                return PlatformDefaultUnitHelper.UnitNotFound(item.SetupUnitId);
+
             PlatformDefaultUnit record = new()
             {
                 Id = Ulid.NewUlid(),
                 PlatformInfo = platform,
                 PlatformInfoId = item.PlatformInfoId,
+                SetupUnit = setupunit,
+                SetupUnitId = setupunit.Id,
                 Description = item.Description?.Trim(),
                 CreatedDT = DateTime.UtcNow,
                 DefaultValue = item.DefaultValue,
                 UnitFactor = item.UnitFactor,
                 UnitOfMeasure = item.UnitOfMeasure,
-                SearchIndex = PlatformDefaultUnitHelper.GetSearchIndex(item.UnitOfMeasure, item.SetupUnit.Name, item.UnitOfMeasure)
+                SearchIndex = PlatformDefaultUnitHelper.GetSearchIndex(item.UnitOfMeasure, item.SetupUnitName, item.UnitOfMeasure)
             };
 
             await _dbcontext.Set<PlatformDefaultUnit>().AddAsync(record, token);

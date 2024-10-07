@@ -117,11 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Confirm email" xml:space="preserve">
-    <value>Bevestig e-mail</value>
+  <data name="Confirmed email" xml:space="preserve">
+    <value>Bevestiging e-mail</value>
   </data>
   <data name="Error confirming your email." xml:space="preserve">
     <value>Fout bij het bevestigen van uw e-mailadres.</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Start</value>
   </data>
   <data name="Thank you for confirming your email." xml:space="preserve">
     <value>Bedankt voor het bevestigen van uw e-mail.</value>

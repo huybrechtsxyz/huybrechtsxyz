@@ -24,7 +24,7 @@
                         <span class="vr"></span>
                         @SL["Add New"]
                     </a>
-                    @if(Model.Data.Platform.Provider != Core.Platform.PlatformProvider.None)
+                    @if(Model.Data.Platform.Provider != Core.Platform.PlatformProvider.None) 
                     {
                         <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Import" asp-route-platformInfoId="@Model.Data.Platform.Id">
                             <i class="bi bi-cloud-arrow-down-fill fs-5"></i>
@@ -48,6 +48,7 @@
                         <thead>
                             <tr>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].UnitOfMeasure)</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].SetupUnitName)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].UnitFactor)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].DefaultValue)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Description)</th>
@@ -59,6 +60,7 @@
                             {
                                 <tr>
                                     <td>@Html.DisplayFor(modelItem => record!.UnitOfMeasure)</td>
+                                    <td>@Html.DisplayFor(modelItem => record!.SetupUnitName)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.UnitFactor)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.DefaultValue)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Description)</td>

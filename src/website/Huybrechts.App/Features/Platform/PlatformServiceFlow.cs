@@ -8,6 +8,7 @@ using Huybrechts.App.Services;
 using Huybrechts.Core.Platform;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
@@ -507,12 +508,14 @@ internal sealed class ImportQueryHandler :
     EntityFlow.ListHandler<PlatformService, ImportModel>,
     IRequestHandler<ImportQuery, Result<ImportResult>>
 {
+    private readonly IMemoryCache _cache;
     private readonly PlatformImportOptions _options;
 
-    public ImportQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration, PlatformImportOptions options)
+    public ImportQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration, PlatformImportOptions options, IMemoryCache cache)
         : base(dbcontext, configuration)
     {
         _options = options;
+        _cache = cache;
     }
 
     public async Task<Result<ImportResult>> Handle(ImportQuery message, CancellationToken token)
@@ -552,7 +555,7 @@ internal sealed class ImportQueryHandler :
     {
         List<ImportModel> result = [];
 
-        var service = new AzurePricingService(_options);
+        var service = new AzurePricingService(_options, _cache);
         var pricing = await service.GetServicesAsync("", "", "", searchString);
 
         if (pricing is null)

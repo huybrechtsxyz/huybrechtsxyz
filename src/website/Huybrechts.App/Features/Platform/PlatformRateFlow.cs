@@ -9,6 +9,7 @@ using Huybrechts.Core.Platform;
 using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
@@ -37,9 +38,9 @@ public static class PlatformRateHelper
 
     //public static List<string> DefaultCurrencies { get; } = ["EUR", "USD"]; //Currencies.Items.Select(s => s.Code).ToList();
 
-    public static async Task AddDefaultSetupUnits(FeatureContext context, PlatformRate rate, bool save, CancellationToken token)
+    public static async Task AddDefaultSetupUnits(FeatureContext context, PlatformRate rate, CancellationToken token)
     {
-        var defaultUnits = await PlatformDefaultUnitFlow.PlatformDefaultUnitHelper.GetDefaultUnitsFor(context, rate, save, token);
+        var defaultUnits = await PlatformDefaultUnitFlow.PlatformDefaultUnitHelper.GetDefaultUnitsFor(context, rate, token);
         if (defaultUnits is null || defaultUnits.Count < 1)
             return;
 
@@ -475,7 +476,7 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
         };
         await _dbcontext.Set<PlatformRate>().AddAsync(record, token);
 
-        await PlatformRateHelper.AddDefaultSetupUnits(_dbcontext, record, false, token);
+        await PlatformRateHelper.AddDefaultSetupUnits(_dbcontext, record, token);
 
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok(record.Id);
@@ -796,14 +797,16 @@ internal sealed class ImportQueryHandler :
     EntityFlow.ListHandler<PlatformRate, ImportModel>,
     IRequestHandler<ImportQuery, Result<ImportResult>>
 {
+    private readonly IMemoryCache _cache;
     private readonly PlatformImportOptions _options;
     private readonly IMapper _mapper;
 
-    public ImportQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration, PlatformImportOptions options, IMapper mapper)
+    public ImportQueryHandler(FeatureContext dbcontext, IConfigurationProvider configuration, PlatformImportOptions options, IMapper mapper, IMemoryCache cache)
         : base(dbcontext, configuration)
     {
         _options = options;
         _mapper = mapper;
+        _cache = cache;
     }
 
     public async Task<Result<ImportResult>> Handle(ImportQuery message, CancellationToken token)
@@ -896,7 +899,7 @@ internal sealed class ImportQueryHandler :
     {
         List<ImportModel> result = [];
             
-        var service = new AzurePricingService(_options);
+        var service = new AzurePricingService(_options, _cache);
         var pricing = await service.GetRatesAsync(currencyCode, serviceName, regionName, searchString);
 
         if (pricing is null)
@@ -957,7 +960,7 @@ internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
             await _dbcontext.Set<PlatformRate>().AddAsync(record, token);
             changes = true;
 
-            await PlatformRateHelper.AddDefaultSetupUnits(_dbcontext, record, false, token);
+            await PlatformRateHelper.AddDefaultSetupUnits(_dbcontext, record, token);
         }
 
         if (changes)

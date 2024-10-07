@@ -70,6 +70,7 @@ public record Model : EntityModel
     /// <remarks>
     /// Precision determines the number of decimal places allowed for the unit's values.
     /// </remarks>
+    [Range(0, 6)]
     [Display(Name = nameof(Precision), ResourceType = typeof(Localization))]
     public int Precision { get; set; } = 2;
 
@@ -236,7 +237,7 @@ public class SetupUnitHelper
 
         const string cacheKey = "SetupUnitList";
 
-        if (!refresh)
+        if (refresh)
         {
             var setupUnitListR = Task.Run(async () => await FetchFromDatabaseAsync()).Result;
             _cache.Set(cacheKey, setupUnitListR, new MemoryCacheEntryOptions().SetSlidingExpiration(_expiration));

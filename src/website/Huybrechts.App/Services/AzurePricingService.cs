@@ -1,4 +1,6 @@
 ﻿using Huybrechts.App.Config;
+using Huybrechts.Core.Setup;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
@@ -17,6 +19,9 @@ public class AzurePricingService
     }
 
     private readonly PlatformImportOptions _options;
+    private static readonly object _cacheLock = new();
+    private readonly IMemoryCache _cache;
+    private readonly TimeSpan _expiration;
 
     private static async Task<PricingResponse?> GetPricingItemsAsync(
         PlatformImportOptionSettings request, 
@@ -285,64 +290,140 @@ public class AzurePricingService
         public string? ArmSkuName { get; set; }
     }
 
-    public AzurePricingService(PlatformImportOptions options)
+    public AzurePricingService(PlatformImportOptions options, IMemoryCache cache)
     {
+        _expiration = ApplicationSettings.GetCacheExpirationTime();
         _options = options;
+        _cache = cache;
     }
 
     public async Task<PricingResponse?> GetRegionsAsync(string currency, string service, string location, string searchString)
     {
-        return await GetPricingItemsAsync(
+        var cacheKey = $"PlatformRegionListForAzure_{searchString}";
+
+        if (_cache.TryGetValue(cacheKey, out PricingResponse? cachedResponse))
+        {
+            if (cachedResponse is not null)
+                return cachedResponse;
+        }
+
+        PricingResponse? response = await GetPricingItemsAsync(
             _options.Platforms["Azure"],
             ServiceType.Regions,
             currency,
             service,
             location,
             searchString);
+
+        if (response is not null)
+        {
+            _cache.Set(cacheKey, response, _expiration);
+        }
+
+        return response;
     }
 
     public async Task<PricingResponse?> GetServicesAsync(string currency, string service, string location, string searchString)
     {
-        return await GetPricingItemsAsync(
+        var cacheKey = $"PlatformServiceListForAzure_{searchString}";
+
+        if (_cache.TryGetValue(cacheKey, out PricingResponse? cachedResponse))
+        {
+            if (cachedResponse is not null)
+                return cachedResponse;
+        }
+
+        PricingResponse? response = await GetPricingItemsAsync(
             _options.Platforms["Azure"],
             ServiceType.Services,
             currency,
             service,
             location,
             searchString);
+
+        if (response is not null)
+        {
+            _cache.Set(cacheKey, response, _expiration);
+        }
+
+        return response;
     }
 
     public async Task<PricingResponse?> GetProductsAsync(string currency, string service, string location, string searchString)
     {
-        return await GetPricingItemsAsync(
+        var cacheKey = $"PlatformProductListForAzure_{searchString}";
+
+        if (_cache.TryGetValue(cacheKey, out PricingResponse? cachedResponse))
+        {
+            if (cachedResponse is not null)
+                return cachedResponse;
+        }
+
+        PricingResponse? response = await GetPricingItemsAsync(
             _options.Platforms["Azure"],
             ServiceType.Products,
             currency,
             service,
             location,
             searchString);
-    }
 
+        if (response is not null)
+        {
+            _cache.Set(cacheKey, response, _expiration);
+        }
+
+        return response;
+    }
 
     public async Task<PricingResponse?> GetRatesAsync(string currency, string service, string location, string searchString)
     {
-        return await GetPricingItemsAsync(
-            _options.Platforms["Azure"], 
-            ServiceType.Rates, 
+        var cacheKey = $"PlatformRateListForAzure_{currency}_{service}_{location}_{searchString}";
+
+        if (_cache.TryGetValue(cacheKey, out PricingResponse? cachedResponse))
+        {
+            if (cachedResponse is not null)
+                return cachedResponse;
+        }
+
+        PricingResponse? response = await GetPricingItemsAsync(
+            _options.Platforms["Azure"],
+            ServiceType.Rates,
             currency,
             service,
             location,
             searchString);
+
+        if (response is not null)
+        {
+            _cache.Set(cacheKey, response, _expiration);
+        }
+
+        return response;
     }
 
     public async Task<PricingResponse?> GetUnitsAsync(string searchString)
     {
-        return await GetPricingItemsAsync(
+        var cacheKey = $"PlatformUnitListForAzure_{searchString}";
+
+        if (_cache.TryGetValue(cacheKey, out PricingResponse? cachedResponse))
+        {
+            if (cachedResponse is not null)
+                return cachedResponse;
+        }
+
+        PricingResponse? response = await GetPricingItemsAsync(
             _options.Platforms["Azure"],
             ServiceType.Units,
             "",
             "",
             "",
             searchString);
+
+        if (response is not null)
+        {
+            _cache.Set(cacheKey, response, _expiration);
+        }
+
+        return response;
     }
 }
