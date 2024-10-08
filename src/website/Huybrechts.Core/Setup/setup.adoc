@@ -1,0 +1,76 @@
+= Data Model
+
+== Setup Model
+
+This document outlines the setup data model, including class definitions and relationships.
+
+[mermaid]
+----
+classDiagram
+  class SetupCountry {
+    +Ulid? SetupLanguageId
+    +SetupLanguage? SetupLanguage
+    +Ulid? SetupCurrencyId
+    +SetupCurrency? SetupCurrency
+    +string Code
+    +string Name
+    +string TranslatedName
+    +string? Description
+    +string? SearchIndex
+  }
+  class SetupCurrency {
+    <<entity>>
+    +string Code
+    +string Name
+    +string Description
+    +string SearchIndex
+  }
+
+  class SetupLanguage {
+    <<entity>>
+    +string Code
+    +string Name
+    +string TranslatedName
+    +string Description
+    +string SearchIndex
+  }
+
+  class SetupState {
+    <<entity>>
+    +ObjectType ObjectType
+    +StateType StateType
+    +string Name
+    +int Sequence
+    +string Description
+    +string SearchIndex
+  }
+
+  class SetupUnit {
+    <<entity>>
+    +SetupUnitType UnitType
+    +string Code
+    +string Name
+    +string Description
+    +bool IsBase
+    +int Precision
+    +MidpointRounding PrecisionType
+    +decimal Factor
+    +string Remark
+    +string SearchIndex
+  }
+
+  class SetupUnitType {
+      <<enumeration>>
+  }
+
+  class StateType {
+      <<enumeration>>
+  }
+
+  class ObjectType {
+      <<enumeration>>
+  }
+
+  SetupLanguage "1" -- "*" SetupCountry : relates
+  SetupCurrency "1" -- "*" SetupCountry : relates
+----

@@ -378,9 +378,9 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         /// <summary>
         ///   Looks up a localized string similar to Select languages from a preexisting list based on ISO codes and import them into the system. This feature allows for easy and standardized language management..
         /// </summary>
-        public static string LanguageImpiortInfo {
+        public static string LanguageImportInfo {
             get {
-                return ResourceManager.GetString("LanguageImpiortInfo", resourceCulture);
+                return ResourceManager.GetString("LanguageImportInfo", resourceCulture);
             }
         }
         
@@ -394,7 +394,7 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Manage Languages.
+        ///   Looks up a localized string similar to View and manage the list of available languages for selection in various contexts such as countries, projects, and other entities. You can add, edit, or remove languages to ensure the system meets your organization&apos;s language needs..
         /// </summary>
         public static string LanguageIndexInfo {
             get {
@@ -403,7 +403,7 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to View and manage the list of available languages for selection in various contexts such as countries, projects, and other entities. You can add, edit, or remove languages to ensure the system meets your organization&apos;s language needs..
+        ///   Looks up a localized string similar to Manage Languages.
         /// </summary>
         public static string LanguageIndexTitle {
             get {

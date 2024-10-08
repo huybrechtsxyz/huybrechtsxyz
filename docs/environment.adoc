@@ -93,6 +93,32 @@ This table helps clarify how the DNS records are structured across the different
 
 == Service configuration
 
+[mermaid]
+----
+graph TD
+    subgraph Traefik
+        direction TB
+        A[Traefik Reverse Proxy]
+    end
+
+    subgraph Website
+        B[Website]
+    end
+
+    subgraph PgAdmin
+        C[PgAdmin]
+    end
+
+    subgraph PostgreSQL
+        D[PostgreSQL Database]
+    end
+
+    A --> B
+    B --> C
+    B --> D
+    C --> D
+----
+
 === Traefik
 
 Traefik is a modern, open-source reverse proxy and load balancer designed to manage and route HTTP and TCP traffic to various services. It integrates seamlessly with cloud-native environments and supports dynamic service discovery, making it ideal for microservices architectures. Traefik offers automatic SSL certificate management, advanced traffic management features, and real-time monitoring. It is highly configurable and supports a wide range of backends, including Kubernetes, Docker, and various cloud providers, enabling efficient and secure traffic management for complex applications.
@@ -166,12 +192,14 @@ Below is an overview of all the secrets utilized in the pipeline, as well as tho
 
 The application is organized into a structured directory layout that facilitates efficient management and scalability. At the top level, the app directory contains several key subdirectories:
 
-app
- ├── cert +
- ├── data +
- │ ├── pgadmin +
- │ └── pgdata +
- └── logs +
+----
+  app
+  ├── cert +
+  ├── data +
+  │ ├── pgadmin +
+  │ └── pgdata +
+  └── logs +
+----
 
 - cert: This folder is designated for storing SSL/TLS certificates, and encryption keys ensuring secure communication between the application and its users.
 - data: This directory houses critical data components. Within it, there are two important subdirectories:

@@ -222,17 +222,17 @@
   <data name="LanguageEditTitle" xml:space="preserve">
     <value>Edit Language</value>
   </data>
-  <data name="LanguageImpiortInfo" xml:space="preserve">
+  <data name="LanguageImportInfo" xml:space="preserve">
     <value>Select languages from a preexisting list based on ISO codes and import them into the system. This feature allows for easy and standardized language management.</value>
   </data>
   <data name="LanguageImportTitle" xml:space="preserve">
     <value>Import Languages from ISO List</value>
   </data>
   <data name="LanguageIndexInfo" xml:space="preserve">
-    <value>Manage Languages</value>
+    <value>View and manage the list of available languages for selection in various contexts such as countries, projects, and other entities. You can add, edit, or remove languages to ensure the system meets your organization's language needs.</value>
   </data>
   <data name="LanguageIndexTitle" xml:space="preserve">
-    <value>View and manage the list of available languages for selection in various contexts such as countries, projects, and other entities. You can add, edit, or remove languages to ensure the system meets your organization's language needs.</value>
+    <value>Manage Languages</value>
   </data>
   <data name="Languages" xml:space="preserve">
     <value>Languages</value>

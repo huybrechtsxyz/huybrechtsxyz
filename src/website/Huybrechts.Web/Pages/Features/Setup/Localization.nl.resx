@@ -222,7 +222,7 @@
   <data name="LanguageEditTitle" xml:space="preserve">
     <value>Taal Bewerken</value>
   </data>
-  <data name="LanguageImpiortInfo" xml:space="preserve">
+  <data name="LanguageImportInfo" xml:space="preserve">
     <value>Selecteer talen uit een bestaande lijst op basis van ISO-codes en importeer ze in het systeem. Deze functie maakt eenvoudig en gestandaardiseerd taalbeheer mogelijk.</value>
   </data>
   <data name="LanguageImportTitle" xml:space="preserve">
