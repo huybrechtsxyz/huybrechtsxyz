@@ -15,10 +15,10 @@ namespace Huybrechts.Core.Setup;
 /// </remarks>
 [MultiTenant]
 [Table("SetupType")]
-[Index(nameof(TenantId), nameof(TypeOf), nameof(Value))]
+[Index(nameof(TenantId), nameof(TypeOf), nameof(Name))]
 [Index(nameof(TenantId), nameof(SearchIndex))]
 [Comment("Defines various object types and codes within the setup configuration.")]
-public record SetupTypeOf : Entity, IEntity
+public record SetupType : Entity, IEntity
 {
     /// <summary>
     /// Gets or sets the type of field (e.g., ProjectType, ProjectKind).
@@ -38,7 +38,7 @@ public record SetupTypeOf : Entity, IEntity
     /// </remarks>
     [MaxLength(64)]
     [Comment("The code or value representing this type (e.g., X00 - X01).")]
-    public string Value { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the description of the type.

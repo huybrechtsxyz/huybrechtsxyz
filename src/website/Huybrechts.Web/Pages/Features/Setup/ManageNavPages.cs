@@ -36,6 +36,10 @@ namespace  Huybrechts.Web.Pages.Features.Setup
 
         public static string StateNavClass(ViewContext viewContext) => PageNavClass(viewContext, State);
 
+        public static string Type => "Type";
+
+        public static string TypeNavClass(ViewContext viewContext) => PageNavClass(viewContext, Type);
+
         public static string PageNavClass(ViewContext viewContext, string page)
         {
             var activePage = viewContext.ViewData["ActivePage"] as string

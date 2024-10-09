@@ -610,6 +610,123 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string Type {
+            get {
+                return ResourceManager.GetString("Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a new setup type to the system. Provide details such as the classification type and description..
+        /// </summary>
+        public static string TypeCreateInfo {
+            get {
+                return ResourceManager.GetString("TypeCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create New Setup Type.
+        /// </summary>
+        public static string TypeCreateTitle {
+            get {
+                return ResourceManager.GetString("TypeCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm the deletion of the selected setup type. This action cannot be undone..
+        /// </summary>
+        public static string TypeDeleteInfo {
+            get {
+                return ResourceManager.GetString("TypeDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Setup Type.
+        /// </summary>
+        public static string TypeDeleteTitle {
+            get {
+                return ResourceManager.GetString("TypeDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify the details of an existing setup type. Adjust the classification type, name, and description as needed..
+        /// </summary>
+        public static string TypeEditInfo {
+            get {
+                return ResourceManager.GetString("TypeEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Setup Type.
+        /// </summary>
+        public static string TypeEditTitle {
+            get {
+                return ResourceManager.GetString("TypeEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import setup types from pre-defined examples. Quickly add multiple setup types to the system by selecting from available templates..
+        /// </summary>
+        public static string TypeImportInfo {
+            get {
+                return ResourceManager.GetString("TypeImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Setup Types.
+        /// </summary>
+        public static string TypeImportTitle {
+            get {
+                return ResourceManager.GetString("TypeImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View and manage different setup types, such as project types, kinds, or other classifications used within the system..
+        /// </summary>
+        public static string TypeIndexInfo {
+            get {
+                return ResourceManager.GetString("TypeIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage Setup Types.
+        /// </summary>
+        public static string TypeIndexTitle {
+            get {
+                return ResourceManager.GetString("TypeIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string TypeNoResults {
+            get {
+                return ResourceManager.GetString("TypeNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Types.
+        /// </summary>
+        public static string Types {
+            get {
+                return ResourceManager.GetString("Types", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to se this form to create a new unit of measurement. Ensure all fields are correctly filled out to define the unit’s attributes, including its type, name, and conversion factor..
         /// </summary>
         public static string UnitCreateInfo {

@@ -144,6 +144,8 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
 
     public DbSet<SetupState> SetupStates { get; set; }
 
+    public DbSet<SetupType> SetupTypes { get; set; }
+
     public DbSet<SetupUnit> SetupUnits { get; set; }
 
     //

@@ -6,6 +6,7 @@ Add-Migration CreateIdentitySchema -Context "ApplicationContext" -Project "Huybr
 Add-Migration CreateProjectPlatformSchema -Context "FeatureContext" -Project "Huybrechts.Infra.SqlServer" -Args APP_DATA_CONTEXT=SqlServerContext
 Add-Migration CreateWikiPageSchema -Context "FeatureContext" -Project "Huybrechts.Infra.SqlServer" -Args APP_DATA_CONTEXT=SqlServerContext
 Add-Migration CreateWikiSearchIndex -Context "FeatureContext" -Project "Huybrechts.Infra.SqlServer" -Args APP_DATA_CONTEXT=SqlServerContext
+Add-Migration CreateSetupTypeCategory -Context "FeatureContext" -Project "Huybrechts.Infra.SqlServer" -Args APP_DATA_CONTEXT=SqlServerContext
 
 # Postgres Sql database
 
@@ -13,3 +14,4 @@ Add-Migration CreateIdentitySchema -Context "ApplicationContext" -Project "Huybr
 Add-Migration CreateProjectPlatformSchema -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext
 Add-Migration CreateWikiPageSchema -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext
 Add-Migration CreateWikiSearchIndex -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext
+Add-Migration CreateSetupTypeCategory -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext

@@ -124,6 +124,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate setup type for {0}.
+        /// </summary>
+        public static string DUPLICATE_SETUPTYPE_NAME {
+            get {
+                return ResourceManager.GetString("DUPLICATE_SETUPTYPE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate system unit for {0}.
         /// </summary>
         public static string DUPLICATE_SETUPUNIT_NAME {
@@ -165,6 +174,15 @@ namespace Huybrechts.App.Features.Setup {
         public static string INVALID_SETUPSTATE_ID {
             get {
                 return ResourceManager.GetString("INVALID_SETUPSTATE_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find system type with ID {0}.
+        /// </summary>
+        public static string INVALID_SETUPTYPE_ID {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPTYPE_ID", resourceCulture);
             }
         }
         

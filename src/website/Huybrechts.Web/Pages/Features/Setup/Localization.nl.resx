@@ -300,6 +300,45 @@
   <data name="States" xml:space="preserve">
     <value>Statussen</value>
   </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="TypeCreateInfo" xml:space="preserve">
+    <value>Voeg een nieuw instellingstype toe aan het systeem. Geef details zoals het classificatietype en de beschrijving.</value>
+  </data>
+  <data name="TypeCreateTitle" xml:space="preserve">
+    <value>Nieuw Instellingstype Aanmaken</value>
+  </data>
+  <data name="TypeDeleteInfo" xml:space="preserve">
+    <value>Bevestig het verwijderen van het geselecteerde instellingstype. Deze actie kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="TypeDeleteTitle" xml:space="preserve">
+    <value>Instellingstype Verwijderen</value>
+  </data>
+  <data name="TypeEditInfo" xml:space="preserve">
+    <value>Wijzig de details van een bestaand instellingstype. Pas het classificatietype, de naam en beschrijving aan indien nodig.</value>
+  </data>
+  <data name="TypeEditTitle" xml:space="preserve">
+    <value>Instellingstype Bewerken</value>
+  </data>
+  <data name="TypeImportInfo" xml:space="preserve">
+    <value>Importeer instellingstypen uit vooraf gedefinieerde voorbeelden. Voeg snel meerdere instellingstypen toe aan het systeem door te selecteren uit beschikbare sjablonen.</value>
+  </data>
+  <data name="TypeImportTitle" xml:space="preserve">
+    <value>Instellingstypen Importeren</value>
+  </data>
+  <data name="TypeIndexInfo" xml:space="preserve">
+    <value>Bekijk en beheer verschillende instellingstypen, zoals projecttypen, soorten of andere classificaties die binnen het systeem worden gebruikt.</value>
+  </data>
+  <data name="TypeIndexTitle" xml:space="preserve">
+    <value>Beheer Instellingstypen</value>
+  </data>
+  <data name="TypeNoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
+  </data>
+  <data name="Types" xml:space="preserve">
+    <value>Types</value>
+  </data>
   <data name="UnitCreateInfo" xml:space="preserve">
     <value>Gebruik dit formulier om een nieuwe meeteenheid te maken. Zorg ervoor dat alle velden correct zijn ingevuld om de attributen van de eenheid te definiëren, inclusief het type, de naam en de omrekenfactor.</value>
   </data>

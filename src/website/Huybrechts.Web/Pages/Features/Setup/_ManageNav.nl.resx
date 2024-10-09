@@ -135,4 +135,7 @@
   <data name="System units" xml:space="preserve">
     <value>Eenheden</value>
   </data>
+  <data name="Types" xml:space="preserve">
+    <value>Types</value>
+  </data>
 </root>

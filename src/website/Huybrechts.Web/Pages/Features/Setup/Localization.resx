@@ -300,6 +300,45 @@
   <data name="States" xml:space="preserve">
     <value>States</value>
   </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="TypeCreateInfo" xml:space="preserve">
+    <value>Add a new setup type to the system. Provide details such as the classification type and description.</value>
+  </data>
+  <data name="TypeCreateTitle" xml:space="preserve">
+    <value>Create New Setup Type</value>
+  </data>
+  <data name="TypeDeleteInfo" xml:space="preserve">
+    <value>Confirm the deletion of the selected setup type. This action cannot be undone.</value>
+  </data>
+  <data name="TypeDeleteTitle" xml:space="preserve">
+    <value>Delete Setup Type</value>
+  </data>
+  <data name="TypeEditInfo" xml:space="preserve">
+    <value>Modify the details of an existing setup type. Adjust the classification type, name, and description as needed.</value>
+  </data>
+  <data name="TypeEditTitle" xml:space="preserve">
+    <value>Edit Setup Type</value>
+  </data>
+  <data name="TypeImportInfo" xml:space="preserve">
+    <value>Import setup types from pre-defined examples. Quickly add multiple setup types to the system by selecting from available templates.</value>
+  </data>
+  <data name="TypeImportTitle" xml:space="preserve">
+    <value>Import Setup Types</value>
+  </data>
+  <data name="TypeIndexInfo" xml:space="preserve">
+    <value>View and manage different setup types, such as project types, kinds, or other classifications used within the system.</value>
+  </data>
+  <data name="TypeIndexTitle" xml:space="preserve">
+    <value>Manage Setup Types</value>
+  </data>
+  <data name="TypeNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Types" xml:space="preserve">
+    <value>Types</value>
+  </data>
   <data name="UnitCreateInfo" xml:space="preserve">
     <value>se this form to create a new unit of measurement. Ensure all fields are correctly filled out to define the unit’s attributes, including its type, name, and conversion factor.</value>
   </data>
