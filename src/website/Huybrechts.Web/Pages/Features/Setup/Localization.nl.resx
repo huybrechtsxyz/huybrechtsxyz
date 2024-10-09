@@ -123,6 +123,45 @@
   <data name="Add New" xml:space="preserve">
     <value>Toevoegen</value>
   </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Categorieën</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="CategoryCreateInfo" xml:space="preserve">
+    <value>Voeg een nieuwe categorie toe, en optioneel een subcategorie, aan het systeem. Geef relevante details zoals de beschrijving en het classificatietype.</value>
+  </data>
+  <data name="CategoryCreateTitle" xml:space="preserve">
+    <value>Nieuwe Categorie Aanmaken</value>
+  </data>
+  <data name="CategoryDeleteInfo" xml:space="preserve">
+    <value>Bevestig het verwijderen van de geselecteerde categorie of subcategorie. Deze actie kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="CategoryDeleteTitle" xml:space="preserve">
+    <value>Categorie Verwijderen</value>
+  </data>
+  <data name="CategoryEditInfo" xml:space="preserve">
+    <value>Wijzig de details van een bestaande categorie of subcategorie. Werk het classificatietype, de naam en beschrijving bij indien nodig.</value>
+  </data>
+  <data name="CategoryEditTitle" xml:space="preserve">
+    <value>Categorie Bewerken</value>
+  </data>
+  <data name="CategoryImportInfo" xml:space="preserve">
+    <value>Importeer categorieën en subcategorieën uit vooraf gedefinieerde sjablonen. Voeg snel meerdere categorieën toe aan het systeem door te kiezen uit beschikbare voorbeelden.</value>
+  </data>
+  <data name="CategoryImportTitle" xml:space="preserve">
+    <value>Categorieën Importeren</value>
+  </data>
+  <data name="CategoryIndexInfo" xml:space="preserve">
+    <value>Bekijk en beheer de categorieën en subcategorieën voor verschillende objecten in het systeem.</value>
+  </data>
+  <data name="CategoryIndexTitle" xml:space="preserve">
+    <value>Beheer Categorieën en Subcategorieën</value>
+  </data>
+  <data name="CategoryNoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
+  </data>
   <data name="Clear Filter" xml:space="preserve">
     <value>Wis filter</value>
   </data>

@@ -136,6 +136,8 @@ public class FeatureContext : MultiTenantDbContext, IMultiTenantDbContext
     // SETUP
     //
 
+    public DbSet<SetupCategory> SetupCategories { get; set; }
+
     public DbSet<SetupCountry> SetupCountries { get; set; }
 
     public DbSet<SetupCurrency> SetupCurrencies { get; set; }

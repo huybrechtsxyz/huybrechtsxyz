@@ -79,6 +79,123 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Categories.
+        /// </summary>
+        public static string Categories {
+            get {
+                return ResourceManager.GetString("Categories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category.
+        /// </summary>
+        public static string Category {
+            get {
+                return ResourceManager.GetString("Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a new category and, optionally, a subcategory to the system. Provide relevant details such as description and classification type..
+        /// </summary>
+        public static string CategoryCreateInfo {
+            get {
+                return ResourceManager.GetString("CategoryCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create New Category.
+        /// </summary>
+        public static string CategoryCreateTitle {
+            get {
+                return ResourceManager.GetString("CategoryCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm the deletion of the selected category or subcategory. This action cannot be undone..
+        /// </summary>
+        public static string CategoryDeleteInfo {
+            get {
+                return ResourceManager.GetString("CategoryDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Category.
+        /// </summary>
+        public static string CategoryDeleteTitle {
+            get {
+                return ResourceManager.GetString("CategoryDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify the details of an existing category or subcategory. Update the classification type, name, and description as needed..
+        /// </summary>
+        public static string CategoryEditInfo {
+            get {
+                return ResourceManager.GetString("CategoryEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Category.
+        /// </summary>
+        public static string CategoryEditTitle {
+            get {
+                return ResourceManager.GetString("CategoryEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import categories and subcategories from predefined templates. Quickly add multiple categories to the system by selecting from available examples..
+        /// </summary>
+        public static string CategoryImportInfo {
+            get {
+                return ResourceManager.GetString("CategoryImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Categories.
+        /// </summary>
+        public static string CategoryImportTitle {
+            get {
+                return ResourceManager.GetString("CategoryImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View and manage the categories and subcategories for different objects in the system..
+        /// </summary>
+        public static string CategoryIndexInfo {
+            get {
+                return ResourceManager.GetString("CategoryIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage Categories and Subcategories.
+        /// </summary>
+        public static string CategoryIndexTitle {
+            get {
+                return ResourceManager.GetString("CategoryIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string CategoryNoResults {
+            get {
+                return ResourceManager.GetString("CategoryNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clear Filter.
         /// </summary>
         public static string Clear_Filter {

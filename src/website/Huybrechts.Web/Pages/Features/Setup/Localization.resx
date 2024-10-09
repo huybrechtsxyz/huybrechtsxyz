@@ -123,6 +123,45 @@
   <data name="Add New" xml:space="preserve">
     <value>Add New</value>
   </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="CategoryCreateInfo" xml:space="preserve">
+    <value>Add a new category and, optionally, a subcategory to the system. Provide relevant details such as description and classification type.</value>
+  </data>
+  <data name="CategoryCreateTitle" xml:space="preserve">
+    <value>Create New Category</value>
+  </data>
+  <data name="CategoryDeleteInfo" xml:space="preserve">
+    <value>Confirm the deletion of the selected category or subcategory. This action cannot be undone.</value>
+  </data>
+  <data name="CategoryDeleteTitle" xml:space="preserve">
+    <value>Delete Category</value>
+  </data>
+  <data name="CategoryEditInfo" xml:space="preserve">
+    <value>Modify the details of an existing category or subcategory. Update the classification type, name, and description as needed.</value>
+  </data>
+  <data name="CategoryEditTitle" xml:space="preserve">
+    <value>Edit Category</value>
+  </data>
+  <data name="CategoryImportInfo" xml:space="preserve">
+    <value>Import categories and subcategories from predefined templates. Quickly add multiple categories to the system by selecting from available examples.</value>
+  </data>
+  <data name="CategoryImportTitle" xml:space="preserve">
+    <value>Import Categories</value>
+  </data>
+  <data name="CategoryIndexInfo" xml:space="preserve">
+    <value>View and manage the categories and subcategories for different objects in the system.</value>
+  </data>
+  <data name="CategoryIndexTitle" xml:space="preserve">
+    <value>Manage Categories and Subcategories</value>
+  </data>
+  <data name="CategoryNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
   <data name="Clear Filter" xml:space="preserve">
     <value>Clear Filter</value>
   </data>

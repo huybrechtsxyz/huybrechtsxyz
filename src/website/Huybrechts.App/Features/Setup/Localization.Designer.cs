@@ -61,6 +61,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Category.
+        /// </summary>
+        public static string Category {
+            get {
+                return ResourceManager.GetString("Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Code.
         /// </summary>
         public static string Code {
@@ -201,6 +210,15 @@ namespace Huybrechts.App.Features.Setup {
         public static string StateType {
             get {
                 return ResourceManager.GetString("StateType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Subcategory.
+        /// </summary>
+        public static string Subcategory {
+            get {
+                return ResourceManager.GetString("Subcategory", resourceCulture);
             }
         }
         
