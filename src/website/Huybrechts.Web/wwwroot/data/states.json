@@ -1,6 +1,6 @@
 [
   {
-    "ObjectType": "Project",
+    "TypeOf": "ProjectInfo",
     "StateType": "New",
     "Name": "New",
     "Description": "Represents a new project within the platform.",
@@ -8,7 +8,7 @@
     "Sequence": 1
   },
   {
-    "ObjectType": "Project",
+    "TypeOf": "ProjectInfo",
     "StateType": "Proposed",
     "Name": "Approved",
     "Description": "Indicates that the project has been approved.",
@@ -16,7 +16,7 @@
     "Sequence": 2
   },
   {
-    "ObjectType": "Project",
+    "TypeOf": "ProjectInfo",
     "StateType": "InProgress",
     "Name": "Committed",
     "Description": "The project has been committed to and resources are allocated.",
@@ -24,7 +24,7 @@
     "Sequence": 3
   },
   {
-    "ObjectType": "Project",
+    "TypeOf": "ProjectInfo",
     "StateType": "InProgress",
     "Name": "Active",
     "Description": "The project is currently active and ongoing.",
@@ -32,7 +32,7 @@
     "Sequence": 4
   },
   {
-    "ObjectType": "Project",
+    "TypeOf": "ProjectInfo",
     "StateType": "Resolved",
     "Name": "Solved",
     "Description": "The issues or tasks within the project have been resolved.",
@@ -40,7 +40,7 @@
     "Sequence": 5
   },
   {
-    "ObjectType": "Project",
+    "TypeOf": "ProjectInfo",
     "StateType": "Completed",
     "Name": "Done",
     "Description": "The project is completed and all tasks are finished.",

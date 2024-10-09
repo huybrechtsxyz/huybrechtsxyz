@@ -13,9 +13,9 @@
   <ItemGroup>
     <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="7.0.2" />
     <PackageReference Include="FluentResults" Version="3.16.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.8" />
-    <PackageReference Include="System.Text.Json" Version="8.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.10" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <PackageReference Include="Ulid" Version="1.3.4" />
   </ItemGroup>
 

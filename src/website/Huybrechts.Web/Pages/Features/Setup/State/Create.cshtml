@@ -19,11 +19,11 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <input type="hidden" asp-for="Data.Id" />
             <div class="form-floating mb-3">
-                <select asp-for="Data.ObjectType"
-                        asp-items="Html.GetEnumSelectList<ObjectType>()"
+                <select asp-for="Data.TypeOf"
+                        asp-items="Model.TypeOfOptions"
                         class="form-select border-info" required></select>
-                <label asp-for="Data.ObjectType" class="form-label"></label>
-                <span asp-validation-for="Data.ObjectType" class="text-danger"></span>
+                <label asp-for="Data.TypeOf" class="form-label"></label>
+                <span asp-validation-for="Data.TypeOf" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Sequence" class="form-control border-info" required />

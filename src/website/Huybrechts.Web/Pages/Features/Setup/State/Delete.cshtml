@@ -18,10 +18,8 @@
         <form id="delete-form" method="post">
             <input type="hidden" asp-for="Data.Id" />
             <div class="form-floating mb-3">
-                <select asp-for="Data.ObjectType"
-                        asp-items="Html.GetEnumSelectList<ObjectType>()"
-                        class="form-control" disabled></select>
-                <label asp-for="Data.ObjectType" class="form-label"></label>
+                <input asp-for="Data.TypeOf" class="form-control" disabled />                
+                <label asp-for="Data.TypeOf" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Sequence" class="form-control" disabled />

@@ -150,9 +150,6 @@
   <data name="Name" xml:space="preserve">
     <value>Naam</value>
   </data>
-  <data name="ObjectType" xml:space="preserve">
-    <value>Object type</value>
-  </data>
   <data name="Precision" xml:space="preserve">
     <value>Precisie</value>
   </data>
@@ -170,6 +167,9 @@
   </data>
   <data name="TranslatedName" xml:space="preserve">
     <value>Originele naam</value>
+  </data>
+  <data name="TypeOf" xml:space="preserve">
+    <value>Type Of</value>
   </data>
   <data name="UnitType" xml:space="preserve">
     <value>Type</value>

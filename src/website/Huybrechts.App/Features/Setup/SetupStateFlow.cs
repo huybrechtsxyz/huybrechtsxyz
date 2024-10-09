@@ -15,38 +15,12 @@ using System.Text.Json.Serialization;
 
 namespace Huybrechts.App.Features.Setup.SetupStateFlow;
 
-public static class SetupStateHelper
-{
-    public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
-
-    public static async Task<List<SetupState>> GetProjectStatesAync(FeatureContext context)
-        => await context.Set<SetupState>()
-            .Where(q => q.ObjectType == ObjectType.Project)
-            .OrderBy(o => o.ObjectType).ThenBy(o => o.Sequence).ThenBy(o => o.Name)
-            .ToListAsync();
-
-    internal static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPSTATE_ID.Replace("{0}", id.ToString()));
-
-    internal static Result DuplicateFound(string name) => Result.Fail(Messages.DUPLICATE_SETUPSTATE_NAME.Replace("{0}", name.ToString()));
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
-    public static async Task<bool> IsDuplicateNameAsync(DbContext context, ObjectType objectType, string name, Ulid? currentId = null)
-    {
-        name = name.ToLower().Trim();
-
-        return await context.Set<SetupState>()
-            .AnyAsync(pr => pr.ObjectType == objectType && pr.Name.ToLower() == name
-                            && (!currentId.HasValue || pr.Id != currentId.Value));
-    }
-}
-
 public record Model
 {
     public Ulid Id { get; init; }
 
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    [Display(Name = nameof(ObjectType), ResourceType = typeof(Localization))]
-    public ObjectType ObjectType { get; set; }
+    [Display(Name = nameof(TypeOf), ResourceType = typeof(Localization))]
+    public string TypeOf { get; set; } = string.Empty;
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     [Display(Name = nameof(StateType), ResourceType = typeof(Localization))]
@@ -61,7 +35,7 @@ public record Model
     [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
     public string? Description { get; set; }
 
-    public string SearchIndex => $"{Name}~{Description}".ToUpperInvariant();
+    public string SearchIndex => $"{TypeOf}~{Name}~{Description}".ToLowerInvariant();
 }
 
 public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -69,11 +43,62 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
     public ModelValidator()
     {
         RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
-        RuleFor(m => m.ObjectType).NotEmpty();
+        RuleFor(x => x.TypeOf).Must(type => SetupStateHelper.IsValidType(type)).WithMessage("TypeOf must be one of the allowed values.");
         RuleFor(m => m.StateType).NotEmpty();
         RuleFor(m => m.Name).NotEmpty().Length(1, 128);
         RuleFor(m => m.Sequence).NotNull();
         RuleFor(m => m.Description).Length(0, 256);
+    }
+}
+
+public static class SetupStateHelper
+{
+    public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
+
+    private static readonly List<string> allowedTypeOfValues = [
+            nameof(Core.Project.ProjectInfo)
+            ];
+
+    public static List<string> AllowedTypeOfValues => allowedTypeOfValues;
+
+    public static bool IsValidType(string type)
+    {
+        // Check if type is null or empty
+        if (string.IsNullOrEmpty(type))
+        {
+            return false;
+        }
+
+        // Check if type is in any of the allowed value lists
+        foreach (var list in SetupStateHelper.AllowedTypeOfValues)
+        {
+            if (list.Contains(type))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static async Task<List<SetupState>> GetProjectStatesAync(FeatureContext context)
+        => await context.Set<SetupState>()
+            .Where(q => q.TypeOf == nameof(Core.Project.ProjectInfo))
+            .OrderBy(o => o.TypeOf).ThenBy(o => o.Sequence).ThenBy(o => o.Name)
+            .ToListAsync();
+
+    internal static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPSTATE_ID.Replace("{0}", id.ToString()));
+
+    internal static Result DuplicateFound(string name) => Result.Fail(Messages.DUPLICATE_SETUPSTATE_NAME.Replace("{0}", name.ToString()));
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
+    public static async Task<bool> IsDuplicateNameAsync(DbContext context, string typeOf, string name, Ulid? currentId = null)
+    {
+        name = name.ToLower().Trim();
+
+        return await context.Set<SetupState>()
+            .AnyAsync(pr => pr.TypeOf == typeOf && pr.Name.ToLower() == name
+                && (!currentId.HasValue || pr.Id != currentId.Value));
     }
 }
 
@@ -115,7 +140,7 @@ internal sealed class ListHandler :
         {
             query = query.OrderBy(message.SortOrder);
         }
-        else query = query.OrderBy(o => o.ObjectType).ThenBy(o => o.Sequence).ThenBy(o => o.Name);
+        else query = query.OrderBy(o => o.TypeOf).ThenBy(o => o.Sequence).ThenBy(o => o.Name);
 
         int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
@@ -148,7 +173,7 @@ public sealed class CreateValidator : ModelValidator<CreateCommand>
     {
         RuleFor(x => x).MustAsync(async (rec, cancellation) =>
         {
-            bool exists = await SetupStateHelper.IsDuplicateNameAsync(dbContext, rec.ObjectType, rec.Name);
+            bool exists = await SetupStateHelper.IsDuplicateNameAsync(dbContext, rec.TypeOf, rec.Name);
             return !exists;
         }).WithMessage(x => Messages.DUPLICATE_SETUPSTATE_NAME.Replace("{0}", x.Name.ToString()));
     }
@@ -165,13 +190,13 @@ internal sealed class CreateHandler : IRequestHandler<CreateCommand, Result<Ulid
 
     public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
     {
-        if (await SetupStateHelper.IsDuplicateNameAsync(_dbcontext, message.ObjectType, message.Name))
+        if (await SetupStateHelper.IsDuplicateNameAsync(_dbcontext, message.TypeOf, message.Name))
             return SetupStateHelper.DuplicateFound(message.Name);
 
         var record = new SetupState
         {
             Id = message.Id,
-            ObjectType = message.ObjectType,
+            TypeOf = message.TypeOf,
             StateType = message.StateType,
             Name = message.Name.Trim(),
             Description = message.Description?.Trim(),
@@ -207,7 +232,7 @@ public class UpdateCommandValidator : ModelValidator<UpdateCommand>
     {
         RuleFor(x => x).MustAsync(async (rec, cancellation) =>
         {
-            bool exists = await SetupStateHelper.IsDuplicateNameAsync(dbContext, rec.ObjectType, rec.Name, rec.Id);
+            bool exists = await SetupStateHelper.IsDuplicateNameAsync(dbContext, rec.TypeOf, rec.Name, rec.Id);
             return !exists;
         }).WithMessage(x => Messages.DUPLICATE_SETUPSTATE_NAME.Replace("{0}", x.Name.ToString()));
     }
@@ -257,10 +282,10 @@ internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
         if (record is null)
             return SetupStateHelper.RecordNotFound(message.Id);
 
-        if (await SetupStateHelper.IsDuplicateNameAsync(_dbcontext, message.ObjectType, message.Name, record.Id))
+        if (await SetupStateHelper.IsDuplicateNameAsync(_dbcontext, message.TypeOf, message.Name, record.Id))
             return SetupStateHelper.DuplicateFound(message.Name);
 
-        record.ObjectType = message.ObjectType;
+        record.TypeOf = message.TypeOf;
         record.StateType = message.StateType;
         record.Name = message.Name.Trim();
         record.Description = message.Description?.Trim();
@@ -412,7 +437,7 @@ internal sealed class ImportQueryHandler :
             records = records.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor)).ToList();
         }
 
-        records = [.. records.OrderBy(o => o.ObjectType).ThenBy(o => o.Sequence).ThenBy(o => o.Name)];
+        records = [.. records.OrderBy(o => o.TypeOf).ThenBy(o => o.Sequence).ThenBy(o => o.Name)];
         int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
 
@@ -450,13 +475,13 @@ internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
         bool changes = false;
         foreach (var item in message.Items ?? [])
         {
-            if (await SetupStateHelper.IsDuplicateNameAsync(_dbcontext, item.ObjectType, item.Name))
+            if (await SetupStateHelper.IsDuplicateNameAsync(_dbcontext, item.TypeOf, item.Name))
                 continue;
 
             var record = new SetupState
             {
                 Id = Ulid.NewUlid(),
-                ObjectType = item.ObjectType,
+                TypeOf = item.TypeOf,
                 StateType = item.StateType,
                 Name = item.Name.Trim(),
                 Sequence = item.Sequence,

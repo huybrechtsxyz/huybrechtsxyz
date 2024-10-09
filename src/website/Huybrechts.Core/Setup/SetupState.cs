@@ -14,19 +14,20 @@ namespace Huybrechts.Core.Setup;
 /// </remarks>
 [MultiTenant]
 [Table("SetupState")]
-[Index(nameof(TenantId), nameof(ObjectType), nameof(Name), IsUnique = true)]
+[Index(nameof(TenantId), nameof(TypeOf), nameof(Name), IsUnique = true)]
 [Index(nameof(TenantId), nameof(SearchIndex))]
 [Comment("Represents a custom state that can be applied to various objects, such as projects, constraints, requirements, and more.")]
 public record SetupState : Entity, IEntity
 {
     /// <summary>
-    /// Gets or sets the type of object to which this state applies.
+    /// Gets or sets the type of field (e.g., ProjectType, ProjectKind).
     /// </summary>
     /// <remarks>
-    /// This enum indicates the object type (e.g., Project, Constraint, Requirement) that the state is associated with.
+    /// This field defines the category or classification type for the object.
     /// </remarks>
-    [Required]
-    public ObjectType ObjectType { get; set; }
+    [MaxLength(64)]
+    [Comment("The classification or type for the object (e.g., ProjectType, ProjectKind).")]
+    public string TypeOf { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the type of the state.
@@ -36,7 +37,6 @@ public record SetupState : Entity, IEntity
     /// </remarks>
     [Required]
     public StateType StateType { get; set; }
-
 
     /// <summary>
     /// Gets or sets the name of the state.
@@ -70,19 +70,6 @@ public record SetupState : Entity, IEntity
     /// </summary>
     [Comment("This field will store the normalized, concatenated values for searching")]
     public string? SearchIndex { get; set; }
-}
-
-/// <summary>
-/// Defines the types of objects that can have custom states.
-/// </summary>
-public enum ObjectType
-{
-    /// <summary>
-    /// Represents a project within the platform.
-    /// </summary>
-    [Display(Name = nameof(ObjectType) + "_" + nameof(Project), Description = nameof(ObjectType) + "_" + nameof(Project) + "_d", ResourceType = typeof(Localization))]
-    [Comment("Represents a project within the platform.")]
-    Project = 1
 }
 
 /// <summary>

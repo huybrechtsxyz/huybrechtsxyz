@@ -63,18 +63,18 @@ namespace Huybrechts.Core.Setup {
         /// <summary>
         ///   Looks up a localized string similar to Project.
         /// </summary>
-        public static string ObjectType_Project {
+        public static string TypeOf_Project {
             get {
-                return ResourceManager.GetString("ObjectType_Project", resourceCulture);
+                return ResourceManager.GetString("TypeOf_Project", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to For projects.
         /// </summary>
-        public static string ObjectType_Project_d {
+        public static string TypeOf_Project_d {
             get {
-                return ResourceManager.GetString("ObjectType_Project_d", resourceCulture);
+                return ResourceManager.GetString("TypeOf_Project_d", resourceCulture);
             }
         }
         

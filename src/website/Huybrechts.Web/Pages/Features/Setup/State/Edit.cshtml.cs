@@ -1,11 +1,12 @@
 using FluentValidation;
 using FluentValidation.Results;
+using Huybrechts.App.Features.Setup.SetupStateFlow;
 using Huybrechts.App.Web;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Flow = Huybrechts.App.Features.Setup.SetupStateFlow;
 
 namespace Huybrechts.Web.Pages.Features.Setup.State;
@@ -23,6 +24,8 @@ public class EditModel : PageModel
     [TempData]
     public string StatusMessage { get; set; } = string.Empty;
 
+    public SelectList TypeOfOptions { get; init; }
+
     public EditModel(IMediator mediator,
         IValidator<Flow.UpdateQuery> getValidator,
         IValidator<Flow.UpdateCommand> postValidator)
@@ -30,6 +33,7 @@ public class EditModel : PageModel
         _mediator = mediator;
         _getValidator = getValidator;
         _postValidator = postValidator;
+        TypeOfOptions = new SelectList(SetupStateHelper.AllowedTypeOfValues);
     }
 
     public async Task<IActionResult> OnGetAsync(Ulid id)

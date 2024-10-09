@@ -160,15 +160,6 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Object type.
-        /// </summary>
-        public static string ObjectType {
-            get {
-                return ResourceManager.GetString("ObjectType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Precision.
         /// </summary>
         public static string Precision {
@@ -219,6 +210,15 @@ namespace Huybrechts.App.Features.Setup {
         public static string TranslatedName {
             get {
                 return ResourceManager.GetString("TranslatedName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type Of.
+        /// </summary>
+        public static string TypeOf {
+            get {
+                return ResourceManager.GetString("TypeOf", resourceCulture);
             }
         }
         
