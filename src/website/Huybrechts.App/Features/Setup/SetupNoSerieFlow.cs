@@ -13,7 +13,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
 using System.Text.Json;
 
-namespace Huybrechts.App.Features.Setup.SetupCategoryFlow;
+namespace Huybrechts.App.Features.Setup.SetupNoSerieFlow;
 
 public record Model
 {
@@ -22,16 +22,28 @@ public record Model
     [Display(Name = nameof(TypeOf), ResourceType = typeof(Localization))]
     public string TypeOf { get; set; } = string.Empty;
 
-    [Display(Name = nameof(Category), ResourceType = typeof(Localization))]
-    public string Category { get; set; } = string.Empty;
+    [Display(Name = nameof(TypeCode), ResourceType = typeof(Localization))]
+    public string TypeCode { get; set; } = string.Empty;
 
-    [Display(Name = nameof(Subcategory), ResourceType = typeof(Localization))]
-    public string Subcategory { get; set; } = string.Empty;
+    [Display(Name = nameof(TypeValue), ResourceType = typeof(Localization))]
+    public string TypeValue { get; set; } = string.Empty;
+
+    [Display(Name = nameof(Format), ResourceType = typeof(Localization))]
+    public string Format { get; set; } = string.Empty;
+
+    [Display(Name = nameof(Counter), ResourceType = typeof(Localization))]
+    public int Counter { get; set; } = 0;
+
+    [Display(Name = nameof(Maximum), ResourceType = typeof(Localization))]
+    public int Maximum { get; set; } = 999999999;
+
+    [Display(Name = nameof(IsDisabled), ResourceType = typeof(Localization))]
+    public bool IsDisabled { get; set; } = false;
 
     [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
     public string? Description { get; set; }
 
-    public string SearchIndex => $"{TypeOf}~{Category}~{Subcategory}~{Description}".ToLowerInvariant();
+    public string SearchIndex => $"{TypeOf}~{TypeCode}~{TypeValue}~{Format}~{Description}".ToLowerInvariant();
 }
 
 public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -40,19 +52,35 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
     {
         RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
         RuleFor(x => x.TypeOf).NotEmpty().Length(1, 64);
-        RuleFor(x => x.TypeOf).Must(type => SetupCategoryHelper.IsValidType(type)).WithMessage("TypeOf must be one of the allowed values.");
-        RuleFor(m => m.Category).NotEmpty().Length(1, 64);
-        RuleFor(m => m.Subcategory).NotNull().Length(0, 64);
+        RuleFor(x => x.TypeOf).Must(type => SetupNoSerieHelper.IsValidType(type)).WithMessage("TypeOf must be one of the allowed values.");
+        RuleFor(m => m.TypeCode).NotEmpty().Length(1, 64);
+        RuleFor(m => m.TypeValue).NotNull().Length(0, 64);
+        RuleFor(m => m.Format).NotEmpty().Length(1, 128);
+        RuleFor(m => m.Counter).NotNull().GreaterThanOrEqualTo(0);
+        RuleFor(m => m.Maximum).NotNull().GreaterThanOrEqualTo(0).LessThanOrEqualTo(999999999);
         RuleFor(m => m.Description).Length(0, 256);
     }
 }
 
-public static class SetupCategoryHelper
+public static class SetupNoSerieHelper
 {
     public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
 
+    public static void CopyFields(Model model, SetupNoSerie entity)
+    {
+        entity.TypeOf = model.TypeOf.Trim();
+        entity.TypeCode = model.TypeCode.Trim();
+        entity.TypeValue = model.TypeValue.Trim();
+        entity.Format = model.Format.Trim();
+        entity.Counter = model.Counter;
+        entity.Maximum = model.Maximum;
+        entity.IsDisabled = model.IsDisabled;
+        entity.Description = model.Description?.Trim();
+        entity.SearchIndex = model.SearchIndex;
+    }
+
     private static readonly List<string> allowedTypeOfValues = [
-            "ProjectCategory"
+            "ProjectCode"
             ];
 
     public static List<string> AllowedTypeOfValues => allowedTypeOfValues;
@@ -66,7 +94,7 @@ public static class SetupCategoryHelper
         }
 
         // Check if type is in any of the allowed value lists
-        foreach (var list in SetupCategoryHelper.AllowedTypeOfValues)
+        foreach (var list in SetupNoSerieHelper.AllowedTypeOfValues)
         {
             if (list.Contains(type))
             {
@@ -77,24 +105,18 @@ public static class SetupCategoryHelper
         return false;
     }
 
-    public static async Task<List<SetupCategory>> GetProjectCategoriesAync(FeatureContext context)
-        => await context.Set<SetupCategory>()
-            .Where(q => q.TypeOf == "ProjectCategory")
-            .OrderBy(o => o.TypeOf).ThenBy(o => o.Category).ThenBy(o => o.Subcategory)
-            .ToListAsync();
+    internal static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPNOSERIE_ID.Replace("{0}", id.ToString()));
 
-    internal static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPCATEGORY_ID.Replace("{0}", id.ToString()));
-
-    internal static Result DuplicateFound(string cat, string subcat) => Result.Fail(Messages.DUPLICATE_SETUPCATEGORY.Replace("{0}", cat.ToString()).Replace("{1}", subcat.ToString()));
+    internal static Result DuplicateFound(string cat, string subcat) => Result.Fail(Messages.DUPLICATE_SETUPNOSERIE.Replace("{0}", cat.ToString()).Replace("{1}", subcat.ToString()));
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
-    public static async Task<bool> IsDuplicateNameAsync(DbContext context, string typeOf, string category, string subcategory, Ulid? currentId = null)
+    public static async Task<bool> IsDuplicateTypeAsync(DbContext context, string typeOf, string typeCode, string typeValue, Ulid? currentId = null)
     {
-        category = category.ToLower().Trim();
-        subcategory = subcategory.ToLower().Trim();
+        typeCode = typeCode.ToLower().Trim();
+        typeValue = typeValue.ToLower().Trim();
 
-        return await context.Set<SetupCategory>()
-            .AnyAsync(pr => pr.TypeOf == typeOf && pr.Category.ToLower() == category && pr.Subcategory.ToLower() == subcategory.ToLower().Trim()
+        return await context.Set<SetupNoSerie>()
+            .AnyAsync(pr => pr.TypeOf == typeOf && pr.TypeCode.ToLower() == typeCode && pr.TypeValue.ToLower() == typeValue.ToLower().Trim()
                 && (!currentId.HasValue || pr.Id != currentId.Value));
     }
 }
@@ -105,7 +127,7 @@ public static class SetupCategoryHelper
 
 public sealed record ListModel : Model { }
 
-internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<SetupCategory, ListModel>(); }
+internal sealed class ListMapping : Profile { public ListMapping() => CreateProjection<SetupNoSerie, ListModel>(); }
 
 public sealed record ListQuery : EntityFlow.ListQuery, IRequest<Result<ListResult>> { }
 
@@ -114,7 +136,7 @@ public sealed class ListValidator : AbstractValidator<ListQuery> { public ListVa
 public sealed record ListResult : EntityFlow.ListResult<ListModel> { }
 
 internal sealed class ListHandler :
-    EntityFlow.ListHandler<SetupCategory, ListModel>,
+    EntityFlow.ListHandler<SetupNoSerie, ListModel>,
     IRequestHandler<ListQuery, Result<ListResult>>
 {
     public ListHandler(FeatureContext dbcontext, IConfigurationProvider configuration)
@@ -124,7 +146,7 @@ internal sealed class ListHandler :
 
     public async Task<Result<ListResult>> Handle(ListQuery message, CancellationToken token)
     {
-        IQueryable<SetupCategory> query = _dbcontext.Set<SetupCategory>();
+        IQueryable<SetupNoSerie> query = _dbcontext.Set<SetupNoSerie>();
 
         var searchString = message.SearchText ?? message.CurrentFilter;
         if (!string.IsNullOrEmpty(searchString))
@@ -137,7 +159,7 @@ internal sealed class ListHandler :
         {
             query = query.OrderBy(message.SortOrder);
         }
-        else query = query.OrderBy(o => o.TypeOf).ThenBy(o => o.Category).ThenBy(o => o.Subcategory);
+        else query = query.OrderBy(o => o.TypeOf).ThenBy(o => o.TypeCode).ThenBy(o => o.TypeValue);
 
         int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
@@ -170,9 +192,9 @@ public sealed class CreateValidator : ModelValidator<CreateCommand>
     {
         RuleFor(x => x).MustAsync(async (rec, cancellation) =>
         {
-            bool exists = await SetupCategoryHelper.IsDuplicateNameAsync(dbContext, rec.TypeOf, rec.Category, rec.Subcategory);
+            bool exists = await SetupNoSerieHelper.IsDuplicateTypeAsync(dbContext, rec.TypeOf, rec.TypeCode, rec.TypeValue);
             return !exists;
-        }).WithMessage(x => Messages.DUPLICATE_SETUPCATEGORY.Replace("{0}", x.Subcategory.ToString()));
+        }).WithMessage(x => Messages.DUPLICATE_SETUPNOSERIE.Replace("{0}", $"{x.TypeOf} - {x.TypeCode} - {x.TypeValue}"));
     }
 }
 
@@ -187,20 +209,16 @@ internal sealed class CreateHandler : IRequestHandler<CreateCommand, Result<Ulid
 
     public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
     {
-        if (await SetupCategoryHelper.IsDuplicateNameAsync(_dbcontext, message.TypeOf, message.Category, message.Subcategory))
-            return SetupCategoryHelper.DuplicateFound(message.Category, message.Subcategory);
+        if (await SetupNoSerieHelper.IsDuplicateTypeAsync(_dbcontext, message.TypeOf, message.TypeCode, message.TypeValue))
+            return SetupNoSerieHelper.DuplicateFound(message.TypeCode, message.TypeValue);
 
-        var record = new SetupCategory
+        var record = new SetupNoSerie
         {
             Id = message.Id,
-            TypeOf = message.TypeOf,
-            Category = message.Category.Trim(),
-            Subcategory = message.Subcategory.Trim(),
-            Description = message.Description?.Trim(),
-            SearchIndex = message.SearchIndex,
             CreatedDT = DateTime.UtcNow
         };
-        await _dbcontext.Set<SetupCategory>().AddAsync(record, token);
+        SetupNoSerieHelper.CopyFields(message, record);
+        await _dbcontext.Set<SetupNoSerie>().AddAsync(record, token);
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok(record.Id);
     }
@@ -228,15 +246,15 @@ public class UpdateCommandValidator : ModelValidator<UpdateCommand>
     {
         RuleFor(x => x).MustAsync(async (rec, cancellation) =>
         {
-            bool exists = await SetupCategoryHelper.IsDuplicateNameAsync(dbContext, rec.TypeOf, rec.Category, rec.Subcategory, rec.Id);
+            bool exists = await SetupNoSerieHelper.IsDuplicateTypeAsync(dbContext, rec.TypeOf, rec.TypeCode, rec.TypeValue, rec.Id);
             return !exists;
-        }).WithMessage(x => Messages.DUPLICATE_SETUPCATEGORY.Replace("{0}", x.Subcategory.ToString()));
+        }).WithMessage(x => Messages.DUPLICATE_SETUPNOSERIE.Replace("{0}", $"{x.TypeOf} - {x.TypeCode} - {x.TypeValue}"));
     }
 }
 
 internal class UpdateCommandMapping : Profile 
 { 
-    public UpdateCommandMapping() => CreateProjection<SetupCategory, UpdateCommand>(); 
+    public UpdateCommandMapping() => CreateProjection<SetupNoSerie, UpdateCommand>(); 
 }
 
 internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCommand>>
@@ -252,12 +270,12 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
 
     public async Task<Result<UpdateCommand>> Handle(UpdateQuery message, CancellationToken token)
     {
-        var command = await _dbcontext.Set<SetupCategory>()
+        var command = await _dbcontext.Set<SetupNoSerie>()
             .ProjectTo<UpdateCommand>(_configuration)
             .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
 
         if (command is null)
-            return SetupCategoryHelper.RecordNotFound(message.Id ?? Ulid.Empty);
+            return SetupNoSerieHelper.RecordNotFound(message.Id ?? Ulid.Empty);
 
         return Result.Ok(command);
     }
@@ -274,21 +292,17 @@ internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
 
     public async Task<Result> Handle(UpdateCommand message, CancellationToken token)
     {
-        var record = await _dbcontext.Set<SetupCategory>().FindAsync([message.Id], cancellationToken: token);
+        var record = await _dbcontext.Set<SetupNoSerie>().FindAsync([message.Id], cancellationToken: token);
         if (record is null)
-            return SetupCategoryHelper.RecordNotFound(message.Id);
+            return SetupNoSerieHelper.RecordNotFound(message.Id);
 
-        if (await SetupCategoryHelper.IsDuplicateNameAsync(_dbcontext, message.TypeOf, message.Category, message.Subcategory, record.Id))
-            return SetupCategoryHelper.DuplicateFound(message.Category, message.Subcategory);
+        if (await SetupNoSerieHelper.IsDuplicateTypeAsync(_dbcontext, message.TypeOf, message.TypeCode, message.TypeValue, record.Id))
+            return SetupNoSerieHelper.DuplicateFound(message.TypeCode, message.TypeValue);
 
-        record.TypeOf = message.TypeOf;
-        record.Category = message.Category.Trim();
-        record.Subcategory = message.Subcategory.Trim();
-        record.Description = message.Description?.Trim();
-        record.SearchIndex = message.SearchIndex;
         record.ModifiedDT = DateTime.UtcNow;
+        SetupNoSerieHelper.CopyFields(message, record);
 
-        _dbcontext.Set<SetupCategory>().Update(record);
+        _dbcontext.Set<SetupNoSerie>().Update(record);
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok();
     }
@@ -322,7 +336,7 @@ internal sealed class DeleteCommandMapping : Profile
 {
     public DeleteCommandMapping()
     {
-        CreateProjection<SetupCategory, DeleteCommand>();
+        CreateProjection<SetupNoSerie, DeleteCommand>();
     }
 }
 
@@ -339,12 +353,12 @@ internal sealed class DeleteQueryHandler : IRequestHandler<DeleteQuery, Result<D
 
     public async Task<Result<DeleteCommand>> Handle(DeleteQuery message, CancellationToken token)
     {
-        var command = await _dbcontext.Set<SetupCategory>()
+        var command = await _dbcontext.Set<SetupNoSerie>()
             .ProjectTo<DeleteCommand>(_configuration)
             .FirstOrDefaultAsync(q => q.Id == message.Id, cancellationToken: token);
 
         if (command is null)
-            return SetupCategoryHelper.RecordNotFound(message.Id ?? Ulid.Empty);
+            return SetupNoSerieHelper.RecordNotFound(message.Id ?? Ulid.Empty);
 
         return Result.Ok(command);
     }
@@ -361,11 +375,11 @@ internal class DeleteCommandHandler : IRequestHandler<DeleteCommand, Result>
 
     public async Task<Result> Handle(DeleteCommand message, CancellationToken token)
     {
-        var record = await _dbcontext.Set<SetupCategory>().FindAsync([message.Id], cancellationToken: token);
+        var record = await _dbcontext.Set<SetupNoSerie>().FindAsync([message.Id], cancellationToken: token);
         if(record is null)
-            return SetupCategoryHelper.RecordNotFound(message.Id);
+            return SetupNoSerieHelper.RecordNotFound(message.Id);
 
-        _dbcontext.Set<SetupCategory>().Remove(record);
+        _dbcontext.Set<SetupNoSerie>().Remove(record);
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok();
     }
@@ -396,7 +410,7 @@ public sealed record ImportCommand : IRequest<Result>
 public sealed class ImportCommandValidator : AbstractValidator<ImportCommand> { public ImportCommandValidator() { } }
 
 internal sealed class ImportQueryHandler :
-    EntityFlow.ListHandler<SetupCategory, ImportModel>,
+    EntityFlow.ListHandler<SetupNoSerie, ImportModel>,
     IRequestHandler<ImportQuery, Result<ImportResult>>
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
@@ -411,10 +425,10 @@ internal sealed class ImportQueryHandler :
     {
         string wwwrootPath = _webHostEnvironment.WebRootPath;
 
-        var filePath = Path.Combine(wwwrootPath, "data", "categories.json");
+        var filePath = Path.Combine(wwwrootPath, "data", "numberseries.json");
         if (!File.Exists(filePath))
         {
-            throw new FileNotFoundException("The categories.json file was not found.", filePath);
+            throw new FileNotFoundException("The numberseries.json file was not found.", filePath);
         }
 
         using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -428,7 +442,7 @@ internal sealed class ImportQueryHandler :
             records = records.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor)).ToList();
         }
 
-        records = [.. records.OrderBy(o => o.TypeOf).ThenBy(o => o.Category).ThenBy(o => o.Subcategory)];
+        records = [.. records.OrderBy(o => o.TypeOf).ThenBy(o => o.TypeCode).ThenBy(o => o.TypeValue)];
         int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
 
@@ -466,21 +480,17 @@ internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
         bool changes = false;
         foreach (var item in message.Items ?? [])
         {
-            if (await SetupCategoryHelper.IsDuplicateNameAsync(_dbcontext, item.TypeOf, item.Category, item.Subcategory))
+            if (await SetupNoSerieHelper.IsDuplicateTypeAsync(_dbcontext, item.TypeOf, item.TypeCode, item.TypeValue))
                 continue;
 
-            var record = new SetupCategory
+            var record = new SetupNoSerie
             {
                 Id = Ulid.NewUlid(),
-                TypeOf = item.TypeOf,
-                Category = item.Category.Trim(),
-                Subcategory = item.Subcategory.Trim(),
-                Description = item.Description?.Trim(),
-                SearchIndex = item.SearchIndex,
                 CreatedDT = DateTime.UtcNow
             };
+            SetupNoSerieHelper.CopyFields(item, record);
 
-            await _dbcontext.Set<SetupCategory>().AddAsync(record, token);
+            await _dbcontext.Set<SetupNoSerie>().AddAsync(record, token);
             changes = true;
         }
 

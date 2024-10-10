@@ -43,6 +43,10 @@ namespace  Huybrechts.Web.Pages.Features.Setup
         public static string Category => "Category";
 
         public static string CategoryNavClass(ViewContext viewContext) => PageNavClass(viewContext, Category);
+        
+        public static string NoSerie => "NoSerie";
+
+        public static string NoSerieNavClass(ViewContext viewContext) => PageNavClass(viewContext, NoSerie);
 
         public static string PageNavClass(ViewContext viewContext, string page)
         {

@@ -15,6 +15,7 @@ namespace Huybrechts.Core.Setup;
 /// </remarks>
 [MultiTenant]
 [Table("SetupNoSerie")]
+[Index(nameof(TenantId), nameof(TypeOf), nameof(TypeCode), nameof(TypeValue))]
 [Index(nameof(TenantId), nameof(SearchIndex))]
 [Comment("Stores configuration for number series, supporting multi-tenancy.")]
 public record SetupNoSerie : Entity, IEntity

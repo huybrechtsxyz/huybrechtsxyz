@@ -124,6 +124,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate no. serie for {0}.
+        /// </summary>
+        public static string DUPLICATE_SETUPNOSERIE {
+            get {
+                return ResourceManager.GetString("DUPLICATE_SETUPNOSERIE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate system state name for {0}.
         /// </summary>
         public static string DUPLICATE_SETUPSTATE_NAME {
@@ -183,6 +192,15 @@ namespace Huybrechts.App.Features.Setup {
         public static string INVALID_SETUPLANGUAGE_ID {
             get {
                 return ResourceManager.GetString("INVALID_SETUPLANGUAGE_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find no. serie with ID {0}.
+        /// </summary>
+        public static string INVALID_SETUPNOSERIE_ID {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPNOSERIE_ID", resourceCulture);
             }
         }
         

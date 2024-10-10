@@ -288,6 +288,45 @@
   <data name="NoResults" xml:space="preserve">
     <value>Geen resultaten gevonden</value>
   </data>
+  <data name="NoSerie" xml:space="preserve">
+    <value>Nummerserie</value>
+  </data>
+  <data name="NoSerieCreateInfo" xml:space="preserve">
+    <value>Gebruik deze pagina om een nieuwe nummerserie te definiëren. U kunt het type, het formaat en de maximale waarde voor de teller opgeven.</value>
+  </data>
+  <data name="NoSerieCreateTitle" xml:space="preserve">
+    <value>Nieuwe Nummerserie Aanmaken</value>
+  </data>
+  <data name="NoSerieDeleteInfo" xml:space="preserve">
+    <value>Bevestig het verwijderen van een nummerserie. Deze actie kan niet ongedaan worden gemaakt en zal de serie uit het systeem verwijderen.</value>
+  </data>
+  <data name="NoSerieDeleteTitle" xml:space="preserve">
+    <value>Nummerserie Verwijderen</value>
+  </data>
+  <data name="NoSerieEditInfo" xml:space="preserve">
+    <value>Pas de details van een bestaande nummerserie aan, inclusief het formaat, de teller en de waarde van het type.</value>
+  </data>
+  <data name="NoSerieEditTitle" xml:space="preserve">
+    <value>Nummerserie Bewerken</value>
+  </data>
+  <data name="NoSerieImportInfo" xml:space="preserve">
+    <value>Gebruik deze pagina om nummerseries te importeren vanuit een extern bestand. Zorg ervoor dat het formaat correct is om fouten tijdens het importeren te voorkomen.</value>
+  </data>
+  <data name="NoSerieImportTitle" xml:space="preserve">
+    <value>Nummerseries Importeren</value>
+  </data>
+  <data name="NoSerieIndexInfo" xml:space="preserve">
+    <value>Deze pagina toont een lijst van alle beschikbare nummerseries. U kunt nummerseries bekijken, aanmaken, bewerken of verwijderen voor verschillende entiteiten.</value>
+  </data>
+  <data name="NoSerieIndexTitle" xml:space="preserve">
+    <value>Overzicht Nummerseries</value>
+  </data>
+  <data name="NoSerieNoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden</value>
+  </data>
+  <data name="NoSeries" xml:space="preserve">
+    <value>Nummerseries</value>
+  </data>
   <data name="Previous" xml:space="preserve">
     <value>Vorige</value>
   </data>

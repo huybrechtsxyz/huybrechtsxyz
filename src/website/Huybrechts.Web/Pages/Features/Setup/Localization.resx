@@ -288,6 +288,45 @@
   <data name="NoResults" xml:space="preserve">
     <value>No results found</value>
   </data>
+  <data name="NoSerie" xml:space="preserve">
+    <value>No. Serie</value>
+  </data>
+  <data name="NoSerieCreateInfo" xml:space="preserve">
+    <value>Use this page to define a new number series. You can specify the type, format, and maximum counter for the series.</value>
+  </data>
+  <data name="NoSerieCreateTitle" xml:space="preserve">
+    <value>Create New Number Series</value>
+  </data>
+  <data name="NoSerieDeleteInfo" xml:space="preserve">
+    <value>Confirm the deletion of a number series. This action is irreversible and will remove the series from the system.</value>
+  </data>
+  <data name="NoSerieDeleteTitle" xml:space="preserve">
+    <value>Delete Number Series</value>
+  </data>
+  <data name="NoSerieEditInfo" xml:space="preserve">
+    <value>Modify the details of an existing number series, including its format, counter, and type values.</value>
+  </data>
+  <data name="NoSerieEditTitle" xml:space="preserve">
+    <value>Edit Number Series</value>
+  </data>
+  <data name="NoSerieImportInfo" xml:space="preserve">
+    <value>Use this page to import number series from an external file. Ensure the format is correct to avoid errors during import.</value>
+  </data>
+  <data name="NoSerieImportTitle" xml:space="preserve">
+    <value>Import Number Series</value>
+  </data>
+  <data name="NoSerieIndexInfo" xml:space="preserve">
+    <value>This page displays a list of all available number series. You can view, create, edit, or delete number series for various entities.</value>
+  </data>
+  <data name="NoSerieIndexTitle" xml:space="preserve">
+    <value>Number Series Overview</value>
+  </data>
+  <data name="NoSerieNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="NoSeries" xml:space="preserve">
+    <value>No. Series</value>
+  </data>
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
   </data>

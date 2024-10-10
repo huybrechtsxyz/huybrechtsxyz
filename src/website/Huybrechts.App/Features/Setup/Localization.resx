@@ -123,6 +123,9 @@
   <data name="Code" xml:space="preserve">
     <value>Code</value>
   </data>
+  <data name="Counter" xml:space="preserve">
+    <value>Counter</value>
+  </data>
   <data name="Country" xml:space="preserve">
     <value>Country</value>
   </data>
@@ -141,14 +144,23 @@
   <data name="Factor" xml:space="preserve">
     <value>Factor</value>
   </data>
+  <data name="Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
   <data name="IsBase" xml:space="preserve">
     <value>Base?</value>
+  </data>
+  <data name="IsDisabled" xml:space="preserve">
+    <value>Disabled?</value>
   </data>
   <data name="IsSelected" xml:space="preserve">
     <value>Select?</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>Language</value>
+  </data>
+  <data name="Maximum" xml:space="preserve">
+    <value>Maximum</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
@@ -174,10 +186,19 @@
   <data name="TranslatedName" xml:space="preserve">
     <value>Translated name</value>
   </data>
+  <data name="TypeCode" xml:space="preserve">
+    <value>Type Code</value>
+  </data>
   <data name="TypeOf" xml:space="preserve">
     <value>Type Of</value>
   </data>
+  <data name="TypeValue" xml:space="preserve">
+    <value>Type Value</value>
+  </data>
   <data name="UnitType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="UnitType1" xml:space="preserve">
     <value>Type</value>
   </data>
 </root>

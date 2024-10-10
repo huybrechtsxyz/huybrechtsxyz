@@ -574,6 +574,123 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No. Serie.
+        /// </summary>
+        public static string NoSerie {
+            get {
+                return ResourceManager.GetString("NoSerie", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this page to define a new number series. You can specify the type, format, and maximum counter for the series..
+        /// </summary>
+        public static string NoSerieCreateInfo {
+            get {
+                return ResourceManager.GetString("NoSerieCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create New Number Series.
+        /// </summary>
+        public static string NoSerieCreateTitle {
+            get {
+                return ResourceManager.GetString("NoSerieCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm the deletion of a number series. This action is irreversible and will remove the series from the system..
+        /// </summary>
+        public static string NoSerieDeleteInfo {
+            get {
+                return ResourceManager.GetString("NoSerieDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Number Series.
+        /// </summary>
+        public static string NoSerieDeleteTitle {
+            get {
+                return ResourceManager.GetString("NoSerieDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify the details of an existing number series, including its format, counter, and type values..
+        /// </summary>
+        public static string NoSerieEditInfo {
+            get {
+                return ResourceManager.GetString("NoSerieEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Number Series.
+        /// </summary>
+        public static string NoSerieEditTitle {
+            get {
+                return ResourceManager.GetString("NoSerieEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this page to import number series from an external file. Ensure the format is correct to avoid errors during import..
+        /// </summary>
+        public static string NoSerieImportInfo {
+            get {
+                return ResourceManager.GetString("NoSerieImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Number Series.
+        /// </summary>
+        public static string NoSerieImportTitle {
+            get {
+                return ResourceManager.GetString("NoSerieImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page displays a list of all available number series. You can view, create, edit, or delete number series for various entities..
+        /// </summary>
+        public static string NoSerieIndexInfo {
+            get {
+                return ResourceManager.GetString("NoSerieIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number Series Overview.
+        /// </summary>
+        public static string NoSerieIndexTitle {
+            get {
+                return ResourceManager.GetString("NoSerieIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string NoSerieNoResults {
+            get {
+                return ResourceManager.GetString("NoSerieNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No. Series.
+        /// </summary>
+        public static string NoSeries {
+            get {
+                return ResourceManager.GetString("NoSeries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Previous.
         /// </summary>
         public static string Previous {

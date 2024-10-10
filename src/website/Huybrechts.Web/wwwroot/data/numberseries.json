@@ -1,0 +1,42 @@
+[
+  {
+    "TypeOf": "ProjectNumber",
+    "TypeCode": "ProjectType",
+    "TypeValue": "Sales",
+    "Format": "PN-YYYY-MM-###",
+    "Counter": 100,
+    "Maximum": 999999,
+    "IsDisabled": false,
+    "Description": "Number series for sales projects."
+  },
+  {
+    "TypeOf": "ProjectNumber",
+    "TypeCode": "ProjectType",
+    "TypeValue": "Development",
+    "Format": "DEV-YYYY-###",
+    "Counter": 500,
+    "Maximum": 999999,
+    "IsDisabled": false,
+    "Description": "Number series for development projects."
+  },
+  {
+    "TypeOf": "ProjectNumber",
+    "TypeCode": "ProjectType",
+    "TypeValue": "Research",
+    "Format": "RES-YY-###",
+    "Counter": 20,
+    "Maximum": 9999,
+    "IsDisabled": false,
+    "Description": "Number series for research projects."
+  },
+  {
+    "TypeOf": "ProjectNumber",
+    "TypeCode": "ProjectType",
+    "TypeValue": "Consulting",
+    "Format": "CONS-###",
+    "Counter": 300,
+    "Maximum": 9999,
+    "IsDisabled": false,
+    "Description": "Number series for consulting projects."
+  }
+]

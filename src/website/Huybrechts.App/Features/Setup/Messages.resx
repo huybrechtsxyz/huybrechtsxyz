@@ -138,6 +138,9 @@
   <data name="DUPLICATE_SETUPLANGUAGE_NAME" xml:space="preserve">
     <value>Duplicate language name for {0}</value>
   </data>
+  <data name="DUPLICATE_SETUPNOSERIE" xml:space="preserve">
+    <value>Duplicate no. serie for {0}</value>
+  </data>
   <data name="DUPLICATE_SETUPSTATE_NAME" xml:space="preserve">
     <value>Duplicate system state name for {0}</value>
   </data>
@@ -158,6 +161,9 @@
   </data>
   <data name="INVALID_SETUPLANGUAGE_ID" xml:space="preserve">
     <value>Unable to find language with ID {0}</value>
+  </data>
+  <data name="INVALID_SETUPNOSERIE_ID" xml:space="preserve">
+    <value>Unable to find no. serie with ID {0}</value>
   </data>
   <data name="INVALID_SETUPSTATE_ID" xml:space="preserve">
     <value>Unable to find system state with ID {0}</value>

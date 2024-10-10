@@ -123,6 +123,9 @@
   <data name="Code" xml:space="preserve">
     <value>Kode</value>
   </data>
+  <data name="Counter" xml:space="preserve">
+    <value>Teller</value>
+  </data>
   <data name="Country" xml:space="preserve">
     <value>Land</value>
   </data>
@@ -141,14 +144,23 @@
   <data name="Factor" xml:space="preserve">
     <value>Faktor</value>
   </data>
+  <data name="Format" xml:space="preserve">
+    <value>Formaat</value>
+  </data>
   <data name="IsBase" xml:space="preserve">
     <value>Basis?</value>
+  </data>
+  <data name="IsDisabled" xml:space="preserve">
+    <value>Uitgeschakeld</value>
   </data>
   <data name="IsSelected" xml:space="preserve">
     <value>Geselecteerd?</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>Taal</value>
+  </data>
+  <data name="Maximum" xml:space="preserve">
+    <value>Maximum</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Naam</value>
@@ -174,8 +186,14 @@
   <data name="TranslatedName" xml:space="preserve">
     <value>Originele naam</value>
   </data>
+  <data name="TypeCode" xml:space="preserve">
+    <value>Type Kode</value>
+  </data>
   <data name="TypeOf" xml:space="preserve">
     <value>Type Of</value>
+  </data>
+  <data name="TypeValue" xml:space="preserve">
+    <value>Type Waarde</value>
   </data>
   <data name="UnitType" xml:space="preserve">
     <value>Type</value>
