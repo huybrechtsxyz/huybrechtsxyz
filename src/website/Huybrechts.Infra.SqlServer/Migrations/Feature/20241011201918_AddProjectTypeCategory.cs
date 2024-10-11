@@ -5,7 +5,7 @@
 namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 {
     /// <inheritdoc />
-    public partial class AddTypeCategoryForProject : Migration
+    public partial class AddProjectTypeCategory : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

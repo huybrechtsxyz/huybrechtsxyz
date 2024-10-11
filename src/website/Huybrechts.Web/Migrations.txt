@@ -16,4 +16,4 @@ Add-Migration CreateProjectPlatformSchema -Context "FeatureContext" -Project "Hu
 Add-Migration CreateWikiPageSchema -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext
 Add-Migration CreateWikiSearchIndex -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext
 Add-Migration CreateSetupTypeNoSerie -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext
-Add-Migration AddProjectTypeCategory -Context "FeatureContext" -Project "Huybrechts.Infra.SqlServer" -Args APP_DATA_CONTEXT=SqlServerContext
+Add-Migration AddProjectTypeCategory -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext
