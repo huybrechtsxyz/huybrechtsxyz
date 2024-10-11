@@ -12,6 +12,42 @@ using System.Linq.Dynamic.Core;
 
 namespace Huybrechts.App.Features.Project.ProjectScenarioFlow;
 
+public record Model
+{
+    public Ulid Id { get; set; }
+
+    [Display(Name = "Project", ResourceType = typeof(Localization))]
+    public Ulid ProjectInfoId { get; set; } = Ulid.Empty;
+
+    [Display(Name = "Project", ResourceType = typeof(Localization))]
+    public string ProjectInfoName { get; set; } = string.Empty;
+
+    [Display(Name = nameof(Name), ResourceType = typeof(Localization))]
+    public string Name { get; set; } = string.Empty;
+
+    [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
+    public string? Description { get; set; }
+
+    [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
+    public string? Remark { get; set; }
+
+    [Display(Name = nameof(Tags), ResourceType = typeof(Localization))]
+    public string? Tags { get; set; }
+
+    public string SearchIndex => ProjectScenarioHelper.GetSearchIndex(Name, Description, Tags);
+}
+
+public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
+{
+    public ModelValidator()
+    {
+        RuleFor(m => m.Id).NotNull().NotEmpty();
+        RuleFor(m => m.ProjectInfoId).NotNull().NotEmpty();
+        RuleFor(m => m.Name).NotEmpty().Length(1, 128);
+        RuleFor(m => m.Description).Length(0, 256);
+    }
+}
+
 public static class ProjectScenarioHelper
 {
     public static string GetSearchIndex
@@ -48,42 +84,6 @@ public static class ProjectScenarioHelper
             .AnyAsync(pr => pr.Name.ToLower() == name
                             && pr.ProjectInfoId == ProjectInfoId
                             && (!currentId.HasValue || pr.Id != currentId.Value));
-    }
-}
-
-public record Model
-{
-    public Ulid Id { get; set; }
-
-    [Display(Name = "Project", ResourceType = typeof(Localization))]
-    public Ulid ProjectInfoId { get; set; } = Ulid.Empty;
-
-    [Display(Name = "Project", ResourceType = typeof(Localization))]
-    public string ProjectInfoName { get; set; } = string.Empty;
-
-    [Display(Name = nameof(Name), ResourceType = typeof(Localization))]
-    public string Name { get; set; } = string.Empty;
-
-    [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
-    public string? Description { get; set; }
-
-    [Display(Name = nameof(Remark), ResourceType = typeof(Localization))]
-    public string? Remark { get; set; }
-
-    [Display(Name = nameof(Tags), ResourceType = typeof(Localization))]
-    public string? Tags { get; set; }
-
-    public string SearchIndex => ProjectScenarioHelper.GetSearchIndex(Name, Description, Tags);
-}
-
-public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
-{
-    public ModelValidator()
-    {
-        RuleFor(m => m.Id).NotNull().NotEmpty();
-        RuleFor(m => m.ProjectInfoId).NotNull().NotEmpty();
-        RuleFor(m => m.Name).NotEmpty().Length(1, 128);
-        RuleFor(m => m.Description).Length(0, 256);
     }
 }
 

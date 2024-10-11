@@ -295,6 +295,15 @@ namespace Huybrechts.Web.Pages.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string Delete {
+            get {
+                return ResourceManager.GetString("Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Design.
         /// </summary>
         public static string Design {
@@ -390,6 +399,15 @@ namespace Huybrechts.Web.Pages.Features.Project {
         public static string Designs {
             get {
                 return ResourceManager.GetString("Designs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
             }
         }
         

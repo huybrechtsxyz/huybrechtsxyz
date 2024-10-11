@@ -34,6 +34,8 @@ public class StatusResult
 
     public string Message { get; set; } = string.Empty;
 
+    public string Value { get; set; } = string.Empty;
+
     public StatusResult() { }
 }
 
@@ -78,7 +80,8 @@ public static class FluentResultExtensions
             Message =
                 (result.IsFailed ? string.Join(Environment.NewLine, result.Errors.Select(s => s.Message)) :
                 result.IsSuccess ? string.Join(Environment.NewLine, result.Successes.Select(s => s.Message)) :
-                string.Join(Environment.NewLine, result.Reasons.Select(s => s.Message)))
+                string.Join(Environment.NewLine, result.Reasons.Select(s => s.Message))),
+            Value = string.Empty
         };
     }
 
@@ -97,7 +100,8 @@ public static class FluentResultExtensions
             Message =
                 (result.IsFailed ? string.Join(Environment.NewLine, result.Errors.Select(s => s.Message)) :
                 result.IsSuccess ? string.Join(Environment.NewLine, result.Successes.Select(s => s.Message)) :
-                string.Join(Environment.NewLine, result.Reasons.Select(s => s.Message)))
+                string.Join(Environment.NewLine, result.Reasons.Select(s => s.Message))),
+            Value = result.ValueOrDefault?.ToString() ?? string.Empty
         };
     }
 

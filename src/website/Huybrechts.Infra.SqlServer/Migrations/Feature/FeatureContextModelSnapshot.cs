@@ -1139,6 +1139,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("int")
                         .HasComment("Gets or sets the business value of the project.");
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The general category of the project, used for higher-level classification, such as Construction, Research, or Technology.");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(32)
@@ -1187,6 +1193,24 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(32)")
                         .HasComment("Gets or sets the priority of the project.");
 
+                    b.Property<string>("ProjectKind")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The specific kind of the project within the project type, such as Mobile App, Web App, or Database Development.");
+
+                    b.Property<string>("ProjectOrigin")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The origin of the project, indicating if it's internal, external, or customer-driven.");
+
+                    b.Property<string>("ProjectType")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The type of the project, such as Infrastructure, Software Development, or Research.");
+
                     b.Property<int?>("Rating")
                         .HasColumnType("int")
                         .HasComment("Gets or sets the rating of the project, reflecting its priority, quality, or stakeholder approval.");
@@ -1218,6 +1242,12 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)")
                         .HasComment("Gets or sets the current state of the project.");
+
+                    b.Property<string>("Subcategory")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The specific subcategory of the project, providing more detailed classification, such as AI Development or Cybersecurity.");
 
                     b.Property<string>("Tags")
                         .HasMaxLength(256)

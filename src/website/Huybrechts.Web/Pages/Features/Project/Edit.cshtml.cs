@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
+using Huybrechts.App.Features.Setup.SetupNoSerieFlow;
 using Huybrechts.App.Web;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -56,6 +57,17 @@ public class EditModel : PageModel
         {
             return RedirectToPage("/Error", new { status = StatusCodes.Status500InternalServerError });
         }
+    }
+
+    public async Task<JsonResult> OnGetSubcategoriesAsync(string category)
+    {
+        Flow.CreateQuery message = new() { };
+        var result = await _mediator.Send(message) ?? new();
+        if (result.HasStatusMessage())
+            StatusMessage = result.ToStatusMessage();
+        if (result.IsFailed)
+            return new JsonResult(null);
+        return new JsonResult(result.Value.LoadSubcategories(category));
     }
 
     public async Task<IActionResult> OnPostAsync()

@@ -304,6 +304,33 @@ namespace Huybrechts.App.Features.Project {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Kind.
+        /// </summary>
+        public static string ProjectKind {
+            get {
+                return ResourceManager.GetString("ProjectKind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Origin.
+        /// </summary>
+        public static string ProjectOrigin {
+            get {
+                return ResourceManager.GetString("ProjectOrigin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string ProjectType {
+            get {
+                return ResourceManager.GetString("ProjectType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Proposal.
         /// </summary>
         public static string Proposal {
@@ -435,6 +462,15 @@ namespace Huybrechts.App.Features.Project {
         public static string State {
             get {
                 return ResourceManager.GetString("State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Subcategory.
+        /// </summary>
+        public static string Subcategory {
+            get {
+                return ResourceManager.GetString("Subcategory", resourceCulture);
             }
         }
         

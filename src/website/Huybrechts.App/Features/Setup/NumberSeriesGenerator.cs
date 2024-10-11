@@ -16,14 +16,9 @@ namespace Huybrechts.App.Features.Setup;
 public partial class NumberSeriesGenerator
 {
     /// <summary>
-    /// Tenant information used to generate tenant-specific series.
-    /// </summary>
-    private readonly ITenantInfo _tenantInfo;
-
-    /// <summary>
     /// Validator for validating input queries related to number series generation.
     /// </summary>
-    private readonly IValidator<NoSerieQuery> _validator;
+    private readonly IValidator<NoSerieQuery>? _validator;
 
     /// <summary>
     /// Regex pattern used for matching number series counter placeholders in format strings.
@@ -41,9 +36,8 @@ public partial class NumberSeriesGenerator
     /// </summary>
     /// <param name="tenantInfo">The tenant information used in generating number series.</param>
     /// <param name="validator">The validator for validating number series queries.</param>
-    public NumberSeriesGenerator(ITenantInfo tenantInfo, IValidator<NoSerieQuery> validator)
+    public NumberSeriesGenerator(IValidator<NoSerieQuery>? validator = null)
     {
-        _tenantInfo = tenantInfo;
         _validator = validator;
     }
 
@@ -56,9 +50,12 @@ public partial class NumberSeriesGenerator
     public Result<SetupNoSerie> Generate(NoSerieQuery query, List<SetupNoSerie> series)
     {
         // Validate input query
-        ValidationResult validation = _validator.Validate(query);
-        if (!validation.IsValid) // Check if validation failed
-            return validation.AsResult(); // Return validation errors
+        if (_validator is not null)
+        {
+            ValidationResult validation = _validator.Validate(query);
+            if (!validation.IsValid) // Check if validation failed
+                return validation.AsResult(); // Return validation errors
+        }
 
         // Validate series data
         if (series is null || series.Count == 0) // No series provided
@@ -143,8 +140,7 @@ public partial class NumberSeriesGenerator
             .Replace("{YY}", dateTime.ToString("yy")) // Two-digit year
             .Replace("{MM}", dateTime.ToString("MM")) // Month
             .Replace("{WW}", GetWeekNumber(dateTime)) // Week number
-            .Replace("{DD}", dateTime.ToString("dd")) // Day
-            .Replace("{TEAM}", _tenantInfo.Id); // Tenant ID
+            .Replace("{DD}", dateTime.ToString("dd")); // Day
         return value; // Return formatted value
     }
 

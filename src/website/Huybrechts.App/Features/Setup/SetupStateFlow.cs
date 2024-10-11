@@ -81,11 +81,11 @@ public static class SetupStateHelper
         return false;
     }
 
-    public static async Task<List<SetupState>> GetProjectStatesAync(FeatureContext context)
+    public static async Task<List<SetupState>> GetProjectStatesAync(FeatureContext context, CancellationToken token)
         => await context.Set<SetupState>()
             .Where(q => q.TypeOf == nameof(Core.Project.ProjectInfo))
             .OrderBy(o => o.TypeOf).ThenBy(o => o.Sequence).ThenBy(o => o.Name)
-            .ToListAsync();
+            .ToListAsync(token);
 
     internal static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPSTATE_ID.Replace("{0}", id.ToString()));
 

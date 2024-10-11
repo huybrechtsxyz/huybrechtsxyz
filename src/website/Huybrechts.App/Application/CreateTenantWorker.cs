@@ -1,8 +1,6 @@
 ﻿using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
 using Huybrechts.App.Data;
-using Huybrechts.App.Features.Platform;
-using Huybrechts.App.Features.Setup;
 using Huybrechts.Core.Platform;
 using MediatR;
 

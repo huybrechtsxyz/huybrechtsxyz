@@ -12,54 +12,6 @@ using System.Linq.Dynamic.Core;
 
 namespace Huybrechts.App.Features.Project.ProjectDesignFlow;
 
-public static class ProjectDesignHelper
-{
-    public static string GetSearchIndex
-        (string name, string? description, string? tags)
-        => $"{name}~{description}~{tags}".ToLowerInvariant();
-
-    public static void CopyFields(Model model, ProjectDesign entity)
-    {
-        entity.Name = model.Name.Trim();
-        entity.Description = model.Description?.Trim();
-        entity.Remark = model.Remark?.Trim();
-        entity.Tags = model.Tags?.Trim();
-        entity.SearchIndex = model.SearchIndex;
-
-        entity.State = model.State.Trim();
-        entity.Reason = model.Reason?.Trim();
-        entity.Environment = model.Environment?.Trim();
-        entity.Version = model.Version?.Trim();
-        entity.Dependencies = model.Dependencies?.Trim();
-        entity.Priority = model.Priority?.Trim();
-        entity.Risk = model.Risk?.Trim();
-        entity.Rating = model.Rating;
-    }
-
-    public static CreateCommand CreateNew(ProjectInfo Project) => new()
-    {
-        Id = Ulid.NewUlid(),
-        ProjectInfoId = Project.Id,
-        ProjectInfoName = Project.Name
-    };
-
-    internal static Result ProjectNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
-
-    internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTDESIGN_ID.Replace("{0}", id.ToString()));
-
-    internal static Result DuplicateEntityFound(string name) => Result.Fail(Messages.DUPLICATE_PROJECTDESIGN_NAME.Replace("{0}", name.ToString()));
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
-    public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid ProjectInfoId, Ulid? currentId = null)
-    {
-        name = name.ToLower().Trim();
-        return await context.Set<ProjectDesign>()
-            .AnyAsync(pr => pr.Name.ToLower() == name
-                            && pr.ProjectInfoId == ProjectInfoId
-                            && (!currentId.HasValue || pr.Id != currentId.Value));
-    }
-}
-
 public record Model
 {
     public Ulid Id { get; set; }
@@ -126,6 +78,54 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
         RuleFor(m => m.Version).Length(0, 32);
         RuleFor(m => m.Priority).Length(0, 32);
         RuleFor(m => m.Risk).Length(0, 32);
+    }
+}
+
+public static class ProjectDesignHelper
+{
+    public static string GetSearchIndex
+        (string name, string? description, string? tags)
+        => $"{name}~{description}~{tags}".ToLowerInvariant();
+
+    public static void CopyFields(Model model, ProjectDesign entity)
+    {
+        entity.Name = model.Name.Trim();
+        entity.Description = model.Description?.Trim();
+        entity.Remark = model.Remark?.Trim();
+        entity.Tags = model.Tags?.Trim();
+        entity.SearchIndex = model.SearchIndex;
+
+        entity.State = model.State.Trim();
+        entity.Reason = model.Reason?.Trim();
+        entity.Environment = model.Environment?.Trim();
+        entity.Version = model.Version?.Trim();
+        entity.Dependencies = model.Dependencies?.Trim();
+        entity.Priority = model.Priority?.Trim();
+        entity.Risk = model.Risk?.Trim();
+        entity.Rating = model.Rating;
+    }
+
+    public static CreateCommand CreateNew(ProjectInfo Project) => new()
+    {
+        Id = Ulid.NewUlid(),
+        ProjectInfoId = Project.Id,
+        ProjectInfoName = Project.Name
+    };
+
+    internal static Result ProjectNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
+
+    internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECTDESIGN_ID.Replace("{0}", id.ToString()));
+
+    internal static Result DuplicateEntityFound(string name) => Result.Fail(Messages.DUPLICATE_PROJECTDESIGN_NAME.Replace("{0}", name.ToString()));
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
+    public static async Task<bool> IsDuplicateNameAsync(DbContext context, string name, Ulid ProjectInfoId, Ulid? currentId = null)
+    {
+        name = name.ToLower().Trim();
+        return await context.Set<ProjectDesign>()
+            .AnyAsync(pr => pr.Name.ToLower() == name
+                            && pr.ProjectInfoId == ProjectInfoId
+                            && (!currentId.HasValue || pr.Id != currentId.Value));
     }
 }
 
@@ -279,7 +279,7 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
 
         var command = ProjectDesignHelper.CreateNew(Project);
 
-        command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext);
+        command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext, token);
 
         return Result.Ok(command);
     }
@@ -392,7 +392,7 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
             return ProjectDesignHelper.ProjectNotFound(command.ProjectInfoId);
 
         command.ProjectInfo = project;
-        command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext);
+        command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext, token);
 
         return Result.Ok(command);
     }
