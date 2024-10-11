@@ -195,6 +195,9 @@
   <data name="ComponentUnits" xml:space="preserve">
     <value>Eenheden</value>
   </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
   <data name="Design" xml:space="preserve">
     <value>Ontwerp</value>
   </data>
@@ -227,6 +230,9 @@
   </data>
   <data name="Designs" xml:space="preserve">
     <value>Ontwerpen</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Bewerken</value>
   </data>
   <data name="InfoCreateInfo" xml:space="preserve">
     <value>Gebruik dit formulier om een nieuw project aan te maken. Vul alle verplichte velden in, zoals projectnaam, beschrijving en startdatum, om een nieuw project toe te voegen.</value>

@@ -195,6 +195,9 @@
   <data name="ComponentUnits" xml:space="preserve">
     <value>Units</value>
   </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
   <data name="Design" xml:space="preserve">
     <value>Design</value>
   </data>
@@ -227,6 +230,9 @@
   </data>
   <data name="Designs" xml:space="preserve">
     <value>Designs</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
   </data>
   <data name="InfoCreateInfo" xml:space="preserve">
     <value>Use this form to create a new project. Fill in all required fields, such as project name, description, and start date, to add a new project to the platform.</value>
