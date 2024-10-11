@@ -61,6 +61,24 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Automatic Reset.
+        /// </summary>
+        public static string AutomaticReset {
+            get {
+                return ResourceManager.GetString("AutomaticReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category.
+        /// </summary>
+        public static string Category {
+            get {
+                return ResourceManager.GetString("Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Code.
         /// </summary>
         public static string Code {
@@ -124,11 +142,38 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Format.
+        /// </summary>
+        public static string Format {
+            get {
+                return ResourceManager.GetString("Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Increment.
+        /// </summary>
+        public static string Increment {
+            get {
+                return ResourceManager.GetString("Increment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Base?.
         /// </summary>
         public static string IsBase {
             get {
                 return ResourceManager.GetString("IsBase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disabled?.
+        /// </summary>
+        public static string IsDisabled {
+            get {
+                return ResourceManager.GetString("IsDisabled", resourceCulture);
             }
         }
         
@@ -151,20 +196,47 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Last Counter.
+        /// </summary>
+        public static string LastCounter {
+            get {
+                return ResourceManager.GetString("LastCounter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last Prefix.
+        /// </summary>
+        public static string LastPrefix {
+            get {
+                return ResourceManager.GetString("LastPrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last Value.
+        /// </summary>
+        public static string LastValue {
+            get {
+                return ResourceManager.GetString("LastValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum.
+        /// </summary>
+        public static string Maximum {
+            get {
+                return ResourceManager.GetString("Maximum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Name {
             get {
                 return ResourceManager.GetString("Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Object type.
-        /// </summary>
-        public static string ObjectType {
-            get {
-                return ResourceManager.GetString("ObjectType", resourceCulture);
             }
         }
         
@@ -205,6 +277,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Start.
+        /// </summary>
+        public static string StartCounter {
+            get {
+                return ResourceManager.GetString("StartCounter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to State type.
         /// </summary>
         public static string StateType {
@@ -214,11 +295,38 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Subcategory.
+        /// </summary>
+        public static string Subcategory {
+            get {
+                return ResourceManager.GetString("Subcategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Translated name.
         /// </summary>
         public static string TranslatedName {
             get {
                 return ResourceManager.GetString("TranslatedName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type Of.
+        /// </summary>
+        public static string TypeOf {
+            get {
+                return ResourceManager.GetString("TypeOf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type Value.
+        /// </summary>
+        public static string TypeValue {
+            get {
+                return ResourceManager.GetString("TypeValue", resourceCulture);
             }
         }
         

@@ -42,7 +42,7 @@
                             <thead>
                                 <tr>
                                     <th>@SL["Select"]</th>
-                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].ObjectType)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].TypeOf)</th>
                                     <th>@Html.DisplayNameFor(model => model.Data.Results[0].Sequence)</th>
                                     <th>@Html.DisplayNameFor(model => model.Data.Results[0].Name)</th>
                                     <th>@Html.DisplayNameFor(model => model.Data.Results[0].StateType)</th>
@@ -57,8 +57,8 @@
                                             <input type="checkbox" asp-for="@Model.Data.Results[idex].IsSelected" />
                                         </td>
                                         <td>
-                                            <input type="hidden" asp-for="@Model.Data.Results[idex].ObjectType" />
-                                            @Html.DisplayFor(model => @Model.Data.Results[idex].ObjectType)
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].TypeOf" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].TypeOf)
                                         </td>
                                         <td>
                                             <input type="hidden" asp-for="@Model.Data.Results[idex].Sequence" />

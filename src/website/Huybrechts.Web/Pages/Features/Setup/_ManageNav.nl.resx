@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Categories" xml:space="preserve">
+    <value>Categorieën</value>
+  </data>
   <data name="Countries" xml:space="preserve">
     <value>Landen</value>
   </data>
@@ -126,6 +129,9 @@
   <data name="Languages" xml:space="preserve">
     <value>Talen</value>
   </data>
+  <data name="No. Series" xml:space="preserve">
+    <value>Nummerseries</value>
+  </data>
   <data name="Setup" xml:space="preserve">
     <value>Instellingen</value>
   </data>
@@ -134,5 +140,8 @@
   </data>
   <data name="System units" xml:space="preserve">
     <value>Eenheden</value>
+  </data>
+  <data name="Types" xml:space="preserve">
+    <value>Types</value>
   </data>
 </root>

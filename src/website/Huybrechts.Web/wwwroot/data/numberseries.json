@@ -1,0 +1,47 @@
+[
+  {
+    "TypeOf": "ProjectCode",
+    "TypeValue": "Development",
+    "Format": "DEV-YYYY-MM-###",
+    "StartCounter": 1,
+    "Increment": 1,
+    "Maximum": 999999,
+    "AutomaticReset": true,
+    "LastCounter": 0,
+    "LastPrefix": "",
+    "LastValue": "",
+    "IsDisabled": false,
+    "Description": "Number series for development projects",
+    "SearchIndex": "ProjectCode-Development"
+  },
+  {
+    "TypeOf": "ProjectCode",
+    "TypeValue": "Commercial",
+    "Format": "SALES-YYYY-MM-###",
+    "StartCounter": 1,
+    "Increment": 1,
+    "Maximum": 999999,
+    "AutomaticReset": true,
+    "LastCounter": 0,
+    "LastPrefix": "",
+    "LastValue": "",
+    "IsDisabled": false,
+    "Description": "Number series for sales projects",
+    "SearchIndex": "ProjectCode-Sales"
+  },
+  {
+    "TypeOf": "ProjectCode",
+    "TypeValue": "Research",
+    "Format": "RD-YYYY-MM-###",
+    "StartCounter": 1,
+    "Increment": 1,
+    "Maximum": 999999,
+    "AutomaticReset": true,
+    "LastCounter": 0,
+    "LastPrefix": "",
+    "LastValue": "",
+    "IsDisabled": false,
+    "Description": "Number series for RD projects",
+    "SearchIndex": "ProjectCode-RD"
+  }
+]

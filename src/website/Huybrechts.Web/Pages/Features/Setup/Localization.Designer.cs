@@ -79,6 +79,123 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Categories.
+        /// </summary>
+        public static string Categories {
+            get {
+                return ResourceManager.GetString("Categories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category.
+        /// </summary>
+        public static string Category {
+            get {
+                return ResourceManager.GetString("Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a new category and, optionally, a subcategory to the system. Provide relevant details such as description and classification type..
+        /// </summary>
+        public static string CategoryCreateInfo {
+            get {
+                return ResourceManager.GetString("CategoryCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create New Category.
+        /// </summary>
+        public static string CategoryCreateTitle {
+            get {
+                return ResourceManager.GetString("CategoryCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm the deletion of the selected category or subcategory. This action cannot be undone..
+        /// </summary>
+        public static string CategoryDeleteInfo {
+            get {
+                return ResourceManager.GetString("CategoryDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Category.
+        /// </summary>
+        public static string CategoryDeleteTitle {
+            get {
+                return ResourceManager.GetString("CategoryDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify the details of an existing category or subcategory. Update the classification type, name, and description as needed..
+        /// </summary>
+        public static string CategoryEditInfo {
+            get {
+                return ResourceManager.GetString("CategoryEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Category.
+        /// </summary>
+        public static string CategoryEditTitle {
+            get {
+                return ResourceManager.GetString("CategoryEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import categories and subcategories from predefined templates. Quickly add multiple categories to the system by selecting from available examples..
+        /// </summary>
+        public static string CategoryImportInfo {
+            get {
+                return ResourceManager.GetString("CategoryImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Categories.
+        /// </summary>
+        public static string CategoryImportTitle {
+            get {
+                return ResourceManager.GetString("CategoryImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View and manage the categories and subcategories for different objects in the system..
+        /// </summary>
+        public static string CategoryIndexInfo {
+            get {
+                return ResourceManager.GetString("CategoryIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage Categories and Subcategories.
+        /// </summary>
+        public static string CategoryIndexTitle {
+            get {
+                return ResourceManager.GetString("CategoryIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string CategoryNoResults {
+            get {
+                return ResourceManager.GetString("CategoryNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clear Filter.
         /// </summary>
         public static string Clear_Filter {
@@ -457,6 +574,127 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No. Serie.
+        /// </summary>
+        public static string NoSerie {
+            get {
+                return ResourceManager.GetString("NoSerie", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this page to define a new number series. You can specify the type, format, and maximum counter for the series.Dynamic String Formatter for Patterns with Date and Number Padding
+        ///
+        ///This function allows you to dynamically generate strings based on a customizable pattern. It replaces placeholders for the current year ({YY}), month ({MM}), and sequences of hash symbols (#) with a padded number. The number is formatted according to the length of the # sequence, making it flexible for different padding requir [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string NoSerieCreateInfo {
+            get {
+                return ResourceManager.GetString("NoSerieCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create New Number Series.
+        /// </summary>
+        public static string NoSerieCreateTitle {
+            get {
+                return ResourceManager.GetString("NoSerieCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm the deletion of a number series. This action is irreversible and will remove the series from the system..
+        /// </summary>
+        public static string NoSerieDeleteInfo {
+            get {
+                return ResourceManager.GetString("NoSerieDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Number Series.
+        /// </summary>
+        public static string NoSerieDeleteTitle {
+            get {
+                return ResourceManager.GetString("NoSerieDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify the details of an existing number series, including its format, counter, and type values. Dynamic String Formatter for Patterns with Date and Number Padding
+        ///
+        ///This function allows you to dynamically generate strings based on a customizable pattern. It replaces placeholders for the current year ({YY}), month ({MM}), and sequences of hash symbols (#) with a padded number. The number is formatted according to the length of the # sequence, making it flexible for different padding requirements. This is u [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string NoSerieEditInfo {
+            get {
+                return ResourceManager.GetString("NoSerieEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Number Series.
+        /// </summary>
+        public static string NoSerieEditTitle {
+            get {
+                return ResourceManager.GetString("NoSerieEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this page to import number series from an external file. Ensure the format is correct to avoid errors during import..
+        /// </summary>
+        public static string NoSerieImportInfo {
+            get {
+                return ResourceManager.GetString("NoSerieImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Number Series.
+        /// </summary>
+        public static string NoSerieImportTitle {
+            get {
+                return ResourceManager.GetString("NoSerieImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page displays a list of all available number series. You can view, create, edit, or delete number series for various entities..
+        /// </summary>
+        public static string NoSerieIndexInfo {
+            get {
+                return ResourceManager.GetString("NoSerieIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number Series Overview.
+        /// </summary>
+        public static string NoSerieIndexTitle {
+            get {
+                return ResourceManager.GetString("NoSerieIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string NoSerieNoResults {
+            get {
+                return ResourceManager.GetString("NoSerieNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No. Series.
+        /// </summary>
+        public static string NoSeries {
+            get {
+                return ResourceManager.GetString("NoSeries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Previous.
         /// </summary>
         public static string Previous {
@@ -606,6 +844,123 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         public static string States {
             get {
                 return ResourceManager.GetString("States", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string Type {
+            get {
+                return ResourceManager.GetString("Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a new setup type to the system. Provide details such as the classification type and description..
+        /// </summary>
+        public static string TypeCreateInfo {
+            get {
+                return ResourceManager.GetString("TypeCreateInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create New Setup Type.
+        /// </summary>
+        public static string TypeCreateTitle {
+            get {
+                return ResourceManager.GetString("TypeCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm the deletion of the selected setup type. This action cannot be undone..
+        /// </summary>
+        public static string TypeDeleteInfo {
+            get {
+                return ResourceManager.GetString("TypeDeleteInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Setup Type.
+        /// </summary>
+        public static string TypeDeleteTitle {
+            get {
+                return ResourceManager.GetString("TypeDeleteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify the details of an existing setup type. Adjust the classification type, name, and description as needed..
+        /// </summary>
+        public static string TypeEditInfo {
+            get {
+                return ResourceManager.GetString("TypeEditInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Setup Type.
+        /// </summary>
+        public static string TypeEditTitle {
+            get {
+                return ResourceManager.GetString("TypeEditTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import setup types from pre-defined examples. Quickly add multiple setup types to the system by selecting from available templates..
+        /// </summary>
+        public static string TypeImportInfo {
+            get {
+                return ResourceManager.GetString("TypeImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Setup Types.
+        /// </summary>
+        public static string TypeImportTitle {
+            get {
+                return ResourceManager.GetString("TypeImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View and manage different setup types, such as project types, kinds, or other classifications used within the system..
+        /// </summary>
+        public static string TypeIndexInfo {
+            get {
+                return ResourceManager.GetString("TypeIndexInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage Setup Types.
+        /// </summary>
+        public static string TypeIndexTitle {
+            get {
+                return ResourceManager.GetString("TypeIndexTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results found.
+        /// </summary>
+        public static string TypeNoResults {
+            get {
+                return ResourceManager.GetString("TypeNoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Types.
+        /// </summary>
+        public static string Types {
+            get {
+                return ResourceManager.GetString("Types", resourceCulture);
             }
         }
         

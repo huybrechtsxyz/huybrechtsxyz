@@ -61,6 +61,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate system category for {0}.
+        /// </summary>
+        public static string DUPLICATE_SETUPCATEGORY {
+            get {
+                return ResourceManager.GetString("DUPLICATE_SETUPCATEGORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate country code for {0}.
         /// </summary>
         public static string DUPLICATE_SETUPCOUNTRY_CODE {
@@ -115,6 +124,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate no. serie for {0}.
+        /// </summary>
+        public static string DUPLICATE_SETUPNOSERIE {
+            get {
+                return ResourceManager.GetString("DUPLICATE_SETUPNOSERIE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate system state name for {0}.
         /// </summary>
         public static string DUPLICATE_SETUPSTATE_NAME {
@@ -124,11 +142,29 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate setup type for {0}.
+        /// </summary>
+        public static string DUPLICATE_SETUPTYPE_NAME {
+            get {
+                return ResourceManager.GetString("DUPLICATE_SETUPTYPE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate system unit for {0}.
         /// </summary>
         public static string DUPLICATE_SETUPUNIT_NAME {
             get {
                 return ResourceManager.GetString("DUPLICATE_SETUPUNIT_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find system category with ID {0}.
+        /// </summary>
+        public static string INVALID_SETUPCATEGORY_ID {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPCATEGORY_ID", resourceCulture);
             }
         }
         
@@ -160,11 +196,56 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid setup of No. Serie for {0}.
+        /// </summary>
+        public static string INVALID_SETUPNOSERIE_CONFIG {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPNOSERIE_CONFIG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No. Series {0} is disabled.
+        /// </summary>
+        public static string INVALID_SETUPNOSERIE_DISABLED {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPNOSERIE_DISABLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find no. serie with ID {0}.
+        /// </summary>
+        public static string INVALID_SETUPNOSERIE_ID {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPNOSERIE_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum value reached for No. Serie {0}.
+        /// </summary>
+        public static string INVALID_SETUPNOSERIE_MAXIMUM {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPNOSERIE_MAXIMUM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find system state with ID {0}.
         /// </summary>
         public static string INVALID_SETUPSTATE_ID {
             get {
                 return ResourceManager.GetString("INVALID_SETUPSTATE_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find system type with ID {0}.
+        /// </summary>
+        public static string INVALID_SETUPTYPE_ID {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPTYPE_ID", resourceCulture);
             }
         }
         

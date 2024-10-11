@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DUPLICATE_SETUPCATEGORY" xml:space="preserve">
+    <value>(Sub)Category {0} bestaat al</value>
+  </data>
   <data name="DUPLICATE_SETUPCOUNTRY_CODE" xml:space="preserve">
     <value>Land met naam {0} bestaat al</value>
   </data>
@@ -135,11 +138,20 @@
   <data name="DUPLICATE_SETUPLANGUAGE_NAME" xml:space="preserve">
     <value>Taal met naam {0} bestaat al</value>
   </data>
+  <data name="DUPLICATE_SETUPNOSERIE" xml:space="preserve">
+    <value>Nummerserie {0} bestaat al</value>
+  </data>
   <data name="DUPLICATE_SETUPSTATE_NAME" xml:space="preserve">
     <value>Status met naam {0} bestaat al</value>
   </data>
+  <data name="DUPLICATE_SETUPTYPE_NAME" xml:space="preserve">
+    <value>Systeem type met naam {0} bestaat al</value>
+  </data>
   <data name="DUPLICATE_SETUPUNIT_NAME" xml:space="preserve">
     <value>Systeemeenheid met naam {0} bestaat al</value>
+  </data>
+  <data name="INVALID_SETUPCATEGORY_ID" xml:space="preserve">
+    <value>Kan systeem category met ID {0} niet vinden</value>
   </data>
   <data name="INVALID_SETUPCOUNTRY_ID" xml:space="preserve">
     <value>Kan land met ID {0} niet vinden</value>
@@ -150,8 +162,23 @@
   <data name="INVALID_SETUPLANGUAGE_ID" xml:space="preserve">
     <value>Kan taal met ID {0} niet vinden</value>
   </data>
+  <data name="INVALID_SETUPNOSERIE_CONFIG" xml:space="preserve">
+    <value>Configuration van nummerreeks {0} is niet geldig</value>
+  </data>
+  <data name="INVALID_SETUPNOSERIE_DISABLED" xml:space="preserve">
+    <value>Nummerserie {0} is uitgeschakeld</value>
+  </data>
+  <data name="INVALID_SETUPNOSERIE_ID" xml:space="preserve">
+    <value>Kan nummerserie met ID {0} niet vinden</value>
+  </data>
+  <data name="INVALID_SETUPNOSERIE_MAXIMUM" xml:space="preserve">
+    <value>Maximum waarde voor nummerserie {0} overschreden</value>
+  </data>
   <data name="INVALID_SETUPSTATE_ID" xml:space="preserve">
     <value>Kan status met ID {0} niet vinden</value>
+  </data>
+  <data name="INVALID_SETUPTYPE_ID" xml:space="preserve">
+    <value>Kan systeem type met ID {0} niet vinden</value>
   </data>
   <data name="INVALID_SETUPUNIT_ID" xml:space="preserve">
     <value>Kan systeemeenheid met ID {0} niet vinden</value>

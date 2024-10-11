@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AutomaticReset" xml:space="preserve">
+    <value>Automatic Reset</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
   <data name="Code" xml:space="preserve">
     <value>Code</value>
   </data>
@@ -138,8 +144,17 @@
   <data name="Factor" xml:space="preserve">
     <value>Factor</value>
   </data>
+  <data name="Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="Increment" xml:space="preserve">
+    <value>Increment</value>
+  </data>
   <data name="IsBase" xml:space="preserve">
     <value>Base?</value>
+  </data>
+  <data name="IsDisabled" xml:space="preserve">
+    <value>Disabled?</value>
   </data>
   <data name="IsSelected" xml:space="preserve">
     <value>Select?</value>
@@ -147,11 +162,20 @@
   <data name="Language" xml:space="preserve">
     <value>Language</value>
   </data>
+  <data name="LastCounter" xml:space="preserve">
+    <value>Last Counter</value>
+  </data>
+  <data name="LastPrefix" xml:space="preserve">
+    <value>Last Prefix</value>
+  </data>
+  <data name="LastValue" xml:space="preserve">
+    <value>Last Value</value>
+  </data>
+  <data name="Maximum" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
-  </data>
-  <data name="ObjectType" xml:space="preserve">
-    <value>Object type</value>
   </data>
   <data name="Precision" xml:space="preserve">
     <value>Precision</value>
@@ -165,11 +189,23 @@
   <data name="Sequence" xml:space="preserve">
     <value>Sequence</value>
   </data>
+  <data name="StartCounter" xml:space="preserve">
+    <value>Start</value>
+  </data>
   <data name="StateType" xml:space="preserve">
     <value>State type</value>
   </data>
+  <data name="Subcategory" xml:space="preserve">
+    <value>Subcategory</value>
+  </data>
   <data name="TranslatedName" xml:space="preserve">
     <value>Translated name</value>
+  </data>
+  <data name="TypeOf" xml:space="preserve">
+    <value>Type Of</value>
+  </data>
+  <data name="TypeValue" xml:space="preserve">
+    <value>Type Value</value>
   </data>
   <data name="UnitType" xml:space="preserve">
     <value>Type</value>

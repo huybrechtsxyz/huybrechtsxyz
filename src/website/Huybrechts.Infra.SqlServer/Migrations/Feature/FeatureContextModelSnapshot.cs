@@ -17,7 +17,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -1773,6 +1773,83 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
+            modelBuilder.Entity("Huybrechts.Core.Setup.SetupCategory", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The primary category assigned to the object.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Additional details or context for the category or subcategory.");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Stores normalized, concatenated values for efficient searching.");
+
+                    b.Property<string>("Subcategory")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The subcategory assigned to the object, dependent on the selected category.");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Gets or sets the tenant identifier.");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
+
+                    b.Property<string>("TypeOf")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The classification or type for the object (e.g., ProjectCategory).");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "TypeOf", "Category", "Subcategory");
+
+                    b.ToTable("SetupCategory", t =>
+                        {
+                            t.HasComment("Defines categories and subcategories for objects in the setup configuration.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupCountry", b =>
                 {
                     b.Property<string>("Id")
@@ -2008,6 +2085,119 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
+            modelBuilder.Entity("Huybrechts.Core.Setup.SetupNoSerie", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<bool>("AutomaticReset")
+                        .HasColumnType("bit")
+                        .HasComment("Indicates whether the counter will automatically reset when the number series changes (e.g., at the start of a new year).");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("Optional description providing more details about the number series.");
+
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasComment("Format string defining how the number is generated, including placeholders like YYYY-MM-###.");
+
+                    b.Property<int>("Increment")
+                        .HasColumnType("int")
+                        .HasComment("Specifies the increment value for the counter when generating a new number.");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("bit")
+                        .HasComment("Indicates whether the counter is disabled. If true, the counter is inactive.");
+
+                    b.Property<int>("LastCounter")
+                        .HasColumnType("int")
+                        .HasComment("The current sequential number for this series.");
+
+                    b.Property<string>("LastPrefix")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Stores the last generated prefix in the series to track the most recent value.");
+
+                    b.Property<string>("LastValue")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Stores the last generated number in the series to track the most recent value.");
+
+                    b.Property<int>("Maximum")
+                        .HasColumnType("int")
+                        .HasComment("The maximum allowed value for the counter before it resets or stops.");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("A normalized concatenated field used for optimizing search operations.");
+
+                    b.Property<int>("StartCounter")
+                        .HasColumnType("int")
+                        .HasComment("The maximum allowed value for the counter before it resets or stops.");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Gets or sets the tenant identifier.");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
+
+                    b.Property<string>("TypeOf")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Type of number series, such as ProjectNumber or InvoiceNumber.");
+
+                    b.Property<string>("TypeValue")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Specific value within the type code, such as 'Sales' or 'Development' for project types.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "TypeOf", "TypeValue");
+
+                    b.ToTable("SetupNoSerie", t =>
+                        {
+                            t.HasComment("Stores configuration for number series, supporting multi-tenancy.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupState", b =>
                 {
                     b.Property<string>("Id")
@@ -2041,9 +2231,6 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.Property<int>("ObjectType")
-                        .HasColumnType("int");
-
                     b.Property<string>("SearchIndex")
                         .HasColumnType("nvarchar(450)")
                         .HasComment("This field will store the normalized, concatenated values for searching");
@@ -2066,16 +2253,93 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("rowversion")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
+                    b.Property<string>("TypeOf")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The classification or type for the object (e.g., ProjectType, ProjectKind).");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.HasIndex("TenantId", "ObjectType", "Name")
+                    b.HasIndex("TenantId", "TypeOf", "Name")
                         .IsUnique();
 
                     b.ToTable("SetupState", t =>
                         {
                             t.HasComment("Represents a custom state that can be applied to various objects, such as projects, constraints, requirements, and more.");
+                        });
+
+                    b.HasAnnotation("Finbuckle:MultiTenant", true);
+                });
+
+            modelBuilder.Entity("Huybrechts.Core.Setup.SetupType", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(26)")
+                        .HasComment("Gets or sets the primary key for the entity.");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who created the entity.");
+
+                    b.Property<DateTime>("CreatedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Date time created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasComment("A detailed description providing additional context or information about the type.");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Gets or sets the ID of the user who last modified the entity.");
+
+                    b.Property<DateTime?>("ModifiedDT")
+                        .HasColumnType("datetime2")
+                        .HasComment("Gets or sets the last modified date and time for the entity.");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The code or value representing this type (e.g., X00 - X01).");
+
+                    b.Property<string>("SearchIndex")
+                        .HasColumnType("nvarchar(450)")
+                        .HasComment("Stores normalized, concatenated values for efficient searching.");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Gets or sets the tenant identifier.");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasComment("Gets or sets the concurrency timestamp for the entity.");
+
+                    b.Property<string>("TypeOf")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("The classification or type for the object (e.g., ProjectType, ProjectKind).");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "SearchIndex");
+
+                    b.HasIndex("TenantId", "TypeOf", "Name");
+
+                    b.ToTable("SetupType", t =>
+                        {
+                            t.HasComment("Defines various object types and codes within the setup configuration.");
                         });
 
                     b.HasAnnotation("Finbuckle:MultiTenant", true);

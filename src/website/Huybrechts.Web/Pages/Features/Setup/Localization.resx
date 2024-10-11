@@ -123,6 +123,45 @@
   <data name="Add New" xml:space="preserve">
     <value>Add New</value>
   </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="CategoryCreateInfo" xml:space="preserve">
+    <value>Add a new category and, optionally, a subcategory to the system. Provide relevant details such as description and classification type.</value>
+  </data>
+  <data name="CategoryCreateTitle" xml:space="preserve">
+    <value>Create New Category</value>
+  </data>
+  <data name="CategoryDeleteInfo" xml:space="preserve">
+    <value>Confirm the deletion of the selected category or subcategory. This action cannot be undone.</value>
+  </data>
+  <data name="CategoryDeleteTitle" xml:space="preserve">
+    <value>Delete Category</value>
+  </data>
+  <data name="CategoryEditInfo" xml:space="preserve">
+    <value>Modify the details of an existing category or subcategory. Update the classification type, name, and description as needed.</value>
+  </data>
+  <data name="CategoryEditTitle" xml:space="preserve">
+    <value>Edit Category</value>
+  </data>
+  <data name="CategoryImportInfo" xml:space="preserve">
+    <value>Import categories and subcategories from predefined templates. Quickly add multiple categories to the system by selecting from available examples.</value>
+  </data>
+  <data name="CategoryImportTitle" xml:space="preserve">
+    <value>Import Categories</value>
+  </data>
+  <data name="CategoryIndexInfo" xml:space="preserve">
+    <value>View and manage the categories and subcategories for different objects in the system.</value>
+  </data>
+  <data name="CategoryIndexTitle" xml:space="preserve">
+    <value>Manage Categories and Subcategories</value>
+  </data>
+  <data name="CategoryNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
   <data name="Clear Filter" xml:space="preserve">
     <value>Clear Filter</value>
   </data>
@@ -249,6 +288,61 @@
   <data name="NoResults" xml:space="preserve">
     <value>No results found</value>
   </data>
+  <data name="NoSerie" xml:space="preserve">
+    <value>No. Serie</value>
+  </data>
+  <data name="NoSerieCreateInfo" xml:space="preserve">
+    <value>Use this page to define a new number series. You can specify the type, format, and maximum counter for the series.Dynamic String Formatter for Patterns with Date and Number Padding
+
+This function allows you to dynamically generate strings based on a customizable pattern. It replaces placeholders for the current year ({YY}), month ({MM}), and sequences of hash symbols (#) with a padded number. The number is formatted according to the length of the # sequence, making it flexible for different padding requirements. This is useful for creating IDs, version numbers, or custom formats with dynamic date and number components.
+
+Features:
+
+    Replace {YY} and {MM} with the current year and month.
+    Automatically detect and replace any sequence of # with a number, padded to the correct length.
+    Flexible for various patterns, making it highly customizable for different use cases.</value>
+  </data>
+  <data name="NoSerieCreateTitle" xml:space="preserve">
+    <value>Create New Number Series</value>
+  </data>
+  <data name="NoSerieDeleteInfo" xml:space="preserve">
+    <value>Confirm the deletion of a number series. This action is irreversible and will remove the series from the system.</value>
+  </data>
+  <data name="NoSerieDeleteTitle" xml:space="preserve">
+    <value>Delete Number Series</value>
+  </data>
+  <data name="NoSerieEditInfo" xml:space="preserve">
+    <value>Modify the details of an existing number series, including its format, counter, and type values. Dynamic String Formatter for Patterns with Date and Number Padding
+
+This function allows you to dynamically generate strings based on a customizable pattern. It replaces placeholders for the current year ({YY}), month ({MM}), and sequences of hash symbols (#) with a padded number. The number is formatted according to the length of the # sequence, making it flexible for different padding requirements. This is useful for creating IDs, version numbers, or custom formats with dynamic date and number components.
+
+Features:
+
+    Replace {YY} and {MM} with the current year and month.
+    Automatically detect and replace any sequence of # with a number, padded to the correct length.
+    Flexible for various patterns, making it highly customizable for different use cases.</value>
+  </data>
+  <data name="NoSerieEditTitle" xml:space="preserve">
+    <value>Edit Number Series</value>
+  </data>
+  <data name="NoSerieImportInfo" xml:space="preserve">
+    <value>Use this page to import number series from an external file. Ensure the format is correct to avoid errors during import.</value>
+  </data>
+  <data name="NoSerieImportTitle" xml:space="preserve">
+    <value>Import Number Series</value>
+  </data>
+  <data name="NoSerieIndexInfo" xml:space="preserve">
+    <value>This page displays a list of all available number series. You can view, create, edit, or delete number series for various entities.</value>
+  </data>
+  <data name="NoSerieIndexTitle" xml:space="preserve">
+    <value>Number Series Overview</value>
+  </data>
+  <data name="NoSerieNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="NoSeries" xml:space="preserve">
+    <value>No. Series</value>
+  </data>
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
   </data>
@@ -299,6 +393,45 @@
   </data>
   <data name="States" xml:space="preserve">
     <value>States</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="TypeCreateInfo" xml:space="preserve">
+    <value>Add a new setup type to the system. Provide details such as the classification type and description.</value>
+  </data>
+  <data name="TypeCreateTitle" xml:space="preserve">
+    <value>Create New Setup Type</value>
+  </data>
+  <data name="TypeDeleteInfo" xml:space="preserve">
+    <value>Confirm the deletion of the selected setup type. This action cannot be undone.</value>
+  </data>
+  <data name="TypeDeleteTitle" xml:space="preserve">
+    <value>Delete Setup Type</value>
+  </data>
+  <data name="TypeEditInfo" xml:space="preserve">
+    <value>Modify the details of an existing setup type. Adjust the classification type, name, and description as needed.</value>
+  </data>
+  <data name="TypeEditTitle" xml:space="preserve">
+    <value>Edit Setup Type</value>
+  </data>
+  <data name="TypeImportInfo" xml:space="preserve">
+    <value>Import setup types from pre-defined examples. Quickly add multiple setup types to the system by selecting from available templates.</value>
+  </data>
+  <data name="TypeImportTitle" xml:space="preserve">
+    <value>Import Setup Types</value>
+  </data>
+  <data name="TypeIndexInfo" xml:space="preserve">
+    <value>View and manage different setup types, such as project types, kinds, or other classifications used within the system.</value>
+  </data>
+  <data name="TypeIndexTitle" xml:space="preserve">
+    <value>Manage Setup Types</value>
+  </data>
+  <data name="TypeNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Types" xml:space="preserve">
+    <value>Types</value>
   </data>
   <data name="UnitCreateInfo" xml:space="preserve">
     <value>se this form to create a new unit of measurement. Ensure all fields are correctly filled out to define the unit’s attributes, including its type, name, and conversion factor.</value>

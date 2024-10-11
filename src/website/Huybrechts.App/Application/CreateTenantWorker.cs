@@ -59,6 +59,9 @@ public class CreateTenantWorker
     private async Task CreateSetup(CancellationToken token)
     {
         await CreateSetupStates(token);
+        await CreateSetupTypes(token);
+        await CreateSetupCategories(token);
+        await CreateSetupNoSeries(token);
         await CreateSetupUnits(token);
         await CreateSetupLanguages(token);
         await CreateSetupCurrencies(token);
@@ -75,6 +78,45 @@ public class CreateTenantWorker
         var entities = request.Value.Results.ToList();
 
         Features.Setup.SetupStateFlow.ImportCommand command = new() { Items = entities };
+        _ = await _mediator.Send(command, token);
+    }
+
+    private async Task CreateSetupTypes(CancellationToken token)
+    {
+        Features.Setup.SetupTypeFlow.ImportQuery query = new() { };
+        var request = await _mediator.Send(query, token);
+        if (request.IsFailed)
+            return;
+
+        var entities = request.Value.Results.ToList();
+
+        Features.Setup.SetupTypeFlow.ImportCommand command = new() { Items = entities };
+        _ = await _mediator.Send(command, token);
+    }
+
+    private async Task CreateSetupCategories(CancellationToken token)
+    {
+        Features.Setup.SetupCategoryFlow.ImportQuery query = new() { };
+        var request = await _mediator.Send(query, token);
+        if (request.IsFailed)
+            return;
+
+        var entities = request.Value.Results.ToList();
+
+        Features.Setup.SetupCategoryFlow.ImportCommand command = new() { Items = entities };
+        _ = await _mediator.Send(command, token);
+    }
+
+    private async Task CreateSetupNoSeries(CancellationToken token)
+    {
+        Features.Setup.SetupNoSerieFlow.ImportQuery query = new() { };
+        var request = await _mediator.Send(query, token);
+        if (request.IsFailed)
+            return;
+
+        var entities = request.Value.Results.ToList();
+
+        Features.Setup.SetupNoSerieFlow.ImportCommand command = new() { Items = entities };
         _ = await _mediator.Send(command, token);
     }
 
