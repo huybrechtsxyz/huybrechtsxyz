@@ -12,13 +12,13 @@ public class NumberSeriesGeneratorTest
 {
     private readonly Mock<IValidator<NoSerieQuery>> _mockValidator;
     private readonly NumberSeriesGenerator _numberSeriesGenerator;
-    private readonly TenantInfo _tenantInfo;
+    //private readonly TenantInfo _tenantInfo;
 
     public NumberSeriesGeneratorTest()
     {
         _mockValidator = new Mock<IValidator<NoSerieQuery>>();
-        _tenantInfo = new TenantInfo() { Id = "1", Name = "Team1", Identifier = "team1" };
-        _numberSeriesGenerator = new NumberSeriesGenerator(_tenantInfo, _mockValidator.Object);
+        //_tenantInfo = new TenantInfo() { Id = "1", Name = "Team1", Identifier = "team1" };
+        _numberSeriesGenerator = new NumberSeriesGenerator(_mockValidator.Object);
     }
 
     // Helper method to create a basic SetupNoSerie object
@@ -28,15 +28,33 @@ public class NumberSeriesGeneratorTest
         {
             TypeOf = typeOf,
             TypeValue = typeValue,
-            Format = "PREFIX-{YYYY}-{MM}-{DD}-{TEAM}-{####}-SUFFIX",
+            Format = "PREFIX-{YYYY}-{MM}-{DD}-{####}-SUFFIX",
             StartCounter = start,
             Increment = increment,
             Maximum = maximum,
             AutomaticReset = isReset,
             IsDisabled = isDisabled,
             LastCounter = counter,
-            LastValue = "PREFIX-2023-10-09-Team1-0005-SUFFIX",
-            LastPrefix = "PREFIX-2023-10-11-Team1--SUFFIX"
+            LastValue = "PREFIX-2023-10-09-0005-SUFFIX",
+            LastPrefix = "PREFIX-2023-10-11--SUFFIX"
+        };
+    }
+
+    private static SetupNoSerie CreateNewSetupNoSerie(string typeOf, string typeValue, int start, int increment, int maximum, bool isDisabled = false, bool isReset = false)
+    {
+        return new SetupNoSerie
+        {
+            TypeOf = typeOf,
+            TypeValue = typeValue,
+            Format = "PREFIX-{YYYY}-{MM}-{DD}-{####}-SUFFIX",
+            StartCounter = start,
+            Increment = increment,
+            Maximum = maximum,
+            AutomaticReset = isReset,
+            IsDisabled = isDisabled,
+            LastCounter = 0,
+            LastValue = "",
+            LastPrefix = ""
         };
     }
 
@@ -125,7 +143,7 @@ public class NumberSeriesGeneratorTest
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(1, result.Value.LastCounter);  // Counter should reset to minimum and incremented to 6
-        Assert.Equal("PREFIX-2024-01-01-1-000001-SUFFIX", result.Value.LastValue);
+        Assert.Equal("PREFIX-2024-01-01-000001-SUFFIX", result.Value.LastValue);
     }
 
     [Fact]
@@ -146,7 +164,28 @@ public class NumberSeriesGeneratorTest
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(6, result.Value.LastCounter);  // Counter should increment by 1
-        Assert.Equal("PREFIX-2023-10-10-1-000006-SUFFIX", result.Value.LastValue);
+        Assert.Equal("PREFIX-2023-10-10-000006-SUFFIX", result.Value.LastValue);
+    }
+
+    [Fact]
+    public void Generate_ShouldIncrementCounter_WhenNewCodeIsUsed()
+    {
+        // Arrange
+        var query = new NoSerieQuery { TypeOf = SetupNoSerieHelper.PROJECTCODE, TypeValue = "001", DateTime = new DateTime(2023, 10, 10) };
+        _mockValidator.Setup(v => v.Validate(It.IsAny<NoSerieQuery>())).Returns(new ValidationResult());
+
+        var series = new List<SetupNoSerie>
+        {
+            CreateNewSetupNoSerie(SetupNoSerieHelper.PROJECTCODE, "001", 1, 1, 10)  // Initial counter 5
+        };
+
+        // Act
+        var result = _numberSeriesGenerator.Generate(query, series);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(1, result.Value.LastCounter);  // Counter should increment by 1
+        Assert.Equal("PREFIX-2023-10-10-000001-SUFFIX", result.Value.LastValue);
     }
 
     [Fact]

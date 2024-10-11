@@ -279,7 +279,7 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
 
         var command = ProjectDesignHelper.CreateNew(Project);
 
-        command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext);
+        command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext, token);
 
         return Result.Ok(command);
     }
@@ -392,7 +392,7 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
             return ProjectDesignHelper.ProjectNotFound(command.ProjectInfoId);
 
         command.ProjectInfo = project;
-        command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext);
+        command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext, token);
 
         return Result.Ok(command);
     }

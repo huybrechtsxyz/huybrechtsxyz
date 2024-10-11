@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore.DynamicLinq;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Dynamic.Core;
+using System.Reflection.Emit;
 using System.Text.Json;
 
 namespace Huybrechts.App.Features.Setup.SetupNoSerieFlow;
@@ -85,6 +86,40 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
 
 public static class SetupNoSerieHelper
 {
+    public static async Task<Result<string>> GenerateAsync(
+        FeatureContext context, 
+        NoSerieQuery message,
+        IValidator<NoSerieQuery> validator,
+        CancellationToken token)
+    {
+        // Get all no. series for that object type
+        message.TypeValue = message.TypeValue.ToUpper().Trim();
+        var list = await context.Set<SetupNoSerie>()
+            .Where(q => q.TypeOf == message.TypeOf)
+            .ToListAsync(token);
+
+        // Get the next number
+        NumberSeriesGenerator generator = new(validator);
+        Result<SetupNoSerie> result = generator.Generate(message, list);
+        if (result.IsFailed)
+            return result.ToResult<string>();
+        if (message.DoPeek)
+            return Result.Ok(result.Value.LastValue);
+
+        // Update the number
+        SetupNoSerie entity = result.Value;
+        var record = await context.Set<SetupNoSerie>().FindAsync([entity.Id], cancellationToken: token);
+        if (record is null)
+            return RecordNotFound(entity.Id);
+        record.ModifiedDT = DateTime.UtcNow;
+        record.LastCounter = entity.LastCounter;
+        record.LastPrefix = entity.LastPrefix;
+        record.LastValue = entity.LastValue;
+
+        context.Set<SetupNoSerie>().Update(record);
+        return Result.Ok(record.LastValue);
+    }
+
     public const string PROJECTCODE = "ProjectCode";
 
     private static readonly List<string> allowedTypeOfValues = [
@@ -178,43 +213,19 @@ internal sealed class NoSerieHandler : IRequestHandler<NoSerieQuery, Result<stri
     private readonly NumberSeriesGenerator _generator;
     private readonly IValidator<NoSerieQuery> _validator;
 
-    public NoSerieHandler(FeatureContext dbcontext, IMultiTenantContextAccessor multiTenantContextAccessor, IValidator<NoSerieQuery> validator)
+    public NoSerieHandler(FeatureContext dbcontext, IValidator<NoSerieQuery> validator)
     {
         _dbcontext = dbcontext;
         _validator = validator;
-        var tenantInfo = multiTenantContextAccessor.MultiTenantContext.TenantInfo ?? new TenantInfo();
-        _generator = new(tenantInfo, validator);
+        _generator = new(validator);
     }
 
     public async Task<Result<string>> Handle(NoSerieQuery message, CancellationToken token)
     {
-        // Get all no. series for that object type
-        message.TypeValue = message.TypeValue.ToUpper().Trim();
-        var list = await _dbcontext.Set<SetupNoSerie>()
-            .Where(q => q.TypeOf == message.TypeOf)
-            .ToListAsync(token);
-
-        // Get the next number
-        Result<SetupNoSerie> result = _generator.Generate(message, list);
-        if (result.IsFailed)
-            return result.ToResult<string>();
-        if (message.DoPeek)
-            return Result.Ok(result.Value.LastValue);
-
-        // Update the number
-        SetupNoSerie entity = result.Value;
-        var record = await _dbcontext.Set<SetupNoSerie>().FindAsync([entity.Id], cancellationToken: token);
-        if (record is null)
-            return SetupNoSerieHelper.RecordNotFound(entity.Id);
-
-        record.ModifiedDT = DateTime.UtcNow;
-        record.LastCounter = entity.LastCounter;
-        record.LastPrefix = entity.LastPrefix;
-        record.LastValue = entity.LastValue;
-
-        _dbcontext.Set<SetupNoSerie>().Update(record);
-        await _dbcontext.SaveChangesAsync(token);
-        return Result.Ok(record.LastValue);
+        var result = await SetupNoSerieHelper.GenerateAsync(_dbcontext, message, _validator, token);
+        if (result.IsSuccess && !message.DoPeek)
+            await _dbcontext.SaveChangesAsync(token);
+        return result;
     }
 }
 

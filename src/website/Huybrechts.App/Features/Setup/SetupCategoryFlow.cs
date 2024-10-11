@@ -51,9 +51,8 @@ public static class SetupCategoryHelper
 {
     public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
 
-    private static readonly List<string> allowedTypeOfValues = [
-            "ProjectCategory"
-            ];
+    private const string PROJECTCATEGORIES = "ProjectCategory";
+    private static readonly List<string> allowedTypeOfValues = [PROJECTCATEGORIES];
 
     public static List<string> AllowedTypeOfValues => allowedTypeOfValues;
 
@@ -77,11 +76,16 @@ public static class SetupCategoryHelper
         return false;
     }
 
-    public static async Task<List<SetupCategory>> GetProjectCategoriesAync(FeatureContext context)
+    public static async Task<List<SetupCategory>> GetAllCategoriesAync(FeatureContext context, CancellationToken token)
         => await context.Set<SetupCategory>()
-            .Where(q => q.TypeOf == "ProjectCategory")
             .OrderBy(o => o.TypeOf).ThenBy(o => o.Category).ThenBy(o => o.Subcategory)
-            .ToListAsync();
+            .ToListAsync(token);
+
+    public static async Task<List<SetupCategory>> GetProjectCategoriesAync(FeatureContext context, CancellationToken token)
+        => await context.Set<SetupCategory>()
+            .Where(q => q.TypeOf == PROJECTCATEGORIES)
+            .OrderBy(o => o.TypeOf).ThenBy(o => o.Category).ThenBy(o => o.Subcategory)
+            .ToListAsync(token);
 
     internal static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPCATEGORY_ID.Replace("{0}", id.ToString()));
 

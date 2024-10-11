@@ -3,7 +3,7 @@ using AutoMapper.QueryableExtensions;
 using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
-using Huybrechts.App.Features.Setup;
+using Huybrechts.App.Features.Setup.SetupNoSerieFlow;
 using Huybrechts.Core.Project;
 using Huybrechts.Core.Setup;
 using MediatR;
@@ -12,52 +12,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
 
 namespace Huybrechts.App.Features.Project.ProjectInfoFlow;
-
-public static class ProjectInfoHelper
-{
-    public static string GetSearchIndex
-        (string code, string name, string? description, string? tags)
-        => $"{code}~{name}~{description}~{tags}".ToLowerInvariant();
-
-    public static void CopyFields(Model model, ProjectInfo entity, bool create)
-    {
-        if (create)
-        {
-            entity.Code = model.Code.Trim().ToUpper();
-        }
-        entity.Name = model.Name.Trim();
-        entity.Description = model.Description?.Trim();
-        entity.Remark = model.Remark?.Trim();
-        entity.Tags = model.Tags?.Trim();
-        entity.SearchIndex = model.SearchIndex;
-
-        entity.State = model.State.Trim();
-        entity.Reason = model.Reason?.Trim();
-        entity.StartDate = model.StartDate;
-        entity.TargetDate = model.TargetDate;
-        entity.Priority = model.Priority?.Trim();
-        entity.Risk = model.Risk?.Trim();
-        entity.Effort = model.Effort;
-        entity.BusinessValue = model.BusinessValue;
-        entity.Rating = model.Rating;
-    }
-
-    public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
-
-    internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
-
-    internal static Result DuplicateCodeFound(string code) => Result.Fail(Messages.DUPLICATE_PROJECT_CODE.Replace("{0}", code.ToString()));
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
-    public static async Task<bool> IsDuplicateCodeAsync(DbContext context, string code, Ulid? currentId = null)
-    {
-        code = code.ToUpper().Trim();
-
-        return await context.Set<ProjectInfo>()
-            .AnyAsync(pr => pr.Code.ToUpper() == code
-                         && (!currentId.HasValue || pr.Id != currentId.Value));
-    }
-}
 
 public record Model
 {
@@ -85,6 +39,21 @@ public record Model
 
     [Display(Name = nameof(Reason), ResourceType = typeof(Localization))]
     public string? Reason { get; set; }
+
+    [Display(Name = nameof(ProjectType), ResourceType = typeof(Localization))]
+    public string ProjectType { get; set; } = string.Empty;
+
+    [Display(Name = nameof(ProjectKind), ResourceType = typeof(Localization))]
+    public string ProjectKind { get; set; } = string.Empty;
+
+    [Display(Name = nameof(ProjectOrigin), ResourceType = typeof(Localization))]
+    public string ProjectOrigin { get; set; } = string.Empty;
+
+    [Display(Name = nameof(Category), ResourceType = typeof(Localization))]
+    public string Category { get; set; } = string.Empty;
+
+    [Display(Name = nameof(Subcategory), ResourceType = typeof(Localization))]
+    public string Subcategory { get; set; } = string.Empty;
 
     [DataType(DataType.Date)]
     [Display(Name = nameof(StartDate), ResourceType = typeof(Localization))]
@@ -122,9 +91,65 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
         RuleFor(m => m.Description).Length(0, 256);
 
         RuleFor(m => m.State).NotEmpty().Length(1, 32);
+        RuleFor(m => m.ProjectType).NotEmpty().Length(1, 64);
+        RuleFor(m => m.ProjectKind).NotEmpty().Length(1, 64);
+        RuleFor(m => m.ProjectOrigin).NotEmpty().Length(1, 64);
+        RuleFor(m => m.Category).NotEmpty().Length(1, 64);
+        RuleFor(m => m.Subcategory).NotEmpty().Length(1, 64);
         RuleFor(m => m.Reason).Length(0, 256);
         RuleFor(m => m.Priority).Length(0, 32);
         RuleFor(m => m.Risk).Length(0, 32);
+    }
+}
+
+public static class ProjectInfoHelper
+{
+    public static string GetSearchIndex
+        (string code, string name, string? description, string? tags)
+        => $"{code}~{name}~{description}~{tags}".ToLowerInvariant();
+
+    public static void CopyFields(Model model, ProjectInfo entity, bool create)
+    {
+        if (create)
+        {
+            entity.Code = model.Code.Trim().ToUpper();
+        }
+        entity.Name = model.Name.Trim();
+        entity.Description = model.Description?.Trim();
+        entity.Remark = model.Remark?.Trim();
+        entity.Tags = model.Tags?.Trim();
+        entity.SearchIndex = model.SearchIndex;
+
+        entity.State = model.State.Trim();
+        entity.Reason = model.Reason?.Trim();
+        entity.ProjectType = model.ProjectType.Trim();
+        entity.ProjectKind = model.ProjectKind.Trim();
+        entity.ProjectOrigin = model.ProjectOrigin.Trim();
+        entity.Category = model.Category.Trim();
+        entity.Subcategory = model.Subcategory.Trim();
+        entity.StartDate = model.StartDate;
+        entity.TargetDate = model.TargetDate;
+        entity.Priority = model.Priority?.Trim();
+        entity.Risk = model.Risk?.Trim();
+        entity.Effort = model.Effort;
+        entity.BusinessValue = model.BusinessValue;
+        entity.Rating = model.Rating;
+    }
+
+    public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
+
+    internal static Result EntityNotFound(Ulid id) => Result.Fail(Messages.INVALID_PROJECT_ID.Replace("{0}", id.ToString()));
+
+    internal static Result DuplicateCodeFound(string code) => Result.Fail(Messages.DUPLICATE_PROJECT_CODE.Replace("{0}", code.ToString()));
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
+    public static async Task<bool> IsDuplicateCodeAsync(DbContext context, string code, Ulid? currentId = null)
+    {
+        code = code.ToUpper().Trim();
+
+        return await context.Set<ProjectInfo>()
+            .AnyAsync(pr => pr.Code.ToUpper() == code
+                         && (!currentId.HasValue || pr.Id != currentId.Value));
     }
 }
 
@@ -196,7 +221,30 @@ public sealed class CreateQueryValidator : AbstractValidator<CreateQuery> { publ
 
 public sealed record CreateCommand : Model, IRequest<Result<Ulid>> 
 {
-    public List<SetupState> States { get; set; } = [];
+    public List<SetupState> SetupStates { get; set; } = [];
+
+    public List<SetupType> SetupProjectTypes { get; set; } = [];
+
+    public List<SetupType> SetupProjectKinds { get; set; } = [];
+
+    public List<SetupType> SetupProjectOrigins { get; set; } = [];
+
+    public List<SetupCategory> SetupCategories { get; set; } = [];
+
+    public List<string> LoadCategories() => [
+        .. SetupCategories
+                    .Select(c => c.Category)
+                    .Distinct()
+                    .OrderBy(c => c)
+    ];
+
+    public List<string> LoadSubcategories(string category) => [
+        .. SetupCategories
+            .Where(c => c.Category == category)
+            .Select(c => c.Subcategory)
+            .Distinct()
+            .OrderBy(sc => sc)
+    ];
 }
 
 public sealed class CreateValidator : ModelValidator<CreateCommand> 
@@ -226,7 +274,12 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
     {
         CreateCommand command = ProjectInfoHelper.CreateNew();
 
-        command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext);
+        command.SetupStates = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext, token);
+
+        command.SetupProjectTypes = await Setup.SetupTypeFlow.SetupTypeHelper.GetProjectTypesAync(_dbcontext, token);
+        command.SetupProjectKinds = await Setup.SetupTypeFlow.SetupTypeHelper.GetProjectKindsAync(_dbcontext, token);
+        command.SetupProjectOrigins = await Setup.SetupTypeFlow.SetupTypeHelper.GetProjectOriginsAync(_dbcontext, token);
+        command.SetupCategories = await Setup.SetupCategoryFlow.SetupCategoryHelper.GetProjectCategoriesAync(_dbcontext, token);
 
         return Result.Ok(command);
     }
@@ -235,10 +288,14 @@ internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCo
 internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Result<Ulid>>
 {
     private readonly FeatureContext _dbcontext;
+    private readonly IValidator<NoSerieQuery> _qryvalidator;
 
-    public CreateCommandHandler(FeatureContext dbcontext)
+    public CreateCommandHandler(
+        FeatureContext dbcontext, 
+        IValidator<NoSerieQuery> qryvalidator)
     {
         _dbcontext = dbcontext;
+        _qryvalidator = qryvalidator;
     }
 
     public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
@@ -254,8 +311,22 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
         };
         ProjectInfoHelper.CopyFields(message, entity, true);
 
+        await _dbcontext.BeginTransactionAsync(token);
+
+        NoSerieQuery noSerieQuery = new()
+        {
+            TypeOf = SetupNoSerieHelper.PROJECTCODE,
+            TypeValue = entity.ProjectType,
+            DateTime = DateTime.UtcNow,
+            DoPeek = false
+        };
+        var number = await SetupNoSerieHelper.GenerateAsync(_dbcontext, noSerieQuery, _qryvalidator, token);
+        if (number.IsFailed)
+            return number.ToResult();
+        entity.Code = number.Value;
         await _dbcontext.Set<ProjectInfo>().AddAsync(entity, token);
-        await _dbcontext.SaveChangesAsync(token);
+
+        await _dbcontext.CommitTransactionAsync(token);
         return Result.Ok(entity.Id);
     }
 }
@@ -276,7 +347,31 @@ public sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
 
 public record UpdateCommand : Model, IRequest<Result> 
 {
-    public List<SetupState> States { get; set; } = [];
+    public List<SetupState> SetupStates { get; set; } = [];
+
+    public List<SetupType> SetupProjectTypes { get; set; } = [];
+
+    public List<SetupType> SetupProjectKinds { get; set; } = [];
+
+    public List<SetupType> SetupProjectOrigins { get; set; } = [];
+
+    public List<SetupCategory> SetupCategories { get; set; } = [];
+
+
+    public List<string> LoadCategories() => [
+        .. SetupCategories
+                    .Select(c => c.Category)
+                    .Distinct()
+                    .OrderBy(c => c)
+    ];
+
+    public List<string> LoadSubcategories(string category) => [
+        .. SetupCategories
+            .Where(c => c.Category == category)
+            .Select(c => c.Subcategory)
+            .Distinct()
+            .OrderBy(sc => sc)
+    ];
 }
 
 public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
@@ -318,7 +413,11 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
         if (command is null)
             return ProjectInfoHelper.EntityNotFound(message.Id ?? Ulid.Empty);
 
-        command.States = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext);
+        command.SetupStates = await Setup.SetupStateFlow.SetupStateHelper.GetProjectStatesAync(_dbcontext, token);
+        command.SetupProjectTypes = await Setup.SetupTypeFlow.SetupTypeHelper.GetProjectTypesAync(_dbcontext, token);
+        command.SetupProjectKinds = await Setup.SetupTypeFlow.SetupTypeHelper.GetProjectKindsAync(_dbcontext, token);
+        command.SetupProjectOrigins = await Setup.SetupTypeFlow.SetupTypeHelper.GetProjectOriginsAync(_dbcontext, token);
+        command.SetupCategories = await Setup.SetupCategoryFlow.SetupCategoryHelper.GetProjectCategoriesAync(_dbcontext, token);
 
         return Result.Ok(command);
     }

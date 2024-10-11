@@ -98,6 +98,61 @@ public record ProjectInfo : Entity, IEntity
     public string? Reason { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of the project.
+    /// </summary>
+    /// <remarks>
+    /// This field defines the high-level classification of the project, such as 'Infrastructure', 'Software Development', or 'Research'.
+    /// It helps in categorizing the projects within an organization based on their nature or scope.
+    /// </remarks>
+    [MaxLength(64)]
+    [Comment("The type of the project, such as Infrastructure, Software Development, or Research.")]
+    public string ProjectType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the kind of the project.
+    /// </summary>
+    /// <remarks>
+    /// This field further specifies the project kind within its type, providing more granularity.
+    /// For example, if the project type is 'Software Development', the kind could be 'Mobile App' or 'Web App'.
+    /// </remarks>
+    [MaxLength(64)]
+    [Comment("The specific kind of the project within the project type, such as Mobile App, Web App, or Database Development.")]
+    public string ProjectKind { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the origin of the project.
+    /// </summary>
+    /// <remarks>
+    /// This field indicates where the project originated from, such as internal, external, or customer-driven. 
+    /// It helps in understanding the source of the project and its background.
+    /// </remarks>
+    [MaxLength(64)]
+    [Comment("The origin of the project, indicating if it's internal, external, or customer-driven.")]
+    public string ProjectOrigin { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the category of the project.
+    /// </summary>
+    /// <remarks>
+    /// This field classifies the project into a broader category that is useful for reporting or organization-wide analysis.
+    /// Categories can include 'Construction', 'Research', 'Technology', etc.
+    /// </remarks>
+    [MaxLength(64)]
+    [Comment("The general category of the project, used for higher-level classification, such as Construction, Research, or Technology.")]
+    public string Category { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the subcategory of the project.
+    /// </summary>
+    /// <remarks>
+    /// The subcategory provides a more detailed classification within the main project category. 
+    /// For instance, a project under the 'Technology' category might have subcategories like 'AI Development' or 'Cybersecurity'.
+    /// </remarks>
+    [MaxLength(64)]
+    [Comment("The specific subcategory of the project, providing more detailed classification, such as AI Development or Cybersecurity.")]
+    public string Subcategory { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the start date for the project.
     /// </summary>
     /// <remarks>

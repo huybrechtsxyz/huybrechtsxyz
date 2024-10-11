@@ -2,7 +2,7 @@
   {
     "TypeOf": "ProjectCode",
     "TypeValue": "Development",
-    "Format": "DEV-YYYY-MM-###",
+    "Format": "DEV-{YYYY}-{MM}-{###}",
     "StartCounter": 1,
     "Increment": 1,
     "Maximum": 999999,
@@ -17,7 +17,7 @@
   {
     "TypeOf": "ProjectCode",
     "TypeValue": "Commercial",
-    "Format": "SALES-YYYY-MM-###",
+    "Format": "SALES-{YYYY}-{MM}-{###}",
     "StartCounter": 1,
     "Increment": 1,
     "Maximum": 999999,
@@ -32,7 +32,7 @@
   {
     "TypeOf": "ProjectCode",
     "TypeValue": "Research",
-    "Format": "RD-YYYY-MM-###",
+    "Format": "RD-{YYYY}-{MM}-{###}",
     "StartCounter": 1,
     "Increment": 1,
     "Maximum": 999999,

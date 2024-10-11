@@ -198,6 +198,15 @@
   <data name="Project" xml:space="preserve">
     <value>Project</value>
   </data>
+  <data name="ProjectKind" xml:space="preserve">
+    <value>Kind</value>
+  </data>
+  <data name="ProjectOrigin" xml:space="preserve">
+    <value>Origin</value>
+  </data>
+  <data name="ProjectType" xml:space="preserve">
+    <value>Type</value>
+  </data>
   <data name="Proposal" xml:space="preserve">
     <value>Proposal</value>
   </data>
@@ -242,6 +251,9 @@
   </data>
   <data name="State" xml:space="preserve">
     <value>State</value>
+  </data>
+  <data name="Subcategory" xml:space="preserve">
+    <value>Subcategory</value>
   </data>
   <data name="Tags" xml:space="preserve">
     <value>Tags</value>

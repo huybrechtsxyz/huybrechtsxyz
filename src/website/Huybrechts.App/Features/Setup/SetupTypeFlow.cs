@@ -46,9 +46,10 @@ public static class SetupTypeHelper
 {
     public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
 
-    private static readonly List<string> allowedTypeOfValues = [
-            "ProjectType", "ProjectKind", "ProjectOrigin"
-            ];
+    private const string PROJECTTYPE = "ProjectType";
+    private const string PROJECTKIND = "ProjectKind";
+    private const string PROJECTORIGIN = "ProjectOrigin";
+    private static readonly List<string> allowedTypeOfValues = [ PROJECTTYPE, PROJECTKIND, PROJECTORIGIN ];
 
     public static List<string> AllowedTypeOfValues => allowedTypeOfValues;
 
@@ -79,7 +80,19 @@ public static class SetupTypeHelper
 
     public static async Task<List<SetupType>> GetProjectTypesAync(FeatureContext context, CancellationToken token)
         => await context.Set<SetupType>()
-            .Where(q => q.TypeOf == nameof(Core.Project.ProjectInfo))
+            .Where(q => q.TypeOf == PROJECTTYPE)
+            .OrderBy(o => o.TypeOf).ThenBy(o => o.Name)
+            .ToListAsync(token);
+
+    public static async Task<List<SetupType>> GetProjectKindsAync(FeatureContext context, CancellationToken token)
+        => await context.Set<SetupType>()
+            .Where(q => q.TypeOf == PROJECTKIND)
+            .OrderBy(o => o.TypeOf).ThenBy(o => o.Name)
+            .ToListAsync(token);
+
+    public static async Task<List<SetupType>> GetProjectOriginsAync(FeatureContext context, CancellationToken token)
+        => await context.Set<SetupType>()
+            .Where(q => q.TypeOf == PROJECTORIGIN)
             .OrderBy(o => o.TypeOf).ThenBy(o => o.Name)
             .ToListAsync(token);
 
