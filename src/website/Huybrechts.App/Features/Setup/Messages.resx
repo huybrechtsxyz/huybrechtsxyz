@@ -162,8 +162,17 @@
   <data name="INVALID_SETUPLANGUAGE_ID" xml:space="preserve">
     <value>Unable to find language with ID {0}</value>
   </data>
+  <data name="INVALID_SETUPNOSERIE_CONFIG" xml:space="preserve">
+    <value>Invalid setup of No. Serie for {0}</value>
+  </data>
+  <data name="INVALID_SETUPNOSERIE_DISABLED" xml:space="preserve">
+    <value>No. Series {0} is disabled</value>
+  </data>
   <data name="INVALID_SETUPNOSERIE_ID" xml:space="preserve">
     <value>Unable to find no. serie with ID {0}</value>
+  </data>
+  <data name="INVALID_SETUPNOSERIE_MAXIMUM" xml:space="preserve">
+    <value>Maximum value reached for No. Serie {0}</value>
   </data>
   <data name="INVALID_SETUPSTATE_ID" xml:space="preserve">
     <value>Unable to find system state with ID {0}</value>

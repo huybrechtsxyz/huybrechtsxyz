@@ -162,8 +162,17 @@
   <data name="INVALID_SETUPLANGUAGE_ID" xml:space="preserve">
     <value>Kan taal met ID {0} niet vinden</value>
   </data>
+  <data name="INVALID_SETUPNOSERIE_CONFIG" xml:space="preserve">
+    <value>Configuration van nummerreeks {0} is niet geldig</value>
+  </data>
+  <data name="INVALID_SETUPNOSERIE_DISABLED" xml:space="preserve">
+    <value>Nummerserie {0} is uitgeschakeld</value>
+  </data>
   <data name="INVALID_SETUPNOSERIE_ID" xml:space="preserve">
     <value>Kan nummerserie met ID {0} niet vinden</value>
+  </data>
+  <data name="INVALID_SETUPNOSERIE_MAXIMUM" xml:space="preserve">
+    <value>Maximum waarde voor nummerserie {0} overschreden</value>
   </data>
   <data name="INVALID_SETUPSTATE_ID" xml:space="preserve">
     <value>Kan status met ID {0} niet vinden</value>

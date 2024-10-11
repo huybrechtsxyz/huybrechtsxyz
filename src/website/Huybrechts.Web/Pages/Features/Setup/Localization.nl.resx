@@ -292,7 +292,15 @@
     <value>Nummerserie</value>
   </data>
   <data name="NoSerieCreateInfo" xml:space="preserve">
-    <value>Gebruik deze pagina om een nieuwe nummerserie te definiëren. U kunt het type, het formaat en de maximale waarde voor de teller opgeven.</value>
+    <value>Gebruik deze pagina om een nieuwe nummerserie te definiëren. U kunt het type, het formaat en de maximale waarde voor de teller opgeven. Dynamische String Formatter voor Patronen met Datum en Genummerde Opvulling
+
+Deze functie maakt het mogelijk om dynamisch strings te genereren op basis van een aanpasbaar patroon. Het vervangt de plaatsaanduidingen voor het huidige jaar ({YY}), maand ({MM}), en reeksen van hekje-symbolen (#) door een opgevuld getal. Het getal wordt opgemaakt volgens de lengte van de #-reeks, waardoor het flexibel is voor verschillende opvuleisen. Dit is handig voor het creëren van ID's, versienummers of aangepaste formats met dynamische datum- en nummercomponenten.
+
+Kenmerken:
+
+    Vervangt {YY} en {MM} door het huidige jaar en de huidige maand.
+    Detecteert en vervangt automatisch elke reeks van # door een opgevuld getal met de juiste lengte.
+    Flexibel voor diverse patronen, waardoor het zeer aanpasbaar is voor verschillende toepassingen.</value>
   </data>
   <data name="NoSerieCreateTitle" xml:space="preserve">
     <value>Nieuwe Nummerserie Aanmaken</value>
@@ -304,7 +312,15 @@
     <value>Nummerserie Verwijderen</value>
   </data>
   <data name="NoSerieEditInfo" xml:space="preserve">
-    <value>Pas de details van een bestaande nummerserie aan, inclusief het formaat, de teller en de waarde van het type.</value>
+    <value>Pas de details van een bestaande nummerserie aan, inclusief het formaat, de teller en de waarde van het type. Dynamische String Formatter voor Patronen met Datum en Genummerde Opvulling
+
+Deze functie maakt het mogelijk om dynamisch strings te genereren op basis van een aanpasbaar patroon. Het vervangt de plaatsaanduidingen voor het huidige jaar ({YY}), maand ({MM}), en reeksen van hekje-symbolen (#) door een opgevuld getal. Het getal wordt opgemaakt volgens de lengte van de #-reeks, waardoor het flexibel is voor verschillende opvuleisen. Dit is handig voor het creëren van ID's, versienummers of aangepaste formats met dynamische datum- en nummercomponenten.
+
+Kenmerken:
+
+    Vervangt {YY} en {MM} door het huidige jaar en de huidige maand.
+    Detecteert en vervangt automatisch elke reeks van # door een opgevuld getal met de juiste lengte.
+    Flexibel voor diverse patronen, waardoor het zeer aanpasbaar is voor verschillende toepassingen.</value>
   </data>
   <data name="NoSerieEditTitle" xml:space="preserve">
     <value>Nummerserie Bewerken</value>

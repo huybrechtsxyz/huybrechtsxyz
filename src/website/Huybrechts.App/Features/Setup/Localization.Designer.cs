@@ -61,6 +61,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Automatic Reset.
+        /// </summary>
+        public static string AutomaticReset {
+            get {
+                return ResourceManager.GetString("AutomaticReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Category.
         /// </summary>
         public static string Category {
@@ -75,15 +84,6 @@ namespace Huybrechts.App.Features.Setup {
         public static string Code {
             get {
                 return ResourceManager.GetString("Code", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Counter.
-        /// </summary>
-        public static string Counter {
-            get {
-                return ResourceManager.GetString("Counter", resourceCulture);
             }
         }
         
@@ -151,6 +151,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Increment.
+        /// </summary>
+        public static string Increment {
+            get {
+                return ResourceManager.GetString("Increment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Base?.
         /// </summary>
         public static string IsBase {
@@ -183,6 +192,33 @@ namespace Huybrechts.App.Features.Setup {
         public static string Language {
             get {
                 return ResourceManager.GetString("Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last Counter.
+        /// </summary>
+        public static string LastCounter {
+            get {
+                return ResourceManager.GetString("LastCounter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last Prefix.
+        /// </summary>
+        public static string LastPrefix {
+            get {
+                return ResourceManager.GetString("LastPrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last Value.
+        /// </summary>
+        public static string LastValue {
+            get {
+                return ResourceManager.GetString("LastValue", resourceCulture);
             }
         }
         
@@ -241,6 +277,15 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Start.
+        /// </summary>
+        public static string StartCounter {
+            get {
+                return ResourceManager.GetString("StartCounter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to State type.
         /// </summary>
         public static string StateType {
@@ -268,15 +313,6 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type Code.
-        /// </summary>
-        public static string TypeCode {
-            get {
-                return ResourceManager.GetString("TypeCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Type Of.
         /// </summary>
         public static string TypeOf {
@@ -300,15 +336,6 @@ namespace Huybrechts.App.Features.Setup {
         public static string UnitType {
             get {
                 return ResourceManager.GetString("UnitType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Type.
-        /// </summary>
-        public static string UnitType1 {
-            get {
-                return ResourceManager.GetString("UnitType1", resourceCulture);
             }
         }
     }

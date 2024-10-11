@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Finbuckle.MultiTenant;
+using Finbuckle.MultiTenant.Abstractions;
 using FluentResults;
 using FluentValidation;
 using Huybrechts.App.Data;
+using Huybrechts.App.Features.Setup.SetupTypeFlow;
 using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
@@ -22,20 +25,35 @@ public record Model
     [Display(Name = nameof(TypeOf), ResourceType = typeof(Localization))]
     public string TypeOf { get; set; } = string.Empty;
 
-    [Display(Name = nameof(TypeCode), ResourceType = typeof(Localization))]
-    public string TypeCode { get; set; } = string.Empty;
-
     [Display(Name = nameof(TypeValue), ResourceType = typeof(Localization))]
     public string TypeValue { get; set; } = string.Empty;
 
     [Display(Name = nameof(Format), ResourceType = typeof(Localization))]
     public string Format { get; set; } = string.Empty;
 
-    [Display(Name = nameof(Counter), ResourceType = typeof(Localization))]
-    public int Counter { get; set; } = 0;
+    [Range(0,999999999)]
+    [Display(Name = nameof(StartCounter), ResourceType = typeof(Localization))]
+    public int StartCounter { get; set; } = 1;
 
+    [Range(0, 999999999)]
+    [Display(Name = nameof(Increment), ResourceType = typeof(Localization))]
+    public int Increment { get; set; } = 0;
+
+    [Range(0, 999999999)]
     [Display(Name = nameof(Maximum), ResourceType = typeof(Localization))]
     public int Maximum { get; set; } = 999999999;
+
+    [Display(Name = nameof(AutomaticReset), ResourceType = typeof(Localization))]
+    public bool AutomaticReset { get; set; } = false;
+
+    [Display(Name = nameof(LastCounter), ResourceType = typeof(Localization))]
+    public int LastCounter { get; set; } = 0;
+
+    [Display(Name = nameof(LastPrefix), ResourceType = typeof(Localization))]
+    public string LastPrefix { get; set; } = string.Empty;
+
+    [Display(Name = nameof(LastValue), ResourceType = typeof(Localization))]
+    public string LastValue { get; set; } = string.Empty;
 
     [Display(Name = nameof(IsDisabled), ResourceType = typeof(Localization))]
     public bool IsDisabled { get; set; } = false;
@@ -43,7 +61,7 @@ public record Model
     [Display(Name = nameof(Description), ResourceType = typeof(Localization))]
     public string? Description { get; set; }
 
-    public string SearchIndex => $"{TypeOf}~{TypeCode}~{TypeValue}~{Format}~{Description}".ToLowerInvariant();
+    public string SearchIndex => $"{TypeOf}~{TypeValue}~{Format}~{Description}".ToLowerInvariant();
 }
 
 public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : Model
@@ -53,35 +71,44 @@ public class ModelValidator<TModel> : AbstractValidator<TModel> where TModel : M
         RuleFor(m => m.Id).NotEmpty().NotEqual(Ulid.Empty);
         RuleFor(x => x.TypeOf).NotEmpty().Length(1, 64);
         RuleFor(x => x.TypeOf).Must(type => SetupNoSerieHelper.IsValidType(type)).WithMessage("TypeOf must be one of the allowed values.");
-        RuleFor(m => m.TypeCode).NotEmpty().Length(1, 64);
         RuleFor(m => m.TypeValue).NotNull().Length(0, 64);
         RuleFor(m => m.Format).NotEmpty().Length(1, 128);
-        RuleFor(m => m.Counter).NotNull().GreaterThanOrEqualTo(0);
+        RuleFor(m => m.StartCounter).NotNull().GreaterThanOrEqualTo(0).LessThanOrEqualTo(999999999);
+        RuleFor(m => m.Increment).NotNull().GreaterThanOrEqualTo(0).LessThanOrEqualTo(999999999);
         RuleFor(m => m.Maximum).NotNull().GreaterThanOrEqualTo(0).LessThanOrEqualTo(999999999);
+        RuleFor(m => m.LastCounter).NotNull().GreaterThanOrEqualTo(0).LessThanOrEqualTo(999999999);
+        RuleFor(m => m.LastPrefix).NotNull().Length(0, 64);
+        RuleFor(m => m.LastValue).NotNull().Length(0, 64);
         RuleFor(m => m.Description).Length(0, 256);
     }
 }
 
 public static class SetupNoSerieHelper
 {
+    public const string PROJECTCODE = "ProjectCode";
+
+    private static readonly List<string> allowedTypeOfValues = [
+            PROJECTCODE
+            ];
+
     public static CreateCommand CreateNew() => new() { Id = Ulid.NewUlid() };
 
     public static void CopyFields(Model model, SetupNoSerie entity)
     {
         entity.TypeOf = model.TypeOf.Trim();
-        entity.TypeCode = model.TypeCode.Trim();
-        entity.TypeValue = model.TypeValue.Trim();
+        entity.TypeValue = model.TypeValue.ToUpper().Trim();
         entity.Format = model.Format.Trim();
-        entity.Counter = model.Counter;
+        entity.StartCounter = model.StartCounter;
+        entity.Increment = model.Increment; 
         entity.Maximum = model.Maximum;
+        entity.AutomaticReset = model.AutomaticReset;
+        entity.LastCounter = model.LastCounter;
+        entity.LastPrefix = model.LastPrefix.Trim();
+        entity.LastValue = model.LastValue.Trim();
         entity.IsDisabled = model.IsDisabled;
         entity.Description = model.Description?.Trim();
         entity.SearchIndex = model.SearchIndex;
     }
-
-    private static readonly List<string> allowedTypeOfValues = [
-            "ProjectCode"
-            ];
 
     public static List<string> AllowedTypeOfValues => allowedTypeOfValues;
 
@@ -107,17 +134,87 @@ public static class SetupNoSerieHelper
 
     internal static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPNOSERIE_ID.Replace("{0}", id.ToString()));
 
-    internal static Result DuplicateFound(string cat, string subcat) => Result.Fail(Messages.DUPLICATE_SETUPNOSERIE.Replace("{0}", cat.ToString()).Replace("{1}", subcat.ToString()));
+    internal static Result DuplicateFound(string value) => Result.Fail(Messages.DUPLICATE_SETUPNOSERIE.Replace("{0}", value));
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
-    public static async Task<bool> IsDuplicateTypeAsync(DbContext context, string typeOf, string typeCode, string typeValue, Ulid? currentId = null)
+    public static async Task<bool> IsDuplicateTypeAsync(DbContext context, string typeOf, string typeValue, Ulid? currentId = null)
     {
-        typeCode = typeCode.ToLower().Trim();
-        typeValue = typeValue.ToLower().Trim();
+        typeValue = typeValue.ToUpper().Trim();
 
         return await context.Set<SetupNoSerie>()
-            .AnyAsync(pr => pr.TypeOf == typeOf && pr.TypeCode.ToLower() == typeCode && pr.TypeValue.ToLower() == typeValue.ToLower().Trim()
+            .AnyAsync(pr => pr.TypeOf == typeOf && pr.TypeValue.ToUpper() == typeValue.ToUpper().Trim()
                 && (!currentId.HasValue || pr.Id != currentId.Value));
+    }
+}
+
+//
+// GET NEW NUMBER
+//
+
+public sealed record NoSerieQuery : IRequest<Result<string>>
+{
+    public string TypeOf { get; set; } = string.Empty;
+
+    public string TypeValue { get; set; } = string.Empty;
+
+    public DateTime DateTime { get; set; } = DateTime.Now;
+
+    public bool DoPeek { get; set; } = true;
+}
+
+public sealed class NoSerieQueryValidator : AbstractValidator<NoSerieQuery>
+{
+    public NoSerieQueryValidator() : base()
+    {
+        RuleFor(x => x.TypeOf).NotEmpty().Length(1, 64);
+        RuleFor(x => x.TypeOf).Must(type => SetupNoSerieHelper.IsValidType(type)).WithMessage("TypeOf must be one of the allowed values.");
+        RuleFor(x => x.TypeValue).NotEmpty();
+    }
+}
+
+internal sealed class NoSerieHandler : IRequestHandler<NoSerieQuery, Result<string>>
+{
+    private readonly FeatureContext _dbcontext;
+    private readonly NumberSeriesGenerator _generator;
+    private readonly IValidator<NoSerieQuery> _validator;
+
+    public NoSerieHandler(FeatureContext dbcontext, IMultiTenantContextAccessor multiTenantContextAccessor, IValidator<NoSerieQuery> validator)
+    {
+        _dbcontext = dbcontext;
+        _validator = validator;
+        var tenantInfo = multiTenantContextAccessor.MultiTenantContext.TenantInfo ?? new TenantInfo();
+        _generator = new(tenantInfo, validator);
+    }
+
+    public async Task<Result<string>> Handle(NoSerieQuery message, CancellationToken token)
+    {
+        // Get all no. series for that object type
+        message.TypeValue = message.TypeValue.ToUpper().Trim();
+        var list = await _dbcontext.Set<SetupNoSerie>()
+            .Where(q => q.TypeOf == message.TypeOf)
+            .ToListAsync(token);
+
+        // Get the next number
+        Result<SetupNoSerie> result = _generator.Generate(message, list);
+        if (result.IsFailed)
+            return result.ToResult<string>();
+        if (message.DoPeek)
+            return Result.Ok(result.Value.LastValue);
+
+        // Update the number
+        SetupNoSerie entity = result.Value;
+        var record = await _dbcontext.Set<SetupNoSerie>().FindAsync([entity.Id], cancellationToken: token);
+        if (record is null)
+            return SetupNoSerieHelper.RecordNotFound(entity.Id);
+
+        record.ModifiedDT = DateTime.UtcNow;
+        record.LastCounter = entity.LastCounter;
+        record.LastPrefix = entity.LastPrefix;
+        record.LastValue = entity.LastValue;
+
+        _dbcontext.Set<SetupNoSerie>().Update(record);
+        await _dbcontext.SaveChangesAsync(token);
+        return Result.Ok(record.LastValue);
     }
 }
 
@@ -159,7 +256,7 @@ internal sealed class ListHandler :
         {
             query = query.OrderBy(message.SortOrder);
         }
-        else query = query.OrderBy(o => o.TypeOf).ThenBy(o => o.TypeCode).ThenBy(o => o.TypeValue);
+        else query = query.OrderBy(o => o.TypeOf).ThenBy(o => o.TypeValue);
 
         int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
@@ -183,34 +280,60 @@ internal sealed class ListHandler :
 // CREATE
 //
 
-public sealed record CreateCommand : Model, IRequest<Result<Ulid>> { }
-
-public sealed class CreateValidator : ModelValidator<CreateCommand> 
+public sealed record CreateQuery : IRequest<Result<CreateCommand>>
 {
-    public CreateValidator(FeatureContext dbContext) :
+}
+
+public sealed class CreateQueryValidator : AbstractValidator<CreateQuery> { public CreateQueryValidator() { } }
+
+public sealed record CreateCommand : Model, IRequest<Result<Ulid>> 
+{
+    public List<SetupType> SetupTypes { get; set; } = [];
+}
+
+public sealed class CreateCommandValidator : ModelValidator<CreateCommand> 
+{
+    public CreateCommandValidator(FeatureContext dbContext) :
         base()
     {
         RuleFor(x => x).MustAsync(async (rec, cancellation) =>
         {
-            bool exists = await SetupNoSerieHelper.IsDuplicateTypeAsync(dbContext, rec.TypeOf, rec.TypeCode, rec.TypeValue);
+            bool exists = await SetupNoSerieHelper.IsDuplicateTypeAsync(dbContext, rec.TypeOf, rec.TypeValue);
             return !exists;
-        }).WithMessage(x => Messages.DUPLICATE_SETUPNOSERIE.Replace("{0}", $"{x.TypeOf} - {x.TypeCode} - {x.TypeValue}"));
+        }).WithMessage(x => Messages.DUPLICATE_SETUPNOSERIE.Replace("{0}", $"{x.TypeOf} - {x.TypeValue}"));
     }
 }
 
-internal sealed class CreateHandler : IRequestHandler<CreateCommand, Result<Ulid>>
+internal class CreateQueryHandler : IRequestHandler<CreateQuery, Result<CreateCommand>>
 {
     private readonly FeatureContext _dbcontext;
 
-    public CreateHandler(FeatureContext dbcontext)
+    public CreateQueryHandler(FeatureContext dbcontext)
+    {
+        _dbcontext = dbcontext;
+    }
+
+    public async Task<Result<CreateCommand>> Handle(CreateQuery message, CancellationToken token)
+    {
+        var record = SetupNoSerieHelper.CreateNew();
+        record.SetupTypes = await SetupTypeHelper.GetAllTypesAync(_dbcontext, token);
+        return Result.Ok(record);
+    }
+}
+
+internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Result<Ulid>>
+{
+    private readonly FeatureContext _dbcontext;
+
+    public CreateCommandHandler(FeatureContext dbcontext)
     {
         _dbcontext = dbcontext;
     }
 
     public async Task<Result<Ulid>> Handle(CreateCommand message, CancellationToken token)
     {
-        if (await SetupNoSerieHelper.IsDuplicateTypeAsync(_dbcontext, message.TypeOf, message.TypeCode, message.TypeValue))
-            return SetupNoSerieHelper.DuplicateFound(message.TypeCode, message.TypeValue);
+        if (await SetupNoSerieHelper.IsDuplicateTypeAsync(_dbcontext, message.TypeOf, message.TypeValue))
+            return SetupNoSerieHelper.DuplicateFound(message.TypeValue);
 
         var record = new SetupNoSerie
         {
@@ -238,7 +361,10 @@ public sealed class UpdateQueryValidator : AbstractValidator<UpdateQuery>
     }
 }
 
-public record UpdateCommand : Model, IRequest<Result> { }
+public record UpdateCommand : Model, IRequest<Result>
+{
+    public List<SetupType> SetupTypes { get; set; } = [];
+}
 
 public class UpdateCommandValidator : ModelValidator<UpdateCommand> 
 {
@@ -246,9 +372,9 @@ public class UpdateCommandValidator : ModelValidator<UpdateCommand>
     {
         RuleFor(x => x).MustAsync(async (rec, cancellation) =>
         {
-            bool exists = await SetupNoSerieHelper.IsDuplicateTypeAsync(dbContext, rec.TypeOf, rec.TypeCode, rec.TypeValue, rec.Id);
+            bool exists = await SetupNoSerieHelper.IsDuplicateTypeAsync(dbContext, rec.TypeOf, rec.TypeValue, rec.Id);
             return !exists;
-        }).WithMessage(x => Messages.DUPLICATE_SETUPNOSERIE.Replace("{0}", $"{x.TypeOf} - {x.TypeCode} - {x.TypeValue}"));
+        }).WithMessage(x => Messages.DUPLICATE_SETUPNOSERIE.Replace("{0}", $"{x.TypeOf} - {x.TypeValue}"));
     }
 }
 
@@ -277,6 +403,8 @@ internal class UpdateQueryHandler : IRequestHandler<UpdateQuery, Result<UpdateCo
         if (command is null)
             return SetupNoSerieHelper.RecordNotFound(message.Id ?? Ulid.Empty);
 
+        command.SetupTypes = await SetupTypeHelper.GetAllTypesAync(_dbcontext, token);
+
         return Result.Ok(command);
     }
 }
@@ -296,8 +424,8 @@ internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, Result>
         if (record is null)
             return SetupNoSerieHelper.RecordNotFound(message.Id);
 
-        if (await SetupNoSerieHelper.IsDuplicateTypeAsync(_dbcontext, message.TypeOf, message.TypeCode, message.TypeValue, record.Id))
-            return SetupNoSerieHelper.DuplicateFound(message.TypeCode, message.TypeValue);
+        if (await SetupNoSerieHelper.IsDuplicateTypeAsync(_dbcontext, message.TypeOf, message.TypeValue, record.Id))
+            return SetupNoSerieHelper.DuplicateFound(message.TypeValue);
 
         record.ModifiedDT = DateTime.UtcNow;
         SetupNoSerieHelper.CopyFields(message, record);
@@ -442,7 +570,7 @@ internal sealed class ImportQueryHandler :
             records = records.Where(q => q.SearchIndex != null && q.SearchIndex.Contains(searchFor)).ToList();
         }
 
-        records = [.. records.OrderBy(o => o.TypeOf).ThenBy(o => o.TypeCode).ThenBy(o => o.TypeValue)];
+        records = [.. records.OrderBy(o => o.TypeOf).ThenBy(o => o.TypeValue)];
         int pageSize = EntityFlow.ListQuery.PageSize;
         int pageNumber = message.Page ?? 1;
 
@@ -480,7 +608,7 @@ internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
         bool changes = false;
         foreach (var item in message.Items ?? [])
         {
-            if (await SetupNoSerieHelper.IsDuplicateTypeAsync(_dbcontext, item.TypeOf, item.TypeCode, item.TypeValue))
+            if (await SetupNoSerieHelper.IsDuplicateTypeAsync(_dbcontext, item.TypeOf, item.TypeValue))
                 continue;
 
             var record = new SetupNoSerie

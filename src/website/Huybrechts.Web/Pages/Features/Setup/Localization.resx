@@ -292,7 +292,15 @@
     <value>No. Serie</value>
   </data>
   <data name="NoSerieCreateInfo" xml:space="preserve">
-    <value>Use this page to define a new number series. You can specify the type, format, and maximum counter for the series.</value>
+    <value>Use this page to define a new number series. You can specify the type, format, and maximum counter for the series.Dynamic String Formatter for Patterns with Date and Number Padding
+
+This function allows you to dynamically generate strings based on a customizable pattern. It replaces placeholders for the current year ({YY}), month ({MM}), and sequences of hash symbols (#) with a padded number. The number is formatted according to the length of the # sequence, making it flexible for different padding requirements. This is useful for creating IDs, version numbers, or custom formats with dynamic date and number components.
+
+Features:
+
+    Replace {YY} and {MM} with the current year and month.
+    Automatically detect and replace any sequence of # with a number, padded to the correct length.
+    Flexible for various patterns, making it highly customizable for different use cases.</value>
   </data>
   <data name="NoSerieCreateTitle" xml:space="preserve">
     <value>Create New Number Series</value>
@@ -304,7 +312,15 @@
     <value>Delete Number Series</value>
   </data>
   <data name="NoSerieEditInfo" xml:space="preserve">
-    <value>Modify the details of an existing number series, including its format, counter, and type values.</value>
+    <value>Modify the details of an existing number series, including its format, counter, and type values. Dynamic String Formatter for Patterns with Date and Number Padding
+
+This function allows you to dynamically generate strings based on a customizable pattern. It replaces placeholders for the current year ({YY}), month ({MM}), and sequences of hash symbols (#) with a padded number. The number is formatted according to the length of the # sequence, making it flexible for different padding requirements. This is useful for creating IDs, version numbers, or custom formats with dynamic date and number components.
+
+Features:
+
+    Replace {YY} and {MM} with the current year and month.
+    Automatically detect and replace any sequence of # with a number, padded to the correct length.
+    Flexible for various patterns, making it highly customizable for different use cases.</value>
   </data>
   <data name="NoSerieEditTitle" xml:space="preserve">
     <value>Edit Number Series</value>

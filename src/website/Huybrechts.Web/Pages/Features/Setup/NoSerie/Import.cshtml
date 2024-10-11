@@ -43,10 +43,9 @@
                                 <tr>
                                     <th>@SL["Select"]</th>
                                     <th>@Html.DisplayNameFor(model => model.Data.Results[0].TypeOf)</th>
-                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].TypeCode)</th>
                                     <th>@Html.DisplayNameFor(model => model.Data.Results[0].TypeValue)</th>
                                     <th>@Html.DisplayNameFor(model => model.Data.Results[0].Format)</th>
-                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].Counter)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].LastCounter)</th>
                                     <th>@Html.DisplayNameFor(model => model.Data.Results[0].Maximum)</th>
                                     <th>@Html.DisplayNameFor(model => model.Data.Results[0].Description)</th>
                                 </tr>
@@ -63,10 +62,6 @@
                                             @Html.DisplayFor(model => @Model.Data.Results[idex].TypeOf)
                                         </td>
                                         <td>
-                                            <input type="hidden" asp-for="@Model.Data.Results[idex].TypeCode" />
-                                            @Html.DisplayFor(model => @Model.Data.Results[idex].TypeCode)
-                                        </td>
-                                        <td>
                                             <input type="hidden" asp-for="@Model.Data.Results[idex].TypeValue" />
                                             @Html.DisplayFor(model => @Model.Data.Results[idex].TypeValue)
                                         </td>
@@ -75,8 +70,8 @@
                                             @Html.DisplayFor(model => @Model.Data.Results[idex].Format)
                                         </td>
                                         <td>
-                                            <input type="hidden" asp-for="@Model.Data.Results[idex].Counter" />
-                                            @Html.DisplayFor(model => @Model.Data.Results[idex].Counter)
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].LastCounter" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].LastCounter)
                                         </td>
                                         <td>
                                             <input type="hidden" asp-for="@Model.Data.Results[idex].Maximum" />

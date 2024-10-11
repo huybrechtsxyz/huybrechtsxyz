@@ -117,14 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AutomaticReset" xml:space="preserve">
+    <value>Automatic Reset</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Category</value>
   </data>
   <data name="Code" xml:space="preserve">
     <value>Code</value>
-  </data>
-  <data name="Counter" xml:space="preserve">
-    <value>Counter</value>
   </data>
   <data name="Country" xml:space="preserve">
     <value>Country</value>
@@ -147,6 +147,9 @@
   <data name="Format" xml:space="preserve">
     <value>Format</value>
   </data>
+  <data name="Increment" xml:space="preserve">
+    <value>Increment</value>
+  </data>
   <data name="IsBase" xml:space="preserve">
     <value>Base?</value>
   </data>
@@ -158,6 +161,15 @@
   </data>
   <data name="Language" xml:space="preserve">
     <value>Language</value>
+  </data>
+  <data name="LastCounter" xml:space="preserve">
+    <value>Last Counter</value>
+  </data>
+  <data name="LastPrefix" xml:space="preserve">
+    <value>Last Prefix</value>
+  </data>
+  <data name="LastValue" xml:space="preserve">
+    <value>Last Value</value>
   </data>
   <data name="Maximum" xml:space="preserve">
     <value>Maximum</value>
@@ -177,6 +189,9 @@
   <data name="Sequence" xml:space="preserve">
     <value>Sequence</value>
   </data>
+  <data name="StartCounter" xml:space="preserve">
+    <value>Start</value>
+  </data>
   <data name="StateType" xml:space="preserve">
     <value>State type</value>
   </data>
@@ -186,9 +201,6 @@
   <data name="TranslatedName" xml:space="preserve">
     <value>Translated name</value>
   </data>
-  <data name="TypeCode" xml:space="preserve">
-    <value>Type Code</value>
-  </data>
   <data name="TypeOf" xml:space="preserve">
     <value>Type Of</value>
   </data>
@@ -196,9 +208,6 @@
     <value>Type Value</value>
   </data>
   <data name="UnitType" xml:space="preserve">
-    <value>Type</value>
-  </data>
-  <data name="UnitType1" xml:space="preserve">
     <value>Type</value>
   </data>
 </root>

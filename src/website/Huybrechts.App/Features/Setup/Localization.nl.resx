@@ -117,14 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AutomaticReset" xml:space="preserve">
+    <value>Automatische Reset</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Categorie</value>
   </data>
   <data name="Code" xml:space="preserve">
     <value>Kode</value>
-  </data>
-  <data name="Counter" xml:space="preserve">
-    <value>Teller</value>
   </data>
   <data name="Country" xml:space="preserve">
     <value>Land</value>
@@ -147,6 +147,9 @@
   <data name="Format" xml:space="preserve">
     <value>Formaat</value>
   </data>
+  <data name="Increment" xml:space="preserve">
+    <value>Verhoging</value>
+  </data>
   <data name="IsBase" xml:space="preserve">
     <value>Basis?</value>
   </data>
@@ -158,6 +161,15 @@
   </data>
   <data name="Language" xml:space="preserve">
     <value>Taal</value>
+  </data>
+  <data name="LastCounter" xml:space="preserve">
+    <value>Laatste Nummer</value>
+  </data>
+  <data name="LastPrefix" xml:space="preserve">
+    <value>Laatste Prefix</value>
+  </data>
+  <data name="LastValue" xml:space="preserve">
+    <value>Last Waarde</value>
   </data>
   <data name="Maximum" xml:space="preserve">
     <value>Maximum</value>
@@ -177,6 +189,9 @@
   <data name="Sequence" xml:space="preserve">
     <value>Volgorde</value>
   </data>
+  <data name="StartCounter" xml:space="preserve">
+    <value>Start</value>
+  </data>
   <data name="StateType" xml:space="preserve">
     <value>Status type</value>
   </data>
@@ -185,9 +200,6 @@
   </data>
   <data name="TranslatedName" xml:space="preserve">
     <value>Originele naam</value>
-  </data>
-  <data name="TypeCode" xml:space="preserve">
-    <value>Type Kode</value>
   </data>
   <data name="TypeOf" xml:space="preserve">
     <value>Type Of</value>

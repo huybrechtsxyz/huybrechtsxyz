@@ -196,11 +196,38 @@ namespace Huybrechts.App.Features.Setup {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid setup of No. Serie for {0}.
+        /// </summary>
+        public static string INVALID_SETUPNOSERIE_CONFIG {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPNOSERIE_CONFIG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No. Series {0} is disabled.
+        /// </summary>
+        public static string INVALID_SETUPNOSERIE_DISABLED {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPNOSERIE_DISABLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find no. serie with ID {0}.
         /// </summary>
         public static string INVALID_SETUPNOSERIE_ID {
             get {
                 return ResourceManager.GetString("INVALID_SETUPNOSERIE_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum value reached for No. Serie {0}.
+        /// </summary>
+        public static string INVALID_SETUPNOSERIE_MAXIMUM {
+            get {
+                return ResourceManager.GetString("INVALID_SETUPNOSERIE_MAXIMUM", resourceCulture);
             }
         }
         

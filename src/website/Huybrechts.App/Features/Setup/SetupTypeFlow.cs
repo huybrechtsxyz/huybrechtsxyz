@@ -72,11 +72,16 @@ public static class SetupTypeHelper
         return false;
     }
 
-    public static async Task<List<SetupType>> GetProjectStatesAync(FeatureContext context)
+    public static async Task<List<SetupType>> GetAllTypesAync(FeatureContext context, CancellationToken token)
+        => await context.Set<SetupType>()
+            .OrderBy(o => o.TypeOf).ThenBy(o => o.Name)
+            .ToListAsync(token);
+
+    public static async Task<List<SetupType>> GetProjectTypesAync(FeatureContext context, CancellationToken token)
         => await context.Set<SetupType>()
             .Where(q => q.TypeOf == nameof(Core.Project.ProjectInfo))
             .OrderBy(o => o.TypeOf).ThenBy(o => o.Name)
-            .ToListAsync();
+            .ToListAsync(token);
 
     internal static Result RecordNotFound(Ulid id) => Result.Fail(Messages.INVALID_SETUPTYPE_ID.Replace("{0}", id.ToString()));
 

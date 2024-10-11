@@ -26,14 +26,16 @@
                 <span asp-validation-for="Data.TypeOf" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.TypeCode" class="form-control border-info" required />
-                <label asp-for="Data.TypeCode" class="form-label"></label>
-                <span asp-validation-for="Data.TypeCode" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Data.TypeValue" class="form-control border-info" required />
+                <select asp-for="Data.TypeValue"
+                        asp-items="Model.Data.SetupTypes?.Select(p => new SelectListItem
+                                {
+                                    Value = p.Name,
+                                    Text = p.Name
+                                }).ToList()"
+                        class="form-select border-info">
+                    <option id=""></option>
+                </select>
                 <label asp-for="Data.TypeValue" class="form-label"></label>
-                <span asp-validation-for="Data.TypeValue" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Format" class="form-control border-info" required />
@@ -41,9 +43,14 @@
                 <span asp-validation-for="Data.Format" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.Counter" class="form-control border-info" required />
-                <label asp-for="Data.Counter" class="form-label"></label>
-                <span asp-validation-for="Data.Counter" class="text-danger"></span>
+                <input asp-for="Data.StartCounter" class="form-control border-info" required />
+                <label asp-for="Data.StartCounter" class="form-label"></label>
+                <span asp-validation-for="Data.StartCounter" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Increment" class="form-control border-info" required />
+                <label asp-for="Data.Increment" class="form-label"></label>
+                <span asp-validation-for="Data.Increment" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Data.Maximum" class="form-control border-info" required />
@@ -51,7 +58,27 @@
                 <span asp-validation-for="Data.Maximum" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Data.IsDisabled" class="form-control border-info" required />
+                <input asp-for="Data.AutomaticReset" class="form-control border-info" />
+                <label asp-for="Data.AutomaticReset" class="form-label"></label>
+                <span asp-validation-for="Data.AutomaticReset" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.LastCounter" class="form-control border-info" disabled />
+                <label asp-for="Data.LastCounter" class="form-label"></label>
+                <span asp-validation-for="Data.LastCounter" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.LastPrefix" class="form-control border-info" disabled />
+                <label asp-for="Data.LastPrefix" class="form-label"></label>
+                <span asp-validation-for="Data.LastPrefix" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.LastCounter" class="form-control border-info" disabled />
+                <label asp-for="Data.LastCounter" class="form-label"></label>
+                <span asp-validation-for="Data.LastCounter" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.IsDisabled" class="form-control border-info" />
                 <label asp-for="Data.IsDisabled" class="form-label"></label>
                 <span asp-validation-for="Data.IsDisabled" class="text-danger"></span>
             </div>

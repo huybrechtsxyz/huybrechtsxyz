@@ -583,7 +583,9 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use this page to define a new number series. You can specify the type, format, and maximum counter for the series..
+        ///   Looks up a localized string similar to Use this page to define a new number series. You can specify the type, format, and maximum counter for the series.Dynamic String Formatter for Patterns with Date and Number Padding
+        ///
+        ///This function allows you to dynamically generate strings based on a customizable pattern. It replaces placeholders for the current year ({YY}), month ({MM}), and sequences of hash symbols (#) with a padded number. The number is formatted according to the length of the # sequence, making it flexible for different padding requir [rest of string was truncated]&quot;;.
         /// </summary>
         public static string NoSerieCreateInfo {
             get {
@@ -619,7 +621,9 @@ namespace Huybrechts.Web.Pages.Features.Setup {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Modify the details of an existing number series, including its format, counter, and type values..
+        ///   Looks up a localized string similar to Modify the details of an existing number series, including its format, counter, and type values. Dynamic String Formatter for Patterns with Date and Number Padding
+        ///
+        ///This function allows you to dynamically generate strings based on a customizable pattern. It replaces placeholders for the current year ({YY}), month ({MM}), and sequences of hash symbols (#) with a padded number. The number is formatted according to the length of the # sequence, making it flexible for different padding requirements. This is u [rest of string was truncated]&quot;;.
         /// </summary>
         public static string NoSerieEditInfo {
             get {

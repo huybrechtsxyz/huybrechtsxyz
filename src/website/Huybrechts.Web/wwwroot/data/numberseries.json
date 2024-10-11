@@ -1,42 +1,47 @@
 [
   {
-    "TypeOf": "ProjectNumber",
-    "TypeCode": "ProjectType",
-    "TypeValue": "Sales",
-    "Format": "PN-YYYY-MM-###",
-    "Counter": 100,
-    "Maximum": 999999,
-    "IsDisabled": false,
-    "Description": "Number series for sales projects."
-  },
-  {
-    "TypeOf": "ProjectNumber",
-    "TypeCode": "ProjectType",
+    "TypeOf": "ProjectCode",
     "TypeValue": "Development",
-    "Format": "DEV-YYYY-###",
-    "Counter": 500,
+    "Format": "DEV-YYYY-MM-###",
+    "StartCounter": 1,
+    "Increment": 1,
     "Maximum": 999999,
+    "AutomaticReset": true,
+    "LastCounter": 0,
+    "LastPrefix": "",
+    "LastValue": "",
     "IsDisabled": false,
-    "Description": "Number series for development projects."
+    "Description": "Number series for development projects",
+    "SearchIndex": "ProjectCode-Development"
   },
   {
-    "TypeOf": "ProjectNumber",
-    "TypeCode": "ProjectType",
+    "TypeOf": "ProjectCode",
+    "TypeValue": "Commercial",
+    "Format": "SALES-YYYY-MM-###",
+    "StartCounter": 1,
+    "Increment": 1,
+    "Maximum": 999999,
+    "AutomaticReset": true,
+    "LastCounter": 0,
+    "LastPrefix": "",
+    "LastValue": "",
+    "IsDisabled": false,
+    "Description": "Number series for sales projects",
+    "SearchIndex": "ProjectCode-Sales"
+  },
+  {
+    "TypeOf": "ProjectCode",
     "TypeValue": "Research",
-    "Format": "RES-YY-###",
-    "Counter": 20,
-    "Maximum": 9999,
+    "Format": "RD-YYYY-MM-###",
+    "StartCounter": 1,
+    "Increment": 1,
+    "Maximum": 999999,
+    "AutomaticReset": true,
+    "LastCounter": 0,
+    "LastPrefix": "",
+    "LastValue": "",
     "IsDisabled": false,
-    "Description": "Number series for research projects."
-  },
-  {
-    "TypeOf": "ProjectNumber",
-    "TypeCode": "ProjectType",
-    "TypeValue": "Consulting",
-    "Format": "CONS-###",
-    "Counter": 300,
-    "Maximum": 9999,
-    "IsDisabled": false,
-    "Description": "Number series for consulting projects."
+    "Description": "Number series for RD projects",
+    "SearchIndex": "ProjectCode-RD"
   }
 ]

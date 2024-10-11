@@ -42,10 +42,9 @@
                         <thead>
                             <tr>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].TypeOf)</th>
-                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].TypeCode)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].TypeValue)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Format)</th>
-                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].Counter)</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].LastValue)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Maximum)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].Description)</th>
                                 <th></th>
@@ -56,10 +55,9 @@
                             {
                                 <tr>
                                     <td>@Html.DisplayFor(modelItem => record!.TypeOf)</td>
-                                    <td>@Html.DisplayFor(modelItem => record!.TypeCode)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.TypeValue)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Format)</td>
-                                    <td>@Html.DisplayFor(modelItem => record!.Counter)</td>
+                                    <td>@Html.DisplayFor(modelItem => record!.LastValue)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Maximum)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Description)</td>
                                     <td>

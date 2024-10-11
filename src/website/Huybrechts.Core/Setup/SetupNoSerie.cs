@@ -15,7 +15,7 @@ namespace Huybrechts.Core.Setup;
 /// </remarks>
 [MultiTenant]
 [Table("SetupNoSerie")]
-[Index(nameof(TenantId), nameof(TypeOf), nameof(TypeCode), nameof(TypeValue))]
+[Index(nameof(TenantId), nameof(TypeOf), nameof(TypeValue))]
 [Index(nameof(TenantId), nameof(SearchIndex))]
 [Comment("Stores configuration for number series, supporting multi-tenancy.")]
 public record SetupNoSerie : Entity, IEntity
@@ -29,17 +29,6 @@ public record SetupNoSerie : Entity, IEntity
     [MaxLength(64)]
     [Comment("Type of number series, such as ProjectNumber or InvoiceNumber.")]
     public string TypeOf { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the type code (e.g., ProjectType or InvoiceType).
-    /// </summary>
-    /// <remarks>
-    /// This field defines the base category for the number series. For example, it can represent the project type or
-    /// invoice type that the number series applies to.
-    /// </remarks>
-    [MaxLength(64)]
-    [Comment("The category on which the number series is based, such as ProjectType or InvoiceType.")]
-    public string TypeCode { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the specific value within the type code (e.g., Sales, Development).
@@ -65,13 +54,24 @@ public record SetupNoSerie : Entity, IEntity
     public string Format { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the current counter for this series.
+    /// Gets or sets the maximum value for the counter.
     /// </summary>
     /// <remarks>
-    /// This field stores the current sequential number for the series. Each time a new number is generated, this value is incremented.
+    /// The counter will reset or stop incrementing when it reaches this maximum value.
     /// </remarks>
-    [Comment("The current sequential number for this series.")]
-    public int Counter { get; set; } = 0;
+    [Comment("The maximum allowed value for the counter before it resets or stops.")]
+    public int StartCounter { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the value by which the counter increments for each new number generated in the series.
+    /// </summary>
+    /// <remarks>
+    /// The counter will increase by this value each time a new number is generated. 
+    /// For example, if set to 1, the counter will increment by 1 (e.g., from 001 to 002). 
+    /// You can adjust this value to skip numbers (e.g., setting it to 10 will increase from 001 to 011).
+    /// </remarks>
+    [Comment("Specifies the increment value for the counter when generating a new number.")]
+    public int Increment { get; set; } = 1;
 
     /// <summary>
     /// Gets or sets the maximum value for the counter.
@@ -81,6 +81,56 @@ public record SetupNoSerie : Entity, IEntity
     /// </remarks>
     [Comment("The maximum allowed value for the counter before it resets or stops.")]
     public int Maximum { get; set; } = 999999999;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the counter should automatically reset 
+    /// when the number series changes, such as at the start of a new year.
+    /// </summary>
+    /// <remarks>
+    /// When set to true, the counter will reset whenever a significant change in the 
+    /// number series is detected, such as when a new year starts or a different entity type is used.
+    /// For example, if the series format includes "YYYY" and the year changes, the counter will 
+    /// automatically reset to zero.
+    /// </remarks>
+    [Comment("Indicates whether the counter will automatically reset when the number series changes (e.g., at the start of a new year).")]
+    public bool AutomaticReset { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the current counter for this series.
+    /// </summary>
+    /// <remarks>
+    /// This field stores the current sequential number for the series. Each time a new number is generated, this value is incremented.
+    /// </remarks>
+    [Comment("The current sequential number for this series.")]
+    public int LastCounter { get; set; } = 0;
+
+    /// <summary>
+    /// Gets or sets the last generated prefix in the number series.
+    /// </summary>
+    /// <remarks>
+    /// This field stores the most recently generated prefix in the series. It can be used to track the last issued 
+    /// number and determine if the counter should be reset, especially in combination with the <see cref="AutomaticReset"/> 
+    /// property.
+    /// For example, if the number format includes "YYYY" and the year changes, this value can be used to compare and decide
+    /// whether a new sequence needs to start.
+    /// </remarks>
+    [MaxLength(64)]
+    [Comment("Stores the last generated prefix in the series to track the most recent value.")]
+    public string LastPrefix { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the last generated value in the number series.
+    /// </summary>
+    /// <remarks>
+    /// This field stores the most recently generated number in the series. It can be used to track the last issued 
+    /// number and determine if the counter should be reset, especially in combination with the <see cref="AutomaticReset"/> 
+    /// property.
+    /// For example, if the number format includes "YYYY" and the year changes, this value can be used to compare and decide
+    /// whether a new sequence needs to start.
+    /// </remarks>
+    [MaxLength(64)]
+    [Comment("Stores the last generated number in the series to track the most recent value.")]
+    public string LastValue { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets a value indicating whether the counter is disabled.
