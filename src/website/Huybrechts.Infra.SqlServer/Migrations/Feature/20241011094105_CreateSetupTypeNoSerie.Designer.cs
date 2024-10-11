@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 {
     [DbContext(typeof(FeatureContext))]
-    [Migration("20241010074621_CreateSetupNoSeries")]
-    partial class CreateSetupNoSeries
+    [Migration("20241011094105_CreateSetupTypeNoSerie")]
+    partial class CreateSetupTypeNoSerie
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2094,9 +2094,9 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
-                    b.Property<int>("Counter")
-                        .HasColumnType("int")
-                        .HasComment("The current sequential number for this series.");
+                    b.Property<bool>("AutomaticReset")
+                        .HasColumnType("bit")
+                        .HasComment("Indicates whether the counter will automatically reset when the number series changes (e.g., at the start of a new year).");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
@@ -2118,9 +2118,29 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(128)")
                         .HasComment("Format string defining how the number is generated, including placeholders like YYYY-MM-###.");
 
+                    b.Property<int>("Increment")
+                        .HasColumnType("int")
+                        .HasComment("Specifies the increment value for the counter when generating a new number.");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("bit")
                         .HasComment("Indicates whether the counter is disabled. If true, the counter is inactive.");
+
+                    b.Property<int>("LastCounter")
+                        .HasColumnType("int")
+                        .HasComment("The current sequential number for this series.");
+
+                    b.Property<string>("LastPrefix")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Stores the last generated prefix in the series to track the most recent value.");
+
+                    b.Property<string>("LastValue")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasComment("Stores the last generated number in the series to track the most recent value.");
 
                     b.Property<int>("Maximum")
                         .HasColumnType("int")
@@ -2139,6 +2159,10 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasColumnType("nvarchar(450)")
                         .HasComment("A normalized concatenated field used for optimizing search operations.");
 
+                    b.Property<int>("StartCounter")
+                        .HasColumnType("int")
+                        .HasComment("The maximum allowed value for the counter before it resets or stops.");
+
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -2150,12 +2174,6 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
-
-                    b.Property<string>("TypeCode")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
-                        .HasComment("The category on which the number series is based, such as ProjectType or InvoiceType.");
 
                     b.Property<string>("TypeOf")
                         .IsRequired()
@@ -2173,7 +2191,7 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
 
                     b.HasIndex("TenantId", "SearchIndex");
 
-                    b.HasIndex("TenantId", "TypeOf", "TypeCode", "TypeValue");
+                    b.HasIndex("TenantId", "TypeOf", "TypeValue");
 
                     b.ToTable("SetupNoSerie", t =>
                         {
