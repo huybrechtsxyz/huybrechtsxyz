@@ -1,14 +1,55 @@
-= Data Model
+= Project Model Documentation
 
-== Project Model
+This documentation provides an overview of the project model, including its various entities and their relationships. The model encompasses components such as project information, designs, components, scenarios, simulations, and platform details.
 
-This documentation provides an overview of the project model, including its various entities and their relationships. The model encompasses components such as project simulations, project entries, project information, scenarios, designs, and associated platform details.
-
-=== Class Diagram
+== Class Diagram
 
 [mermaid]
 ----
 classDiagram
+    class ProjectInfo {
+        +Ulid Id
+        +string Name
+        +string Description
+        +string Number
+    }
+
+    class ProjectDesign {
+        +Ulid Id
+        +string Name
+    }
+
+    class ProjectComponent {
+        +Ulid Id
+        +string Name
+        +string? Description
+        +int Order
+    }
+
+    class ProjectComponentUnit {
+        +Ulid ProjectComponentId
+        +Ulid? ProjectQuantityId
+        +decimal Quantity
+        +decimal Amount
+    }
+
+    class ProjectScenario {
+        +Ulid Id
+        +string Name
+    }
+
+    class ProjectScenarioUnit {
+        +Ulid ProjectScenarioId
+        +Ulid ProjectComponentId
+        +decimal Quantity
+    }
+
+    class ProjectQuantity {
+        +Ulid Id
+        +decimal Quantity
+        +string UnitOfMeasure
+    }
+
     class ProjectSimulation {
         +Ulid Id
         +string Name
@@ -49,37 +90,7 @@ classDiagram
         +decimal OwnUnitAmount
     }
 
-    class ProjectInfo {
-        +Ulid Id
-        +string Name
-    }
-
-    class ProjectScenario {
-        +Ulid Id
-        +string Name
-    }
-
-    class ProjectDesign {
-        +Ulid Id
-        +string Name
-    }
-
-    class ProjectComponent {
-        +Ulid Id
-        +string Name
-    }
-
-    class ProjectQuantity {
-        +Ulid Id
-        +decimal Quantity
-    }
-
     class PlatformInfo {
-        +Ulid Id
-        +string Name
-    }
-
-    class PlatformProduct {
         +Ulid Id
         +string Name
     }
@@ -90,6 +101,11 @@ classDiagram
     }
 
     class PlatformService {
+        +Ulid Id
+        +string Name
+    }
+
+    class PlatformProduct {
         +Ulid Id
         +string Name
     }
@@ -111,6 +127,74 @@ classDiagram
     ProjectSimulationEntry --> PlatformService : "Mandatory"
     ProjectSimulationEntry --> PlatformRate : "Mandatory"
 ----
+
+== Model Overview
+
+This project model consists of several key entities, each serving a specific purpose in the context of project simulations and management.
+
+=== ProjectInfo
+
+The `ProjectInfo` class stores details about a project.
+
+* **Properties**:
+  - `Ulid Id`: Unique identifier for the project.
+  - `string Name`: Name of the project.
+  - `string Description`: Optional description of the project.
+  - `string Number`: The project number for identification.
+
+=== ProjectDesign
+
+The `ProjectDesign` class contains information about the design aspects of a project.
+
+* **Properties**:
+  - `Ulid Id`: Unique identifier for the project design.
+  - `string Name`: Name of the design.
+
+=== ProjectComponent
+
+The `ProjectComponent` class represents components that make up a project.
+
+* **Properties**:
+  - `Ulid Id`: Unique identifier for the component.
+  - `string Name`: Name of the component.
+  - `string? Description`: Optional description of the component.
+  - `int Order`: The order of the component within the design or project.
+
+=== ProjectComponentUnit
+
+The `ProjectComponentUnit` class represents units related to a project component.
+
+* **Properties**:
+  - `Ulid ProjectComponentId`: Foreign key referencing the associated component.
+  - `Ulid? ProjectQuantityId`: Optional foreign key for project quantity.
+  - `decimal Quantity`: Quantity of units related to the component.
+  - `decimal Amount`: Amount associated with the component unit.
+
+=== ProjectScenario
+
+The `ProjectScenario` class represents a scenario within a project.
+
+* **Properties**:
+  - `Ulid Id`: Unique identifier for the scenario.
+  - `string Name`: Name of the scenario.
+
+=== ProjectScenarioUnit
+
+The `ProjectScenarioUnit` class represents units related to a project scenario.
+
+* **Properties**:
+  - `Ulid ProjectScenarioId`: Foreign key referencing the associated scenario.
+  - `Ulid ProjectComponentId`: Foreign key referencing the associated component.
+  - `decimal Quantity`: Quantity of units related to the scenario.
+
+=== ProjectQuantity
+
+The `ProjectQuantity` class keeps track of quantities associated with project elements.
+
+* **Properties**:
+  - `Ulid Id`: Unique identifier for the project quantity.
+  - `decimal Quantity`: Quantity associated with the project.
+  - `string UnitOfMeasure`: Unit of measure for the quantity (e.g., per hour, per item).
 
 === ProjectSimulation
 
@@ -158,46 +242,6 @@ The `ProjectSimulationEntry` class represents a single entry in a project simula
   - `decimal OwnRetailAmount`: Retail cost adjusted for ownership percentage.
   - `decimal OwnUnitAmount`: Unit cost adjusted for ownership percentage.
 
-=== ProjectInfo
-
-The `ProjectInfo` class stores details about a project.
-
-* **Properties**:
-  - `Ulid Id`: Unique identifier for the project.
-  - `string Name`: Name of the project.
-
-=== ProjectScenario
-
-The `ProjectScenario` class represents a scenario within a project.
-
-* **Properties**:
-  - `Ulid Id`: Unique identifier for the scenario.
-  - `string Name`: Name of the scenario.
-
-=== ProjectDesign
-
-The `ProjectDesign` class contains information about the design aspects of a project.
-
-* **Properties**:
-  - `Ulid Id`: Unique identifier for the project design.
-  - `string Name`: Name of the design.
-
-=== ProjectComponent
-
-The `ProjectComponent` class represents components that make up a project.
-
-* **Properties**:
-  - `Ulid Id`: Unique identifier for the component.
-  - `string Name`: Name of the component.
-
-=== ProjectQuantity
-
-The `ProjectQuantity` class keeps track of quantities associated with project elements.
-
-* **Properties**:
-  - `Ulid Id`: Unique identifier for the project quantity.
-  - `decimal Quantity`: Quantity associated with the project.
-
 === PlatformInfo
 
 The `PlatformInfo` class holds information related to platform-specific data.
@@ -205,14 +249,6 @@ The `PlatformInfo` class holds information related to platform-specific data.
 * **Properties**:
   - `Ulid Id`: Unique identifier for the platform info.
   - `string Name`: Name of the platform info.
-
-=== PlatformProduct
-
-The `PlatformProduct` class represents products available on the platform.
-
-* **Properties**:
-  - `Ulid Id`: Unique identifier for the platform product.
-  - `string Name`: Name of the product.
 
 === PlatformRegion
 
@@ -230,14 +266,17 @@ The `PlatformService` class represents services offered on the platform.
   - `Ulid Id`: Unique identifier for the platform service.
   - `string Name`: Name of the service.
 
+=== PlatformProduct
+
+The `PlatformProduct` class represents products available on the platform.
+
+* **Properties**:
+  - `Ulid Id`: Unique identifier for the platform product.
+  - `string Name`: Name of the product.
+
 === PlatformRate
 
 The `PlatformRate` class defines rates for products or services on the platform.
 
 * **Properties**:
-  - `Ulid Id`: Unique identifier for the platform rate.
-  - `decimal Rate`: The rate associated with the platform product/service.
-
-== Conclusion
-
-This project model serves as a comprehensive framework for managing project simulations, capturing essential details about project components, costs, and relationships among various entities. The design supports robust project management, enabling effective decision-making and resource allocation in project execution.
+  - `Ulid Id`: Unique identifier for the
