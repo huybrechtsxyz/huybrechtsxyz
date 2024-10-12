@@ -36,7 +36,7 @@ jobs:
             cd /
             cd /app
             echo DOCKER DEPLOY
-            sudo chmod -R 777 /app/cert
+            sudo chmod -R 600 /app/cert
             sudo chmod -R 777 /app/data
             sudo chmod -R 777 /app/logs
             docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
