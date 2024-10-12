@@ -237,7 +237,7 @@ public static class WebHostExtensions
             });
 
             builder.Services.AddDataProtection()
-                .PersistKeysToFileSystem(new DirectoryInfo(@"/app/cert"))
+                .PersistKeysToFileSystem(new DirectoryInfo(@"/app/data"))
                 .SetApplicationName("huybrechts.xyz");
         }
 
