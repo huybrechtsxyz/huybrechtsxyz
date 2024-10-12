@@ -55,8 +55,8 @@
                                                 <span class="vr"></span>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 40px);" data-popper-placement="bottom-end">
-                                                <li><a asp-page="Edit" asp-route-id="@record!.Id" class="dropdown-item btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i><span class="vr"></span>@SL["Edit"]</a></li>
-                                                <li> <a asp-page="Delete" asp-route-id="@record!.Id" class="dropdown-item btn btn-icon btn-secondary"><i class="bi bi-trash2-fill"></i><span class="vr"></span>@SL["Delete"]</a></li>
+                                                <li><a asp-page="Edit" asp-route-id="@record!.Id" class="dropdown-item btn btn-primary"><i class="bi bi-pencil-square"></i><span class="vr"></span>@SL["Edit"]</a></li>
+                                                <li> <a asp-page="Delete" asp-route-id="@record!.Id" class="dropdown-item btn btn-secondary"><i class="bi bi-trash2-fill"></i><span class="vr"></span>@SL["Delete"]</a></li>
                                                 <li><hr class="dropdown-divider"></li>
                                                 <li>
                                                     <a asp-page="/Features/Project/Design/Index" asp-route-projectInfoId="@record!.Id" class="dropdown-item btn btn-info">
