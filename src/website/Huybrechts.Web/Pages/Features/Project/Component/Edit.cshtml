@@ -173,105 +173,64 @@
             loadDatalist('Environment', '#environments');
             loadDatalist('Group', '#groups');
             loadDatalist('Responsible', '#responsibles');
+        });
 
-            var selectedSourceType = $('#sourceType').val();
-            var platformId = '@Model.Data.PlatformInfoId';  // Assuming PlatformId is a property in your model
-            var productId = '@Model.Data.PlatformProductId';    // Assuming ProductId is a property in your model
-
-            // Function to load the platform options based on the current SourceType
-            function loadPlatforms(selectedPlatformId = null) {
-                $.ajax({
-                    url: '?handler=platforms',
-                    type: 'GET',
-                    success: function (data) {
-                        var platformSelect = $('#platforms');
-                        platformSelect.empty().append('<option value="">@SL["Select a platform"]</option>');
-
-                        $.each(data, function (index, platform) {
-                            var selected = (selectedPlatformId && platform.id == selectedPlatformId) ? 'selected' : '';
-                            platformSelect.append('<option value="' + platform.id + '" ' + selected + '>' + platform.name + '</option>');
-                        });
-
-                        if (selectedPlatformId) {
-                            $('#platformSection').show();  // Show platform section if a platform is pre-selected
-                        }
-
-                        console.log('Platforms loaded successfully.');
-                    },
-                    error: function () {
-                        console.error('Failed to load platforms.');
-                    }
-                });
-            }
-
-            // Function to load the product options based on the selected platform
-            function loadProducts(platformInfoId, selectedProductId = null) {
-                $.ajax({
-                    url: '?handler=products',
-                    type: 'GET',
-                    data: {
-                        platformInfoId: platformInfoId
-                    },
-                    success: function (data) {
-                        var productSelect = $('#products');
-                        productSelect.empty().append('<option value="">@SL["Select a product"]</option>');
-
-                        $.each(data, function (index, product) {
-                            var selected = (selectedProductId && product.id == selectedProductId) ? 'selected' : '';
-                            productSelect.append('<option value="' + product.id + '" ' + selected + '>' + product.label + '</option>');
-                        });
-
-                        if (selectedProductId) {
-                            $('#productSection').show();  // Show product section if a product is pre-selected
-                        }
-
-                        console.log('Products loaded successfully.');
-                    },
-                    error: function () {
-                        console.error('Failed to load products.');
-                    }
-                });
-            }
-
-            // Handle sourceType dropdown change
-            $('#sourceType').change(function () {
-                selectedSourceType = $(this).val();
-                console.log('Selected SourceType:', selectedSourceType);
-
-                //if (selectedSourceType === "Platform") {
-                if (selectedSourceType === "2") {
-                    $('#platformSection').show();
-                    loadPlatforms();  // Load platforms if "Platform" is selected
-                } else {
-                    $('#platformSection').hide();
-                    $('#productSection').hide();
-                }
-            });
-
-            // Handle platform dropdown change
-            $('#platforms').change(function () {
-                platformId = $(this).val();
-                console.log('Selected Platform ID:', platformId);
-
-                if (platformId) {
-                    loadProducts(platformId);  // Load products if a platform is selected
-                } else {
-                    $('#productSection').hide();
-                }
-            });
-
-            // Initial load based on the pre-selected SourceType, Platform, and Product
+        $('#sourceType').change(function () {
+            var selectedSourceType = $(this).val();
+            console.log('Selected SourceType:', selectedSourceType); // Debugging
             //if (selectedSourceType === "Platform") {
             if (selectedSourceType === "2") {
                 $('#platformSection').show();
-                $('#productSection').show();
-                loadPlatforms(platformId);  // Load platforms with the pre-selected platform
-            }
-
-            if (platformId) {
-                loadProducts(platformId, productId);  // Load products with the pre-selected product
+                loadPlatforms();  // Load platforms if Platform is selected
+            } else {
+                $('#platformSection').hide();
+                $('#productSection').hide();
             }
         });
 
+        $('#platforms').change(function () {
+            var platformId = $(this).val();
+            if (platformId) {
+                loadProducts(platformId);  // Load products when a platform is selected
+            }
+        });
+
+        function loadPlatforms() {
+            $.ajax({
+                url: "?handler=platforms",
+                type: 'GET',
+                success: function (data) {
+                    var platformSelect = $('#platforms');
+                    platformSelect.empty().append('<option value="@Ulid.Empty">@SL["Select a platform"]</option>');
+                    $.each(data, function (index, platform) {
+                        platformSelect.append('<option value="' + platform.id + '">' + platform.name + '</option>');
+                    });
+                },
+                error: function () {
+                    console.error('Failed to load platforms.');
+                }
+            });
+        }
+
+        function loadProducts(platformInfoId) {
+            $.ajax({
+                url: "?handler=products",
+                type: 'GET',
+                data: {
+                    platformInfoId: platformInfoId
+                },
+                success: function (data) {
+                    var productSelect = $('#products');
+                    productSelect.empty().append('<option value="@Ulid.Empty">@SL["Select a product"]</option>');
+                    $.each(data, function (index, product) {
+                        productSelect.append('<option value="' + product.id + '">' + product.label + '</option>');
+                    });
+                    $('#productSection').show();
+                },
+                error: function () {
+                    console.error('Failed to load products.');
+                }
+            });
+        }
     </script>
 }
