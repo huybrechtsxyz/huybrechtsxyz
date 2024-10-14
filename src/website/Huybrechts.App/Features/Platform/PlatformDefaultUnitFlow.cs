@@ -5,6 +5,7 @@ using FluentValidation;
 using Huybrechts.App.Data;
 using Huybrechts.App.Features.Setup.SetupUnitFlow;
 using Huybrechts.Core.Platform;
+using Huybrechts.Core.Project;
 using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
@@ -111,17 +112,31 @@ public static class PlatformDefaultUnitHelper
             PlatformInfo = platform
         };
 
-    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
-    //public static async Task<List<PlatformDefaultUnit>> GetDefaultUnitsFor(FeatureContext context, PlatformRate rate, CancellationToken token)
-    //{
-    //    string unitOfMeasure = rate.UnitOfMeasure.ToLower().Trim();
-    //    List<PlatformDefaultUnit> defaultUnits = await context.Set<PlatformDefaultUnit>()
-    //        .Include(i => i.SetupUnit)
-    //        .Where(q => q.PlatformInfoId == rate.PlatformInfoId && q.UnitOfMeasure.ToLower() == unitOfMeasure)
-    //        .OrderBy(o => o.SetupUnit.Name)
-    //        .ToListAsync(cancellationToken: token);
-    //    return defaultUnits;
-    //}
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
+    public static async Task<List<PlatformDefaultUnit>> GetDefaultUnitsFor(FeatureContext context, PlatformRate rate, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(rate);
+        var units = await context.PlatformDefaultUnits
+            .Where(unit => unit.PlatformInfoId == rate.PlatformInfoId &&
+                           (rate.ServiceName == null || (unit.ServiceName != null && unit.ServiceName.ToLower() == rate.ServiceName.ToLower())) &&
+                           (rate.ProductName == null || (unit.ProductName != null && unit.ProductName.ToLower() == rate.ProductName.ToLower())) &&
+                           (rate.SkuName == null || (unit.SkuName != null && unit.SkuName.ToLower() == rate.SkuName.ToLower())) &&
+                           (rate.MeterName == null || (unit.MeterName != null && unit.MeterName.ToLower() == rate.MeterName.ToLower())) &&
+                           unit.IsDefaultPlatformRateUnit)
+            .OrderBy(unit => unit.ServiceName)
+            .ThenBy(unit => unit.ProductName)
+            .ThenBy(unit => unit.SkuName)
+            .ThenBy(unit => unit.Sequence)
+            .ThenBy(unit => unit.MeterName ?? string.Empty)
+            .ToListAsync(token);
+        return units;
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
+    public static async Task<List<PlatformDefaultUnit>> GetDefaultUnitsFor(FeatureContext context, ProjectComponent component, CancellationToken token)
+    {
+
+    }
 
     //[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
     //public static async Task<List<PlatformDefaultUnit>> GetDefaultUnitsFor(FeatureContext context, ProjectComponent component, CancellationToken token)
