@@ -147,6 +147,15 @@
   <data name="EffectiveStartDate" xml:space="preserve">
     <value>Ingangsdatum</value>
   </data>
+  <data name="Expression" xml:space="preserve">
+    <value>Expressie</value>
+  </data>
+  <data name="IsDefaultPlatformRateUnit" xml:space="preserve">
+    <value>Is prijs eenheid?</value>
+  </data>
+  <data name="IsDefaultProjectComponentUnit" xml:space="preserve">
+    <value>Is component eenheid?</value>
+  </data>
   <data name="IsPrimaryRegion" xml:space="preserve">
     <value>Is primaire regio</value>
   </data>
@@ -210,6 +219,9 @@
   <data name="RetailPrice" xml:space="preserve">
     <value>Verkoopprijs</value>
   </data>
+  <data name="Sequence" xml:space="preserve">
+    <value>Volgnummer</value>
+  </data>
   <data name="Service" xml:space="preserve">
     <value>Dienst</value>
   </data>
@@ -248,5 +260,8 @@
   </data>
   <data name="ValidFrom" xml:space="preserve">
     <value>Geldig van</value>
+  </data>
+  <data name="Variable" xml:space="preserve">
+    <value>Variable</value>
   </data>
 </root>

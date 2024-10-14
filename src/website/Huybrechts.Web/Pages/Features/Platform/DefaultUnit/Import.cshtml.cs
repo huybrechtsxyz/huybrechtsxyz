@@ -50,7 +50,7 @@ public class ImportModel : PageModel
         
         ValidationResult state = await _getValidator.ValidateAsync(message);
         if (!state.IsValid)
-            return RedirectToPage(nameof(Index), new { platformInfoId = Data.Platform.Id });
+            return RedirectToPage(nameof(Index), new { platformInfoId = Data.PlatformInfo.Id });
 
         var result = await _mediator.Send(message);
         if (result.HasStatusMessage())
@@ -67,15 +67,15 @@ public class ImportModel : PageModel
             var selection = Data.Results.Where(q => q.IsSelected == true).ToList();
             Flow.ImportCommand message = new()
             {
-                PlatformInfoId = Data.Platform.Id,
+                PlatformInfoId = Data.PlatformInfo.Id,
                 Items = selection
             };
 
             ValidationResult state = await _postValidator.ValidateAsync(message);
             if (!state.IsValid)
             {
-                var refresh = await _mediator.Send(new Flow.ImportQuery() { PlatformInfoId = Data.Platform.Id, Refresh = true });
-                Data.Platform = refresh.Value.Platform;
+                var refresh = await _mediator.Send(new Flow.ImportQuery() { PlatformInfoId = Data.PlatformInfo.Id });
+                Data.PlatformInfo = refresh.Value.PlatformInfo;
                 Data.SetupUnits = refresh.Value.SetupUnits;
                 state.AddToModelState(ModelState, nameof(Data) + ".");
                 return Page();
@@ -85,7 +85,7 @@ public class ImportModel : PageModel
             if (result.HasStatusMessage())
                 StatusMessage = result.ToStatusMessage();
 
-            return RedirectToPage(nameof(Index), new { platformInfoId = Data.Platform.Id });
+            return RedirectToPage(nameof(Index), new { platformInfoId = Data.PlatformInfo.Id });
         }
         catch (Exception ex)
         {

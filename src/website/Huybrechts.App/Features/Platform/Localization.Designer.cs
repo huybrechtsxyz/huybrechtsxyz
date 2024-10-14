@@ -151,6 +151,33 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expression.
+        /// </summary>
+        public static string Expression {
+            get {
+                return ResourceManager.GetString("Expression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is rate unit?.
+        /// </summary>
+        public static string IsDefaultPlatformRateUnit {
+            get {
+                return ResourceManager.GetString("IsDefaultPlatformRateUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is component unit?.
+        /// </summary>
+        public static string IsDefaultProjectComponentUnit {
+            get {
+                return ResourceManager.GetString("IsDefaultProjectComponentUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Is primary region.
         /// </summary>
         public static string IsPrimaryRegion {
@@ -340,6 +367,15 @@ namespace Huybrechts.App.Features.Platform {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sequence.
+        /// </summary>
+        public static string Sequence {
+            get {
+                return ResourceManager.GetString("Sequence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Service.
         /// </summary>
         public static string Service {
@@ -453,6 +489,15 @@ namespace Huybrechts.App.Features.Platform {
         public static string ValidFrom {
             get {
                 return ResourceManager.GetString("ValidFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variable.
+        /// </summary>
+        public static string Variable {
+            get {
+                return ResourceManager.GetString("Variable", resourceCulture);
             }
         }
     }
