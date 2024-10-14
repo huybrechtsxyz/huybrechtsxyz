@@ -3,6 +3,7 @@
 @model Huybrechts.Web.Pages.Features.Project.Scenario.IndexModel
 @{
     ViewData["CardTitle"] = Model.Data.Project.Name + " | " + SL["ScenarioIndexTitle"];
+    ViewData["ProjectInfoId"] = Model.Data.Project.Id;
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }

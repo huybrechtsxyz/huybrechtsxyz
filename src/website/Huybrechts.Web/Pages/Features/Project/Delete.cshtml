@@ -5,6 +5,7 @@
 @model Huybrechts.Web.Pages.Features.Project.DeleteModel
 @{
     ViewData["CardTitle"] = SL["InfoDeleteTitle"];
+    ViewData["ProjectInfoId"] = Model.Data.Id;
 }
 
 <partial name="_StatusResult" for="StatusMessage" />

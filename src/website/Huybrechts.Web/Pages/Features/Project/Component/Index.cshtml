@@ -3,6 +3,7 @@
 @model Huybrechts.Web.Pages.Features.Project.Component.IndexModel
 @{
     ViewData["CardTitle"] = Model.Data.ProjectInfo.Name + " | " + Model.Data.ProjectDesign.Name + " | " + SL["ComponentIndexTitle"];
+    ViewData["ProjectInfoId"] = Model.Data.ProjectInfo.Id;
 }
 
 @* @section Links {

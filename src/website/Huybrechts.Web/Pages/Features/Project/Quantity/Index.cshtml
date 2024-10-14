@@ -3,6 +3,7 @@
 @model Huybrechts.Web.Pages.Features.Project.Quantity.IndexModel
 @{
     ViewData["CardTitle"] = Model.Data.Project.Name + " | " + SL["QuantityIndexTitle"];
+    ViewData["ProjectInfoId"] = Model.Data.Project.Id;
     var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
     var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
 }
@@ -50,6 +51,10 @@
                                 <tr>
                                     <td>@Html.DisplayFor(modelItem => record!.Name)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.Description)</td>
+                                    <td>
+                                        <a asp-page="Edit" asp-route-id="@record!.Id" class="btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i></a>
+                                        <a asp-page="Delete" asp-route-id="@record!.Id" class="btn btn-icon btn-secondary"><i class="bi bi-trash2-fill"></i></a>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
