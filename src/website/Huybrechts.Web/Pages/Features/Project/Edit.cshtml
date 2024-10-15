@@ -5,6 +5,7 @@
 @model Huybrechts.Web.Pages.Features.Project.EditModel
 @{
     ViewData["CardTitle"] = SL["InfoEditTitle"];
+    ViewData["ProjectInfoId"] = Model.Data.Id;
 }
 
 <partial name="_StatusResult" for="StatusMessage" />

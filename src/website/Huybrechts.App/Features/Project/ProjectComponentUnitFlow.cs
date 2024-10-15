@@ -10,8 +10,10 @@ using Huybrechts.Core.Project;
 using Huybrechts.Core.Setup;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Dynamic.Core;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Huybrechts.App.Features.Project.ProjectComponentUnitFlow;
 
@@ -416,72 +418,82 @@ internal class DefaultQueryHandler : IRequestHandler<DefaultCommand, Result>
             .ToListAsync(token);
         var index = units.Count * 10 + 10;
 
-        if (component.SourceType == SourceType.Platform) 
+        await _dbcontext.BeginTransactionAsync(token);
+
+        if (component.SourceType == SourceType.Platform)
         {
-            if (component.PlatformInfoId.HasValue && component.PlatformInfoId != Ulid.Empty)
-            {
-                var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(f => f.Id == component.PlatformInfoId, token);
-                if(platform is not null && component.PlatformProductId.HasValue && component.PlatformProductId != Ulid.Empty)
-                {
-                    var product = await _dbcontext.Set<PlatformProduct>().FirstOrDefaultAsync(f => f.Id == component.PlatformProductId, token);
-                    if (product is not null)
-                    {
-                        var rates = await _dbcontext.Set<PlatformRate>()
-                            .Where(q => q.PlatformProductId == product.Id)
-                            .Include(i => i.RateUnits)
-                            .ThenInclude(j => j.SetupUnit)
-                            .ToListAsync(token);
-
-                        await _dbcontext.BeginTransactionAsync(token);
-
-                        if (rates is not null && rates.Count > 0)
-                        {
-                            // Get all SetupUnit IDs associated with the current component units
-                            var existingUnitIds = units.Select(u => u.SetupUnit!.Id).ToHashSet();
-
-                            // Get all SetupUnits from the rates
-                            var allSetupUnitsFromRates = rates.SelectMany(r => r.RateUnits)
-                                .Select(ru => ru.SetupUnit)
-                                .Distinct()
-                                .ToList();
-
-                            foreach (var rate in rates)
-                            {
-                                foreach (var rateUnit in rate.RateUnits)
-                                {
-                                    if (existingUnitIds.Contains(rateUnit.SetupUnit.Id))
-                                        continue;
-
-                                    ProjectComponentUnit newComponentUnit = new()
-                                    {
-                                        Id = Ulid.NewUlid(),
-                                        CreatedDT = DateTime.UtcNow,
-                                        ProjectInfoId = project.Id,
-                                        ProjectDesignId = design.Id,
-                                        ProjectComponent = component,
-
-                                        Sequence = index,
-                                        SetupUnit = rateUnit.SetupUnit,
-                                        Variable = rateUnit.SetupUnit.Name.ToLower().Trim(),
-                                        Quantity = 1,
-                                        Expression = string.Empty
-                                    };
-
-                                    await _dbcontext.Set<ProjectComponentUnit>().AddAsync(newComponentUnit, token);
-                                    existingUnitIds.Add(rateUnit.SetupUnit.Id);
-                                    index += 10;
-                                }
-                            }
-                        }
-
-                        await _dbcontext.SaveChangesAsync(token);
-                        await _dbcontext.CommitTransactionAsync(token);
-                    }
-                }
-            }
+            await HandlePlatformAsync(component, index, token);
         }
 
+        await _dbcontext.CommitTransactionAsync(token);
         return Result.Ok();
+    }
+
+    private async Task HandlePlatformAsync(ProjectComponent component, int index, CancellationToken token)
+    {
+        var platform = await _dbcontext.Set<PlatformInfo>().FirstOrDefaultAsync(f => f.Id == component.PlatformInfoId, token);
+        if (platform is null)
+            return;
+
+        var product = await _dbcontext.Set<PlatformProduct>().FirstOrDefaultAsync(f => f.Id == component.PlatformProductId, token);
+        if (product is null)
+            return;
+
+        var rates = await _dbcontext.Set<PlatformRate>()
+            .Where(q => q.PlatformProductId == product.Id)
+            .Include(i => i.RateUnits)
+            .ThenInclude(j => j.SetupUnit)
+            .ToListAsync(token);
+        if (rates is null || rates.Count == 0)
+            return;
+
+        var itemList = rates
+            .Select(i => new { i.ServiceName, i.ProductName, i.SkuName })
+            .Distinct()
+            .ToList();
+        if (itemList is null || itemList.Count == 0)
+            return;
+
+        foreach(var item in itemList)
+        {
+            var defaultUnits = await _dbcontext.Set<PlatformDefaultUnit>()
+                .Include(i => i.SetupUnit)
+                .Where(unit => unit.PlatformInfoId == component.PlatformInfoId
+                && (unit.ServiceName != null && unit.ServiceName.ToLower() == item.ServiceName.ToLower())
+                && (unit.ProductName != null && unit.ProductName.ToLower() == item.ProductName.ToLower())
+                && (unit.SkuName != null && unit.SkuName.ToLower() == item.SkuName.ToLower())
+                && (unit.IsDefaultProjectComponentUnit == true))
+                .OrderBy(unit => unit.ServiceName)
+                .ThenBy(unit => unit.ProductName)
+                .ThenBy(unit => unit.SkuName)
+                .ThenBy(unit => unit.Sequence)
+                .ToListAsync(token);
+
+            if (defaultUnits is null || defaultUnits.Count == 0)
+                continue;
+
+            foreach(var dftUnit in defaultUnits)
+            {
+                ProjectComponentUnit newUnit = new()
+                {
+                    Id = Ulid.NewUlid(),
+                    CreatedDT = DateTime.UtcNow,
+                    ProjectInfoId = component.ProjectInfoId,
+                    ProjectDesignId = component.ProjectDesignId,
+                    ProjectComponent = component,
+                    Sequence = index,
+                    Description = dftUnit.Description,
+                    SetupUnit = dftUnit.SetupUnit,
+                    SetupUnitId = dftUnit.SetupUnitId,
+                    Category = string.Empty,
+                    Variable = dftUnit.Variable,
+                    Quantity = dftUnit.DefaultValue,
+                    Expression = dftUnit.Expression
+                };
+                await _dbcontext.Set<ProjectComponentUnit>().AddAsync(newUnit, token);
+                index += 10;
+            }
+        }
     }
 }
 

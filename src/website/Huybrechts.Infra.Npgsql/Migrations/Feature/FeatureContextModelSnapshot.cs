@@ -47,6 +47,24 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasColumnType("character varying(256)")
                         .HasComment("A brief description providing additional details about the region.");
 
+                    b.Property<string>("Expression")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasComment("The formula used to calculate the value of the quantity for this unit.");
+
+                    b.Property<bool>("IsDefaultPlatformRateUnit")
+                        .HasColumnType("boolean")
+                        .HasComment("Is this a default for the Platform Rate Unit");
+
+                    b.Property<bool>("IsDefaultProjectComponentUnit")
+                        .HasColumnType("boolean")
+                        .HasComment("Is this a default for the Project Component Unit");
+
+                    b.Property<string>("MeterName")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Meter name.");
+
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
                         .HasColumnType("character varying(450)")
@@ -61,14 +79,32 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformInfo.");
 
+                    b.Property<string>("ProductName")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("Product name.");
+
                     b.Property<string>("SearchIndex")
                         .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
+                    b.Property<int>("Sequence")
+                        .HasColumnType("integer")
+                        .HasComment("Gets or sets the sequence order of this unit.");
+
+                    b.Property<string>("ServiceName")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("The name of the service.");
+
                     b.Property<string>("SetupUnitId")
-                        .IsRequired()
                         .HasColumnType("character varying(26)")
                         .HasComment("Foreign key linking to the SetupUnit entity.");
+
+                    b.Property<string>("SkuName")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("SKU name.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
@@ -88,10 +124,14 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
                         .HasComment("Conversion factor for the unit rate, translating platform units to standard units.");
 
                     b.Property<string>("UnitOfMeasure")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasComment("Unit of measure.");
+
+                    b.Property<string>("Variable")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasComment("The variable name used in the metrics calculations for this unit.");
 
                     b.HasKey("Id");
 
@@ -99,9 +139,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasIndex("SetupUnitId");
 
-                    b.HasIndex("TenantId", "SearchIndex");
-
-                    b.HasIndex("TenantId", "PlatformInfoId", "UnitOfMeasure");
+                    b.HasIndex("TenantId", "PlatformInfoId", "SearchIndex");
 
                     b.ToTable("PlatformDefaultUnit", t =>
                         {
@@ -2578,9 +2616,7 @@ namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 
                     b.HasOne("Huybrechts.Core.Setup.SetupUnit", "SetupUnit")
                         .WithMany()
-                        .HasForeignKey("SetupUnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SetupUnitId");
 
                     b.Navigation("PlatformInfo");
 

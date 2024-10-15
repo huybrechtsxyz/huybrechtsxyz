@@ -3,134 +3,137 @@ using System;
 using Huybrechts.App.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Huybrechts.Infra.SqlServer.Migrations.Feature
+namespace Huybrechts.Infra.Npgsql.Migrations.Feature
 {
     [DbContext(typeof(FeatureContext))]
-    partial class FeatureContextModelSnapshot : ModelSnapshot
+    [Migration("20241014195920_AddPlatformDefaultUnits")]
+    partial class AddPlatformDefaultUnits
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.10")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformDefaultUnit", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<decimal>("DefaultValue")
                         .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)")
+                        .HasColumnType("numeric(18,4)")
                         .HasComment("Default rate for the unit, representing a base measurement standard.");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("A brief description providing additional details about the region.");
 
                     b.Property<string>("Expression")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("The formula used to calculate the value of the quantity for this unit.");
 
                     b.Property<bool>("IsDefaultPlatformRateUnit")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasComment("Is this a default for the Platform Rate Unit");
 
                     b.Property<bool>("IsDefaultProjectComponentUnit")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasComment("Is this a default for the Project Component Unit");
 
                     b.Property<string>("MeterName")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Meter name.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformInfo.");
 
                     b.Property<string>("ProductName")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Product name.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<int>("Sequence")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Gets or sets the sequence order of this unit.");
 
                     b.Property<string>("ServiceName")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("The name of the service.");
 
                     b.Property<string>("SetupUnitId")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key linking to the SetupUnit entity.");
 
                     b.Property<string>("SkuName")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("SKU name.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<decimal>("UnitFactor")
                         .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Conversion factor for the unit rate, translating platform units to standard units.");
 
                     b.Property<string>("UnitOfMeasure")
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Unit of measure.");
 
                     b.Property<string>("Variable")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("The variable name used in the metrics calculations for this unit.");
 
                     b.HasKey("Id");
@@ -152,60 +155,60 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformInfo", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Detailed description of the platform.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Name of the platform.");
 
                     b.Property<int>("Provider")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("The platform's supported automation provider, enabling automated resource management.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Additional remarks or comments about the platform.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
@@ -226,102 +229,102 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformProduct", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("AboutURL")
                         .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
+                        .HasColumnType("character varying(512)")
                         .HasComment("URL linking to additional information about the product.");
 
                     b.Property<string>("Category")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Category of the product");
 
                     b.Property<string>("CostBasedOn")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Parameters or metrics on which the cost of the product is based.");
 
                     b.Property<string>("CostDriver")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("The cost driver or factor that influences the pricing of the product.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("A brief description providing details about the product.");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("A label representing the product, often used for display purposes.");
 
                     b.Property<string>("Limitations")
                         .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
+                        .HasColumnType("character varying(512)")
                         .HasComment("Limitations or constraints related to the product.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("The name of the product offered by the platform.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformInfo entity.");
 
                     b.Property<string>("PricingTier")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Size or pricing tier associated with the product.");
 
                     b.Property<string>("PricingURL")
                         .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
+                        .HasColumnType("character varying(512)")
                         .HasComment("URL providing pricing information for the product.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Additional remarks or notes regarding the product.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
@@ -344,136 +347,136 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRate", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("CurrencyCode")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)")
+                        .HasColumnType("character varying(10)")
                         .HasComment("Currency code.");
 
                     b.Property<bool>("IsPrimaryRegion")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasComment("Indicates whether this is the primary rate for the region.");
 
                     b.Property<string>("MeterName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Meter name.");
 
                     b.Property<decimal>("MinimumUnits")
                         .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Tier minimum units.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformInfo entity.");
 
                     b.Property<string>("PlatformProductId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformProduct entity.");
 
                     b.Property<string>("PlatformRegionId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformRegion entity.");
 
                     b.Property<string>("PlatformServiceId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformService entity.");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Product name.");
 
                     b.Property<string>("RateType")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Rate type.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Additional remarks or comments about the rate.");
 
                     b.Property<decimal>("RetailPrice")
                         .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Retail price.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("ServiceFamily")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Service family or category.");
 
                     b.Property<string>("ServiceName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("The name of the service.");
 
                     b.Property<string>("SkuName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("SKU name.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("UnitOfMeasure")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Unit of measure.");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Unit price.");
 
                     b.Property<DateTime>("ValidFrom")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Rate is valid from.");
 
                     b.HasKey("Id");
@@ -495,83 +498,83 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRateUnit", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<decimal>("DefaultValue")
                         .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)")
+                        .HasColumnType("numeric(18,4)")
                         .HasComment("Default rate for the unit, representing a base measurement standard.");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("character varying(200)")
                         .HasComment("Description of the measuring unit, providing additional context for users.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformInfo entity.");
 
                     b.Property<string>("PlatformProductId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformProduct entity.");
 
                     b.Property<string>("PlatformRateId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformProduct entity.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("SetupUnitId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key linking to the SetupUnit entity.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<decimal>("UnitFactor")
                         .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Conversion factor for the unit rate, translating platform units to standard units.");
 
                     b.Property<string>("UnitOfMeasure")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Unit of measure.");
 
                     b.HasKey("Id");
@@ -593,67 +596,67 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformRegion", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("A brief description providing additional details about the region.");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("A label representing the region, often the location name.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("The unique name identifier of the region.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformInfo.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Additional remarks or notes regarding the region.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
@@ -676,72 +679,72 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Platform.PlatformService", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Category")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("The category or family of the service, helping to classify it among similar offerings.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("A brief description providing additional details about the service.");
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("A label representing the service, often used in the user interface.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("The name of the service or service offered by the platform.");
 
                     b.Property<string>("PlatformInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformInfo entity.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Additional remarks or notes regarding the service.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
@@ -764,146 +767,146 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectComponent", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Account")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the account under which this component is managed.");
 
                     b.Property<int>("ComponentLevel")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Specifies the level of the component (e.g., Component, Configuration, Module, Variant).");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Gets or sets the description of the component.");
 
                     b.Property<string>("Environment")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the environment associated with the component.");
 
                     b.Property<string>("Group")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the group to which this component belongs.");
 
                     b.Property<string>("Location")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the location associated with the component.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the name of the component.");
 
                     b.Property<string>("Organization")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the organization under which this component is managed.");
 
                     b.Property<string>("OrganizationalUnit")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the account under which this component is managed.");
 
                     b.Property<int>("OwnershipPercentage")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Gets or sets the percentage of ownership for this component.");
 
                     b.Property<string>("ParentId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the ID of the parent component, if any.");
 
                     b.Property<string>("PlatformInfoId")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the optional ID of the platform information associated with this component.");
 
                     b.Property<string>("PlatformProductId")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the optional ID of the platform product associated with this component.");
 
                     b.Property<string>("ProjectComponentId")
-                        .HasColumnType("nvarchar(26)");
+                        .HasColumnType("character varying(26)");
 
                     b.Property<string>("ProjectDesignId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the ID of the project design this component belongs to.");
 
                     b.Property<string>("ProjectInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the ID of the project this component belongs to.");
 
                     b.Property<string>("Proposal")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the proposal associated with the component.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Gets or sets any additional remarks or notes about the component.");
 
                     b.Property<string>("Responsible")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the responsible to which this component belongs.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("A normalized search index to optimize searching through components.");
 
                     b.Property<int>("Sequence")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Gets or sets the sequence order of this component within its parent design or component.");
 
                     b.Property<string>("Source")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Optional field to store the source of this component.");
 
                     b.Property<int>("SourceType")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Specifies the source type of this component (None, Platform).");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<int>("VariantType")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Specifies the type of variant for this component (Standard, Option, Exceptional).");
 
                     b.HasKey("Id");
@@ -927,108 +930,108 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectComponentUnit", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Category")
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Category of the component unit (example: forfait, per unit, ...)");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Gets or sets the description of the unit.");
 
                     b.Property<string>("Expression")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("The formula used to calculate the value of the quantity for this component unit.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("ProjectComponentId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("The ID of the project component to which this unit belongs.");
 
                     b.Property<string>("ProjectDesignId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("The design ID of the project this component unit belongs to.");
 
                     b.Property<string>("ProjectInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("The project ID this component unit is part of.");
 
                     b.Property<string>("ProjectQuantityId")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the unique identifier for the Project Quantity.");
 
                     b.Property<decimal>("Quantity")
                         .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Gets or sets the quantity of the unit used.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Gets or sets any additional remarks or notes about the component unit.");
 
                     b.Property<decimal>("RetailPrice")
                         .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Gets or sets the standard price for a unit.");
 
                     b.Property<decimal>("SalesPrice")
                         .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Gets or sets the sales price for a unit.");
 
                     b.Property<int>("Sequence")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Gets or sets the sequence order of this component within its parent design or component unit.");
 
                     b.Property<string>("SetupUnitId")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("The ID of the measuring unit used for this component.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Gets or sets the actual price you pay for a unit.");
 
                     b.Property<string>("Variable")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("The variable name used in the metrics calculations for this component unit.");
 
                     b.HasKey("Id");
@@ -1050,104 +1053,104 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectDesign", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Dependencies")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("List of dependencies for the design");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Gets or sets the description of the project design.");
 
                     b.Property<string>("Environment")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("The environment in which the project design is implemented.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the name of the project design.");
 
                     b.Property<string>("Priority")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
+                        .HasColumnType("character varying(32)")
                         .HasComment("Gets or sets the priority of the project.");
 
                     b.Property<string>("ProjectInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the unique identifier for the project associated with this design.");
 
                     b.Property<int?>("Rating")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Gets or sets the rating of the project, reflecting its priority, quality, or stakeholder approval.");
 
                     b.Property<string>("Reason")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Gets or sets the reason for the current state of the design.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Additional remarks or comments about the project design.");
 
                     b.Property<string>("Risk")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
+                        .HasColumnType("character varying(32)")
                         .HasComment("Gets or sets the risk of the project.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("State")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
+                        .HasColumnType("character varying(32)")
                         .HasComment("Gets or sets the current state of the project design.");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Keywords or categories for the design");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("Version")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
+                        .HasColumnType("character varying(32)")
                         .HasComment("Design version");
 
                     b.HasKey("Id");
@@ -1170,142 +1173,142 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectInfo", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<int?>("BusinessValue")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Gets or sets the business value of the project.");
 
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("The general category of the project, used for higher-level classification, such as Construction, Research, or Technology.");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
+                        .HasColumnType("character varying(32)")
                         .HasComment("Code of the Project.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Detailed description of the Project.");
 
                     b.Property<int?>("Effort")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Gets or sets the effort required for the project.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Name of the Project.");
 
                     b.Property<string>("ParentId")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("The project ID this component unit is part of.");
 
                     b.Property<string>("Priority")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
+                        .HasColumnType("character varying(32)")
                         .HasComment("Gets or sets the priority of the project.");
 
                     b.Property<string>("ProjectKind")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("The specific kind of the project within the project type, such as Mobile App, Web App, or Database Development.");
 
                     b.Property<string>("ProjectOrigin")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("The origin of the project, indicating if it's internal, external, or customer-driven.");
 
                     b.Property<string>("ProjectType")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("The type of the project, such as Infrastructure, Software Development, or Research.");
 
                     b.Property<int?>("Rating")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Gets or sets the rating of the project, reflecting its priority, quality, or stakeholder approval.");
 
                     b.Property<string>("Reason")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Gets or sets the reason for the current state of the project.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Additional remarks or comments about the Project.");
 
                     b.Property<string>("Risk")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
+                        .HasColumnType("character varying(32)")
                         .HasComment("Gets or sets the risk of the project.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<DateTime?>("StartDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the start date for the project.");
 
                     b.Property<string>("State")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
+                        .HasColumnType("character varying(32)")
                         .HasComment("Gets or sets the current state of the project.");
 
                     b.Property<string>("Subcategory")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("The specific subcategory of the project, providing more detailed classification, such as AI Development or Cybersecurity.");
 
                     b.Property<string>("Tags")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Keywords or categories for the project");
 
                     b.Property<DateTime?>("TargetDate")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the target completion date for the project.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
@@ -1326,68 +1329,68 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectQuantity", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1024)
-                        .HasColumnType("nvarchar(1024)")
+                        .HasColumnType("character varying(1024)")
                         .HasComment("Gets or sets a description of the bill of quantities.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Gets or sets the name of the bill of quantities.");
 
                     b.Property<string>("ProjectInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the unique identifier for the project associated with this bill of quantities.");
 
                     b.Property<string>("Remark")
                         .HasMaxLength(1024)
-                        .HasColumnType("nvarchar(1024)")
+                        .HasColumnType("character varying(1024)")
                         .HasComment("Gets or sets any additional remarks for the bill of quantities.");
 
                     b.Property<string>("SearchIndex")
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the search index for the bill of quantities.");
 
                     b.Property<string>("Tags")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Gets or sets the tags associated with the bill of quantities.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
@@ -1410,65 +1413,65 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectScenario", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Gets or sets the description of the project scenario.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the name of the scenario scenario.");
 
                     b.Property<string>("ProjectInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the unique identifier for the project associated with this scenario.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Additional remarks or comments about the project scenario.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Keywords or categories for the scenario");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
@@ -1491,68 +1494,68 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectScenarioUnit", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Expression")
                         .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("ProjectInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the ID of the project this scenario metric belongs to.");
 
                     b.Property<string>("ProjectScenarioId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)");
+                        .HasColumnType("character varying(26)");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Gets or sets any additional remarks or notes about the scenario unit.");
 
                     b.Property<int>("Sequence")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Gets or sets the sequence order of this unit within its parent scenario.");
 
                     b.Property<string>("SetupUnitId")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("The ID of the measuring unit used for this component.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("Variable")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.HasKey("Id");
 
@@ -1571,69 +1574,69 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectSimulation", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Gets or sets the description of the project simulation.");
 
                     b.Property<bool>("IsCalculating")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasComment("Gets or sets if the project simulation is being calculated on this moment.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the name of the simulation.");
 
                     b.Property<string>("ProjectInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the unique identifier for the project associated with this simulation.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Additional remarks or comments about the project simulation.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Keywords or categories for the simulation");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
@@ -1651,162 +1654,162 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Project.ProjectSimulationEntry", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("CurrencyCode")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)")
+                        .HasColumnType("character varying(10)")
                         .HasComment("Currency code.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<decimal>("OwnRetailAmount")
                         .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)")
+                        .HasColumnType("numeric(18,4)")
                         .HasComment("Ownership-adjusted retail cost in the specified currency.");
 
                     b.Property<decimal>("OwnSalesAmount")
                         .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)")
+                        .HasColumnType("numeric(18,4)")
                         .HasComment("The sales revenue adjusted for the ownership percentage.");
 
                     b.Property<decimal>("OwnUnitAmount")
                         .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)")
+                        .HasColumnType("numeric(18,4)")
                         .HasComment("Ownership-adjusted unit cost per service unit in the specified currency.");
 
                     b.Property<int>("OwnershipPercentage")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Percentage of ownership for this component or service.");
 
                     b.Property<string>("PlatformInfoId")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the optional ID of the platform information associated with this component.");
 
                     b.Property<string>("PlatformProductId")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the optional ID of the platform product associated with this component.");
 
                     b.Property<string>("PlatformRateId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformProduct entity.");
 
                     b.Property<string>("PlatformRegionId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformRegion entity.");
 
                     b.Property<string>("PlatformServiceId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Foreign key referencing the PlatformService entity.");
 
                     b.Property<string>("ProjectComponentId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("The ID of the project component to which this unit belongs.");
 
                     b.Property<string>("ProjectDesignId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the ID of the project design this component belongs to.");
 
                     b.Property<string>("ProjectInfoId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)");
+                        .HasColumnType("character varying(26)");
 
                     b.Property<string>("ProjectQuantityId")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the unique identifier for the Project Quantity.");
 
                     b.Property<string>("ProjectScenarioId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)");
+                        .HasColumnType("character varying(26)");
 
                     b.Property<string>("ProjectSimulationId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(26)");
+                        .HasColumnType("character varying(26)");
 
                     b.Property<decimal>("Quantity")
                         .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)")
+                        .HasColumnType("numeric(18,4)")
                         .HasComment("Quantity of service units.");
 
                     b.Property<decimal>("RetailAmount")
                         .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)")
+                        .HasColumnType("numeric(18,4)")
                         .HasComment("Internal retail cost in the specified currency.");
 
                     b.Property<decimal>("RetailPrice")
                         .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Retail price in the specified currency.");
 
                     b.Property<decimal>("SalesAmount")
                         .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)")
+                        .HasColumnType("numeric(18,4)")
                         .HasComment("Internal retail cost in the specified currency.");
 
                     b.Property<decimal>("SalesPrice")
                         .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Gets or sets the sales price for a unit.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<decimal>("UnitAmount")
                         .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)")
+                        .HasColumnType("numeric(18,4)")
                         .HasComment("Internal unit cost per service unit in the specified currency.");
 
                     b.Property<string>("UnitCategory")
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Category of the component unit (example: forfait, per unit, ...)");
 
                     b.Property<string>("UnitDescription")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Gets or sets the description of the unit.");
 
                     b.Property<string>("UnitOfMeasure")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Unit of measure.");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 6)
-                        .HasColumnType("decimal(18,6)")
+                        .HasColumnType("numeric(18,6)")
                         .HasComment("Unit price per service unit in the specified currency.");
 
                     b.HasKey("Id");
@@ -1844,64 +1847,64 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupCategory", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("The primary category assigned to the object.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Additional details or context for the category or subcategory.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("Stores normalized, concatenated values for efficient searching.");
 
                     b.Property<string>("Subcategory")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("The subcategory assigned to the object, dependent on the selected category.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("TypeOf")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("The classification or type for the object (e.g., ProjectCategory).");
 
                     b.HasKey("Id");
@@ -1921,66 +1924,66 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupCountry", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("SetupCurrencyId")
-                        .HasColumnType("nvarchar(26)");
+                        .HasColumnType("character varying(26)");
 
                     b.Property<string>("SetupLanguageId")
-                        .HasColumnType("nvarchar(26)");
+                        .HasColumnType("character varying(26)");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("TranslatedName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.HasKey("Id");
 
@@ -2007,55 +2010,55 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupCurrency", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.HasKey("Id");
@@ -2079,61 +2082,61 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupLanguage", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("TranslatedName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.HasKey("Id");
 
@@ -2156,100 +2159,100 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupNoSerie", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<bool>("AutomaticReset")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasComment("Indicates whether the counter will automatically reset when the number series changes (e.g., at the start of a new year).");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Optional description providing more details about the number series.");
 
                     b.Property<string>("Format")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Format string defining how the number is generated, including placeholders like YYYY-MM-###.");
 
                     b.Property<int>("Increment")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Specifies the increment value for the counter when generating a new number.");
 
                     b.Property<bool>("IsDisabled")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasComment("Indicates whether the counter is disabled. If true, the counter is inactive.");
 
                     b.Property<int>("LastCounter")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("The current sequential number for this series.");
 
                     b.Property<string>("LastPrefix")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Stores the last generated prefix in the series to track the most recent value.");
 
                     b.Property<string>("LastValue")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Stores the last generated number in the series to track the most recent value.");
 
                     b.Property<int>("Maximum")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("The maximum allowed value for the counter before it resets or stops.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("A normalized concatenated field used for optimizing search operations.");
 
                     b.Property<int>("StartCounter")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("The maximum allowed value for the counter before it resets or stops.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("TypeOf")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Type of number series, such as ProjectNumber or InvoiceNumber.");
 
                     b.Property<string>("TypeValue")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Specific value within the type code, such as 'Sales' or 'Development' for project types.");
 
                     b.HasKey("Id");
@@ -2269,62 +2272,62 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupState", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<int>("Sequence")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("StateType")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("TypeOf")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("The classification or type for the object (e.g., ProjectType, ProjectKind).");
 
                     b.HasKey("Id");
@@ -2345,58 +2348,58 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupType", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("A detailed description providing additional context or information about the type.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("The code or value representing this type (e.g., X00 - X01).");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("Stores normalized, concatenated values for efficient searching.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("TypeOf")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("The classification or type for the object (e.g., ProjectType, ProjectKind).");
 
                     b.HasKey("Id");
@@ -2416,83 +2419,83 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Setup.SetupUnit", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)")
+                        .HasColumnType("character varying(10)")
                         .HasComment("A unique code representing the unit, standardized across all instances.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("Description")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasComment("A detailed description of the unit.");
 
                     b.Property<decimal>("Factor")
                         .HasPrecision(18, 10)
-                        .HasColumnType("decimal(18,10)")
+                        .HasColumnType("numeric(18,10)")
                         .HasComment("A multiplication factor used to convert this unit to the base unit.");
 
                     b.Property<bool>("IsBase")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasComment("Indicates whether this unit is the base unit for its type.");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("The unique name of the unit within its type.");
 
                     b.Property<int>("Precision")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Number of decimal places for the unit.");
 
                     b.Property<int>("PrecisionType")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Determines how values are rounded according to the System.Decimal Rounding enum.");
 
                     b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Additional remarks or comments about the unit.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching.");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<int>("UnitType")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasComment("Gets or sets the type of the unit (e.g., Length, Mass, Volume, System, etc.).");
 
                     b.HasKey("Id");
@@ -2516,48 +2519,48 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
             modelBuilder.Entity("Huybrechts.Core.Wiki.WikiPage", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(26)")
+                        .HasColumnType("character varying(26)")
                         .HasComment("Gets or sets the primary key for the entity.");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasComment("Gets or sets the markdown content for the wiki page.");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who created the entity.");
 
                     b.Property<DateTime>("CreatedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Date time created");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("character varying(450)")
                         .HasComment("Gets or sets the ID of the user who last modified the entity.");
 
                     b.Property<DateTime?>("ModifiedDT")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasComment("Gets or sets the last modified date and time for the entity.");
 
                     b.Property<string>("Namespace")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("character varying(128)")
                         .HasComment("Gets or sets the namespace to which the wiki page belongs (e.g., 'UserGuide').");
 
                     b.Property<string>("Page")
                         .IsRequired()
                         .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
+                        .HasColumnType("character varying(512)")
                         .HasComment("Gets or sets the page or URL slug for the wiki page.");
 
                     b.Property<string>("PreviewText")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Gets or sets the first characters of the markdown content for the wiki page.");
 
                     b.Property<float>("Rank")
@@ -2565,30 +2568,30 @@ namespace Huybrechts.Infra.SqlServer.Migrations.Feature
                         .HasComment("Represents the rank of the search result during specific queries.");
 
                     b.Property<string>("SearchIndex")
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("text")
                         .HasComment("This field will store the normalized, concatenated values for searching");
 
                     b.Property<string>("Tags")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasComment("Keywords or categories for the project");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("character varying(64)")
                         .HasComment("Gets or sets the tenant identifier.");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
+                        .HasColumnType("bytea")
                         .HasComment("Gets or sets the concurrency timestamp for the entity.");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)")
+                        .HasColumnType("character varying(512)")
                         .HasComment("Gets or sets the title of the wiki page.");
 
                     b.HasKey("Id");

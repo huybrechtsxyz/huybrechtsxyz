@@ -17,8 +17,7 @@ namespace Huybrechts.Core.Platform;
 [MultiTenant]
 [Table("PlatformDefaultUnit")]
 [Comment("Represents a default unit of measure for a platform, linking to a setup unit and a specific platform.")]
-[Index(nameof(TenantId), nameof(PlatformInfoId), nameof(UnitOfMeasure))]
-[Index(nameof(TenantId), nameof(SearchIndex))]
+[Index(nameof(TenantId), nameof(PlatformInfoId), nameof(SearchIndex))]
 public record PlatformDefaultUnit : Entity, IEntity
 {
     /// <summary>
@@ -36,15 +35,55 @@ public record PlatformDefaultUnit : Entity, IEntity
     /// <summary>
     /// Foreign key linking to the SetupUnit entity.
     /// </summary>
-    [Required]
     [Comment("Foreign key linking to the SetupUnit entity.")]
-    public Ulid SetupUnitId { get; set; }
+    public Ulid? SetupUnitId { get; set; }
 
     /// <summary>
     /// Navigation property for SetupUnit.
     /// </summary>
     [ForeignKey(nameof(SetupUnitId))]
-    public SetupUnit SetupUnit { get; set; } = null!;
+    public SetupUnit? SetupUnit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the sequence order of this unit.
+    /// </summary>
+    /// <remarks>
+    /// Used to determine the order in which units should be arranged or processed.
+    /// </remarks>
+    [Comment("Gets or sets the sequence order of this unit.")]
+    public int Sequence { get; set; } = 0;
+
+    /// <summary>
+    /// The name of the service.
+    /// Provides a human-readable identifier for the service associated with this rate.
+    /// </summary>
+    [MaxLength(128)]
+    [Comment("The name of the service.")]
+    public string? ServiceName { get; set; }
+
+    /// <summary>
+    /// The name of the product associated with this rate.
+    /// Typically refers to the overarching product category the service belongs to, ensuring clarity in billing.
+    /// </summary>
+    [MaxLength(128)]
+    [Comment("Product name.")]
+    public string? ProductName { get; set; }
+
+    /// <summary>
+    /// The SKU (Stock Keeping Unit) name associated with this rate.
+    /// Identifies the specific version or configuration of the product.
+    /// </summary>
+    [MaxLength(128)]
+    [Comment("SKU name.")]
+    public string? SkuName { get; set; }
+
+    /// <summary>
+    /// The meter name associated with this rate.
+    /// Typically refers to the specific resource or unit being measured for billing purposes.
+    /// </summary>
+    [MaxLength(128)]
+    [Comment("Meter name.")]
+    public string? MeterName { get; set; }
 
     /// <summary>
     /// The unit of measure for the rate (e.g., per hour, per GB).
@@ -52,7 +91,7 @@ public record PlatformDefaultUnit : Entity, IEntity
     /// </summary>
     [MaxLength(64)]
     [Comment("Unit of measure.")]
-    public string UnitOfMeasure { get; set; } = string.Empty;
+    public string? UnitOfMeasure { get; set; }
 
     /// <summary>
     /// The conversion factor for the unit rate, used to translate platform units to standard units.
@@ -78,6 +117,38 @@ public record PlatformDefaultUnit : Entity, IEntity
     [MaxLength(256)]
     [Comment("A brief description providing additional details about the region.")]
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Is this a default for the Platform Rate Unit
+    /// </summary>
+    [Comment("Is this a default for the Platform Rate Unit")]
+    public bool IsDefaultPlatformRateUnit { get; set; } = false;
+
+    /// <summary>
+    /// Is this a default for the Project Component Unit
+    /// </summary>
+    [Comment("Is this a default for the Project Component Unit")]
+    public bool IsDefaultProjectComponentUnit { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the name of the variable used in calculations.
+    /// </summary>
+    /// <remarks>
+    /// This represents the variable name used in formulas for calculating the cost.
+    /// </remarks>
+    [MaxLength(128)]
+    [Comment("The variable name used in the metrics calculations for this unit.")]
+    public string? Variable { get; set; }
+
+    /// <summary>
+    /// Gets or sets the formula expression used to calculate the quantity value.
+    /// </summary>
+    /// <remarks>
+    /// This formula will be applied to derive the cost or value of the input metrics.
+    /// </remarks>
+    [MaxLength(256)]
+    [Comment("The formula used to calculate the value of the quantity for this unit.")]
+    public string? Expression { get; set; }
 
     /// <summary>
     /// This field will store the normalized, concatenated values for searching

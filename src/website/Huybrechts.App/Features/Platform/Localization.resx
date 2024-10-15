@@ -147,6 +147,15 @@
   <data name="EffectiveStartDate" xml:space="preserve">
     <value>Effective start date</value>
   </data>
+  <data name="Expression" xml:space="preserve">
+    <value>Expression</value>
+  </data>
+  <data name="IsDefaultPlatformRateUnit" xml:space="preserve">
+    <value>Is rate unit?</value>
+  </data>
+  <data name="IsDefaultProjectComponentUnit" xml:space="preserve">
+    <value>Is component unit?</value>
+  </data>
   <data name="IsPrimaryRegion" xml:space="preserve">
     <value>Is primary region</value>
   </data>
@@ -210,6 +219,9 @@
   <data name="RetailPrice" xml:space="preserve">
     <value>Retail price</value>
   </data>
+  <data name="Sequence" xml:space="preserve">
+    <value>Sequence</value>
+  </data>
   <data name="Service" xml:space="preserve">
     <value>Service</value>
   </data>
@@ -248,5 +260,8 @@
   </data>
   <data name="ValidFrom" xml:space="preserve">
     <value>Valid from</value>
+  </data>
+  <data name="Variable" xml:space="preserve">
+    <value>Variable</value>
   </data>
 </root>

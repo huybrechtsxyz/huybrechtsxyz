@@ -36,9 +36,7 @@ public static class PlatformRateHelper
         ValidFrom = DateTime.Today
     };
 
-    //public static List<string> DefaultCurrencies { get; } = ["EUR", "USD"]; //Currencies.Items.Select(s => s.Code).ToList();
-
-    public static async Task AddDefaultSetupUnits(FeatureContext context, PlatformRate rate, CancellationToken token)
+    public static async Task AddDefaultSetupUnitsAsync(FeatureContext context, PlatformRate rate, CancellationToken token)
     {
         var defaultUnits = await PlatformDefaultUnitFlow.PlatformDefaultUnitHelper.GetDefaultUnitsFor(context, rate, token);
         if (defaultUnits is null || defaultUnits.Count < 1)
@@ -46,6 +44,9 @@ public static class PlatformRateHelper
 
         foreach (var defaultUnit in defaultUnits)
         {
+            if (defaultUnit.SetupUnitId is null || defaultUnit.SetupUnitId == Ulid.Empty)
+                continue;
+
             PlatformRateUnit rateUnit = new()
             {
                 Id = Ulid.NewUlid(),
@@ -53,8 +54,8 @@ public static class PlatformRateHelper
                 PlatformProductId = rate.PlatformProductId,
                 PlatformRate = rate,
                 PlatformRateId = rate.Id,
-                SetupUnit = defaultUnit.SetupUnit,
-                SetupUnitId = defaultUnit.SetupUnit.Id,
+                SetupUnit = defaultUnit.SetupUnit!,
+                SetupUnitId = defaultUnit.SetupUnit!.Id,
                 UnitOfMeasure = rate.UnitOfMeasure,
                 UnitFactor = defaultUnit.UnitFactor,
                 DefaultValue = defaultUnit.DefaultValue,
@@ -476,7 +477,7 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
         };
         await _dbcontext.Set<PlatformRate>().AddAsync(record, token);
 
-        await PlatformRateHelper.AddDefaultSetupUnits(_dbcontext, record, token);
+        PlatformRateHelper.AddDefaultSetupUnitsAsync(_dbcontext, record, token);
 
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok(record.Id);
@@ -960,7 +961,7 @@ internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
             await _dbcontext.Set<PlatformRate>().AddAsync(record, token);
             changes = true;
 
-            await PlatformRateHelper.AddDefaultSetupUnits(_dbcontext, record, token);
+            PlatformRateHelper.AddDefaultSetupUnitsAsync(_dbcontext, record, token);
         }
 
         if (changes)
