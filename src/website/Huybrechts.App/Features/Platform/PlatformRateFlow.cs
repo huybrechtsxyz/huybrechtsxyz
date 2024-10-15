@@ -36,34 +36,35 @@ public static class PlatformRateHelper
         ValidFrom = DateTime.Today
     };
 
-    //public static List<string> DefaultCurrencies { get; } = ["EUR", "USD"]; //Currencies.Items.Select(s => s.Code).ToList();
-
-    public static void AddDefaultSetupUnits(FeatureContext context, PlatformRate rate, CancellationToken token)
+    public static async Task AddDefaultSetupUnitsAsync(FeatureContext context, PlatformRate rate, CancellationToken token)
     {
-        //var defaultUnits = await PlatformDefaultUnitFlow.PlatformDefaultUnitHelper.GetDefaultUnitsFor(context, rate, token);
-        //if (defaultUnits is null || defaultUnits.Count < 1)
-        //    return;
+        var defaultUnits = await PlatformDefaultUnitFlow.PlatformDefaultUnitHelper.GetDefaultUnitsFor(context, rate, token);
+        if (defaultUnits is null || defaultUnits.Count < 1)
+            return;
 
-        //foreach (var defaultUnit in defaultUnits)
-        //{
-        //    PlatformRateUnit rateUnit = new()
-        //    {
-        //        Id = Ulid.NewUlid(),
-        //        PlatformInfoId = rate.PlatformInfoId,
-        //        PlatformProductId = rate.PlatformProductId,
-        //        PlatformRate = rate,
-        //        PlatformRateId = rate.Id,
-        //        SetupUnit = defaultUnit.SetupUnit,
-        //        SetupUnitId = defaultUnit.SetupUnit.Id,
-        //        UnitOfMeasure = rate.UnitOfMeasure,
-        //        UnitFactor = defaultUnit.UnitFactor,
-        //        DefaultValue = defaultUnit.DefaultValue,
-        //        Description = defaultUnit.Description ?? string.Empty,
-        //        SearchIndex = defaultUnit.SearchIndex,
-        //        CreatedDT = DateTime.UtcNow,
-        //    };
-        //    await context.Set<PlatformRateUnit>().AddAsync(rateUnit, token);
-        //}
+        foreach (var defaultUnit in defaultUnits)
+        {
+            if (defaultUnit.SetupUnitId is null || defaultUnit.SetupUnitId == Ulid.Empty)
+                continue;
+
+            PlatformRateUnit rateUnit = new()
+            {
+                Id = Ulid.NewUlid(),
+                PlatformInfoId = rate.PlatformInfoId,
+                PlatformProductId = rate.PlatformProductId,
+                PlatformRate = rate,
+                PlatformRateId = rate.Id,
+                SetupUnit = defaultUnit.SetupUnit!,
+                SetupUnitId = defaultUnit.SetupUnit!.Id,
+                UnitOfMeasure = rate.UnitOfMeasure,
+                UnitFactor = defaultUnit.UnitFactor,
+                DefaultValue = defaultUnit.DefaultValue,
+                Description = defaultUnit.Description ?? string.Empty,
+                SearchIndex = defaultUnit.SearchIndex,
+                CreatedDT = DateTime.UtcNow,
+            };
+            await context.Set<PlatformRateUnit>().AddAsync(rateUnit, token);
+        }
 
         return;
     }
@@ -476,7 +477,7 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
         };
         await _dbcontext.Set<PlatformRate>().AddAsync(record, token);
 
-        PlatformRateHelper.AddDefaultSetupUnits(_dbcontext, record, token);
+        PlatformRateHelper.AddDefaultSetupUnitsAsync(_dbcontext, record, token);
 
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok(record.Id);
@@ -960,7 +961,7 @@ internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
             await _dbcontext.Set<PlatformRate>().AddAsync(record, token);
             changes = true;
 
-            PlatformRateHelper.AddDefaultSetupUnits(_dbcontext, record, token);
+            PlatformRateHelper.AddDefaultSetupUnitsAsync(_dbcontext, record, token);
         }
 
         if (changes)

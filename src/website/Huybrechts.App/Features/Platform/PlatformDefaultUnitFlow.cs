@@ -132,24 +132,6 @@ public static class PlatformDefaultUnitHelper
         return units;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
-    public static async Task<List<PlatformDefaultUnit>> GetDefaultUnitsFor(FeatureContext context, ProjectComponent component, CancellationToken token)
-    {
-
-    }
-
-    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", Justification = "EntityFrameworkCore")]
-    //public static async Task<List<PlatformDefaultUnit>> GetDefaultUnitsFor(FeatureContext context, ProjectComponent component, CancellationToken token)
-    //{
-    //    //string unitOfMeasure = rate.UnitOfMeasure.ToLower().Trim();
-    //    List<PlatformDefaultUnit> defaultUnits = await context.Set<PlatformDefaultUnit>()
-    //        .Include(i => i.SetupUnit)
-    //        //.Where(q => q.PlatformInfoId == rate.PlatformInfoId && q.UnitOfMeasure.ToLower() == unitOfMeasure)
-    //        //.OrderBy(o => o.SetupUnit.Name)
-    //        .ToListAsync(cancellationToken: token);
-    //    return defaultUnits;
-    //}
-
     public static string GetSearchIndex(
         string? service, string? product, string? sku, string? meter, string? unitOfMeasure, string? setupUnit, string? description, string? variable)
         => $"{unitOfMeasure}~{setupUnit}~{description}~{service}~{product}~{sku}~{meter}~{variable}".ToLowerInvariant();
