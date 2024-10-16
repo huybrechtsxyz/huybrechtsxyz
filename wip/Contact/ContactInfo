@@ -1,0 +1,24 @@
+namespace Huybrechts.Core.Contact;
+
+public enum ContactType
+{
+    Contact = 1,
+    Person,
+    Company,
+    Business,
+}
+
+public record ContactInfo: Entity, IEntity
+{
+
+}
+
+public record PersonInfo: Entity, IEntity
+{
+
+}
+
+public record CompanyInfo: Entity, IEntity
+{
+
+}
