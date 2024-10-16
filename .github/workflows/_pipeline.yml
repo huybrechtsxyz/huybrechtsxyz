@@ -111,6 +111,15 @@ jobs:
               echo "y" | ufw enable
             fi
             ufw reload
+            #Format the Disk (if unformatted)
+            #mkfs.ext4 /dev/sdb1
+            #Create a Mount Point
+            #mkdir /mnt/data
+            #Mount the Partition
+            #mount /dev/sdb1 /mnt/data
+            #Make the Mount Persistent (Optional)
+            #nano /etc/fstab
+            #/dev/sdb1  /mnt/data  ext4  defaults  0  0
 
   update-server:
     name: Update Server Job
