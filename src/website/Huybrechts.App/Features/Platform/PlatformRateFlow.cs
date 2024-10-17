@@ -5,6 +5,7 @@ using FluentValidation;
 using Huybrechts.App.Config;
 using Huybrechts.App.Data;
 using Huybrechts.App.Services;
+using Huybrechts.Core.Extensions;
 using Huybrechts.Core.Platform;
 using Huybrechts.Core.Setup;
 using MediatR;
@@ -477,7 +478,7 @@ internal sealed class CreateCommandHandler : IRequestHandler<CreateCommand, Resu
         };
         await _dbcontext.Set<PlatformRate>().AddAsync(record, token);
 
-        PlatformRateHelper.AddDefaultSetupUnitsAsync(_dbcontext, record, token);
+        await PlatformRateHelper.AddDefaultSetupUnitsAsync(_dbcontext, record, token);
 
         await _dbcontext.SaveChangesAsync(token);
         return Result.Ok(record.Id);
@@ -824,9 +825,10 @@ internal sealed class ImportQueryHandler :
         var services = await PlatformRateHelper.GetServicesAsync(_dbcontext, platform.Id, token);
         var currencies = (await PlatformRateHelper.GetCurrenciesAsync(_dbcontext, token)).Select(s => s.Code).ToList();
 
-        if (!message.PlatformRegionId.HasValue || message.PlatformRegionId == Ulid.Empty
-            || !message.PlatformServiceId.HasValue || message.PlatformServiceId == Ulid.Empty
-            || string.IsNullOrEmpty(message.CurrencyCode))
+        if ((!message.Page.HasValue || message.Page <= 1) 
+            && ( message.PlatformRegionId.IsEmpty()
+            || message.PlatformServiceId.IsEmpty()
+            || string.IsNullOrEmpty(message.CurrencyCode)))
             return Result.Ok(new ImportResult
             {
                 PlatformProductId = message.PlatformProductId,
@@ -843,7 +845,7 @@ internal sealed class ImportQueryHandler :
                 Services = services.ToList(),
                 Results = []
             });
-            
+    
         var region = regions.First(f => f.Id == message.PlatformRegionId).Name;
         var service = services.First(f => f.Id == message.PlatformServiceId).Name;
         var currency = message.CurrencyCode;
@@ -961,7 +963,7 @@ internal class ImportCommandHandler : IRequestHandler<ImportCommand, Result>
             await _dbcontext.Set<PlatformRate>().AddAsync(record, token);
             changes = true;
 
-            PlatformRateHelper.AddDefaultSetupUnitsAsync(_dbcontext, record, token);
+            await PlatformRateHelper.AddDefaultSetupUnitsAsync(_dbcontext, record, token);
         }
 
         if (changes)

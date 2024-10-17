@@ -156,6 +156,9 @@
                             <li class="page-item @prev">
                                 <a asp-page="Import"
                                    asp-route-platformProductId="@Model.Data.PlatformProductId"
+                                   asp-route-platformRegionId="@Model.Data.PlatformRegionId"
+                                   asp-route-platformServiceId="@Model.Data.PlatformServiceId"
+                                   asp-route-currencyCode="@Model.Data.CurrencyCode"
                                    asp-route-pageindex="@(Model.Data.Results.PageIndex - 1)"
                                    asp-route-currentFilter="@Model.Data.CurrentFilter"
                                    class="page-link" aria-label="Previous">
@@ -169,6 +172,9 @@
                                     <a asp-page="Import"
 
                                        asp-route-platformProductId="@Model.Data.PlatformProductId"
+                                       asp-route-platformRegionId="@Model.Data.PlatformRegionId"
+                                       asp-route-platformServiceId="@Model.Data.PlatformServiceId"
+                                       asp-route-currencyCode="@Model.Data.CurrencyCode"
                                        asp-route-pageindex="@i"
                                        asp-route-currentFilter="@Model.Data.CurrentFilter"
                                        class="page-link">
@@ -179,6 +185,9 @@
                             <li class="page-item @next">
                                 <a asp-page="Import"
                                    asp-route-platformProductId="@Model.Data.PlatformProductId"
+                                   asp-route-platformRegionId="@Model.Data.PlatformRegionId"
+                                   asp-route-platformServiceId="@Model.Data.PlatformServiceId"
+                                   asp-route-currencyCode="@Model.Data.CurrencyCode"
                                    asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
                                    asp-route-currentFilter="@Model.Data.CurrentFilter"
                                    class="page-link" aria-label="Next">
