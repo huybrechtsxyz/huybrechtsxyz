@@ -100,6 +100,7 @@
                                     <th class="text-right">@Html.DisplayNameFor(model => model.Data.Results[0].RetailPrice)</th>
                                     <th class="text-center">@Html.DisplayNameFor(model => model.Data.Results[0].UnitOfMeasure)</th>
                                     <th class="text-right">@Html.DisplayNameFor(model => model.Data.Results[0].MinimumUnits)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].RateType)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -110,7 +111,6 @@
                                     <input type="hidden" asp-for="@Model.Data.Results[idex].CurrencyCode" />
                                     <input type="hidden" asp-for="@Model.Data.Results[idex].ValidFrom" />
                                     <input type="hidden" asp-for="@Model.Data.Results[idex].UnitPrice" />
-                                    <input type="hidden" asp-for="@Model.Data.Results[idex].RateType" />
                                     <input type="hidden" asp-for="@Model.Data.Results[idex].IsPrimaryRegion" />
                                     <input type="hidden" asp-for="@Model.Data.Results[idex].Remark" />
 
@@ -141,6 +141,10 @@
                                         <td class="text-end">
                                             <input type="hidden" asp-for="@Model.Data.Results[idex].MinimumUnits" />
                                             @Html.DisplayFor(model => model.Data.Results[idex].MinimumUnits)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].RateType" />
+                                            @Html.DisplayFor(model => model.Data.Results[idex].RateType)
                                         </td>
                                     </tr>
                                 }

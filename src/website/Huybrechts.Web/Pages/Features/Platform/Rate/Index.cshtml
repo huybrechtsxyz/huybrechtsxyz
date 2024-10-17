@@ -98,6 +98,7 @@
                                 <th class="text-center">@Html.DisplayNameFor(model => model.Data.Results[0].UnitOfMeasure)</th>
                                 <th class="text-end">@Html.DisplayNameFor(model => model.Data.Results[0].MinimumUnits)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].CurrencyCode)</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].RateType)</th>
                                 <th>@Html.DisplayNameFor(model => model.Data.Results[0].PlatformRegionLabel)</th>
                                 <th>@SL["RateUnits"]</th>
                                 <th></th>
@@ -115,6 +116,7 @@
                                     <td class="text-cennter">@Html.DisplayFor(modelItem => record!.UnitOfMeasure)</td>
                                     <td class="text-end">@Html.DisplayFor(modelItem => record!.MinimumUnits)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.CurrencyCode)</td>
+                                    <td>@Html.DisplayFor(modelItem => record!.RateType)</td>
                                     <td>@Html.DisplayFor(modelItem => record!.PlatformRegionLabel)</td>
                                     <td>@string.Join(", ", record.RateUnits.Select(pru => pru.SetupUnit.Name))</td>
                                     <td>
