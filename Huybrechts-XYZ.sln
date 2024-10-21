@@ -26,10 +26,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.App.Tests", "tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Web.Tests", "tests\website\Huybrechts.Web.Tests\Huybrechts.Web.Tests.csproj", "{2E5F7E60-9B8F-4D71-89D6-8334CFF44EFA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rpgsite", "rpgsite", "{2C390DF5-CB89-4FFB-86A8-D99BEBA2EB8E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Rpg.Web", "src\rpgsite\Huybrechts.Rpg.Web.csproj", "{72D942E8-844F-4569-AD96-A5C61CDDC690}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,10 +60,6 @@ Global
 		{2E5F7E60-9B8F-4D71-89D6-8334CFF44EFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E5F7E60-9B8F-4D71-89D6-8334CFF44EFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E5F7E60-9B8F-4D71-89D6-8334CFF44EFA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{72D942E8-844F-4569-AD96-A5C61CDDC690}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{72D942E8-844F-4569-AD96-A5C61CDDC690}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{72D942E8-844F-4569-AD96-A5C61CDDC690}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{72D942E8-844F-4569-AD96-A5C61CDDC690}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,7 +67,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4591B6CF-2104-48DF-A22F-ADD1C8BBFEA5} = {933F4344-29B5-4764-AE79-A99E62499411}
 		{2E5F7E60-9B8F-4D71-89D6-8334CFF44EFA} = {933F4344-29B5-4764-AE79-A99E62499411}
-		{72D942E8-844F-4569-AD96-A5C61CDDC690} = {2C390DF5-CB89-4FFB-86A8-D99BEBA2EB8E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {436387A2-5AFF-4E7F-AD8C-80ED0A43D324}
