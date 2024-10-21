@@ -36,7 +36,12 @@ jobs:
             cd /
             cd /app
             echo DOCKER DEPLOY
+            # Set environment variables for MinIO credentials
+            export MINIO_ROOT_USER=${{ secrets.APP_HOST_USERNAME }}      # Inject from GitHub secret
+            export MINIO_ROOT_PASSWORD=${{ secrets.APP_HOST_PASSWORD }}  # Inject from GitHub secret
+            # Set the appropriate security on the application subdirectories
             sudo chmod -R 600 /app/cert
             sudo chmod -R 777 /app/data
             sudo chmod -R 777 /app/logs
+            # Redeploy the new docker compose
             docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log

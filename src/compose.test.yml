@@ -204,9 +204,9 @@ services:
       - APP_DATA_USERNAME
       - APP_DATA_PASSWORD
     environment:
-      - APP_DATA_USERNAME=/run/secrets/APP_DATA_USERNAME
-      - APP_DATA_PASSWORD=/run/secrets/APP_DATA_PASSWORD
-    command: ["sh", "-c", "export MINIO_ROOT_USER=$(cat /run/secrets/APP_DATA_USERNAME) && export MINIO_ROOT_PASSWORD=$(cat /run/secrets/APP_DATA_PASSWORD) && minio server /data --console-address \":9001\""]
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - APP_DATA_PASSWORD=${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
     volumes:
       - /mnt/data:/data
     networks:
@@ -216,15 +216,15 @@ services:
         - "traefik.enable=true"
         - "traefik.tags=test"
         - "traefik.http.routers.minio.rule=Host(`data.test.huybrechts.xyz`)"
-        - "traefik.http.services.minio.loadbalancer.server.port=9000"
+        - "traefik.http.services.minio.loadbalancer.server.port=9001"
         - "traefik.http.routers.minio.entrypoints=websecure"
         - "traefik.http.routers.minio.tls.certresolver=leresolver"
-        - "traefik.http.routers.minio-admin.rule=Host(`admin.test.huybrechts.xyz/data`)"
-        - "traefik.http.services.minio-admin.loadbalancer.server.port=9001"
-        - "traefik.http.routers.minio-admin.entrypoints=websecure"
-        - "traefik.http.routers.minio-admin.tls.certresolver=leresolver"
-        - "traefik.http.middlewares.minio-admin-prefix.stripprefix.prefixes=/data"
-        - "traefik.http.routers.minio-admin.middlewares=authadmin,minio-admin-prefix"
+        # - "traefik.http.routers.minio-admin.rule=Host(`admin.test.huybrechts.xyz/data`)"
+        # - "traefik.http.services.minio-admin.loadbalancer.server.port=9001"
+        # - "traefik.http.routers.minio-admin.entrypoints=websecure"
+        # - "traefik.http.routers.minio-admin.tls.certresolver=leresolver"
+        # - "traefik.http.middlewares.minio-admin-prefix.stripprefix.prefixes=/data"
+        # - "traefik.http.routers.minio-admin.middlewares=authadmin,minio-admin-prefix"
 
 networks:
   traefik:
