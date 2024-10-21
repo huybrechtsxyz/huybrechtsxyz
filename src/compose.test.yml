@@ -215,16 +215,18 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.tags=test"
-        - "traefik.http.routers.minio.rule=Host(`data.test.huybrechts.xyz`)"
+        # This setup works
+        #- "traefik.http.routers.minio.rule=Host(`amdin.test.huybrechts.xyz`)"
+        #- "traefik.http.services.minio.loadbalancer.server.port=9001"
+        #- "traefik.http.routers.minio.entrypoints=websecure"
+        #- "traefik.http.routers.minio.tls.certresolver=leresolver"
+        # Lets try with the admin one
+        - "traefik.http.routers.minio.rule=Host(`admin.test.huybrechts.xyz`) && PathPrefix(`/minio`)"
+        - "traefik.http.middlewares.minio-admin-prefix.stripprefix.prefixes=/minio"
         - "traefik.http.services.minio.loadbalancer.server.port=9001"
         - "traefik.http.routers.minio.entrypoints=websecure"
         - "traefik.http.routers.minio.tls.certresolver=leresolver"
-        # - "traefik.http.routers.minio-admin.rule=Host(`admin.test.huybrechts.xyz/data`)"
-        # - "traefik.http.services.minio-admin.loadbalancer.server.port=9001"
-        # - "traefik.http.routers.minio-admin.entrypoints=websecure"
-        # - "traefik.http.routers.minio-admin.tls.certresolver=leresolver"
-        # - "traefik.http.middlewares.minio-admin-prefix.stripprefix.prefixes=/data"
-        # - "traefik.http.routers.minio-admin.middlewares=authadmin,minio-admin-prefix"
+        - "traefik.http.routers.minio.middlewares=minio-admin-prefix"
 
 networks:
   traefik:
