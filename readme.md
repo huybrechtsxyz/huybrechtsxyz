@@ -1,6 +1,6 @@
-= Huybrechts.xyz
+# Huybrechts.xyz
 
-== Hi there 👋
+## Hi there 👋
 The Huybrechts.xyz website is a website for Vincent Huybrechts. The goal was to create a clean simple architecture that can support an ERP system. The goal of this project is to learn about development and deployment of modern software.
 
-See https://huybrechts.xyz/docs[Documentation]
+See [Documentation](https://docs.huybrechts.xyz)

@@ -221,6 +221,25 @@ services:
         - "traefik.http.routers.minio.tls.certresolver=leresolver"
         - "traefik.http.routers.minio.middlewares=authadmin"
 
+  mkdocs:
+    image: squidfunk/mkdocs-material
+    volumes:
+      - ./docs:/docs  # Assuming your documentation source is in ./docs
+    command: serve -a 0.0.0.0:8000  # Serve on all interfaces
+    networks:
+      - traefik
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=test"
+        - "traefik.http.routers.mkdocs.rule=Host(`docs.test.huybrechts.xyz`)"
+        - "traefik.http.services.mkdocs.loadbalancer.server.port=8000"
+        - "traefik.http.routers.mkdocs.entrypoints=websecure"
+        - "traefik.http.routers.mkdocs.tls.certresolver=leresolver"
+
 networks:
   traefik:
     external: true
