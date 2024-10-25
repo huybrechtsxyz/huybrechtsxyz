@@ -199,6 +199,7 @@ jobs:
             createpath "/app/data"
             createpath "/app/data/pgdata"
             createpath "/app/data/pgadmin"
+            createpath "/app/docs"
             createpath "/app/logs"
             sudo chown -R 5050:5050 /app/data/*
             #Create the traefik network on docker
