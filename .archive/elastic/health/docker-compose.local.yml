@@ -1,0 +1,17 @@
+version: '3.5'
+
+networks:
+    intranet:
+        driver: overlay
+
+services: 
+    heartbeat:
+        image: docker.elastic.co/beats/heartbeat:7.7.0
+        user: heartbeat
+        environment: 
+            output.elasticsearch.hosts: "elasticsearch:9200"
+        networks:
+            - intranet
+        volumes:
+            - ./heartbeat.yml:/usr/share/heartbeat/heartbeat.yml:ro
+            - /var/run/docker.sock:/var/run/docker.sock:ro

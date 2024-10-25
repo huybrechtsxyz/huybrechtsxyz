@@ -1,0 +1,19 @@
+version: '3.5'
+
+networks:
+  intranet:
+    driver: overlay
+
+services:
+    vault:
+        image: vault:1.4.2
+        command: vault server -dev
+        cap_add:
+            - IPC_LOCK
+        environment:
+            - VAULT_ADDR='http://127.0.0.1:8200'
+        networks:
+            - intranet
+        volumes:
+            - "../../app/vault/file:/vault/file"
+            - "../../app/vault/logs:/vault/logs"

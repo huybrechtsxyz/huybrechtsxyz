@@ -1,0 +1,16 @@
+version: '3.5'
+
+networks:
+  intranet:
+    driver: overlay
+
+services:
+  docs:
+    image: squidfunk/mkdocs-material:latest
+    networks:
+      - intranet
+    volumes:
+      - ../../App/:/docs
+    deploy:
+      mode: replicated
+      replicas: 1

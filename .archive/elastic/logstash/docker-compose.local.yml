@@ -1,0 +1,28 @@
+version: '3.5'
+
+networks:
+    intranet:
+        driver: overlay
+
+configs:
+    logstashconfig:
+        file: .\logstash.yml
+    logstashpipeline:
+        file: .\logstash.conf
+
+services: 
+    logstash:
+        image: docker.elastic.co/logstash/logstash:7.7.0
+        user: root
+        environment:
+            LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+        networks:
+            - intranet
+        # ports:
+        #     - "5000:5000"
+        #     - "9600:9600"
+        configs:
+            - source: logstashconfig
+              target: /usr/share/logstash/config/logstash.yml
+            - source: logstashpipeline
+              target: /usr/share/logstash/pipeline/logstash.conf

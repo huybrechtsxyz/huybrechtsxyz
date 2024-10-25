@@ -1,0 +1,30 @@
+version: '3.5'
+
+networks:
+  intranet:
+    driver: overlay
+
+services:
+    consul:
+        image: consul:1.7.2
+        command: consul agent -server -dev -bootstrap -ui -client=0.0.0.0 -log-level debug -config-dir /consul/config
+        environment:
+            - CONSUL_LOCAL_CONFIG={"datacenter":"dockerhost","server":true}
+            - CONSUL_ADDR="http://127.0.0.1:8500"
+            - CONSUL_BIND_INTERFACE=eth0
+            - CONSUL_CLIENT_INTERFACE=eth0
+        networks:
+            - intranet
+        volumes:
+            - "../../app/consul/config:/consul/config"
+            - "../../app/consul/data:/consul/data"
+        deploy:
+            labels:
+                - traefik.enable=true
+                - traefik.port=8500
+                - traefik.tags=${TREAFIK_PUBLIC_TAG:-traefik-public}
+                - traefik.http.routers.consul.rule=Host(`consul.localhost`)
+                - traefik.http.routers.consul.entrypoints=web
+                - traefik.http.services.consul.loadbalancer.server.port=8500
+                - co.elastic.metrics/module=consul
+                - co.elastic.metrics/metricsets=agent

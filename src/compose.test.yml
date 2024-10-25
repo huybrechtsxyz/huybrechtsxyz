@@ -36,6 +36,14 @@ services:
       #- --metrics.openTelemetry.addRoutersLabels=true
       #- --metrics.openTelemetry.addServicesLabels=true
       #- --metrics.openTelemetry.grpc=true
+      # CONSUL
+      # - --providers.consulCatalog=true
+      # - --providers.consulCatalog.cache=true
+      # - --providers.consulCatalog.refreshInterval=30s
+      # - --providers.consulCatalog.endpoint.address=consul:8500
+      # - --providers.consulCatalog.endpoint.scheme=http
+      # - --providers.consulCatalog.exposedByDefault=false
+      # - --providers.consulcatalog.defaultRule=Host(`disco.test.huybrechts.xyz`)
       # Entry points
       - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
@@ -223,9 +231,9 @@ services:
 
   mkdocs:
     image: squidfunk/mkdocs-material
-    volumes:
-      - ./docs:/docs  # Assuming your documentation source is in ./docs
     command: serve -a 0.0.0.0:8000  # Serve on all interfaces
+    volumes:
+      - "/app/docs:/docs"  # Assuming your documentation source is in ./docs
     networks:
       - traefik
     deploy:

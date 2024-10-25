@@ -1,13 +1,23 @@
 site_name: Huybrechts.xyz
 site_url: https://Huybrechts.xyz
 repo_url: https://github.com/huybrechtsxyz/huybrechtsxyz/
+site_description: Documentation for the Huybrechts.xyz website and applications
+site_author: Vincent Huybrechts
+
+copyright: Copyright &copy; 2024 Vincent Huybrechts
+
 nav:
   - Home: index.md
   - Environment: environment.md
   - Data Model: model_data.md
+
 plugins:
   - search
+  
 extra:
+  social:
+    - icon: fontawesome/brands/linkedin
+      link: https://be.linkedin.com/in/vincent-huybrechts-23b18031?trk=profile-badge
   consent:
     title: Cookie consent
     description: >- 
@@ -15,6 +25,7 @@ extra:
       as to measure the effectiveness of our documentation and whether users
       find what they're searching for. With your consent, you're helping us to
       make our documentation better.
+
 theme:
   name: material
   language: en
@@ -32,3 +43,10 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true

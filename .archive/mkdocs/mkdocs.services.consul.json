@@ -1,0 +1,15 @@
+{
+  "service":
+    {
+      "name" : "docs",
+      "address": "docs",
+      "port" : 8000,
+      "tags":[
+        "traefik.enable=true",
+        "traefik.tags=intranet",
+        "traefik.http.routers.docs.rule=Host(`docs.localhost`)",
+        "traefik.http.routers.docs.entrypoints=web",
+        "traefik.http.services.docs.loadbalancer.server.port=8000"
+      ]
+    }
+  }

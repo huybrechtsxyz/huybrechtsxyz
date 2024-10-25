@@ -1,0 +1,15 @@
+{
+    "service":
+    {
+        "name" : "kibana",
+        "address": "kibana",
+        "port" : 5601,
+        "tags":[
+            "traefik.enable=true",
+            "traefik.tags=traefik",
+            "traefik.http.routers.kibana.rule=Host(`kibana.localhost`)",
+            "traefik.http.routers.kibana.entrypoints=web",
+            "traefik.http.services.kibana.loadbalancer.server.port=5601"
+        ]
+    }
+}

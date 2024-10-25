@@ -7,4 +7,4 @@ The data model of an application defines how data is structured, stored, and rel
 - [Wiki Model](./model_data_wiki.md)
 - [Project Model](./model_data_project.md)
 
-Back to [Index](./index.md)
+Back to [Index](../index.md)
