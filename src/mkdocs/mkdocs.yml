@@ -9,7 +9,7 @@ copyright: Copyright &copy; 2024 Vincent Huybrechts
 nav:
   - Home: index.md
   - Environment: environment.md
-  - Data Model: model_data.md
+  - Development: development.md
 
 plugins:
   - search

@@ -302,7 +302,7 @@ jobs:
           strip_components: 2
           overwrite: true
           source: "src/mkdocs/mkdocs.yml"
-          target: /app/docs
+          target: /app
 
   deploy-stack-build:
     name: Deploy Docker Swarm Stack (Rebuild)

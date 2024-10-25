@@ -233,7 +233,7 @@ services:
     image: squidfunk/mkdocs-material
     command: serve -a 0.0.0.0:8000 -v  # Serve on all interfaces
     volumes:
-      - "/app/docs:/docs"
+      - "/app:/docs"
     networks:
       - traefik
     deploy:
