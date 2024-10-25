@@ -3,7 +3,7 @@ version: '3.9'
 
 services:
   traefik:
-    image: "traefik:v3.1"
+    image: "traefik:v3.1.6"
     command:
       # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
       # Enable the Traefik log, for configurations and errors
@@ -197,6 +197,48 @@ services:
         - "traefik.http.routers.website.entrypoints=websecure"
         - "traefik.http.routers.website.tls=true"
         - "traefik.http.routers.website.tls.certresolver=leresolver"
+
+  minio:
+    image: minio/minio
+    secrets:
+      - APP_DATA_USERNAME
+      - APP_DATA_PASSWORD
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
+    volumes:
+      - /mnt/data:/data
+    networks:
+      - traefik
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=production"
+        - "traefik.http.routers.minio.rule=Host(`data.huybrechts.xyz`)"
+        - "traefik.http.services.minio.loadbalancer.server.port=9001"
+        - "traefik.http.routers.minio.entrypoints=websecure"
+        - "traefik.http.routers.minio.tls.certresolver=leresolver"
+        - "traefik.http.routers.minio.middlewares=authadmin"
+
+  mkdocs:
+    image: squidfunk/mkdocs-material
+    command: serve -a 0.0.0.0:8000 -v  # Serve on all interfaces
+    volumes:
+      - "/app:/docs"
+    networks:
+      - traefik
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=production"
+        - "traefik.http.routers.mkdocs.rule=Host(`docs.huybrechts.xyz`)"
+        - "traefik.http.services.mkdocs.loadbalancer.server.port=8000"
+        - "traefik.http.routers.mkdocs.entrypoints=websecure"
+        - "traefik.http.routers.mkdocs.tls.certresolver=leresolver"
 
 networks:
   traefik:
