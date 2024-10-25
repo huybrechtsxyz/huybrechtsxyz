@@ -281,17 +281,6 @@ jobs:
           overwrite: true
           source: "src/compose.${{ inputs.environment }}.yml"
           target: /app
-      - name: Deploy markdown configuration
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.APP_HOST_SERVER }}
-          username: ${{ secrets.APP_HOST_USERNAME }}
-          password: ${{ secrets.APP_HOST_PASSWORD }}
-          port: ${{ secrets.APP_HOST_PORT }}
-          strip_components: 2
-          overwrite: true
-          source: "src/mkdocs/mkdocs.yml"
-          target: /app
       - name: Deploy documentation files
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -302,6 +291,17 @@ jobs:
           strip_components: 1
           overwrite: true
           source: "docs/**"
+          target: /app/docs
+      - name: Deploy markdown configuration
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APP_HOST_PORT }}
+          strip_components: 2
+          overwrite: true
+          source: "src/mkdocs/mkdocs.yml"
           target: /app/docs
 
   deploy-stack-build:

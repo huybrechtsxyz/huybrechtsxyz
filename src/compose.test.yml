@@ -231,9 +231,9 @@ services:
 
   mkdocs:
     image: squidfunk/mkdocs-material
-    command: serve -a 0.0.0.0:8000  # Serve on all interfaces
+    command: serve -a 0.0.0.0:8000 -v  # Serve on all interfaces
     volumes:
-      - "/app/docs:/docs"  # Assuming your documentation source is in ./docs
+      - "/app/docs:/docs"
     networks:
       - traefik
     deploy:
