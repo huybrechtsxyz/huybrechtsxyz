@@ -288,7 +288,7 @@ jobs:
           username: ${{ secrets.APP_HOST_USERNAME }}
           password: ${{ secrets.APP_HOST_PASSWORD }}
           port: ${{ secrets.APP_HOST_PORT }}
-          strip_components: 1
+          strip_components: 2
           overwrite: true
           source: "src/mkdocs/mkdocs.yml"
           target: /app
