@@ -12,25 +12,25 @@
 
   <ItemGroup>
      <PackageReference Include="AutoMapper" Version="13.0.1" />
-     <PackageReference Include="Azure.Identity" Version="1.12.1" />
-     <PackageReference Include="Finbuckle.MultiTenant.AspNetCore" Version="7.0.2" />
-     <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="7.0.2" />
+     <PackageReference Include="Azure.Identity" Version="1.13.1" />
+     <PackageReference Include="Finbuckle.MultiTenant.AspNetCore" Version="8.0.0" />
+     <PackageReference Include="Finbuckle.MultiTenant.EntityFrameworkCore" Version="8.0.0" />
      <PackageReference Include="FluentValidation" Version="11.10.0" />
      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.10.0" />
-     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.14" />
+     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.15" />
      <PackageReference Include="Hangfire.InMemory" Version="1.0.0" />
-     <PackageReference Include="Hangfire.PostgreSql" Version="1.20.9" />
-     <PackageReference Include="Hangfire.SqlServer" Version="1.8.14" />
+     <PackageReference Include="Hangfire.PostgreSql" Version="1.20.10" />
+     <PackageReference Include="Hangfire.SqlServer" Version="1.8.15" />
      <PackageReference Include="Jace" Version="1.0.0" />
      <PackageReference Include="MailKit" Version="4.8.0" />
-     <PackageReference Include="Markdig" Version="0.37.0" />
+     <PackageReference Include="Markdig" Version="0.38.0" />
      <PackageReference Include="MediatR" Version="12.4.1" />
      <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.10" />
      <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="8.0.10" />
      <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.10" />
      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
-     <PackageReference Include="Microsoft.EntityFrameworkCore.DynamicLinq" Version="8.4.5" />
+     <PackageReference Include="Microsoft.EntityFrameworkCore.DynamicLinq" Version="8.4.6" />
      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
         <PrivateAssets>all</PrivateAssets>
@@ -41,7 +41,10 @@
      <PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.3.8" />
      <PackageReference Include="MiniProfiler.EntityFrameworkCore" Version="4.3.8" />
      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
+     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
+     <PackageReference Include="OpenIddict" Version="5.8.0" />
+     <PackageReference Include="OpenIddict.AspNetCore" Version="5.8.0" />
+     <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="5.8.0" />
      <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
      <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>

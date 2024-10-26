@@ -37,8 +37,8 @@ namespace Huybrechts.Web.Pages.Account.Manage
             }
 
             var roles = await _userManager.GetApplicationRolesAsync(user);
-            SystemRoles = [.. roles.Where(q => q.TenantId.IsNullOrEmpty()).OrderBy(o => o.Label)];
-            TenantRoles = [.. roles.Where(q => !q.TenantId.IsNullOrEmpty()).OrderBy(o => o.TenantId).ThenBy(o => o.Label)];
+            SystemRoles = [.. roles.Where(q => q.TenantId == null || q.TenantId == "").OrderBy(o => o.Label)];
+            TenantRoles = [.. roles.Where(q => q.TenantId != null && q.TenantId != "").OrderBy(o => o.TenantId).ThenBy(o => o.Label)];
 
             return Page();
         }
