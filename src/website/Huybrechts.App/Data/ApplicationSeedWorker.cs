@@ -7,7 +7,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using OpenIddict.Abstractions;
+using OpenIddict.Core;
+using OpenIddict.EntityFrameworkCore.Models;
 using Serilog;
+using System.Collections.Generic;
 
 namespace Huybrechts.App.Data;
 
@@ -88,7 +92,9 @@ public class ApplicationSeedWorker : IHostedService
 	private async Task InitializeForAllAsync(CancellationToken cancellationToken = default)
 	{
 		await CreateDefaultUsersAndRoles();
-	}
+		await SeedOpenIddictClients();
+
+    }
 
 	private async Task CreateDefaultUsersAndRoles()
 	{
@@ -184,4 +190,41 @@ public class ApplicationSeedWorker : IHostedService
 
 		return item;
 	}
+
+    private async Task SeedOpenIddictClients()
+    {
+        using var scope = _serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+        var manager = scope.ServiceProvider.GetRequiredService<OpenIddictApplicationManager<OpenIddictEntityFrameworkCoreApplication>>();
+        var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+        List<OpenIddictLoginOptions> clients = ApplicationSettings.GetOpenIddictClients(configuration);
+		if (clients.Count == 0)
+			return;
+
+		foreach(var client in clients)
+		{
+            if (await manager.FindByClientIdAsync(client.ClientId) == null)
+			{
+				await manager.CreateAsync(new OpenIddictApplicationDescriptor()
+				{
+					ClientId = client.ClientId,
+					ClientSecret = client.ClientSecret,
+					ConsentType = OpenIddictConstants.ConsentTypes.Explicit,
+					DisplayName = client.ClientName,
+					Permissions =
+					{
+						OpenIddictConstants.Permissions.Endpoints.Authorization,
+						OpenIddictConstants.Permissions.Endpoints.Token,
+						OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
+						OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+						OpenIddictConstants.Permissions.Scopes.Profile,
+						OpenIddictConstants.Permissions.Scopes.Email
+					}
+                });
+            }
+
+        }
+    }
+
 }

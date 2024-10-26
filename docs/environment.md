@@ -239,6 +239,7 @@ Below is an overview of all the secrets utilized in the pipeline, as well as tho
 | `APP_HOST_SERVER`   | Secret | Server IP                         | `10.0.0.1`                                     |
 | `APP_HOST_PORT`     | Secret | SSH Port                          | `22`                                           |
 | `APP_AUTH_GOOGLE`   | Secret | JSON with client ID and secret    | `{ ClientId: abc, ClientSecret: 123 }`         |
+| `APP_AUTH_OIDDICT`  | Secret | JSON with OpenIddict clients      | `[ { ClientId: abc, ClientSecret: 123, ClientName: ABC } ]`|
 | `APP_SMTP_OPTIONS`  | Secret | JSON with SMTP server options     | `{ Server: ... }`                              |
 | `REGISTRY_USERNAME` | Secret | Container registry username       | `user1`                                        |
 | `REGISTRY_PASSWORD` | Secret | Container registry password       | `1234`                                         |

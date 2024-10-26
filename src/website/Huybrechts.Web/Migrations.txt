@@ -13,6 +13,7 @@ Add-Migration CreateWikiSearchIndex -Context "FeatureContext" -Project "Huybrech
 Add-Migration CreateSetupTypeNoSerie -Context "FeatureContext" -Project "Huybrechts.Infra.SqlServer" -Args APP_DATA_CONTEXT=SqlServerContext
 Add-Migration AddProjectTypeCategory -Context "FeatureContext" -Project "Huybrechts.Infra.SqlServer" -Args APP_DATA_CONTEXT=SqlServerContext
 Add-Migration AddPlatformDefaultUnits -Context "FeatureContext" -Project "Huybrechts.Infra.SqlServer" -Args APP_DATA_CONTEXT=SqlServerContext
+Add-Migration CreateOpenIddictSchema -Context "ApplicationContext" -Project "Huybrechts.Infra.SqlServer" -Args APP_DATA_CONTEXT=SqlServerContext
 
 # Postgres Sql database
 
@@ -23,3 +24,4 @@ Add-Migration CreateWikiSearchIndex -Context "FeatureContext" -Project "Huybrech
 Add-Migration CreateSetupTypeNoSerie -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext
 Add-Migration AddProjectTypeCategory -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext
 Add-Migration AddPlatformDefaultUnits -Context "FeatureContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext
+Add-Migration CreateOpenIddictSchema -Context "ApplicationContext" -Project "Huybrechts.Infra.Npgsql" -Args APP_DATA_CONTEXT=NpgsqlContext

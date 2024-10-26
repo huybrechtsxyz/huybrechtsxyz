@@ -8,6 +8,7 @@ namespace Huybrechts.App.Config;
 public static class ApplicationSettings
 {
     private const string ENV_APP_AUTH_GOOGLE = "APP_AUTH_GOOGLE";
+    private const string ENV_APP_AUTH_OIDDICT = "APP_AUTH_OIDDICT";
     private const string ENV_APP_SMTP_OPTIONS = "APP_SMTP_OPTIONS";
     private const string ENV_DOTNET_RUNNING_IN_CONTAINER = "DOTNET_RUNNING_IN_CONTAINER";
 
@@ -130,6 +131,23 @@ public static class ApplicationSettings
         options = new();
         configuration.GetSection(nameof(GoogleLoginOptions)).Bind(options);
         return options ?? new();
+    }
+
+    public static List<OpenIddictLoginOptions> GetOpenIddictClients(IConfiguration configuration)
+    {
+        List<OpenIddictLoginOptions> options;
+
+        var value = configuration.GetValue<string>(ENV_APP_AUTH_OIDDICT);
+        if (!string.IsNullOrEmpty(value) && value.Length > 1)
+        {
+            options = JsonSerializer.Deserialize<List<OpenIddictLoginOptions>>(value) ?? [];
+            if (options is not null)
+                return options;
+        }
+
+        options = [];
+        configuration.GetSection(nameof(OpenIddictLoginOptions)).Bind(options);
+        return options ?? [];
     }
 
     public static PlatformImportOptions GetPlatformImportOptions(IConfiguration configuration)
