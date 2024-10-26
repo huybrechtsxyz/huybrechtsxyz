@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using OpenIddict.Abstractions;
 using Serilog;
 
 namespace Huybrechts.App.Web;
@@ -176,6 +177,47 @@ public static class WebHostExtensions
         .AddSignInManager<ApplicationSignInManager>()
         .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
         .AddDefaultTokenProviders();
+
+        log.Information("Configure OpenIddict authentication");
+        builder.Services.AddOpenIddict()
+            .AddCore(options =>
+            {
+                // Use Entity Framework for OpenIddict
+                options.UseEntityFrameworkCore().UseDbContext<ApplicationContext>();
+            })
+            .AddServer(options =>
+            {
+                // Enable the authorization, token, and introspection endpoints
+                options.SetAuthorizationEndpointUris("/connect/authorize")
+                       .SetTokenEndpointUris("/connect/token")
+                       .SetIntrospectionEndpointUris("/connect/introspect");
+
+                // Allow the authorization code and refresh token flows
+                options.AllowAuthorizationCodeFlow()
+                       .AllowRefreshTokenFlow();
+
+                // Register scopes (OpenID, profile, email)
+                options.RegisterScopes(OpenIddictConstants.Scopes.OpenId,
+                                       OpenIddictConstants.Scopes.Profile,
+                                       OpenIddictConstants.Scopes.Email);
+
+                // Use development certificates for signing and encryption
+                options.AddDevelopmentEncryptionCertificate()
+                       .AddDevelopmentSigningCertificate();
+
+                // Enable ASP.NET Core host integration
+                options.UseAspNetCore()
+                       .EnableAuthorizationEndpointPassthrough()
+                       .EnableTokenEndpointPassthrough();
+            })
+            .AddValidation(options =>
+            {
+                // Token validation configuration
+                options.UseLocalServer();
+                options.UseAspNetCore();
+            });
+
+        log.Information("Configure authorization builder");
 
         builder.Services.AddSingleton<IAuthorizationHandler, MultiTenantRoleAuthorizationHandler>();
 

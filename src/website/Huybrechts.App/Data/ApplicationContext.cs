@@ -25,6 +25,7 @@ public class ApplicationContext : IdentityDbContext<
     {
         base.OnModelCreating(builder);
 
+        // Register the identity entities
         builder.Entity<ApplicationUser>(b =>
         {
             // Each User can have many UserClaims
@@ -83,5 +84,8 @@ public class ApplicationContext : IdentityDbContext<
         builder.Entity<ApplicationUserLogin>().ToTable(nameof(ApplicationUserLogin));
         builder.Entity<ApplicationUserRole>().ToTable(nameof(ApplicationUserRole));
         builder.Entity<ApplicationUserToken>().ToTable(nameof(ApplicationUserToken));
+
+        // Register the OpenIddict entities
+        builder.UseOpenIddict();
     }
 }
