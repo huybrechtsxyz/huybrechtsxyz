@@ -21,7 +21,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using OpenIddict.Abstractions;
+using Piranha.AspNetCore.Identity.SQLite;
+using Piranha.Data.EF.PostgreSql;
+using Piranha.Data.EF.SQLite;
+using Piranha.Data.EF.SQLServer;
 using Serilog;
+using SixLabors.ImageSharp;
 
 namespace Huybrechts.App.Web;
 
@@ -144,6 +149,34 @@ public static class WebHostExtensions
             });
 
         //builder.Services.AddTransient<IFeatureContextProvider, FeatureContextProvider>();
+
+        builder.AddPiranha(options =>
+        {
+            options.UseCms();
+            options.UseManager();
+            options.UseFileStorage(naming: Piranha.Local.FileStorageNaming.UniqueFolderNames);
+
+            options.UseBlobStorage()
+
+            options.UseImageSharp();
+            options.UseTinyMCE();
+            options.UseMemoryCache();
+            switch (contextProviderType)
+            {
+                case ContextProviderType.SqlServer:
+                    {
+                        options.UseEF<SQLServerDb>(db => db.UseSqlServer(connectionString));
+                        break;
+                    }
+                case ContextProviderType.Postgres:
+                    {
+                        options.UseEF<PostgreSqlDb>(db => db.UseNpgsql(connectionString));
+                        break;
+                    }
+                default: throw new ArgumentException($"Unsupported or invalid connection string format: {connectionString}.");
+            }
+        });
+
 
         return builder;
     }
