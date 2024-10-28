@@ -1,0 +1,51 @@
+# Deploy Docker Swarm Stack Task
+name: Deploy Swarm Stack Task
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      APP_DATA_USERNAME: 
+        required: true
+      APP_DATA_PASSWORD:
+        required: true
+      APP_HOST_SERVER:
+        required: true
+      APP_HOST_PORT:
+        required: true
+      APP_HOST_USERNAME:
+        required: true
+      APP_HOST_PASSWORD:
+        required: true
+
+jobs:
+  deploy-stack:
+    name: Deploy Swarm Stack Task
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Update docker stack
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.APP_HOST_SERVER }}
+          username: ${{ secrets.APP_HOST_USERNAME }}
+          password: ${{ secrets.APP_HOST_PASSWORD }}
+          port: ${{ secrets.APP_HOST_PORT }}
+          script_stop: true
+          script: |
+            set -e
+            cd /
+            cd /app
+            echo DOCKER DEPLOY
+            # Set environment variables for MinIO credentials
+            export MINIO_ROOT_USER=${{ secrets.APP_DATA_USERNAME }}
+            export MINIO_ROOT_PASSWORD=${{ secrets.APP_DATA_PASSWORD }}
+            # Set the appropriate security on the application subdirectories
+            sudo chmod -R 600 /app/cert
+            sudo chmod -R 777 /app/data
+            sudo chmod -R 777 /app/logs
+            # Redeploy the new docker compose
+            docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
