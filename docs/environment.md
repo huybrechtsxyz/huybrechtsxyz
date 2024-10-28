@@ -48,6 +48,24 @@ Traefik is a modern reverse proxy and load balancer designed to manage and route
 
 Traefik is used as ingress router for docker swarm, reverse proxy, and load balancer
 
+### Consul
+
+### PostgreSQL
+
+### PGAdmin4
+
+### Minio
+
+### Mkdocs
+
+### Website (landing)
+
+### Identity (openiddict)
+
+### API
+
+### Application
+
 ## Domain configuration
 
 ### Domain setup
