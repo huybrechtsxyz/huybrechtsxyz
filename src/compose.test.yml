@@ -109,6 +109,31 @@ services:
         # Middlewares
         - "traefik.http.middlewares.authadmin.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
         - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+        - "traefik.http.middlewares.compress.compress={}"
+        # SSL Header
+        - "traefik.http.middlewares.sslHeader.headers.accessControlAllowMethods=GET,OPTIONS,PUT"
+        - "traefik.http.middlewares.sslHeader.headers.accessControlAllowHeaders=*"
+        - "traefik.http.middlewares.sslHeader.headers.accessControlAllowOriginListRegex=`https://?(?:admin\\.|data\\.|docs\\.|proxy\\.|www\\.|)(test\\.|staging\\.)?huybrechts\\.xyz(.*)`gi"
+        - "traefik.http.middlewares.sslHeader.headers.accessControlMaxAge=100"
+        - "traefik.http.middlewares.sslHeader.headers.addVaryHeader=true"
+        - "traefik.http.middlewares.sslHeader.headers.frameDeny=true"
+        - "traefik.http.middlewares.sslHeader.headers.browserXssFilter=true"
+        - "traefik.http.middlewares.sslheader.headers.contentTypeNosniff=true"
+        - "traefik.http.middlewares.sslheader.headers.forceSTSHeader=true"
+        - "traefik.http.middlewares.sslheader.headers.referrerPolicy=no-referrer, origin-when-cross-origin"
+        - "traefik.http.middlewares.sslheader.headers.stsSeconds=31536000"
+        - "traefik.http.middlewares.sslheader.headers.stsIncludeSubdomains=true"
+        - "traefik.http.middlewares.sslheader.headers.stsPreload=true"
+        - "traefik.http.middlewares.sslheader.headers.contentSecurityPolicy=\
+            default-src 'none';\
+            base-uri 'self';\
+            font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;\
+            form-action 'self' https://accounts.google.com;\
+            frame-ancestors 'none';\
+            frame-src 'self' https://www.google.com https://notfound-static.fwebservices.be/;\
+            img-src 'self' https://*.googleusercontent.com data:;\
+            object-src 'none';\
+            style-src 'self' *.googleapis.com;"
         # Dashboard
         - "traefik.http.routers.traefik.rule=Host(`proxy.test.huybrechts.xyz`)"
         - "traefik.http.routers.traefik.service=api@internal"
@@ -205,7 +230,7 @@ services:
         - "traefik.http.routers.pgadmin.entrypoints=websecure"
         - "traefik.http.routers.pgadmin.tls=true"
         - "traefik.http.routers.pgadmin.tls.certresolver=leresolver"
-        - "traefik.http.routers.pgadmin.middlewares=authadmin"
+        - "traefik.http.routers.pgadmin.middlewares=authadmin,compress"
         # Consul labels for service discovery and health checking
         - "consul.register=true"
         - "consul.tags=pgadmin,test"
@@ -242,7 +267,7 @@ services:
         - "traefik.http.services.minio.loadbalancer.server.port=9001"
         - "traefik.http.routers.minio.entrypoints=websecure"
         - "traefik.http.routers.minio.tls.certresolver=leresolver"
-        - "traefik.http.routers.minio.middlewares=authadmin"
+        - "traefik.http.routers.minio.middlewares=authadmin,compress"
         # Consul labels for service discovery and health checking
         - "consul.register=true"
         - "consul.tags=minio,test"
@@ -276,6 +301,7 @@ services:
         - "traefik.http.services.mkdocs.loadbalancer.server.port=8000"
         - "traefik.http.routers.mkdocs.entrypoints=websecure"
         - "traefik.http.routers.mkdocs.tls.certresolver=leresolver"
+        - "traefik.http.routers.mkdocs.middlewares=compress"
         # Consul labels for service discovery and health checking
         - "consul.register=true"
         - "consul.tags=mkdocs,test"

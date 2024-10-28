@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "landing", "landing", "{9EFE0CD0-F412-47FE-BCA8-4B9B0E060F44}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Landing.Web", "src\landing\Huybrechts.Landing.Web\Huybrechts.Landing.Web.csproj", "{EF2CF43B-B392-4714-A09F-AF181C178A7A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E00926ED-5FA5-4575-AE28-5FA5ADE8907F} = {E00926ED-5FA5-4575-AE28-5FA5ADE8907F}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{B5A8CD5A-5FA4-41D5-AC2C-AEA940FB3A9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Shared.Web", "src\shared\Huybrechts.Shared.Web\Huybrechts.Shared.Web.csproj", "{E00926ED-5FA5-4575-AE28-5FA5ADE8907F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EF2CF43B-B392-4714-A09F-AF181C178A7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF2CF43B-B392-4714-A09F-AF181C178A7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF2CF43B-B392-4714-A09F-AF181C178A7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF2CF43B-B392-4714-A09F-AF181C178A7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E00926ED-5FA5-4575-AE28-5FA5ADE8907F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E00926ED-5FA5-4575-AE28-5FA5ADE8907F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E00926ED-5FA5-4575-AE28-5FA5ADE8907F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E00926ED-5FA5-4575-AE28-5FA5ADE8907F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EF2CF43B-B392-4714-A09F-AF181C178A7A} = {9EFE0CD0-F412-47FE-BCA8-4B9B0E060F44}
+		{E00926ED-5FA5-4575-AE28-5FA5ADE8907F} = {B5A8CD5A-5FA4-41D5-AC2C-AEA940FB3A9C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C9458309-7428-4D11-921E-829CC2E8CC1A}
+	EndGlobalSection
+EndGlobal
