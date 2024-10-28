@@ -83,5 +83,7 @@ public class ApplicationContext : IdentityDbContext<
         builder.Entity<ApplicationUserLogin>().ToTable(nameof(ApplicationUserLogin));
         builder.Entity<ApplicationUserRole>().ToTable(nameof(ApplicationUserRole));
         builder.Entity<ApplicationUserToken>().ToTable(nameof(ApplicationUserToken));
+
+        builder.UseOpenIddict();
     }
 }

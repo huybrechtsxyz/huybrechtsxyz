@@ -9,7 +9,9 @@ public class GoogleLoginOptions
 
 	[Required] public string ClientSecret { get; set; } = string.Empty;
 
-	public string ToLogString() 
+	public bool IsValid() => !(string.IsNullOrEmpty(ClientId) || string.IsNullOrEmpty(ClientSecret));
+
+    public string ToLogString() 
 	{ 
 		var builder = new StringBuilder();
 		builder.AppendLine("GoogleLoginOptions");

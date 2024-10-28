@@ -9,10 +9,10 @@ using Serilog;
 try
 {
     Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
+        .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+        .Enrich.FromLogContext()
+        .WriteTo.Console()
+        .CreateBootstrapLogger();
     Log.Information("Starting application");
 
     Log.Information("Creating application builder");
@@ -28,10 +28,10 @@ try
     builder.AddLoggingServices();
     Log.Information("Startup configuration for {environment}", builder.Environment.EnvironmentName);
     builder.Configuration.AddXyzDockerSecrets(builder.Configuration, Log.Logger);
-    Log.Information("Startup configuration.............................");
-    Log.Information(builder.Configuration.GetDebugView());
+    //Log.Information("Startup configuration.............................");
+    //Log.Information(builder.Configuration.GetDebugView());
     //Log.Information(ApplicationSettings.GetSmtpServerOptions(builder.Configuration).ToLogString());
-    Log.Information("Startup configuration.............................");
+    //Log.Information("Startup configuration.............................");
 
     Log.Information("Add options to configuration");
     builder.Services.AddSingleton(ApplicationSettings.GetSmtpServerOptions(builder.Configuration));
@@ -59,11 +59,11 @@ try
         opts.IdleTimeout = TimeSpan.FromMinutes(5);
     });
 
-    Log.Information("Building the application with services");
-    foreach (var service in builder.Services)
-        Log.Debug(service.ToString());
-    Log.Debug("Building the application with configuration");
-    Log.Debug(builder.Configuration.GetDebugView());
+    //Log.Information("Building the application with services");
+    //foreach (var service in builder.Services)
+    //    Log.Debug(service.ToString());
+    //Log.Debug("Building the application with configuration");
+    //Log.Debug(builder.Configuration.GetDebugView());
 
     // Database migrations
     Log.Information("Adding database initializer as hosted service");

@@ -7,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using OpenIddict.Abstractions;
+using OpenIddict.Core;
+using OpenIddict.EntityFrameworkCore.Models;
 using Serilog;
 
 namespace Huybrechts.App.Data;
@@ -85,10 +88,12 @@ public class ApplicationSeedWorker : IHostedService
 		return healthCheckResult;
 	}
 
-	private async Task InitializeForAllAsync(CancellationToken cancellationToken = default)
+	private async Task InitializeForAllAsync(CancellationToken token = default)
 	{
 		await CreateDefaultUsersAndRoles();
-	}
+		await CreateOpenIdClients(token);
+
+    }
 
 	private async Task CreateDefaultUsersAndRoles()
 	{
@@ -184,4 +189,28 @@ public class ApplicationSeedWorker : IHostedService
 
 		return item;
 	}
+
+    public async Task CreateOpenIdClients(CancellationToken token)
+    {
+        using var scope = _serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+        var manager = scope.ServiceProvider.GetRequiredService<OpenIddictApplicationManager<OpenIddictEntityFrameworkCoreApplication>>();
+
+        if (await manager.FindByClientIdAsync("huybrechts-lizard", token) == null)
+        {
+            await manager.CreateAsync(new OpenIddictApplicationDescriptor
+            {
+                ClientId = "huybrechts-lizard",
+                ClientSecret = "lizard-secret",
+                Permissions =
+                {
+                    OpenIddictConstants.Permissions.Endpoints.Token,
+                    OpenIddictConstants.Permissions.GrantTypes.Password,
+                    OpenIddictConstants.Permissions.GrantTypes.RefreshToken
+                }
+            }, 
+			token);
+        }
+    }
+
 }

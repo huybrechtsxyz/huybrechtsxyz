@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using OpenIddict.Abstractions;
 using Serilog;
 
 namespace Huybrechts.App.Web;
@@ -161,22 +162,23 @@ public static class WebHostExtensions
 
         log.Information("Configure authentication identity");
         builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
-        {
-            options.SignIn.RequireConfirmedAccount = builder.Environment.IsStaging() || builder.Environment.IsProduction();
-            options.Password.RequireUppercase = true;
-            options.Password.RequireLowercase = true;
-            options.Password.RequireDigit = true;
-            options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequiredLength = 8;
-        })
-        .AddEntityFrameworkStores<ApplicationContext>()
-        .AddRoleManager<ApplicationRoleManager>()
-        .AddUserStore<ApplicationUserStore>()
-        .AddUserManager<ApplicationUserManager>()
-        .AddSignInManager<ApplicationSignInManager>()
-        .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
-        .AddDefaultTokenProviders();
+            {
+                options.SignIn.RequireConfirmedAccount = builder.Environment.IsStaging() || builder.Environment.IsProduction();
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireDigit = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 8;
+            })
+            .AddEntityFrameworkStores<ApplicationContext>()
+            .AddRoleManager<ApplicationRoleManager>()
+            .AddUserStore<ApplicationUserStore>()
+            .AddUserManager<ApplicationUserManager>()
+            .AddSignInManager<ApplicationSignInManager>()
+            .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
+            .AddDefaultTokenProviders();
 
+        log.Information("Configure authorization policies");
         builder.Services.AddSingleton<IAuthorizationHandler, MultiTenantRoleAuthorizationHandler>();
 
         builder.Services.AddAuthorizationBuilder()
@@ -190,7 +192,7 @@ public static class WebHostExtensions
 
         log.Information("Configure authentication for google");
         GoogleLoginOptions? google = ApplicationSettings.GetGoogleLoginOptions(builder.Configuration);
-        if (!(google is null || string.IsNullOrEmpty(google.ClientId) || string.IsNullOrEmpty(google.ClientSecret)))
+        if (google is not null && google.IsValid())
         {
             builder.Services.AddAuthentication().AddGoogle(options =>
             {
@@ -207,6 +209,85 @@ public static class WebHostExtensions
                 };
             });
         }
+
+        // https://github.com/openiddict/openiddict-samples/blob/dev/samples/Mimban/Mimban.Server/Program.cs
+        Log.Information("Configure openiddict server");
+        builder.Services.AddOpenIddict()
+            .AddCore(options =>
+            {
+                // Use Entity Framework for OpenIddict
+                options.UseEntityFrameworkCore().UseDbContext<ApplicationContext>();
+            })
+            .AddClient(options =>
+            {
+                // Note: this sample uses the code flow, but you can enable the other flows if necessary.
+                options.AllowAuthorizationCodeFlow();
+
+                // Register the signing and encryption credentials used to protect
+                // sensitive data like the state tokens produced by OpenIddict.
+                options.AddDevelopmentEncryptionCertificate()
+                       .AddDevelopmentSigningCertificate();
+
+                // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
+                options.UseAspNetCore()
+                       .EnableRedirectionEndpointPassthrough();
+
+                // Register the System.Net.Http integration and use the identity of the current
+                // assembly as a more specific user agent, which can be useful when dealing with
+                // providers that use the user agent as a way to throttle requests (e.g Reddit).
+                options.UseSystemNetHttp().SetProductInformation(typeof(ApplicationContext).Assembly);
+
+                // Register the Web providers integrations.
+                // Note: to mitigate mix-up attacks, it's recommended to use a unique redirection endpoint
+                // URI per provider, unless all the registered providers support returning a special "iss"
+                // parameter containing their URL as part of authorization responses. For more information,
+                // see https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#section-4.4.
+
+                XXX 
+
+                if (google is not null && google.IsValid())
+                {
+                    options.UseWebProviders()
+                       .AddGoogle(options =>
+                       {
+                           options.SetClientId(google.ClientId)
+                                  .SetClientSecret(google.ClientSecret)
+                                  .SetRedirectUri("connect-google");
+                       });
+                }
+            })
+            .AddServer(options =>
+            {
+                // Enable the authorization, token, and introspection endpoints
+                options.SetAuthorizationEndpointUris("/connect/authorize")
+                       .SetTokenEndpointUris("/connect/token")
+                       .SetIntrospectionEndpointUris("/connect/introspect");
+
+                // Allow the authorization code and refresh token flows
+                options.AllowPasswordFlow()
+                       .AllowRefreshTokenFlow()
+                       .AllowAuthorizationCodeFlow();
+
+                // Register scopes (OpenID, profile, email)
+                options.RegisterScopes(OpenIddictConstants.Scopes.OpenId,
+                                       OpenIddictConstants.Scopes.Profile,
+                                       OpenIddictConstants.Scopes.Email);
+
+                // Use development certificates for signing and encryption
+                options.AddDevelopmentEncryptionCertificate()
+                       .AddDevelopmentSigningCertificate();
+
+                // Enable ASP.NET Core host integration
+                options.UseAspNetCore()
+                       .EnableAuthorizationEndpointPassthrough()
+                       .EnableTokenEndpointPassthrough();
+            })
+            .AddValidation(options =>
+            {
+                // Token validation configuration
+                options.UseLocalServer();
+                options.UseAspNetCore();
+            });
         return builder;
     }
 

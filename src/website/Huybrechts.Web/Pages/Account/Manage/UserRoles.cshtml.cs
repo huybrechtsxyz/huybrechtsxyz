@@ -4,7 +4,6 @@ using Huybrechts.App.Application;
 using Huybrechts.Core.Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Huybrechts.Web.Pages.Account.Manage
 {
@@ -37,8 +36,8 @@ namespace Huybrechts.Web.Pages.Account.Manage
             }
 
             var roles = await _userManager.GetApplicationRolesAsync(user);
-            SystemRoles = [.. roles.Where(q => q.TenantId.IsNullOrEmpty()).OrderBy(o => o.Label)];
-            TenantRoles = [.. roles.Where(q => !q.TenantId.IsNullOrEmpty()).OrderBy(o => o.TenantId).ThenBy(o => o.Label)];
+            SystemRoles = [.. roles.Where(q => q.TenantId == null).OrderBy(o => o.Label)];
+            TenantRoles = [.. roles.Where(q => q.TenantId != null).OrderBy(o => o.TenantId).ThenBy(o => o.Label)];
 
             return Page();
         }
