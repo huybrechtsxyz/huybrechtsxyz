@@ -5,13 +5,6 @@ using Serilog;
 
 try
 {
-    Log.Logger = new LoggerConfiguration()
-       .Enrich.FromLogContext()
-       .WriteTo.Console()
-       .CreateBootstrapLogger();
-    Log.Information("Starting application");
-
-    Log.Information("Creating application builder");
     /* https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-8.0#command-line
 	 * provides default configuration for the app in the following order, from highest to lowest priority:
 	 * Command-line arguments using the Command-line configuration provider.
@@ -20,17 +13,18 @@ try
 	 * appsettings.{Environment}.json using the JSON configuration provider. For example, appsettings.Production.json and appsettings.Development.json.
 	 * appsettings.json using the JSON configuration provider.
 	 */
+    Log.Logger = Huybrechts.Shared.Web.WebHostExtensions.AddBootstrapLogger();
+    Log.Information("Starting application");
+
+    Log.Information("Creating application builder");
     var builder = WebApplication.CreateBuilder(args);
-    builder.Host.UseSerilog((context, services, configuration) => configuration
-           .ReadFrom.Configuration(context.Configuration)
-           .ReadFrom.Services(services)
-           .Enrich.FromLogContext(),
-           writeToProviders: true);
+    builder.AddLoggingServices();
     Log.Information("Startup configuration for {environment}", builder.Environment.EnvironmentName);
     builder.Configuration.AddDockerSecrets(builder.Configuration, Log.Logger);
     builder.AddWebconfigServices(Log.Logger);
     builder.AddCookiePolicies(Log.Logger);
-    Log.Information("Configuring other services");
+    
+     Log.Information("Configuring other services");
     builder.Services.AddSingleton<IResourceNamesCache, ResourceNamesCache>();
     builder.Services.AddLocalization();
     builder.Services.AddAntiforgery();
@@ -42,40 +36,16 @@ try
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        Log.Information("Configure the HTTP request pipeline for DEVELOPMENT");
-        app.UseDeveloperExceptionPage();
-    }
-    else if (app.Environment.IsTest())
-    {
-        Log.Information("Configure the HTTP request pipeline for TEST");
-        app.UseDeveloperExceptionPage();
-        app.UseExceptionHandler("/Error");
-    }
-    else if (app.Environment.IsStaging())
-    {
-        Log.Information("Configure the HTTP request pipeline for staging");
-        app.UseExceptionHandler("/Error");
-    }
-    else if (app.Environment.IsProduction())
-    {
-        Log.Information("Configure the HTTP request pipeline for staging");
-        app.UseExceptionHandler("/Error");
-    }
-    else
-        throw new Exception("Invalid application environment for " + app.Environment.EnvironmentName);
-
-    app.AddRedirectionMiddleware(Log.Logger);
-    app.AddStaticFilesMiddleware(Log.Logger);
-    app.AddLocalizationMiddleware(Log.Logger);
-    app.AddRoutingMiddleware(Log.Logger);
-
-    Log.Information("Configure authentication and authorization");
-    app.UseAuthentication();
-    app.UseAuthorization();
-    app.UseAntiforgery();
-    app.UseResponseCaching();
+    Log.Information("Configure the HTTP request pipeline");
+    app.UseExceptionMiddleware(false, Log.Logger);
+    app.UseHstsMiddleware(Log.Logger);
+    app.UseRedirecionMiddleware(Log.Logger);
+    app.UseStaticFilesMiddleware(Log.Logger);
+    app.UseLocalizationMiddleware(Log.Logger);
+    app.UseRoutingMiddleware(Log.Logger);
+    app.UseCorsMiddleware(Log.Logger);
+    app.UseClientSecurityMiddleware(Log.Logger);
+    app.UseCustomMiddleware(Log.Logger);
     app.UseMiniProfiler();
 
     Log.Information("Mapping and routing razor components");

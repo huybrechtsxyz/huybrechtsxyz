@@ -6,13 +6,10 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "landing", "landing", "{9EFE0CD0-F412-47FE-BCA8-4B9B0E060F44}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Landing.Web", "src\landing\Huybrechts.Landing.Web\Huybrechts.Landing.Web.csproj", "{EF2CF43B-B392-4714-A09F-AF181C178A7A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E00926ED-5FA5-4575-AE28-5FA5ADE8907F} = {E00926ED-5FA5-4575-AE28-5FA5ADE8907F}
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{B5A8CD5A-5FA4-41D5-AC2C-AEA940FB3A9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Shared.Web", "src\shared\Huybrechts.Shared.Web\Huybrechts.Shared.Web.csproj", "{E00926ED-5FA5-4575-AE28-5FA5ADE8907F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Shared.App", "src\shared\Huybrechts.Shared.App\Huybrechts.Shared.App.csproj", "{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,17 +21,17 @@ Global
 		{EF2CF43B-B392-4714-A09F-AF181C178A7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF2CF43B-B392-4714-A09F-AF181C178A7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF2CF43B-B392-4714-A09F-AF181C178A7A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E00926ED-5FA5-4575-AE28-5FA5ADE8907F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E00926ED-5FA5-4575-AE28-5FA5ADE8907F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E00926ED-5FA5-4575-AE28-5FA5ADE8907F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E00926ED-5FA5-4575-AE28-5FA5ADE8907F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EF2CF43B-B392-4714-A09F-AF181C178A7A} = {9EFE0CD0-F412-47FE-BCA8-4B9B0E060F44}
-		{E00926ED-5FA5-4575-AE28-5FA5ADE8907F} = {B5A8CD5A-5FA4-41D5-AC2C-AEA940FB3A9C}
+		{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295} = {B5A8CD5A-5FA4-41D5-AC2C-AEA940FB3A9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9458309-7428-4D11-921E-829CC2E8CC1A}
