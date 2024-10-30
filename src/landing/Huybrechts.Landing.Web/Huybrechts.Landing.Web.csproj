@@ -24,4 +24,8 @@
       <ProjectReference Include="..\..\shared\Huybrechts.Shared.App\Huybrechts.Shared.App.csproj" />
    </ItemGroup>
 
+   <ItemGroup>
+     <Folder Include="wwwroot\lib\jquery\dist\" />
+   </ItemGroup>
+
 </Project>
