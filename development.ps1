@@ -38,10 +38,16 @@ $env:CONSUL_ADDR="http://127.0.0.1:8500"
 Start-Process -FilePath ".app/consul/consul.exe" -ArgumentList "agent", "-dev" -WindowStyle Minimized
 
 # DEBUG AND TEST
+
+Start-Process -FilePath "msedge.exe" -ArgumentList `
+   "http://localhost:8500 ",`
+   "--incognito --start-maximized --new-window"
+
 Pause 'Press any key to stop debugging'
 Write-Output 'Stopping Local Host environment...'
 
 # STOPPING SERVICES
+Stop-Process -Name 'msedge' -ErrorAction Ignore
 Stop-Process -Name 'consul' -ErrorAction Ignore
 
 # SYSTEM

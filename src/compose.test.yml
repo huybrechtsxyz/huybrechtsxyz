@@ -315,6 +315,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Test
       - DOTNET_RUNNING_IN_CONTAINER=1
+      - CONSUL_ADDR=http://consul:8500
     networks:
       - traefik
     volumes:
@@ -343,6 +344,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Test
       - DOTNET_RUNNING_IN_CONTAINER=1
+      - CONSUL_ADDR=http://consul:8500
       - APP_DATA_USERNAME=/run/secrets/APP_DATA_USERNAME
       - APP_DATA_PASSWORD=/run/secrets/APP_DATA_PASSWORD
     networks:
