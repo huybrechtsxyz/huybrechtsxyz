@@ -310,6 +310,31 @@ services:
         - "consul.check.timeout=5s"
         - "consul.check.deregister_critical_service_after=1m"
 
+  landing:
+    image: huybrechts/landing:test
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Test
+      - DOTNET_RUNNING_IN_CONTAINER=1
+    networks:
+      - traefik
+    volumes:
+      - "/app/cert:/app/cert"
+      - "/app/data:/app/data"
+      - "/app/logs:/app/logs"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=test"
+        - "traefik.http.routers.landing.rule=Host(`test.huybrechts.xyz`)"
+        - "traefik.http.services.landing.loadbalancer.server.port=8080"
+        - "traefik.http.routers.landing.entrypoints=websecure"
+        - "traefik.http.routers.landing.tls=true"
+        - "traefik.http.routers.landing.tls.certresolver=leresolver"
+        - "traefik.http.routers.landing.middlewares=sslheader"
+
 secrets:
 
   APP_DATA_NAME:
