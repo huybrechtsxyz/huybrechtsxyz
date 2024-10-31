@@ -50,21 +50,47 @@ Traefik is used as ingress router for docker swarm, reverse proxy, and load bala
 
 ### Consul
 
+aka consul
+
+![consul-architecture](img/consul-architecture.png)
+
+Consul is an open-source tool by HashiCorp designed for service discovery, configuration management, and network automation within distributed systems. It helps applications and services communicate seamlessly across diverse environments, such as cloud, on-premises, or hybrid infrastructures. Consul provides key features, including service discovery (to find and connect services dynamically), health checking (to monitor service availability), a distributed key-value store (for configuration), and network segmentation (with service mesh capabilities to secure and manage network traffic). Consul's adaptability makes it valuable for managing microservices and complex, dynamic environments efficiently.
+
 ### PostgreSQL
+
+aka postgres
+
+PostgreSQL is a powerful, open-source relational database management system known for its stability, flexibility, and support for advanced data types and operations. It supports both SQL (relational) and JSON (non-relational) querying, making it suitable for a wide range of applications. PostgreSQL is ACID-compliant, ensuring reliable transactions, and includes features such as indexing, full-text search, and support for complex queries and joins. It’s widely used for handling large-scale, high-availability databases, and is known for its extensibility, allowing developers to add custom functions and data types.
 
 ### PGAdmin4
 
+aka pgadmin
+
+pgAdmin 4 is a comprehensive web-based management tool for PostgreSQL databases. It provides a user-friendly interface to manage, monitor, and interact with PostgreSQL databases, making it easier to run queries, view database objects, and configure settings. pgAdmin 4 supports features like query tools, graphical query building, data export/import, and server monitoring, allowing database administrators and developers to efficiently handle database tasks. With its ability to manage multiple databases from a single interface, pgAdmin 4 is a popular choice for both small and large PostgreSQL deployments.
+
 ### Minio
+
+aka minio
+
+MinIO is an open-source, high-performance, object storage system compatible with the Amazon S3 API. It is designed for large-scale data storage, handling unstructured data such as photos, videos, and backups across distributed systems. MinIO provides high availability and fault tolerance by allowing data to be stored and replicated across multiple nodes. Its scalability, combined with fast read/write operations, makes it ideal for cloud-native applications, machine learning, and big data workloads. MinIO can be deployed on-premises, in hybrid clouds, or as part of containerized environments like Kubernetes.
 
 ### Mkdocs
 
-### Website (landing)
+aka mkdocs
 
-### Identity (openiddict)
+MkDocs is a fast, simple, and open-source static site generator specifically designed for creating project documentation. Written in Python, it converts Markdown files into a full-featured, customizable documentation website. With its straightforward setup and a variety of themes (like the popular "Material for MkDocs"), MkDocs is ideal for technical documentation, allowing developers to focus on content creation while handling all the styling, navigation, and structure. It’s widely used for project documentation due to its ease of use, clean interface, and seamless integration with version control platforms like GitHub.
 
-### API
+### Landing / Welcome
 
-### Application
+aka landing
+
+A landing or welcome page is the introductory page on a website or application, designed to greet visitors and provide an initial impression of the brand. It often highlights key features, gives an overview of the site's purpose, and may guide users toward relevant sections, such as logging in, signing up, or exploring main content areas. Unlike a landing page, which focuses on a specific action, a welcome page serves as an entryway, setting the tone for the user experience, offering essential navigation, and sometimes showcasing recent updates or promotions. It’s meant to engage users right away and provide a friendly, informative start to their journey.
+
+### Identity Server
+
+aka identity
+
+An accounts or identity welcome page is a gateway for users to manage their personal information, authentication settings, and account-related preferences. This page typically provides options to log in, sign up, or access account recovery tools. For registered users, it may offer a quick overview of profile settings, security options (like two-factor authentication), and links to update personal details or manage subscriptions. By providing a secure, user-friendly experience, the accounts welcome page streamlines access to identity management features, ensuring users can easily handle account tasks with confidence and convenience.
 
 ## Domain configuration
 
@@ -89,9 +115,19 @@ DNS resolves the requested domain (e.g., `api.staging.example.com`) to the IP wh
 
 The table below provides a structured view of the domain configuration for the website. It outlines the various applications (e.g., web, API, admin, blog) across different environments, such as production and staging. Each domain is associated with a fully qualified domain name (FQDN) that is used to access the respective service in its environment.
 
+traefik
+
+
 | Application  | Environment   | Domain                       | Path        | Description                                     |
 |--------------|---------------|------------------------------|-------------|-------------------------------------------------|
 | Traefik      | Test          | proxy.test.example.com       | /dashboard/ | Application proxy for test environment          |
+| Consul       | Test          | config.test.example.com      | /           | Configuration server for test environment       |
+| PostgreSql   | Test          |                              |             | Database server for test environment            |
+| PGAdmin      | Test          | admin.test.example.com       | /pgadmin    | Data administration for test environment        |
+| Minio        | Test          | data.test.example.com        | /           | Data server for test environment                |
+| Mkdocs       | Test          | docs.test.example.com        | /           | Documentation for test environment              |
+| Landing      | Test          | www.test.example.com         | /           | Landing page test environment                   |
+| Identity     | Test          | identity.test.example.com    | /           | Identity server for test environment            |
 |              |               |                              |             |                                                 |
 | Traefik      | Staging       | proxy.staging.example.xyz    | /dashboard/ | Application proxy for staging environment       |
 |              |               |                              |             |                                                 |
@@ -108,18 +144,13 @@ The table helps illustrate how traffic is managed and directed for different sub
 |-----------------------------------|-------|------------------|----------------------------------------------------|
 | test.example.com                  | A     | {ip-address}     | Main website running in test environment           |
 | www.test.example.com              | CNAME | test.{url}       | Main website running in test environment           |
-| proxy.test.example.com            | A     | {ip-address}     | Application proxy in test environment              |
-| admin.test.example.com            | A     | {ip-address}     | Database administration in test environment        |
+| *.test.example.com                | A     | {ip-address}     | Applications running in test environment           |
 |                                   |       |                  |                                                    |
 | staging.example.com               | A     | {ip-address}     | Main website running in staging environment        |
 | www.staging.example.com           | CNAME | test.{url}       | Main website running in staging environment        |
-| proxy.staging.example.com         | A     | {ip-address}     | Application proxy in staging environment           |
-| admin.staging.example.com         | A     | {ip-address}     | Database administration in staging environment     |
 |                                   |       |                  |                                                    |
 | example.com                       | A     | {ip-address}     | Main website running in production environment     |
 | www.example.com                   | CNAME | test.{url}       | Main website running in production environment     |
-| proxy.example.com                 | A     | {ip-address}     | Application proxy in production environment        |
-| admin.example.com                 | A     | {ip-address}     | Database administration in production environment  |
 |                                   |       |                  |                                                    |
 
 **Explanation:**
@@ -201,12 +232,12 @@ Below is an overview of all the secrets utilized in the pipeline, as well as tho
 
 | Secret Name         | Type   | Description                       | Example                                        |
 |---------------------|--------|-----------------------------------|------------------------------------------------|
+| `APP_DATA_USERNAME` | Secret | Database username                 | `user1`                                        |
+| `APP_DATA_PASSWORD` | Secret | Database password                 | `1234`                                         |
 | `APP_HOST_USERNAME` | Secret | Server username                   | `user1`                                        |
 | `APP_HOST_PASSWORD` | Secret | Server password                   | `1234`                                         |
 | `APP_HOST_SERVER`   | Secret | Server IP                         | `10.0.0.1`                                     |
 | `APP_HOST_PORT`     | Secret | SSH Port                          | `22`                                           |
-| `APP_AUTH_GOOGLE`   | Secret | JSON with client ID and secret    | `{ ClientId: abc, ClientSecret: 123 }`         |
-| `APP_SMTP_OPTIONS`  | Secret | JSON with SMTP server options     | `{ Server: ... }`                              |
 | `REGISTRY_USERNAME` | Secret | Container registry username       | `user1`                                        |
 | `REGISTRY_PASSWORD` | Secret | Container registry password       | `1234`                                         |
 

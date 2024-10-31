@@ -335,10 +335,38 @@ services:
         - "traefik.http.routers.landing.tls.certresolver=leresolver"
         - "traefik.http.routers.landing.middlewares=sslheader"
 
+  identity:
+    image: huybrechts/identity:test
+    secrets:
+      - APP_DATA_USERNAME
+      - APP_DATA_PASSWORD
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Test
+      - DOTNET_RUNNING_IN_CONTAINER=1
+      - APP_DATA_USERNAME=/run/secrets/APP_DATA_USERNAME
+      - APP_DATA_PASSWORD=/run/secrets/APP_DATA_PASSWORD
+    networks:
+      - traefik
+    volumes:
+      - "/app/cert:/app/cert"
+      - "/app/data:/app/data"
+      - "/app/logs:/app/logs"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=test"
+        - "traefik.http.routers.landing.rule=Host(`identity.test.huybrechts.xyz`)"
+        - "traefik.http.services.landing.loadbalancer.server.port=8080"
+        - "traefik.http.routers.landing.entrypoints=websecure"
+        - "traefik.http.routers.landing.tls=true"
+        - "traefik.http.routers.landing.tls.certresolver=leresolver"
+        - "traefik.http.routers.landing.middlewares=sslheader"
+
 secrets:
 
-  APP_DATA_NAME:
-    external: true
   APP_DATA_USERNAME:
     external: true
   APP_DATA_PASSWORD:

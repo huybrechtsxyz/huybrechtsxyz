@@ -58,7 +58,7 @@ jobs:
       APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
 
   build-landing:
-    name: Build Deploy Landing Job
+    name: Build Landing Job
     if: inputs.rebuild == 'true'
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_docker.yml@main
     with:
@@ -66,6 +66,19 @@ jobs:
       imagename: 'huybrechts/landing'
       sourcepath: 'landing'
       projectname: 'Huybrechts.Landing.Web'
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+  build-identity:
+    name: Build Identity Job
+    if: inputs.rebuild == 'true'
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_docker.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+      imagename: 'huybrechts/identity'
+      sourcepath: 'identity'
+      projectname: 'Huybrechts.Identity.Web'
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
