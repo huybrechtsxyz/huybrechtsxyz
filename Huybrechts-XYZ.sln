@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{B5A8CD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Shared.App", "src\shared\Huybrechts.Shared.App\Huybrechts.Shared.App.csproj", "{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Landing.Tests", "tests\landing\Huybrechts.Landing.Tests\Huybrechts.Landing.Tests.csproj", "{9F7F0198-7F1F-4C98-B73E-45C602E1EB19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F7F0198-7F1F-4C98-B73E-45C602E1EB19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F7F0198-7F1F-4C98-B73E-45C602E1EB19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F7F0198-7F1F-4C98-B73E-45C602E1EB19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F7F0198-7F1F-4C98-B73E-45C602E1EB19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{EF2CF43B-B392-4714-A09F-AF181C178A7A} = {9EFE0CD0-F412-47FE-BCA8-4B9B0E060F44}
 		{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295} = {B5A8CD5A-5FA4-41D5-AC2C-AEA940FB3A9C}
+		{9F7F0198-7F1F-4C98-B73E-45C602E1EB19} = {9EFE0CD0-F412-47FE-BCA8-4B9B0E060F44}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9458309-7428-4D11-921E-829CC2E8CC1A}
