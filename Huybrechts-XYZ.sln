@@ -11,7 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{B5A8CD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Shared.App", "src\shared\Huybrechts.Shared.App\Huybrechts.Shared.App.csproj", "{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Landing.Tests", "tests\landing\Huybrechts.Landing.Tests\Huybrechts.Landing.Tests.csproj", "{9F7F0198-7F1F-4C98-B73E-45C602E1EB19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Huybrechts.Landing.Tests", "tests\landing\Huybrechts.Landing.Tests\Huybrechts.Landing.Tests.csproj", "{9F7F0198-7F1F-4C98-B73E-45C602E1EB19}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "identity", "identity", "{152CDDE5-38AD-433F-9756-5953553E7940}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Identity.Web", "src\identity\Huybrechts.Identity.Web\Huybrechts.Identity.Web.csproj", "{09C236BF-8D92-4AA3-91DD-0A051243DDE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +35,10 @@ Global
 		{9F7F0198-7F1F-4C98-B73E-45C602E1EB19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F7F0198-7F1F-4C98-B73E-45C602E1EB19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F7F0198-7F1F-4C98-B73E-45C602E1EB19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09C236BF-8D92-4AA3-91DD-0A051243DDE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09C236BF-8D92-4AA3-91DD-0A051243DDE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09C236BF-8D92-4AA3-91DD-0A051243DDE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09C236BF-8D92-4AA3-91DD-0A051243DDE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +47,7 @@ Global
 		{EF2CF43B-B392-4714-A09F-AF181C178A7A} = {9EFE0CD0-F412-47FE-BCA8-4B9B0E060F44}
 		{EA2C4A5E-C5CC-4A5B-88A8-694E6D8F0295} = {B5A8CD5A-5FA4-41D5-AC2C-AEA940FB3A9C}
 		{9F7F0198-7F1F-4C98-B73E-45C602E1EB19} = {9EFE0CD0-F412-47FE-BCA8-4B9B0E060F44}
+		{09C236BF-8D92-4AA3-91DD-0A051243DDE7} = {152CDDE5-38AD-433F-9756-5953553E7940}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9458309-7428-4D11-921E-829CC2E8CC1A}
