@@ -19,9 +19,11 @@ Restart the service
 > sudo service ssh restart
 
 ## Introduction
+
 SSH, or secure shell, is an encrypted protocol used to administer and communicate with servers. When working with a Linux server, chances are, you will spend most of your time in a terminal session connected to your server through SSH. While there are a few different ways of logging into an SSH server, in this guide, we’ll focus on setting up SSH keys. SSH keys provide an easy, yet extremely secure way of logging into your server. For this reason, this is the method we recommend for all users.
 
 ## How Do SSH Keys Work?
+
 An SSH server can authenticate clients using a variety of different methods. The most basic of these is password authentication, which is easy to use, but not the most secure. Although passwords are sent to the server in a secure manner, they are generally not complex or long enough to be resistant to repeated, persistent attackers. Modern processing power combined with automated scripts make brute forcing a password-protected account very possible. Although there are other methods of adding additional security (fail2ban, etc.), SSH keys prove to be a reliable and secure alternative.
 
 SSH key pairs are two cryptographically secure keys that can be used to authenticate a client to an SSH server. Each key pair consists of a public key and a private key. The private key is retained by the client and should be kept absolutely secret. Any compromise of the private key will allow the attacker to log into servers that are configured with the associated public key without additional authentication. As an additional precaution, the key can be encrypted on disk with a passphrase.
@@ -31,6 +33,7 @@ The associated public key can be shared freely without any negative consequences
 When a client attempts to authenticate using SSH keys, the server can test the client on whether they are in possession of the private key. If the client can prove that it owns the private key, a shell session is spawned or the requested command is executed.
 
 ## How To Create SSH Keys
+
 The first step to configure SSH key authentication to your server is to generate an SSH key pair on your local computer.
 
 To do this, we can use a special utility called `ssh-keygen`, which is included with the standard OpenSSH suite of tools. By default, this will create a 2048 bit RSA key pair, which is fine for most uses. On your local computer, generate a SSH key pair by typing:
@@ -81,9 +84,11 @@ A passphrase is an optional addition. If you enter one, you will have to provide
 You now have a public and private key that you can use to authenticate. The next step is to place the public key on your server so that you can use SSH key authentication to log in.
 
 ## How To Copy a Public Key to your Server
+
 If you already have a server available and did not embed keys upon creation, you can still upload your public key and use it to authenticate to your server. The method you use depends largely on the tools you have available and the details of your current configuration. The following methods all yield the same end result. The easiest, most automated method is first and the ones that follow each require additional manual steps if you are unable to use the preceding methods.
 
 ### Copying your Public Key Using SSH-Copy-ID
+
 The easiest way to copy your public key to an existing server is to use a utility called ssh-copy-id. Because of its simplicity, this method is recommended if available. The ssh-copy-id tool is included in the OpenSSH packages in many distributions, so you may have it available on your local system. For this method to work, you must already have password-based SSH access to your server. To use the utility, you simply need to specify the remote host that you would like to connect to and the user account that you have password SSH access to. This is the account where your public SSH key will be copied.
 
 The syntax is:
@@ -115,6 +120,7 @@ Now try logging into the machine, with:
 and check to make sure that only the key(s) you wanted were added. At this point, your id_rsa.pub key has been uploaded to the remote account. You can continue onto the next section.
 
 ### Copying your Public Key Using SSH
+
 If you do not have ssh-copy-id available, but you have password-based SSH access to an account on your server, you can upload your keys using a conventional SSH method. We can do this by outputting the content of our public SSH key on our local computer and piping it through an SSH connection to the remote server. On the other side, we can make sure that the ~/.ssh directory exists under the account we are using and then output the content we piped over into a file called authorized_keys within this directory. We will use the >> redirect symbol to append the content instead of overwriting it. This will let us add keys without destroying previously added keys.
 
 The full command will look like this:
@@ -134,6 +140,7 @@ This just means that your local computer does not recognize the remote host. Thi
 After entering your users password, the content of your id_rsa.pub key will be copied to the end of the authorized_keys file of the remote user’s account. Continue to the next section if this was successful.
 
 ### Copying your Public Key Manually
+
 If you do not have password-based SSH access to your server available, you will have to do the above process manually. The content of your `id_rsa.pub` file will have to be added to a file at `~/.ssh/authorized_keys` on your remote machine somehow. To display the content of your id_rsa.pub key, type this into your local computer:
 
 > cat ~/.ssh/id_rsa.pub (or for windows)\
@@ -141,7 +148,7 @@ If you do not have password-based SSH access to your server available, you will 
 
 You will see the key’s content, which may look something like this:
 
-> ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCqql6MzstZYh1TmWWv11q5O3pISj2ZFl9HgH1JLknLLx44+tXfJ7mIrKNxOOwxIxvcBF8PXSYvobFYEZjGIVCEAjrUzLiIxbyCoxVyle7Q+bqgZ8SeeM8wzytsY+dVGcBxF6N4JS+zVk5eMcV385gG3Y6ON3EG112n6d+SMXY0OEBIcO6x+PnUSGHrSgpBgX7Ks1r7xqFa7heJLLt2wWwkARptX7udSq05paBhcpB0pHtA1Rfz3K2B+ZVIpSDfki9UVKzT8JUmwW6NNzSgxUfQHGwnW7kj4jp4AT0VZk3ADw497M2G/12N0PPB5CnhHf7ovgy6nL1ikrygTKRFmNZISvAcywB9GVqNAVE+ZHDSCuURNsAInVzgYo9xgJDW8wUw2o8U77+xiFxgI5QSZX3Iq7YLMgeksaO4rBJEa54k8m5wEiEE1nUhLuJ0X/vh2xPff6SQ1BL/zkOhvJCACK6Vb15mDOeCSq54Cr7kvS46itMosi/uS66+PujOO+xt/2FWYepz6ZlN70bRly57Q06J+ZJoc9FfBCbCyYH7U/ASsmY095ywPsBo1XQ9PqhnN1/YOorJ068foQDNVpm146mUpILVxmq41Cj55YKHEazXGsdBIbXWhcrRf4G2fJLRcGUr9q8/lERo9oxRm5JFX6TCmj6kmiFqv+Ow9gI0x8GvaQ== demo@test
+> ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCqql6Mzst...o9oxRm5JFX6TCmj6kmiFqv+Ow9gI0x8GvaQ== demo@test
 
 Access your remote host using whatever method you have available. Once you have access to your account on the remote server, you should make sure the `~/.ssh directory` is created. This command will create the directory if necessary, or do nothing if it already exists:
 
@@ -154,6 +161,7 @@ Now, you can create or modify the authorized_keys file within this directory. Yo
 In the above command, substitute the public_key_string with the output from the cat ~/.ssh/id_rsa.pub command that you executed on your local system. It should start with ssh-rsa AAAA.... If this works, you can move on to try to authenticate without a password.
 
 ## Authenticate to your Server Using SSH Keys
+
 If you have successfully completed one of the procedures above, you should be able to log into the remote host without the remote account’s password. The basic process is the same:
 
 > ssh username@remote_host
@@ -169,6 +177,7 @@ This just means that your local computer does not recognize the remote host. Typ
 If successful, continue on to find out how to lock down the server.
 
 ## Disabling Password Authentication on your Server
+
 If you were able to login to your account using SSH without a password, you have successfully configured SSH key-based authentication to your account. However, your password-based authentication mechanism is still active, meaning that your server is still exposed to brute-force attacks. Before completing the steps in this section, make sure that you either have SSH key-based authentication configured for the root account on this server, or preferably, that you have SSH key-based authentication configured for an account on this server with sudo access. This step will lock down password-based logins, so ensuring that you have will still be able to get administrative access is essential.
 
 Once the above conditions are true, log into your remote server with SSH keys, either as root or with an account with sudo privileges. Open the SSH daemon’s configuration file:

@@ -13,7 +13,9 @@ Accounts required to build the software. Create an account to each of the servic
 - [Google Captcha Console](https://www.google.com/recaptcha/admin) for form validation against robots.
 
 ## Required Software
+
 The following software is required for building Huybrechts.xyz. Install the software on your local machine.
+
 - [Visual Studio Code](https://code.visualstudio.com/) as integrated development environment (IDE).
 - [GIT for Windows](https://gitforwindows.org/) for source control (required by VSCode).
 - [ASP.NET Core](https://dotnet.microsoft.com/download) as software development kit.
@@ -21,7 +23,9 @@ The following software is required for building Huybrechts.xyz. Install the soft
 - [Putty](https://putty.org/) as SSH terminal to connect to virtual private server.
 
 ## Visual Studio Code Extensions
+
 A list of Visual Studio Code extensions required/optional for development.
+
 - C# for Visual Studio Code (powered by OmniSharp) [required].
 - Gitflow integration for Visual Studio Code [recommended].
 - Docker [recommended].
