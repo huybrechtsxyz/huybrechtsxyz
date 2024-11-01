@@ -42,41 +42,53 @@ This is the live environment where the application is accessible to end-users. S
 
 ### Traefik 
 
-aka [traefik](./svc/traefik.md)
+aka traefik(./svc/traefik.md)
+
+![traefik-architecture](../img/traefik-architecture.png)
 
 Traefik is a modern reverse proxy and load balancer designed to manage and route traffic to microservices and APIs. It dynamically discovers services via integration with popular orchestration systems like Docker, Kubernetes, and Consul, and automatically configures routing based on service changes. Traefik simplifies managing HTTP, HTTPS, and TCP traffic, providing built-in features like SSL termination, load balancing, and request routing. It's particularly suited for microservice architectures, offering seamless integration, auto-discovery, and flexibility, making it a powerful tool for efficiently handling network traffic in dynamic environments.
 
-Traefik is used as ingress router for docker swarm, reverse proxy, and load balancer
+Clear Responsibilities
 
-### Whoami
+- Providers discover the services that live on your infrastructure (their IP, health, ...)
+- Entrypoints listen for incoming traffic (ports, ...)
+- Routers analyze the requests (host, path, headers, SSL, ...)
+- Services forward the request to your services (load balancing, ...)
+- Middlewares may update the request or make decisions based on the request (authentication, rate limiting, headers, ...)
 
-aka whoami
+### Consul
 
-Whoami is a simple web service used for testing and debugging in network environments. It responds to HTTP requests by returning details about the incoming request, such as headers, IP addresses, and server information. Commonly used with reverse proxies like Traefik, Whoami helps verify that routing, load balancing, and other network configurations are working as expected. It's lightweight and easy to deploy, making it a handy tool for confirming correct service behavior in a microservices or containerized setup.
+aka consul
 
-Whoami is used for testing and staging environments.
+![consul-architecture](img/consul-architecture.png)
 
-### Postgres & PG Admin
+Consul is an open-source tool by HashiCorp designed for service discovery, configuration management, and network automation within distributed systems. It helps applications and services communicate seamlessly across diverse environments, such as cloud, on-premises, or hybrid infrastructures. Consul provides key features, including service discovery (to find and connect services dynamically), health checking (to monitor service availability), a distributed key-value store (for configuration), and network segmentation (with service mesh capabilities to secure and manage network traffic). Consul's adaptability makes it valuable for managing microservices and complex, dynamic environments efficiently.
 
-aka postgres, pgadmin
+### PostgreSQL
+
+aka postgres
 
 PostgreSQL is a powerful, open-source relational database management system known for its stability, flexibility, and support for advanced data types and operations. It supports both SQL (relational) and JSON (non-relational) querying, making it suitable for a wide range of applications. PostgreSQL is ACID-compliant, ensuring reliable transactions, and includes features such as indexing, full-text search, and support for complex queries and joins. It’s widely used for handling large-scale, high-availability databases, and is known for its extensibility, allowing developers to add custom functions and data types.
+
+### PGAdmin4
+
+aka pgadmin
 
 pgAdmin 4 is a comprehensive web-based management tool for PostgreSQL databases. It provides a user-friendly interface to manage, monitor, and interact with PostgreSQL databases, making it easier to run queries, view database objects, and configure settings. pgAdmin 4 supports features like query tools, graphical query building, data export/import, and server monitoring, allowing database administrators and developers to efficiently handle database tasks. With its ability to manage multiple databases from a single interface, pgAdmin 4 is a popular choice for both small and large PostgreSQL deployments.
 
 ### Minio
 
-aka minio / data
+aka minio
 
 MinIO is an open-source, high-performance, object storage system compatible with the Amazon S3 API. It is designed for large-scale data storage, handling unstructured data such as photos, videos, and backups across distributed systems. MinIO provides high availability and fault tolerance by allowing data to be stored and replicated across multiple nodes. Its scalability, combined with fast read/write operations, makes it ideal for cloud-native applications, machine learning, and big data workloads. MinIO can be deployed on-premises, in hybrid clouds, or as part of containerized environments like Kubernetes.
 
 Minio is used as storage service.
 
-### Huybrechts.XYZ
+### Mkdocs
 
-aka website
+aka mkdocs
 
-The application of Huybrechts.xyz.
+MkDocs is a fast, simple, and open-source static site generator specifically designed for creating project documentation. Written in Python, it converts Markdown files into a full-featured, customizable documentation website. With its straightforward setup and a variety of themes (like the popular "Material for MkDocs"), MkDocs is ideal for technical documentation, allowing developers to focus on content creation while handling all the styling, navigation, and structure. It’s widely used for project documentation due to its ease of use, clean interface, and seamless integration with version control platforms like GitHub.
 
 ## Domain configuration
 
@@ -105,19 +117,16 @@ The table below provides a structured view of the domain configuration for the w
 |--------------|---------------|------------------------------|-------------|-------------------------------------------------|
 | Traefik      | Test          | proxy.test.huybrechts.xyz    | /dashboard/ | Application proxy for test environment          |
 | PG Admin     | Test          | admin.test.huybrechts.xyz    | /pgadmin    | Database administration service (/pgadmin)      |
-| PostgreSql   | Test          | -                            | -           | Database service (private back-end)             |
 | Minio        | Test          | data.test.huybrechts.xyz     | /           | Minio console running in test environment       |
 | Website      | Test          | test.huybrechts.xyz          | /           | Main website running in test environment        |
 |              |               |                              |             |                                                 |
 | Traefik      | Staging       | proxy.staging.huybrechts.xyz | /dashboard/ | Application proxy for staging environment       |
 | PG Admin     | Staging       | admin.staging.huybrechts.xyz | /pgadmin    | Database administration service (/pgadmin)      |
-| PostgreSql   | Staging       | -                            | -           | Database service (private back-end)             |
 | Minio        | Staging       | data.staging.huybrechts.xyz  | /           | Minio console running in staging environment    |
 | Website      | Staging       | staging.huybrechts.xyz       | /           | Main website running in staging environment     |
 |              |               |                              |             |                                                 |
 | Traefik      | Production    | proxy.huybrechts.xyz         | /dashboard/ | Application proxy for production environment    |
 | PG Admin     | Production    | admin.huybrechts.xyz         | /pgadmin    | Database administration service (/pgadmin)      |
-| PostgreSql   | Production    | -                            | -           | Database service (private back-end)             |
 | Minio        | Production    | data.huybrechts.xyz          | /           | Minio console running in production environment |
 | Website      | Production    | huybrechts.xyz               | /           | Main website running in production environment  |
 
@@ -211,6 +220,7 @@ The application is organized into a structured directory layout that facilitates
   app
   ├── cert +          # Certificates
   ├── data +          # Data directory
+  │ ├── consul +      # Consul data
   │ ├── pgadmin +     # PG admin data
   │ └── pgdata +      # PostgreSql databases
   └── logs +          # Logging
@@ -228,20 +238,22 @@ Below is an overview of all the secrets utilized in the pipeline, as well as tho
 
 | Secret Name         | Type   | Description                       | Example                                        |
 |---------------------|--------|-----------------------------------|------------------------------------------------|
-| `APP_DATA_URL`      | Secret | Database connection               | `DS://{username}:{password}@{database}`        |
-| `APP_DATA_NAME`     | Secret | Database name                     | `appdata`                                      |
 | `APP_DATA_USERNAME` | Secret | DB Admin                          | `admin1`                                       |
 | `APP_DATA_PASSWORD` | Secret | DB Password                       | `1234`                                         |
-| `APP_DATA_CONTEXT`  | Secret | Select specific connection string | `SqliteContext`                                |
-| `APP_HOST_EMAIL`    | Secret | Server email                      | `a@b.com`                                      |
 | `APP_HOST_USERNAME` | Secret | Server username                   | `user1`                                        |
 | `APP_HOST_PASSWORD` | Secret | Server password                   | `1234`                                         |
 | `APP_HOST_SERVER`   | Secret | Server IP                         | `10.0.0.1`                                     |
 | `APP_HOST_PORT`     | Secret | SSH Port                          | `22`                                           |
-| `APP_AUTH_GOOGLE`   | Secret | JSON with client ID and secret    | `{ ClientId: abc, ClientSecret: 123 }`         |
-| `APP_SMTP_OPTIONS`  | Secret | JSON with SMTP server options     | `{ Server: ... }`                              |
 | `REGISTRY_USERNAME` | Secret | Container registry username       | `user1`                                        |
 | `REGISTRY_PASSWORD` | Secret | Container registry password       | `1234`                                         |
+| | | | | 
+| `APP_DATA_URL`      | Secret | Database connection               | `DS://{username}:{password}@{database}`        |
+| `APP_DATA_NAME`     | Secret | Database name                     | `appdata`                                      |
+| `APP_DATA_CONTEXT`  | Secret | Select specific connection string | `SqliteContext`                                |
+| `APP_HOST_EMAIL`    | Secret | Server email                      | `a@b.com`                                      |
+| `APP_AUTH_GOOGLE`   | Secret | JSON with client ID and secret    | `{ ClientId: abc, ClientSecret: 123 }`         |
+| `APP_SMTP_OPTIONS`  | Secret | JSON with SMTP server options     | `{ Server: ... }`                              |
+
 
 ### Continuous Integration and Delivery
 
