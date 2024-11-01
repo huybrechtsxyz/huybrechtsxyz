@@ -1,5 +1,5 @@
-# This reusable workflow Jobs
-name: Reusable Build and Deploy Tasks
+# Deploy Docker Swarm Stack Task
+name: Deploy Swarm Stack Task
 
 on:
   workflow_call:
@@ -8,6 +8,10 @@ on:
         required: true
         type: string
     secrets:
+      APP_DATA_USERNAME: 
+        required: true
+      APP_DATA_PASSWORD:
+        required: true
       APP_HOST_SERVER:
         required: true
       APP_HOST_PORT:
@@ -18,8 +22,8 @@ on:
         required: true
 
 jobs:
-  deploy-stack-task:
-    name: Deploy Docker Swarm Stack Task
+  deploy-stack:
+    name: Deploy Swarm Stack Task
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
@@ -37,8 +41,8 @@ jobs:
             cd /app
             echo DOCKER DEPLOY
             # Set environment variables for MinIO credentials
-            export MINIO_ROOT_USER=${{ secrets.APP_HOST_USERNAME }}      # Inject from GitHub secret
-            export MINIO_ROOT_PASSWORD=${{ secrets.APP_HOST_PASSWORD }}  # Inject from GitHub secret
+            export MINIO_ROOT_USER=${{ secrets.APP_DATA_USERNAME }}
+            export MINIO_ROOT_PASSWORD=${{ secrets.APP_DATA_PASSWORD }}
             # Set the appropriate security on the application subdirectories
             sudo chmod -R 600 /app/cert
             sudo chmod -R 777 /app/data

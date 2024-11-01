@@ -1,5 +1,5 @@
-# This reusable workflow
-name: Reusable Build and Deploy Jobs
+# Build and Deploy Jobs
+name: Build and Deploy Jobs
 
 on:
   workflow_call:
@@ -14,17 +14,9 @@ on:
         required: true
         type: string
     secrets:
-      APP_AUTH_GOOGLE:
-        required: true
-      APP_DATA_NAME:
-        required: true
-      APP_DATA_USERNAME:
+      APP_DATA_USERNAME: 
         required: true
       APP_DATA_PASSWORD:
-        required: true
-      APP_DATA_URL:
-        required: true
-      APP_HOST_EMAIL:
         required: true
       APP_HOST_SERVER:
         required: true
@@ -34,281 +26,26 @@ on:
         required: true
       APP_HOST_PASSWORD:
         required: true
-      APP_SMTP_OPTIONS:
-        required: true
       REGISTRY_USERNAME:
         required: true
       REGISTRY_PASSWORD:
         required: true
-        
+      APP_AUTH_GOOGLE:
+        required: true
+      APP_DATA_NAME:
+        required: true
+      APP_DATA_URL:
+        required: true
+      APP_HOST_EMAIL:
+        required: true
+      APP_SMTP_OPTIONS:
+        required: true
+
 jobs:
-  init-server:
+  initialize-server:
     name: Initialize Server Job
     if: inputs.initialize == 'true'
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    steps:
-      - name: Initialize server script
-        uses: appleboy/ssh-action@v1.0.2
-        with:
-          host: ${{ secrets.APP_HOST_SERVER }}
-          username: ${{ secrets.APP_HOST_USERNAME }}
-          password: ${{ secrets.APP_HOST_PASSWORD }}
-          port: ${{ secrets.APP_HOST_PORT }}
-          script: |
-            set -e
-            cd /;
-            echo "Initializing server";
-            echo "Reading package list"
-            apt-get -y update
-            echo "Install Apache utils"
-            if checkgid &>>/dev/null; then
-              echo "Apache utils are already installed"
-            else
-              apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common apache2-utils
-            fi
-            echo "Install Docker"
-            if docker --version &>>/dev/null; then
-              echo "Docker already installed"
-            else
-              if ! grep -q "^deb.*docker" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
-                curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-                add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-              fi
-              apt-get -y install docker-ce docker-ce-cli containerd.io
-              docker --version
-            fi
-            echo "Install Docker-Compose"
-            if docker-compose --version; then
-              echo "Docker-Compose already installed"
-            else
-              curl -L "https://github.com/docker/compose/releases/download/latest/docker-compose-$(uname -s)-$(uname -m)" \
-                -o /usr/local/bin/docker-compose
-              chmod +x /usr/local/bin/docker-compose
-            fi
-            echo "Install json parser"
-            if jq --help; then
-              echo 'JSON parser already installed'
-            else
-              apt-get -y install jq
-              echo 'JSON parser installed'
-            fi
-            echo "Firewall set rules and enable"
-            if ufw --version; then
-              echo "Firewall already installed"
-            else
-              apt-get install ufw
-            fi
-            ufw default deny incoming
-            ufw default deny outgoing
-            ufw allow from 172.16.0.0/24
-            ufw allow to 172.16.0.0/24
-            ufw allow 22/tcp
-            ufw allow 80/tcp
-            ufw allow 443/tcp
-            if ! ufw status | grep -q "active"; then
-              echo "Enable firewall"
-              echo "y" | ufw enable
-            fi
-            ufw reload
-            #Format the Disk (if unformatted)
-            #mkfs.ext4 /dev/sdb1
-            #Create a Mount Point
-            #mkdir /mnt/data
-            #Mount the Partition
-            #mount /dev/sdb1 /mnt/data
-            #Make the Mount Persistent (Optional)
-            #nano /etc/fstab
-            #/dev/sdb1  /mnt/data  ext4  defaults  0  0
-
-  update-server:
-    name: Update Server Job
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    steps:
-      - name: Update server script
-        uses: appleboy/ssh-action@v1.0.2
-        with:
-          host: ${{ secrets.APP_HOST_SERVER }}
-          username: ${{ secrets.APP_HOST_USERNAME }}
-          password: ${{ secrets.APP_HOST_PASSWORD }}
-          port: ${{ secrets.APP_HOST_PORT }}
-          script: |
-            cd /
-            # Function to create a path if it does not already exist
-            function createpath() {
-              local newpath="$1"
-              if [ ! -d "$newpath" ]; then
-                mkdir -p "$newpath"
-                if [ $? -ne 0 ]; then
-                  echo "Error: Failed to create directory '$newpath'"
-                  return 1  # Return non-zero status to indicate failure
-                fi
-                #chmod 777 "$newpath"
-                sudo chmod -R 777 "$newpath"
-              fi
-              return 0  # Return zero status to indicate success
-            }
-            # Function to check if a Docker secret is in use
-            function issecretinuse() {
-              local secret_name="$1"
-              # Check if any services are using the secret
-              if docker service ls --format '{{.Name}}' | xargs -I {} docker service inspect {} --format '{{range .Spec.TaskTemplate.ContainerSpec.Secrets}}{{if eq .SecretName "'"$secret_name"'"}}{{.SecretName}}{{end}}{{end}}' | grep -q "$secret_name"; then
-                return 0
-              fi
-              # Check if any containers are using the secret
-              if docker ps --format '{{.Names}}' | xargs -I {} docker inspect {} --format '{{range .Mounts}}{{if eq .Type "secret"}}{{.Name}}{{end}}{{end}}' | grep -q "$secret_name"; then
-                return 0
-              fi
-              return 1
-            }
-            # Function to create or update a Docker secret
-            function createsecret() {
-              local secret_label="$1"
-              local secret_name="$2"
-              local secret_value="$3"
-              echo "Inspecting $secret_label"
-              # Check if the secret already exists
-              if docker secret inspect "$secret_name" &> /dev/null; then
-                echo "$secret_label - Secret already exists"
-                # Check if the secret is in use
-                echo "Checking if $secret_label is in use"
-                if issecretinuse "$secret_name"; then
-                  echo "$secret_label is in use by services or containers. Skipping deletion."
-                  return 0
-                fi
-                # Remove the old secret
-                echo "Removing old $secret_label"
-                docker secret rm "$secret_name"
-              fi
-              # Check if secret_name is not empty and create a new secret
-              if [ -n "$secret_name" ]; then
-                echo "Creating new $secret_label"
-                echo "$secret_value" | docker secret create "$secret_name" -
-              else
-                echo "$secret_label - Not defined"
-              fi
-            }
-            # Start of scripts
-            # sudo chown -R 5050:5050 /app/data/pgadmin
-            echo Updating server
-            echo Creating application directories
-            cd /
-            createpath "/app"
-            createpath "/app/cert"
-            createpath "/app/data"
-            createpath "/app/data/pgdata"
-            createpath "/app/data/pgadmin"
-            createpath "/app/docs"
-            createpath "/app/logs"
-            sudo chown -R 5050:5050 /app/data/*
-            #Create the traefik network on docker
-            echo Traefik Network
-            docker network inspect traefik --format {{.Id}} 2>/dev/null \
-              || docker network create --driver overlay traefik
-            #Create the docker secrets
-            createsecret "Google Mail" "APP_AUTH_GOOGLE" '${{ secrets.APP_AUTH_GOOGLE }}'
-            createsecret "Database Name" "APP_DATA_NAME" '${{ secrets.APP_DATA_NAME }}'
-            createsecret "Database User" "APP_DATA_USERNAME" '${{ secrets.APP_DATA_USERNAME }}'
-            createsecret "Database Pass" "APP_DATA_PASSWORD" '${{ secrets.APP_DATA_PASSWORD }}'
-            createsecret "Database URL" "APP_DATA_URL" '${{ secrets.APP_DATA_URL }}'
-            createsecret "Server Email" "APP_HOST_EMAIL" '${{ secrets.APP_HOST_EMAIL }}'
-            createsecret "Server Server" "APP_HOST_SERVER" '${{ secrets.APP_HOST_SERVER }}'
-            createsecret "Server Port" "APP_HOST_PORT" '${{ secrets.APP_HOST_PORT }}'
-            createsecret "Server Username" "APP_HOST_USERNAME" '${{ secrets.APP_HOST_USERNAME }}'
-            createsecret "Server Password" "APP_HOST_PASSWORD" '${{ secrets.APP_HOST_PASSWORD }}'
-            createsecret "SMTP Options" "APP_SMTP_OPTIONS" '${{ secrets.APP_SMTP_OPTIONS }}'
-  
-  build-website:
-    name: Build Website Image
-    if: inputs.rebuild == 'true'
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build website
-        run: dotnet build --no-restore
-      - name: Test website
-        run: dotnet test --no-build --verbosity normal
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
-        with:
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: huybrechts/website
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha
-            type=raw,value=${{ inputs.environment }}
-      - name: Build and push Docker image
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
-        with:
-          context: .
-          file: ./src/website/Huybrechts.Web/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  deploy-generic:
-    name: Deploy Generic Configuration
-    needs: [update-server]
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4
-      - name: Deploy generic files
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.APP_HOST_SERVER }}
-          username: ${{ secrets.APP_HOST_USERNAME }}
-          password: ${{ secrets.APP_HOST_PASSWORD }}
-          port: ${{ secrets.APP_HOST_PORT }}
-          strip_components: 1
-          overwrite: true
-          source: "src/compose.${{ inputs.environment }}.yml"
-          target: /app
-      - name: Deploy documentation files
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.APP_HOST_SERVER }}
-          username: ${{ secrets.APP_HOST_USERNAME }}
-          password: ${{ secrets.APP_HOST_PASSWORD }}
-          port: ${{ secrets.APP_HOST_PORT }}
-          strip_components: 1
-          overwrite: true
-          source: "docs/**"
-          target: /app/docs
-      - name: Deploy markdown configuration
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.APP_HOST_SERVER }}
-          username: ${{ secrets.APP_HOST_USERNAME }}
-          password: ${{ secrets.APP_HOST_PASSWORD }}
-          port: ${{ secrets.APP_HOST_PORT }}
-          strip_components: 2
-          overwrite: true
-          source: "src/mkdocs/mkdocs.yml"
-          target: /app
-
-  deploy-stack-build:
-    name: Deploy Docker Swarm Stack (Rebuild)
-    if: inputs.rebuild == 'true'
-    needs: [build-website, deploy-generic]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_tasks.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_initialize.yml@main
     with:
       environment: ${{ inputs.environment }}
     secrets:
@@ -317,14 +54,73 @@ jobs:
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
       APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
 
-  deploy-stack-nobuild:
-    name: Deploy Docker Swarm Stack (Build)
-    if: inputs.rebuild != 'true'
-    needs: [deploy-generic]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_tasks.yml@main
+  update-server:
+    name: Update Server Job
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_update.yml@main
     with:
       environment: ${{ inputs.environment }}
     secrets:
+      APP_DATA_USERNAME: ${{ secrets.APP_DATA_USERNAME }}
+      APP_DATA_PASSWORD: ${{ secrets.APP_DATA_PASSWORD }}
+      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      APP_AUTH_GOOGLE: ${{ secrets.APP_AUTH_GOOGLE }}
+      APP_DATA_NAME: ${{ secrets.APP_DATA_NAME }}
+      APP_DATA_URL: ${{ secrets.APP_DATA_URL }}
+      APP_HOST_EMAIL: ${{ secrets.APP_HOST_EMAIL }}
+      APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
+
+  build-website:
+    name: Build Website Job
+    if: inputs.rebuild == 'true'
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_docker.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+      imagename: 'huybrechts/website'
+      sourcepath: 'website'
+      projectname: 'Huybrechts.Web'
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+  deploy-config:
+    name: Deploy Configuration Job
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_configuration.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+
+  deploy-stack-rebuild:
+    name: Deploy Docker Swarm Stack (Rebuild)
+    if: inputs.rebuild == 'true'
+    needs: [deploy-config, build-website]
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_deploy.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      APP_DATA_USERNAME: ${{ secrets.APP_DATA_USERNAME }}
+      APP_DATA_PASSWORD: ${{ secrets.APP_DATA_PASSWORD }}
+      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+
+  deploy-stack-nobuild:
+    name: Deploy Docker Swarm Stack (Build)
+    if: inputs.rebuild != 'true'
+    needs: [deploy-config]
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_deploy.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      APP_DATA_USERNAME: ${{ secrets.APP_DATA_USERNAME }}
+      APP_DATA_PASSWORD: ${{ secrets.APP_DATA_PASSWORD }}
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
