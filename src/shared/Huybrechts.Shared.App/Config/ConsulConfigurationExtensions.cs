@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Consul;
 using Serilog;
 
 namespace Huybrechts.Shared.App.Config;
