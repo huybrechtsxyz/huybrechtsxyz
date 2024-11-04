@@ -1,6 +1,40 @@
 # Environment
 
-The environment of this application is designed to ensure high performance, scalability, and security. This setup consists of several core components, including web servers, databases, DNS (Domain Name System) configuration, and associated applications, which all work in unison to deliver a seamless user experience.
+The environment of the website is designed to ensure high performance, scalability, and security. This setup consists of several core components, including web servers, databases, DNS (Domain Name System) configuration, and associated applications, which all work in unison to deliver a seamless user experience.
+
+## Application overview
+
+The table below provides a structured view of the domain configuration for the website. It outlines the various applications (e.g., web, API, admin, blog) across different environments, such as production and staging. Each domain is associated with a fully qualified domain name (FQDN) that is used to access the respective service in its environment.
+
+### Test environment
+
+| Service      | Environment   | Domain                       | Path        | Description                                     |
+|--------------|---------------|------------------------------|-------------|-------------------------------------------------|
+| Traefik      | Test          | proxy.test.huybrechts.xyz    | /dashboard/ | Application reverse-proxy service               |
+| Consul       | Test          | config.test.huybrechts.xyz   | /           | Configuration administration service            |
+| PostgreSql   | Test          | -                            | -           | PostgreSql database service                     |
+| PG Admin     | Test          | admin.test.huybrechts.xyz    | /pgadmin    | Database administration service (/pgadmin)      |
+| Minio        | Test          | data.test.huybrechts.xyz     | /           | Minio data (blob) management and console        |
+| Mkdocs       | Test          | docs.test.huybrechts.xyz     | /           | Documentation                                   |
+| Landing      | Test          | test.test.huybrechts.xyz     | /           | Landing page (C#)                               |
+
+### Staging environment
+
+| Service      | Environment   | Domain                       | Path        | Description                                     |
+|--------------|---------------|------------------------------|-------------|-------------------------------------------------|
+| Traefik      | Staging       | proxy.staging.huybrechts.xyz | /dashboard/ | Application proxy for staging environment       |
+| PG Admin     | Staging       | admin.staging.huybrechts.xyz | /pgadmin    | Database administration service (/pgadmin)      |
+| Minio        | Staging       | data.staging.huybrechts.xyz  | /           | Minio console running in staging environment    |
+| Website      | Staging       | staging.huybrechts.xyz       | /           | Main website running in staging environment     |
+
+### Production environment
+
+| Service      | Environment   | Domain                       | Path        | Description                                     |
+|--------------|---------------|------------------------------|-------------|-------------------------------------------------|
+| Traefik      | Production    | proxy.huybrechts.xyz         | /dashboard/ | Application proxy for production environment    |
+| PG Admin     | Production    | admin.huybrechts.xyz         | /pgadmin    | Database administration service (/pgadmin)      |
+| Minio        | Production    | data.huybrechts.xyz          | /           | Minio console running in production environment |
+| Website      | Production    | huybrechts.xyz               | /           | Main website running in production environment  |
 
 ## Overview
 
@@ -42,11 +76,19 @@ This is the live environment where the application is accessible to end-users. S
 
 ### Traefik 
 
-aka [traefik](./svc/traefik.md)
+aka traefik
+
+![traefik-architecture](../img/traefik-architecture.png)
 
 Traefik is a modern reverse proxy and load balancer designed to manage and route traffic to microservices and APIs. It dynamically discovers services via integration with popular orchestration systems like Docker, Kubernetes, and Consul, and automatically configures routing based on service changes. Traefik simplifies managing HTTP, HTTPS, and TCP traffic, providing built-in features like SSL termination, load balancing, and request routing. It's particularly suited for microservice architectures, offering seamless integration, auto-discovery, and flexibility, making it a powerful tool for efficiently handling network traffic in dynamic environments.
 
-Traefik is used as ingress router for docker swarm, reverse proxy, and load balancer
+Clear Responsibilities
+
+- Providers discover the services that live on your infrastructure (their IP, health, ...)
+- Entrypoints listen for incoming traffic (ports, ...)
+- Routers analyze the requests (host, path, headers, SSL, ...)
+- Services forward the request to your services (load balancing, ...)
+- Middlewares may update the request or make decisions based on the request (authentication, rate limiting, headers, ...)
 
 ### Consul
 
@@ -74,23 +116,13 @@ aka minio
 
 MinIO is an open-source, high-performance, object storage system compatible with the Amazon S3 API. It is designed for large-scale data storage, handling unstructured data such as photos, videos, and backups across distributed systems. MinIO provides high availability and fault tolerance by allowing data to be stored and replicated across multiple nodes. Its scalability, combined with fast read/write operations, makes it ideal for cloud-native applications, machine learning, and big data workloads. MinIO can be deployed on-premises, in hybrid clouds, or as part of containerized environments like Kubernetes.
 
+Minio is used as storage service.
+
 ### Mkdocs
 
 aka mkdocs
 
 MkDocs is a fast, simple, and open-source static site generator specifically designed for creating project documentation. Written in Python, it converts Markdown files into a full-featured, customizable documentation website. With its straightforward setup and a variety of themes (like the popular "Material for MkDocs"), MkDocs is ideal for technical documentation, allowing developers to focus on content creation while handling all the styling, navigation, and structure. It’s widely used for project documentation due to its ease of use, clean interface, and seamless integration with version control platforms like GitHub.
-
-### Landing / Welcome
-
-aka landing
-
-A landing or welcome page is the introductory page on a website or application, designed to greet visitors and provide an initial impression of the brand. It often highlights key features, gives an overview of the site's purpose, and may guide users toward relevant sections, such as logging in, signing up, or exploring main content areas. Unlike a landing page, which focuses on a specific action, a welcome page serves as an entryway, setting the tone for the user experience, offering essential navigation, and sometimes showcasing recent updates or promotions. It’s meant to engage users right away and provide a friendly, informative start to their journey.
-
-### Identity Server
-
-aka identity
-
-An accounts or identity welcome page is a gateway for users to manage their personal information, authentication settings, and account-related preferences. This page typically provides options to log in, sign up, or access account recovery tools. For registered users, it may offer a quick overview of profile settings, security options (like two-factor authentication), and links to update personal details or manage subscriptions. By providing a secure, user-friendly experience, the accounts welcome page streamlines access to identity management features, ensuring users can easily handle account tasks with confidence and convenience.
 
 ## Domain configuration
 
@@ -111,47 +143,31 @@ DNS records are configured to map subdomains (e.g., `api.staging.example.com`) t
 
 DNS resolves the requested domain (e.g., `api.staging.example.com`) to the IP where Traefik is running. Traefik inspects the incoming request, checks the hostname, and applies the matching routing rule to direct the request to the corresponding application and environment.
 
-### Domain overview
-
-The table below provides a structured view of the domain configuration for the website. It outlines the various applications (e.g., web, API, admin, blog) across different environments, such as production and staging. Each domain is associated with a fully qualified domain name (FQDN) that is used to access the respective service in its environment.
-
-traefik
-
-
-| Application  | Environment   | Domain                       | Path        | Description                                     |
-|--------------|---------------|------------------------------|-------------|-------------------------------------------------|
-| Traefik      | Test          | proxy.test.example.com       | /dashboard/ | Application proxy for test environment          |
-| Consul       | Test          | config.test.example.com      | /           | Configuration server for test environment       |
-| PostgreSql   | Test          |                              |             | Database server for test environment            |
-| PGAdmin      | Test          | admin.test.example.com       | /pgadmin    | Data administration for test environment        |
-| Minio        | Test          | data.test.example.com        | /           | Data server for test environment                |
-| Mkdocs       | Test          | docs.test.example.com        | /           | Documentation for test environment              |
-| Landing      | Test          | www.test.example.com         | /           | Landing page test environment                   |
-| Identity     | Test          | identity.test.example.com    | /           | Identity server for test environment            |
-|              |               |                              |             |                                                 |
-| Traefik      | Staging       | proxy.staging.example.xyz    | /dashboard/ | Application proxy for staging environment       |
-|              |               |                              |             |                                                 |
-| Traefik      | Production    | proxy.example.com            | /dashboard/ | Application proxy for production environment    |
-|              |               |                              |             |                                                 |
-
 ### Domain management
 
 The DNS management table below outlines the configuration of DNS records for the environments. Each subdomain is mapped to its corresponding record type (e.g., A or CNAME) and the target it points to, which could be an IP address or another domain. This setup ensures that each service, such as the main website, API, and admin panel, is correctly routed in both environments.
 
 The table helps illustrate how traffic is managed and directed for different subdomains, allowing for efficient and organized domain resolution across the development and production environments.
 
-| Subdomain                         | Type  | Points to        | Description                                        |
-|-----------------------------------|-------|------------------|----------------------------------------------------|
-| test.example.com                  | A     | {ip-address}     | Main website running in test environment           |
-| www.test.example.com              | CNAME | test.{url}       | Main website running in test environment           |
-| *.test.example.com                | A     | {ip-address}     | Applications running in test environment           |
-|                                   |       |                  |                                                    |
-| staging.example.com               | A     | {ip-address}     | Main website running in staging environment        |
-| www.staging.example.com           | CNAME | test.{url}       | Main website running in staging environment        |
-|                                   |       |                  |                                                    |
-| example.com                       | A     | {ip-address}     | Main website running in production environment     |
-| www.example.com                   | CNAME | test.{url}       | Main website running in production environment     |
-|                                   |       |                  |                                                    |
+| Subdomain                         | Type | Points to        | Description                                        |
+|-----------------------------------|------|------------------|----------------------------------------------------|
+| test.huybrechts.xyz               | A    | {ip-address}     | Main website running in test environment           |
+| www.test.huybrechts.xyz           | A    | {ip-address}     | Main website running in test environment           |
+| proxy.test.huybrechts.xyz         | A    | {ip-address}     | Application proxy in test environment              |
+| admin.test.huybrechts.xyz         | A    | {ip-address}     | Database administration in test environment        |
+| data.test.huybrechts.xyz          | A    | {ip-address}     | Minio administration in test environment           |
+|                                   |      |                  |                                                    |
+| staging.huybrechts.xyz            | A    | {ip-address}     | Main website running in staging environment        |
+| www.staging.huybrechts.xyz        | A    | {ip-address}     | Main website running in staging environment        |
+| proxy.staging.huybrechts.xyz      | A    | {ip-address}     | Application proxy in staging environment           |
+| admin.staging.huybrechts.xyz      | A    | {ip-address}     | Database administration in staging environment     |
+| data.staging.huybrechts.xyz       | A    | {ip-address}     | Minio administration in staging environment        |
+|                                   |      |                  |                                                    |
+| huybrechts.xyz                    | A    | {ip-address}     | Main website running in production environment     |
+| www.huybrechts.xyz                | A    | {ip-address}     | Main website running in production environment     |
+| proxy.huybrechts.xyz              | A    | {ip-address}     | Application proxy in production environment        |
+| admin.huybrechts.xyz              | A    | {ip-address}     | Database administration in production environment  |
+| data.huybrechts.xyz               | A    | {ip-address}     | Minio administration in production environment     |
 
 **Explanation:**
 
@@ -172,24 +188,24 @@ The configuration of the servers used for testing, staging, and production envir
 
 **Overview**
 
-* Provider: Kamatera
-* Environments: Testing, Staging, Production
-* Server Types: Virtual Private Server (VPS)
-* Architecture: All environments follow a consistent setup but vary in hardware resources based on their requirements.
+    Provider: Kamatera
+    Environments: Testing, Staging, Production
+    Server Types: Virtual Private Server (VPS)
+    Architecture: All environments follow a consistent setup but vary in hardware resources based on their requirements.
 
 **Common Configuration**
 
 The following configuration is consistent across all environments:
 
-* Operating System: Ubuntu 22.04 LTS
-* Reverse Proxy: Traefik (manages HTTP/HTTPS traffic routing)
-* Database: PostgreSQL, managed via pgAdmin 4
-* Object Storage: MinIO for S3-compatible object storage
-* Testing Service: whoami for traffic and service validation
-* Networking: Public and private networking configured
-* SSH access with private key authentication for secure management.
-* Firewall: Configured to allow only necessary ports (e.g., SSH, HTTP, HTTPS).
-* Backup and Monitoring: Configured for automatic backups and basic monitoring via Kamatera’s tools.
+    Operating System: Ubuntu 22.04 LTS
+    Reverse Proxy: Traefik (manages HTTP/HTTPS traffic routing)
+    Database: PostgreSQL, managed via pgAdmin 4
+    Object Storage: MinIO for S3-compatible object storage
+    Testing Service: whoami for traffic and service validation
+    Networking: Public and private networking configured
+        SSH access with private key authentication for secure management.
+        Firewall: Configured to allow only necessary ports (e.g., SSH, HTTP, HTTPS).
+    Backup and Monitoring: Configured for automatic backups and basic monitoring via Kamatera’s tools.
 
 **Hardware Specifications**
 
@@ -207,6 +223,8 @@ In a Docker setup, a Docker Compose file is used to define and manage multi-cont
 > Each environment has its own docker compose file  
 > compose.{environment}.yml
 
+### Application deployment
+
 ## Application Structure
 
 The application is organized into a structured directory layout that facilitates efficient management and scalability. At the top level, the `app` directory contains several key subdirectories:
@@ -215,6 +233,7 @@ The application is organized into a structured directory layout that facilitates
   app
   ├── cert +          # Certificates
   ├── data +          # Data directory
+  │ ├── consul +      # Consul data
   │ ├── pgadmin +     # PG admin data
   │ └── pgdata +      # PostgreSql databases
   └── logs +          # Logging
@@ -232,14 +251,22 @@ Below is an overview of all the secrets utilized in the pipeline, as well as tho
 
 | Secret Name         | Type   | Description                       | Example                                        |
 |---------------------|--------|-----------------------------------|------------------------------------------------|
-| `APP_DATA_USERNAME` | Secret | Database username                 | `user1`                                        |
-| `APP_DATA_PASSWORD` | Secret | Database password                 | `1234`                                         |
+| `APP_DATA_USERNAME` | Secret | DB Admin                          | `admin1`                                       |
+| `APP_DATA_PASSWORD` | Secret | DB Password                       | `1234`                                         |
 | `APP_HOST_USERNAME` | Secret | Server username                   | `user1`                                        |
 | `APP_HOST_PASSWORD` | Secret | Server password                   | `1234`                                         |
 | `APP_HOST_SERVER`   | Secret | Server IP                         | `10.0.0.1`                                     |
 | `APP_HOST_PORT`     | Secret | SSH Port                          | `22`                                           |
 | `REGISTRY_USERNAME` | Secret | Container registry username       | `user1`                                        |
 | `REGISTRY_PASSWORD` | Secret | Container registry password       | `1234`                                         |
+| | | | | 
+| `APP_DATA_URL`      | Secret | Database connection               | `DS://{username}:{password}@{database}`        |
+| `APP_DATA_NAME`     | Secret | Database name                     | `appdata`                                      |
+| `APP_DATA_CONTEXT`  | Secret | Select specific connection string | `SqliteContext`                                |
+| `APP_HOST_EMAIL`    | Secret | Server email                      | `a@b.com`                                      |
+| `APP_AUTH_GOOGLE`   | Secret | JSON with client ID and secret    | `{ ClientId: abc, ClientSecret: 123 }`         |
+| `APP_SMTP_OPTIONS`  | Secret | JSON with SMTP server options     | `{ Server: ... }`                              |
+
 
 ### Continuous Integration and Delivery
 
