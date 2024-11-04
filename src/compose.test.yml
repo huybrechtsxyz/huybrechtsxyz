@@ -49,7 +49,7 @@ services:
       - --providers.consulCatalog.endpoint.address=consul:8500
       - --providers.consulCatalog.endpoint.scheme=http
       - --providers.consulCatalog.exposedByDefault=false
-      - --providers.consulcatalog.defaultRule=Host(`disco.test.huybrechts.xyz`)
+      - --providers.consulcatalog.defaultRule=Host(`config.test.huybrechts.xyz`)
       # Entry points
       - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
@@ -151,6 +151,7 @@ services:
       - traefik
     volumes:
       - /app/data/consul:/consul/data
+      - /app/consul-postgres.json:/consul/config/consul-postgres.json
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
       interval: 10s
@@ -167,7 +168,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.tags=test"
-        - "traefik.http.routers.consul.rule=Host(`disco.test.huybrechts.xyz`)"
+        - "traefik.http.routers.consul.rule=Host(`config.test.huybrechts.xyz`)"
         - "traefik.http.routers.consul.entrypoints=websecure"
         - "traefik.http.routers.consul.tls.certresolver=leresolver"
         - "traefik.http.services.consul.loadbalancer.server.port=8500"

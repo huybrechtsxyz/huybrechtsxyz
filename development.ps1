@@ -61,7 +61,8 @@ Start-Process -FilePath $minioExe -ArgumentList "server $minioData --console-add
 
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" -ArgumentList `
-   "http://localhost:8500 http://localhost:9001",`
+   "http://localhost:8500 " `
+   + "http://localhost:9001",`
    "--incognito --start-maximized --new-window"
 
 Pause 'Press any key to stop debugging'

@@ -47,3 +47,16 @@ jobs:
         overwrite: true
         source: "docs/**"
         target: /app/docs
+    - name: Deploy markdown configuration
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.APP_HOST_SERVER }}
+        username: ${{ secrets.APP_HOST_USERNAME }}
+        password: ${{ secrets.APP_HOST_PASSWORD }}
+        port: ${{ secrets.APP_HOST_PORT }}
+        strip_components: 2
+        overwrite: true
+        source: |
+          src/mkdocs/mkdocs.yml
+          src/consul/consul-*.json
+        target: /app

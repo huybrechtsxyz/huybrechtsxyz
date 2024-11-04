@@ -22,19 +22,13 @@ The table below provides a structured view of the domain configuration for the w
 
 | Service      | Environment   | Domain                       | Path        | Description                                     |
 |--------------|---------------|------------------------------|-------------|-------------------------------------------------|
-| Traefik      | Staging       | proxy.staging.huybrechts.xyz | /dashboard/ | Application proxy for staging environment       |
-| PG Admin     | Staging       | admin.staging.huybrechts.xyz | /pgadmin    | Database administration service (/pgadmin)      |
-| Minio        | Staging       | data.staging.huybrechts.xyz  | /           | Minio console running in staging environment    |
-| Website      | Staging       | staging.huybrechts.xyz       | /           | Main website running in staging environment     |
+| Traefik      | Staging       | proxy.test.huybrechts.xyz    | /dashboard/ | Application reverse-proxy service               |
 
 ### Production environment
 
 | Service      | Environment   | Domain                       | Path        | Description                                     |
 |--------------|---------------|------------------------------|-------------|-------------------------------------------------|
-| Traefik      | Production    | proxy.huybrechts.xyz         | /dashboard/ | Application proxy for production environment    |
-| PG Admin     | Production    | admin.huybrechts.xyz         | /pgadmin    | Database administration service (/pgadmin)      |
-| Minio        | Production    | data.huybrechts.xyz          | /           | Minio console running in production environment |
-| Website      | Production    | huybrechts.xyz               | /           | Main website running in production environment  |
+| Traefik      | Production    | proxy.test.huybrechts.xyz    | /dashboard/ | Application reverse-proxy service               |
 
 ## Overview
 
