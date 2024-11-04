@@ -22,7 +22,7 @@ try
     builder.AddLoggingServices();
     Log.Information("Startup configuration for {environment}", builder.Environment.EnvironmentName);
     builder.Configuration.AddDockerSecrets(builder.Configuration, Log.Logger);
-    builder.Configuration.AddConsul();
+    builder.Configuration.AddConsul(Log.Logger);
     builder.AddWebconfigServices(Log.Logger);
     builder.AddCookiePolicies(Log.Logger);
     

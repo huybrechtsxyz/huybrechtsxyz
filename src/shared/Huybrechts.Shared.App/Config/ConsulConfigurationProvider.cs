@@ -1,40 +1,50 @@
 ﻿using Consul;
+using Microsoft.Extensions.Logging;
 using System.Text;
 
 namespace Microsoft.Extensions.Configuration.Consul
 {
     public class ConsulConfigurationProvider : ConfigurationProvider
     {
+        private readonly ILogger _logger;
         private readonly Func<IConsulClient> _clientFactory;
         private readonly QueryOptions _options;
         private readonly string _prefix;
 
-        public ConsulConfigurationProvider(Func<IConsulClient> clientFactory, QueryOptions options, string prefix)
+        public ConsulConfigurationProvider(Func<IConsulClient> clientFactory, QueryOptions options, string prefix, ILogger logger)
         {
             _clientFactory = clientFactory;
             _options = options;
             _prefix = prefix ?? string.Empty;
+            _logger = logger;
         }
 
         public override void Load()
         {
-            Data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
-
-            using var client = _clientFactory();
-            var results = client.KV
-                .List(_prefix, _options)
-                .Result // ehhh, we have no async version of Load :(
-                .Response;
-
-            if (results == null)
-                return;
-
-            foreach (var pair in results)
+            try
             {
-                var key = ReplacePathDelimiters(RemovePrefix(pair.Key));
-                var value = AsString(pair.Value);
+                Data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
 
-                Data[key] = value;
+                using var client = _clientFactory();
+                var results = client.KV
+                    .List(_prefix, _options)
+                    .Result // ehhh, we have no async version of Load :(
+                    .Response;
+
+                if (results == null)
+                    return;
+
+                foreach (var pair in results)
+                {
+                    var key = ReplacePathDelimiters(RemovePrefix(pair.Key));
+                    var value = AsString(pair.Value);
+
+                    Data[key] = value;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Unable to load configuration from CONSUL");
             }
         }
 
