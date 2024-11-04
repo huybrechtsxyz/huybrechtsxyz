@@ -61,7 +61,7 @@ if (-Not (Test-Path -Path $minioExe)) {
 
 $env:MINIO_ROOT_USER="admin"
 $env:MINIO_ROOT_PASSWORD="password"
-Start-Process -FilePath $minioExe -ArgumentList "server $minioData --console-address `":9001`"" 
+Start-Process -FilePath $minioExe -ArgumentList "server $minioData --console-address `":9001`"" -WindowStyle Minimized
 
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" -ArgumentList `
