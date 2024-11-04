@@ -28,10 +28,12 @@ New-Item -ItemType Directory -Path $baseDir, $certDir, $dataDir, $logsDir -Force
 
 # CONSUL
 Write-Output "Starting Consul..."
-$consulDir = Resolve-Path -Path "$baseDir/consul"
-$consulExe = "$consulDir/consul.exe"
-$consulData = Resolve-Path -Path "$dataDir/consul"
+$consulDir = "$baseDir/consul"
+$consulData = "$dataDir/consul"
 New-Item -ItemType Directory -Path $consulDir, $consulData -Force
+$consulDir = Resolve-Path -Path $consulDir
+$consulData = Resolve-Path -Path $consulData
+$consulExe = "$consulDir/consul.exe"
 
 if (-Not (Test-Path -Path $consulExe)) {
     Write-Output "    Extracting Consul..."
@@ -45,10 +47,12 @@ Start-Process -FilePath "$consulDir/consul.exe" -ArgumentList "agent", "-dev" -W
 
 # MINIO
 Write-Output "Starting Minio..."
-$minioDir = Resolve-Path -Path "$baseDir/minio"
-$minioExe = "$minioDir/minio.exe"
-$minioData = Resolve-Path -Path "$dataDir/minio"
+$minioDir = "$baseDir/minio"
+$minioData = "$dataDir/minio"
 New-Item -ItemType Directory -Path $minioDir, $minioData -Force
+$minioDir = Resolve-Path -Path $minioDir
+$minioData = Resolve-Path -Path $minioData
+$minioExe = "$minioDir/minio.exe"
 
 if (-Not (Test-Path -Path $minioExe)) {
     Write-Output "Extracting Minio..."
@@ -61,12 +65,11 @@ Start-Process -FilePath $minioExe -ArgumentList "server $minioData --console-add
 
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" -ArgumentList `
-   "http://localhost:8500 " `
-   + "http://localhost:9001",`
-   "--incognito --start-maximized --new-window"
+   "http://localhost:8500 http://localhost:9001", `
+   "--inprivate", "--start-maximized", "--new-window"
 
 Pause 'Press any key to stop debugging'
-Write-Output 'Stopping Local Host environment...'
+Write-Output 'Stopping DEVELOPMENT environment...'
 
 # STOPPING SERVICES
 Stop-Process -Name 'msedge' -ErrorAction Ignore
@@ -74,4 +77,4 @@ Stop-Process -Name 'consul' -ErrorAction Ignore
 Stop-Process -Name 'minio' -ErrorAction Ignore
 
 # SYSTEM
-Write-Output 'Local Host environment stopped.'
+Write-Output 'DEVELOPMENT environment stopped.'
