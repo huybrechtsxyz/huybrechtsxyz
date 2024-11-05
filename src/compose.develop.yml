@@ -6,9 +6,6 @@ networks:
   traefik:
     external: true
 
-  intranet:
-    driver: bridge
-
 services:
 
   consul:
@@ -24,6 +21,7 @@ services:
     volumes:
       - ../.app/data/consul:/consul/data
       - ../.app/consul.traefik.develop.json:/consul/config/traefik.json
+      - ../.app/consul.postgres.develop.json:/consul/config/postgres.json
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
       interval: 10s
@@ -103,3 +101,22 @@ services:
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+
+  postgres:
+    image: postgres
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: xyzdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    networks:
+      - traefik
+    volumes:
+      - ../.app/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d xyzdb -U admin"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
