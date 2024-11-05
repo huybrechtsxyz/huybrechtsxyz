@@ -22,7 +22,7 @@ try
     builder.AddLoggingServices();
     Log.Information("Startup configuration for {environment}", builder.Environment.EnvironmentName);
     builder.Configuration.AddDockerSecrets(builder.Configuration, Log.Logger);
-    builder.Configuration.AddConsul(Log.Logger);
+    builder.Configuration.AddConsul("landing", Log.Logger);
     builder.AddWebconfigServices(Log.Logger);
     builder.AddCookiePolicies(Log.Logger);
     
@@ -30,6 +30,7 @@ try
     builder.Services.AddSingleton<IResourceNamesCache, ResourceNamesCache>();
     builder.Services.AddLocalization();
     builder.Services.AddAntiforgery();
+    builder.Services.AddControllers();
     builder.Services.AddRazorPages()
         .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
         .AddDataAnnotationsLocalization();
@@ -51,6 +52,7 @@ try
     app.UseMiniProfiler();
 
     Log.Information("Mapping and routing razor components");
+    app.MapControllers();
     app.MapRazorPages();
 
     Log.Information("Run configured application");

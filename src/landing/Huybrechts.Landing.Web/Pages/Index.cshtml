@@ -3,7 +3,6 @@
 @model Huybrechts.Landing.Web.Pages.IndexModel
 @{
     Layout = null;
-    //var imageSource = "/lib/bootstrap-icons/person-badge.svg";
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -44,6 +43,7 @@
                                     <ul class="nav navbar-nav navbar-right">
                                         <li class="active"><a class="smooth-menu" asp-page="Home">@Localizer["Home"]</a></li>
                                         <li><a class="smooth-menu" asp-page="Privacy">@Localizer["Privacy"]</a></li>
+                                        <li><partial name="_SelectLanguagePartial" /></li>
                                     </ul>
                                 </nav>
                             </div>

@@ -1,3 +1,4 @@
+using Huybrechts.Shared.App.Config;
 using Huybrechts.Shared.Web;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Localization;
@@ -21,6 +22,7 @@ try
     builder.AddLoggingServices();
     Log.Information("Startup configuration for {environment}", builder.Environment.EnvironmentName);
     builder.Configuration.AddDockerSecrets(builder.Configuration, Log.Logger);
+    builder.Configuration.AddConsul("landing", Log.Logger);
     builder.AddWebconfigServices(Log.Logger);
     builder.AddCookiePolicies(Log.Logger);
 
