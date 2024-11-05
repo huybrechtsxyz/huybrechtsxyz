@@ -40,7 +40,7 @@ docker-compose -f $composeFile up -d
 
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" -ArgumentList `
-   "http://proxy.localhost/dashboard/ http://config.localhost", `
+   "http://proxy.localhost/dashboard/ http://config.localhost http://admin.localhost/pgadmin", `
    "--inprivate", "--start-maximized", "--new-window"
 
 Pause 'Press any key to stop debugging'

@@ -1,0 +1,16 @@
+{
+  "service": {
+    "name": "pgadmin",
+    "tags": [ "database", "admin" ],
+    "port": 5432,
+    "checks": [
+      {
+        "id": "pgadmin-http-check",
+        "name": "PGAdmin 4 HTTP Health Check",
+        "http": "http://pgadmin/pgadmin",
+        "interval": "10s",
+        "timeout": "1s"
+      }
+    ]
+  }
+}

@@ -20,8 +20,9 @@ services:
       - traefik
     volumes:
       - ../.app/data/consul:/consul/data
-      - ../.app/consul.traefik.develop.json:/consul/config/traefik.json
-      - ../.app/consul.postgres.develop.json:/consul/config/postgres.json
+      - ../.app/consul.traefik.json:/consul/config/traefik.json
+      - ../.app/consul.postgres.json:/consul/config/postgres.json
+      - ../.app/consul.pgadmin.json:/consul/config/pgadmin.json
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
       interval: 10s
@@ -43,7 +44,7 @@ services:
       # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
       # Enable the Traefik log, for configurations and errors
       - --log=true
-      - --log.level=INFO
+      - --log.level=DEBUG
       - --log.format=json
       - --log.maxsize=5
       - --log.maxage=5
@@ -120,3 +121,25 @@ services:
       retries: 10
       start_period: 5s
 
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_LISTEN_PORT: 8088
+      PGADMIN_DEFAULT_EMAIL: admin@localhost.dev
+      PGADMIN_DEFAULT_PASSWORD: password
+      SCRIPT_NAME: /pgadmin
+    networks:
+      - traefik
+    volumes:
+      - ../.app/data/pgadmin:/var/lib/pgadmin
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      - "traefik.http.routers.pgadmin.rule=Host(`admin.localhost`) && PathPrefix(`/pgadmin`)"
+      - "traefik.http.routers.pgadmin.entrypoints=web"
+      - "traefik.http.services.pgadmin.loadbalancer.server.port=8088"
