@@ -1,0 +1,105 @@
+# Docker Compose for the development environment
+version: '3.9'
+
+networks:
+
+  traefik:
+    external: true
+
+  intranet:
+    driver: bridge
+
+services:
+
+  consul:
+    image: consul:1.15.4
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    command: agent -server -bootstrap -ui -client 0.0.0.0
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    networks:
+      - traefik
+    volumes:
+      - ../.app/data/consul:/consul/data
+      - ../.app/consul.traefik.develop.json:/consul/config/traefik.json
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      - "traefik.http.routers.consul.rule=Host(`config.localhost`)"
+      - "traefik.http.routers.consul.entrypoints=web"
+      - "traefik.http.services.consul.loadbalancer.server.port=8500"
+
+  traefik:
+    image: "traefik:v3.1.6"
+    depends_on:
+      - consul
+    command:
+      # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+      # Enable the Traefik log, for configurations and errors
+      - --log=true
+      - --log.level=INFO
+      - --log.format=json
+      - --log.maxsize=5
+      - --log.maxage=5
+      - --log.filePath=/app/logs/traefik.log
+      # Checking the Health of Your Traefik Instances
+      - --ping=true
+      # Enable the access log, with HTTP requests
+      - --accesslog=true
+      - --accesslog.format=json
+      - --accesslog.filepath=/app/logs/traefik-access.log
+      # Prometheus metrics
+      - --metrics.prometheus=true
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addRoutersLabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      # Consul configuration
+      - --providers.consulCatalog=true
+      - --providers.consulCatalog.cache=true
+      - --providers.consulCatalog.refreshInterval=30s
+      - --providers.consulCatalog.endpoint.address=http://consul:8500
+      - --providers.consulCatalog.endpoint.scheme=http
+      - --providers.consulCatalog.exposedByDefault=false
+      - --providers.consulCatalog.defaultRule=Host(`config.localhost`)
+      # Entry points
+      - --entrypoints.web.address=:80
+      # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
+      # Docker configuration
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=traefik
+      # Dashboard. Optional. Default: true. 
+      - --api
+      - --api.dashboard=true
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - traefik
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "../.app/cert:/app/cert"
+      - "../.app/logs:/app/logs"
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    labels:
+      # Enable for test
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      # Dashboard
+      - "traefik.http.routers.traefik.rule=Host(`proxy.localhost`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"

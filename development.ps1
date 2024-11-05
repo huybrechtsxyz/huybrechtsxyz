@@ -1,25 +1,51 @@
-# SYSTEM
+# Start development engine
 Write-Output 'Starting DEVELOPMENT environment...'
 
-# BASIC PATHS
+# Basic paths
 $baseDir = "./.app"
 $certDir = "$baseDir/cert"
 $dataDir = "$baseDir/data"
 $logsDir = "$baseDir/logs"
 New-Item -ItemType Directory -Path $baseDir, $certDir, $dataDir, $logsDir -Force
 
-# Start Docker Compose
-$composeFile = "./src/compose.development.yml"
+# Consul paths
+$consulData = "$dataDir/consul"
+New-Item -ItemType Directory -Path $consulData -Force
+Copy-Item -Path "./src/consul/*" -Destination $baseDir -Recurse
+
+# Define network names
+$traefikNetwork = "traefik"
+$intranetNetwork = "intranet"
+
+# Check and create the "traefik" network if it doesn't exist
+if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$traefikNetwork$")) {
+    Write-Host "Creating external network '$traefikNetwork'..."
+    docker network create --driver=bridge --attachable $traefikNetwork
+} else {
+    Write-Host "Network '$traefikNetwork' already exists."
+}
+
+# Check and create the "intranet" network if it doesn't exist
+if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$intranetNetwork$")) {
+    Write-Host "Creating bridge network '$intranetNetwork'..."
+    docker network create --driver=bridge $intranetNetwork
+} else {
+    Write-Host "Network '$intranetNetwork' already exists."
+}
+
+# Start docker compose
+$composeFile = "./src/compose.develop.yml"
 Write-Host "Starting Docker Compose..."
 docker-compose -f $composeFile up -d
 
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" -ArgumentList `
-   "http://localhost:8500 http://localhost:9001", `
+   "http://proxy.localhost/dashboard/ http://config.localhost", `
    "--inprivate", "--start-maximized", "--new-window"
 
 Pause 'Press any key to stop debugging'
 Write-Output 'Stopping DEVELOPMENT environment...'
+Stop-Process -Name 'msedge' -ErrorAction Ignore
 
 # Stop Docker Compose
 Write-Host "Stopping Docker Compose..."
