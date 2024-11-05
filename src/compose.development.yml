@@ -1,0 +1,139 @@
+# Docker Compose for the development environment
+version: '3.9'
+
+networks:
+
+  traefik:
+    external: true
+
+  intranet:
+    driver: bridge
+
+services:
+
+traefik:
+    image: "traefik:v3.1.6"
+    command:
+      # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+      # Enable the Traefik log, for configurations and errors
+      - --log=true
+      - --log.level=INFO
+      - --log.format=json
+      - --log.maxsize=5
+      - --log.maxage=5
+      - --log.filePath=/app/logs/traefik.log
+      # Checking the Health of Your Traefik Instances
+      - --ping=true
+      # Enable the access log, with HTTP requests
+      - --accesslog=true
+      - --accesslog.format=json
+      - --accesslog.filepath=/app/logs/traefik-access.log
+      # Prometheus metrics
+      # https://doc.traefik.io/traefik/v3.0/observability/metrics/prometheus/
+      #Enable prometheus metrics
+      - --metrics.prometheus=true
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addRoutersLabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      # OpenTelemetry metrics
+      # https://doc.traefik.io/traefik/v3.0/observability/metrics/opentelemetry/
+      # Address of the OpenTelemetry Collector to send metrics to.
+      # The reporter can send metrics to the OpenTelemetry Collector using gRPC.
+      #- --metrics.openTelemetry=true
+      #- --metrics.openTelemetry.address=localhost:4318
+      #- --metrics.openTelemetry.addEntryPointsLabels=true
+      #- --metrics.openTelemetry.addRoutersLabels=true
+      #- --metrics.openTelemetry.addServicesLabels=true
+      #- --metrics.openTelemetry.grpc=true
+      # CONSUL
+      - --providers.consulCatalog=true
+      - --providers.consulCatalog.cache=true
+      - --providers.consulCatalog.refreshInterval=30s
+      - --providers.consulCatalog.endpoint.address=consul:8500
+      - --providers.consulCatalog.endpoint.scheme=http
+      - --providers.consulCatalog.exposedByDefault=false
+      - --providers.consulcatalog.defaultRule=Host(`config.localhost`)
+      # Entry points
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
+      # https://doc.traefik.io/traefik/routing/entrypoints/#http2
+      # Do not expose all Docker services, only the ones explicitly exposed
+      # Docker swarm confiuration
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=traefik
+      - --providers.swarm
+      - --providers.swarm.constraints=Label(`traefik.tags`, `develop`)
+      # Dashboard. Optional. Default: true. 
+      - --api
+      - --api.dashboard=true
+      # Enable ACME (Let's Encrypt): automatic SSL.
+      # CA server to use. Uncomment the line to use Let's Encrypt's staging server, leave commented to go to prod. Optional
+      # Default: "https://acme-v02.api.letsencrypt.org/directory"
+      # Email address used for registration. Required
+      # File or key used for certificates storage. Required
+      # Make sure the this file is available and permission is set correctly
+      # Use a TLS-ALPN-01 ACME challenge. Optional (but recommended). 
+      - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.leresolver.acme.email=webmaster@huybrechts.xyz
+      - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
+      - --certificatesresolvers.leresolver.acme.tlschallenge=true
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - traefik
+    volumes:
+      - "//var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./.app/cert:/app/cert"
+      - "./.app/logs:/app/logs"
+    healthcheck:
+      # Run traefik healthcheck command
+      # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    labels:
+      # Enable for test
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      # Middlewares
+      - "traefik.http.middlewares.authadmin.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.compress.compress={}"
+      # SSL Header
+      - "traefik.http.middlewares.sslHeader.headers.accessControlAllowMethods=GET,OPTIONS,PUT"
+      - "traefik.http.middlewares.sslHeader.headers.accessControlAllowHeaders=*"
+      - "traefik.http.middlewares.sslHeader.headers.accessControlAllowOriginListRegex=`https://?(?:admin\\.|data\\.|docs\\.|proxy\\.|www\\.|)(test\\.|staging\\.)?localhost(.*)`gi"
+      - "traefik.http.middlewares.sslHeader.headers.accessControlMaxAge=100"
+      - "traefik.http.middlewares.sslHeader.headers.addVaryHeader=true"
+      - "traefik.http.middlewares.sslHeader.headers.frameDeny=true"
+      - "traefik.http.middlewares.sslHeader.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.sslheader.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.sslheader.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.sslheader.headers.referrerPolicy=no-referrer, origin-when-cross-origin"
+      - "traefik.http.middlewares.sslheader.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.sslheader.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.sslheader.headers.stsPreload=true"
+      - "traefik.http.middlewares.sslheader.headers.contentSecurityPolicy=\
+          default-src 'none';\
+          base-uri 'self';\
+          font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;\
+          form-action 'self' https://accounts.google.com;\
+          frame-ancestors 'none';\
+          frame-src 'self' https://www.google.com https://notfound-static.fwebservices.be/;\
+          img-src 'self' https://*.googleusercontent.com data:;\
+          object-src 'none';\
+          style-src 'self' *.googleapis.com;"
+      # Dashboard
+      - "traefik.http.routers.traefik.rule=Host(`proxy.localhost`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.routers.traefik.tls.certresolver=leresolver"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.middlewares=authadmin"
