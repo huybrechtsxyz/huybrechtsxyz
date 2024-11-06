@@ -4,7 +4,7 @@ version: '3.9'
 networks:
 
   traefik:
-    external: true
+    driver: bridge
 
 services:
 
@@ -124,22 +124,24 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     environment:
-      PGADMIN_LISTEN_PORT: 8088
+      PGADMIN_LISTEN_PORT: 8080
       PGADMIN_DEFAULT_EMAIL: admin@localhost.dev
       PGADMIN_DEFAULT_PASSWORD: password
-      SCRIPT_NAME: /pgadmin
+    ports:
+      - "8080:8080"
     networks:
       - traefik
     volumes:
       - ../.app/data/pgadmin:/var/lib/pgadmin
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      test: ["CMD", "curl", "-f", "http://pgadmin.localhost:8080/"]
       interval: 10s
       timeout: 5s
       retries: 3
     labels:
       - "traefik.enable=true"
       - "traefik.tags=develop"
-      - "traefik.http.routers.pgadmin.rule=Host(`admin.localhost`) && PathPrefix(`/pgadmin`)"
+      - "traefik.http.routers.pgadmin.rule=Host(`pgadmin.localhost`)"
       - "traefik.http.routers.pgadmin.entrypoints=web"
-      - "traefik.http.services.pgadmin.loadbalancer.server.port=8088"
+      - "traefik.http.services.pgadmin.loadbalancer.server.port=8080"
+      - "traefik.http.services.pgadmin.loadbalancer.server.scheme=http"
