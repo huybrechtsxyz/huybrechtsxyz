@@ -17,6 +17,12 @@ Copy-Item -Path "./src/consul/*" -Destination $baseDir -Recurse
 $minioData = "$dataDir/minio"
 New-Item -ItemType Directory -Path $minioData -Force
 
+# Documentation path
+$docsData = "$baseDir/docs"
+New-Item -ItemType Directory -Path $docsData -Force
+Copy-Item -Path "./src/mkdocs/mkdocs.yml" -Destination "$baseDir/mkdocs.yml"
+Copy-Item -Path "./docs/*" -Destination $docsData -Recurse -Force
+
 # Define network names
 $traefikNetwork = "traefik"
 $intranetNetwork = "intranet"
@@ -44,7 +50,7 @@ docker-compose -f $composeFile up -d
 
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" -ArgumentList `
-   "http://proxy.localhost/dashboard/ http://config.localhost http://pgadmin.localhost:8080 http://data.localhost:9001", `
+   "http://proxy.localhost/dashboard/ http://config.localhost http://pgadmin.localhost:8080 http://data.localhost:9001 http://docs.localhost:8000", `
    "--inprivate", "--start-maximized", "--new-window"
 
 Pause 'Press any key to stop debugging'

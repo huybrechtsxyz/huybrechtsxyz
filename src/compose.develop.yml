@@ -24,6 +24,7 @@ services:
       - ../.app/consul.postgres.json:/consul/config/postgres.json
       - ../.app/consul.pgadmin.json:/consul/config/pgadmin.json
       - ../.app/consul.minio.json:/consul/config/minio.json
+      - ../.app/consul.mkdocs.json:/consul/config/mkdocs.json
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
       interval: 10s
@@ -160,10 +161,25 @@ services:
       - ../.app/data/minio:/data
     networks:
       - traefik
-    deploy:
-      labels:
-        - "traefik.enable=true"
-        - "traefik.tags=test"
-        - "traefik.http.routers.minio.rule=Host(`data.localhost`)"
-        - "traefik.http.services.minio.loadbalancer.server.port=9001"
-        - "traefik.http.routers.minio.entrypoints=web"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=test"
+      - "traefik.http.routers.minio.rule=Host(`data.localhost`)"
+      - "traefik.http.services.minio.loadbalancer.server.port=9001"
+      - "traefik.http.routers.minio.entrypoints=web"
+
+  mkdocs:
+    image: squidfunk/mkdocs-material
+    command: serve -a 0.0.0.0:8000 -v  # Serve on all interfaces
+    ports:
+      - "8000:8000"
+    volumes:
+      - "../.app:/docs"
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=test"
+      - "traefik.http.routers.mkdocs.rule=Host(`docs.localhost`)"
+      - "traefik.http.services.mkdocs.loadbalancer.server.port=8000"
+      - "traefik.http.routers.mkdocs.entrypoints=web"

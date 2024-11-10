@@ -2,7 +2,7 @@
   "service": {
     "name": "minio",
     "tags": [ "data", "admin" ],
-    "port": 5432,
+    "port": 9001,
     "checks": [
       {
         "id": "minio-http-check",
