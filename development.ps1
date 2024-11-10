@@ -13,6 +13,10 @@ $consulData = "$dataDir/consul"
 New-Item -ItemType Directory -Path $consulData -Force
 Copy-Item -Path "./src/consul/*" -Destination $baseDir -Recurse
 
+# Minio paths
+$minioData = "$dataDir/minio"
+New-Item -ItemType Directory -Path $minioData -Force
+
 # Define network names
 $traefikNetwork = "traefik"
 $intranetNetwork = "intranet"
@@ -40,7 +44,7 @@ docker-compose -f $composeFile up -d
 
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" -ArgumentList `
-   "http://proxy.localhost/dashboard/ http://config.localhost http://pgadmin.localhost:8080", `
+   "http://proxy.localhost/dashboard/ http://config.localhost http://pgadmin.localhost:8080 http://data.localhost:9001", `
    "--inprivate", "--start-maximized", "--new-window"
 
 Pause 'Press any key to stop debugging'

@@ -1,7 +1,7 @@
 {
   "service": {
     "name": "postgres",
-    "tags": [ "database" ],
+    "tags": [ "data" ],
     "port": 5432,
     "checks": [
       {

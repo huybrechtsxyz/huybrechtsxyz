@@ -23,6 +23,7 @@ services:
       - ../.app/consul.traefik.json:/consul/config/traefik.json
       - ../.app/consul.postgres.json:/consul/config/postgres.json
       - ../.app/consul.pgadmin.json:/consul/config/pgadmin.json
+      - ../.app/consul.minio.json:/consul/config/minio.json
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
       interval: 10s
@@ -146,3 +147,23 @@ services:
       - "traefik.http.routers.pgadmin.entrypoints=web"
       - "traefik.http.services.pgadmin.loadbalancer.server.port=8080"
       - "traefik.http.services.pgadmin.loadbalancer.server.scheme=http"
+
+  minio:
+    image: minio/minio
+    environment:
+      - MINIO_ROOT_USER=root
+      - MINIO_ROOT_PASSWORD=password
+    command: server /data --console-address ":9001"
+    ports:
+      - "9001:9001"
+    volumes:
+      - ../.app/data/minio:/data
+    networks:
+      - traefik
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tags=test"
+        - "traefik.http.routers.minio.rule=Host(`data.localhost`)"
+        - "traefik.http.services.minio.loadbalancer.server.port=9001"
+        - "traefik.http.routers.minio.entrypoints=web"
