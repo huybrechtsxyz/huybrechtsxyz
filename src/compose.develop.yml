@@ -4,7 +4,7 @@ version: '3.9'
 networks:
 
   traefik:
-    driver: bridge
+    external: true
 
 services:
 
@@ -40,6 +40,7 @@ services:
     image: "traefik:v3.1.6"
     depends_on:
       - consul
+      - pgadmin
     command:
       # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
       # Enable the Traefik log, for configurations and errors
@@ -125,7 +126,7 @@ services:
     image: dpage/pgadmin4
     environment:
       PGADMIN_LISTEN_PORT: 8080
-      PGADMIN_DEFAULT_EMAIL: admin@localhost.dev
+      PGADMIN_DEFAULT_EMAIL: webmaster@huybrechts.xyz
       PGADMIN_DEFAULT_PASSWORD: password
     ports:
       - "8080:8080"
