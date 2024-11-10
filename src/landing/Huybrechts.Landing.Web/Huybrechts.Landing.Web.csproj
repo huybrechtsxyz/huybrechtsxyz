@@ -21,4 +21,8 @@
       <Folder Include="wwwroot\" />
    </ItemGroup>
 
+   <ItemGroup>
+     <ProjectReference Include="..\..\shared\Huybrechts.Shared.App\Huybrechts.Shared.App.csproj" />
+   </ItemGroup>
+
 </Project>

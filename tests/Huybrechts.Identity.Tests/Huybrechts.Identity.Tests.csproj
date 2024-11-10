@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\landing\Huybrechts.Landing.Web\Huybrechts.Landing.Web.csproj" />
+    <ProjectReference Include="..\..\src\identity\Huybrechts.Identity.Web\Huybrechts.Identity.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
