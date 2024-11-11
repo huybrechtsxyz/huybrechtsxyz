@@ -20,11 +20,13 @@ services:
       - traefik
     volumes:
       - ../.app/data/consul:/consul/data
-      - ../.app/consul.traefik.json:/consul/config/traefik.json
-      - ../.app/consul.postgres.json:/consul/config/postgres.json
-      - ../.app/consul.pgadmin.json:/consul/config/pgadmin.json
-      - ../.app/consul.minio.json:/consul/config/minio.json
-      - ../.app/consul.mkdocs.json:/consul/config/mkdocs.json
+      - ../.app/data/consul.traefik.json:/consul/config/traefik.json
+      - ../.app/data/consul.postgres.json:/consul/config/postgres.json
+      - ../.app/data/consul.pgadmin.json:/consul/config/pgadmin.json
+      - ../.app/data/consul.minio.json:/consul/config/minio.json
+      - ../.app/data/consul.mkdocs.json:/consul/config/mkdocs.json
+      - ../.app/data/consul.elastic.json:/consul/config/elastic.json
+      - ../.app/data/consul.logstash.json:/consul/config/logstash.json
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
       interval: 10s
@@ -163,7 +165,7 @@ services:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.tags=test"
+      - "traefik.tags=develop"
       - "traefik.http.routers.minio.rule=Host(`data.localhost`)"
       - "traefik.http.services.minio.loadbalancer.server.port=9001"
       - "traefik.http.routers.minio.entrypoints=web"
@@ -179,7 +181,47 @@ services:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.tags=test"
+      - "traefik.tags=develop"
       - "traefik.http.routers.mkdocs.rule=Host(`docs.localhost`)"
       - "traefik.http.services.mkdocs.loadbalancer.server.port=8000"
       - "traefik.http.routers.mkdocs.entrypoints=web"
+
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.license.self_generated.type=basic
+      - xpack.security.enabled=false
+      - xpack.monitoring.collection.enabled=true
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - ../.app/data/elastic:/usr/share/elasticsearch/data
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      - "traefik.http.routers.elastic.rule=Host(`elastic.localhost`)"
+      - "traefik.http.services.elastic.loadbalancer.server.port=9200"
+      - "traefik.http.routers.elastic.entrypoints=web"
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.15.3
+    environment:
+      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+      - xpack.monitoring.enabled=true
+    ports:
+      - "9500:9500"
+    networks:
+      - traefik
+    volumes:
+      - ../.app/data/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      - "traefik.http.routers.logstash.rule=Host(`elastic.localhost`)"
+      - "traefik.http.services.logstash.loadbalancer.server.port=9500"
+      - "traefik.http.routers.logstash.entrypoints=web"

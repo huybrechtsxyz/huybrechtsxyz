@@ -1,0 +1,16 @@
+{
+  "service": {
+    "name": "logstash",
+    "tags": [ "logging" ],
+    "port": 9500,
+    "checks": [
+      {
+        "id": "logstash-http-check",
+        "name": "logstash 4 HTTP Health Check",
+        "http": "http://elastic:9500",
+        "interval": "10s",
+        "timeout": "1s"
+      }
+    ]
+  }
+}

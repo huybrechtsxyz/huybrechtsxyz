@@ -1,0 +1,16 @@
+{
+  "service": {
+    "name": "elastic",
+    "tags": [ "logging" ],
+    "port": 9200,
+    "checks": [
+      {
+        "id": "elastic-http-check",
+        "name": "elastic 4 HTTP Health Check",
+        "http": "http://elastic:9200",
+        "interval": "10s",
+        "timeout": "1s"
+      }
+    ]
+  }
+}

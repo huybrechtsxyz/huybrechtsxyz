@@ -11,7 +11,7 @@ New-Item -ItemType Directory -Path $baseDir, $certDir, $dataDir, $logsDir -Force
 # Consul paths
 $consulData = "$dataDir/consul"
 New-Item -ItemType Directory -Path $consulData -Force
-Copy-Item -Path "./src/consul/*" -Destination $baseDir -Recurse
+Copy-Item -Path "./src/consul/*" -Destination $dataDir -Recurse
 
 # Minio paths
 $minioData = "$dataDir/minio"
@@ -22,6 +22,11 @@ $docsData = "$baseDir/docs"
 New-Item -ItemType Directory -Path $docsData -Force
 Copy-Item -Path "./src/mkdocs/mkdocs.yml" -Destination "$baseDir/mkdocs.yml"
 Copy-Item -Path "./docs/*" -Destination $docsData -Recurse -Force
+
+# Elastic search
+$elasticData = "$dataDir/elastic"
+New-Item -ItemType Directory -Path $elasticData -Force
+Copy-Item -Path "./src/elastic/*" -Destination $dataDir
 
 # Define network names
 $traefikNetwork = "traefik"
