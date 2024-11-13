@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Huybrechts.Shared.Web": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:59195;http://localhost:59196"
+    }
+  }
+}
