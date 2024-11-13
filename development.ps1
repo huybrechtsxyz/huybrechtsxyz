@@ -56,7 +56,7 @@ if ($docker -eq 'true')
     Write-Output "Configurating CONSUL for Docker..."
     $consulData = "$dataDir/consul"
     New-Item -ItemType Directory -Path $consulData -Force
-    Copy-Item -Path "./src/consul/*" -Destination $dataDir -Recurse
+    Copy-Item -Path "./src/consul/*" -Destination $baseDir -Recurse
 }
 else
 {
@@ -150,14 +150,14 @@ if ($docker -eq 'true')
 
     # DEBUG AND TEST
     Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://proxy.localhost/dashboard/",     # Dashboard URL
-        "http://config.localhost",               # Config URL
-        "http://pgadmin.localhost:8080",         # PgAdmin URL
-        "http://data.localhost:9001",            # Data URL
-        "http://docs.localhost:8000",            # Documentation URL
-        "--inprivate",                           # Open in InPrivate mode
-        "--start-maximized",                     # Start maximized
-        "--new-window"                           # Open in a new window
+        "http://localhost:80/dashboard/",    # Dashboard URL
+        "http://localhost:8500",             # Config URL
+        "http://localhost:8180",             # PgAdmin URL
+        "http://localhost:9001",             # Data URL
+        "http://localhost:8200",             # Documentation URL
+        "--inprivate",                       # Open in InPrivate mode
+        "--start-maximized",                 # Start maximized
+        "--new-window"                       # Open in a new window
 }
 else
 {

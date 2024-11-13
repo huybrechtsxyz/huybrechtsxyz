@@ -18,12 +18,22 @@
 
 ## Deployment
 
-### With executables
+### Ports
 
 | Component | Port |
 | --------- | ---- |
+| Traefik   |   80 |
+| Traefik   |  433 |
+| Traefik   | 8080 |
+| Traefik   | 8433 |
+
 | Consul    | 8500 |
+| Consul    | 8600 |
+
+| Postgres  | 5432 |
+| PGAdmin   | 8180 |
 | Minio     | 9001 |
+| MKDocs    | 8200 |
 
 ### On Docker
 
