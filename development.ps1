@@ -31,8 +31,19 @@ try {
     if ($dockerVersion -match "Docker version") {
         Write-Output " -- Docker is available"
         
-        # Run docker-compose if Docker is available
-        $docker = 'true'
+        # Check if Docker is running
+        try {
+            $output = docker run hello-world 2>&1
+            if ($output -like "*docker: error during connect*") {
+                Write-Host " -- Docker is not running"
+            } else {
+                Write-Host " -- Docker is running"
+                $docker = 'true'
+            }
+        } catch {
+            Write-Host " -- Docker is not running."
+        }
+        
     } else {
         throw " -- Docker not found"
     }
