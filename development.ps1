@@ -1,4 +1,7 @@
-# FUNCTION: EXTRACT
+<#
+#>
+
+# FUNCTION: Extract zipfile for local development
 function Expand-ZipFile {
     param (
         [string]$zipFile,
@@ -16,38 +19,85 @@ function Expand-ZipFile {
     }
 }
 
-# Start development engine
+# FUNCTION: Check if Docker is available by running the `docker` command
+function Get-Docker {
+    try {
+        # Try running 'docker --version' to check if Docker is installed and available
+        $dockerVersion = & docker --version 2>&1
+        # If Docker is available, $dockerVersion should contain version information, otherwise it throws an error
+        if ($dockerVersion -match "Docker version") {
+            Write-Output " -- Docker is available"
+            # Check if Docker is running
+            try {
+                $output = docker run hello-world 2>&1
+                if ($output -like "*docker: error during connect*") {
+                    Write-Output " -- Docker is not running"
+                    return $false
+                } else {
+                    Write-Output " -- Docker is running"
+                    return $true
+                }
+            } catch {
+                Write-Output " -- Docker is not running."
+                return $false
+            }
+        } else {
+            Write-Output " -- Docker not found"
+            return $false
+        }
+    } catch {
+        # Handle the case where Docker isn't available
+        Write-Output " -- Docker is not installed."
+        return $false
+    }
+}
+
+# FUNCTION: Configure required docker networks
+function Set-Docker {
+    # Check and create the "traefik" network if it doesn't exist
+    $traefikNetwork = "traefik"
+    if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$traefikNetwork$")) {
+        Write-Host "Creating external network '$traefikNetwork'..."
+        docker network create --driver=bridge --attachable $traefikNetwork
+    } else {
+        Write-Host "Network '$traefikNetwork' already exists."
+    }
+
+    # Check and create the "intranet" network if it doesn't exist
+    $intranetNetwork = "intranet"
+    if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$intranetNetwork$")) {
+        Write-Host "Creating bridge network '$intranetNetwork'..."
+        docker network create --driver=bridge $intranetNetwork
+    } else {
+        Write-Host "Network '$intranetNetwork' already exists."
+    }
+}
+
+# FUNCTION: Configure and run keycloak
+function Invoke-Keycloak {
+    if ($docker -eq 'true')
+    {
+        Write-Output "Configuring KEYCLOAK for Docker..."
+    }
+    else
+    {
+        Write-Output "Skipping KEYCLOAK for Executable..."
+        Write-Output "Please mock your identity tokens in the other applications..."
+    }
+}
+
+#
+# START DEVELOPMENT SERVICES
+#
+
+# Start development environment
 Write-Output 'Starting DEVELOPMENT environment...'
 
 # Check if Docker is available by running the `docker` command
-try {
-    # Try running 'docker --version' to check if Docker is installed and available
-    $dockerVersion = & docker --version 2>&1
-
-    # If Docker is available, $dockerVersion should contain version information, otherwise it throws an error
-    if ($dockerVersion -match "Docker version") {
-        Write-Output " -- Docker is available"
-        
-        # Check if Docker is running
-        try {
-            $output = docker run hello-world 2>&1
-            if ($output -like "*docker: error during connect*") {
-                Write-Host " -- Docker is not running"
-            } else {
-                Write-Host " -- Docker is running"
-                $docker = 'true'
-            }
-        } catch {
-            Write-Host " -- Docker is not running."
-        }
-        
-    } else {
-        throw " -- Docker not found"
-    }
-}
-catch {
-    # Handle the case where Docker isn't available
-    Write-Output " -- Docker is not installed."
+Write-Output 'Validating docker...'
+$docker = Get-Docker
+if ($docker -eq 'true') {
+    Set-Docker
 }
 
 # Basic paths
@@ -58,69 +108,47 @@ $dataDir = "$baseDir/data"
 $logsDir = "$baseDir/logs"
 New-Item -ItemType Directory -Path $baseDir, $certDir, $dataDir, $logsDir -Force
 
-# Define network names
-$traefikNetwork = "traefik"
-$intranetNetwork = "intranet"
+# Configure and run keycloak
+Invoke-Keycloak
 
-if ($docker -eq 'true')
-{
-    # Check and create the "traefik" network if it doesn't exist
-    if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$traefikNetwork$")) {
-        Write-Host "Creating external network '$traefikNetwork'..."
-        docker network create --driver=bridge --attachable $traefikNetwork
-    } else {
-        Write-Host "Network '$traefikNetwork' already exists."
-    }
-
-    # Check and create the "intranet" network if it doesn't exist
-    if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$intranetNetwork$")) {
-        Write-Host "Creating bridge network '$intranetNetwork'..."
-        docker network create --driver=bridge $intranetNetwork
-    } else {
-        Write-Host "Network '$intranetNetwork' already exists."
-    }
-
-    # Start docker compose
+if ($docker -eq 'true') {
+    #
+    # USE DOCKER
+    #
     $composeFile = "./src/compose.develop.yml"
     Write-Host "Starting Docker Compose..."
     docker-compose -f $composeFile up -d
 
     # DEBUG AND TEST
     Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://localhost:80/dashboard/",    # Dashboard URL
-        #"http://localhost:8500",             # Config URL
-        #"http://localhost:8180",             # PgAdmin URL
-        #"http://localhost:9001",             # Data URL
-        #"http://localhost:8200",             # Documentation URL
+        "http://localhost",
+        "--inprivate",                       # Open in InPrivate mode
+        "--start-maximized",                 # Start maximized
+        "--new-window"                       # Open in a new window
+} else {
+    #
+    # USE EXECUTABLES
+    #
+    Start-Process -FilePath "msedge.exe" -ArgumentList `
+        "http://localhost",
         "--inprivate",                       # Open in InPrivate mode
         "--start-maximized",                 # Start maximized
         "--new-window"                       # Open in a new window
 }
-else
-{
-    # Start-Process -FilePath "msedge.exe" -ArgumentList `
-    #     "http://localhost:8500",             # Config URL
-    #     "http://localhost:9001",             # Data URL
-    #     "--inprivate",                       # Open in InPrivate mode
-    #     "--start-maximized",                 # Start maximized
-    #     "--new-window"                       # Open in a new window
-}
 
+# Stopping the development environment
 Pause 'Press any key to stop debugging'
 Write-Output 'Stopping DEVELOPMENT environment...'
 Stop-Process -Name 'msedge' -ErrorAction Ignore
 
-if ($docker -eq 'true')
-{
+if ($docker -eq 'true') {
     # Stop Docker Compose
     Write-Host "Stopping Docker Compose..."
     docker-compose -f $composeFile down
-}
-else
-{
+} else {
     # STOPPING SERVICES
     Stop-Process -Name 'msedge' -ErrorAction Ignore
 }
 
-# SYSTEM
+# Stop the development environment
 Write-Output 'DEVELOPMENT environment stopped.'
