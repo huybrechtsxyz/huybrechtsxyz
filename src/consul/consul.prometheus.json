@@ -1,14 +1,14 @@
 {
   "service": {
-    "id": "traefik-1",
-    "name": "traefik",
-    "tags": ["traefik", "proxy"],
-    "port": 8080,
+    "id": "prometheus-1",
+    "name": "prometheus",
+    "tags": ["monitoring", "prometheus"],
+    "port": 9090,
     "checks": [
       {
         "id": "traefik-http-check",
         "name": "Traefik HTTP Health Check",
-        "http": "http://traefik:8080/ping",
+        "http": "http://prometheus:9090/metrics",
         "interval": "15s",
         "timeout": "5s"
       }

@@ -20,6 +20,7 @@ An overview of the used services:
 
 - [Consul](./services/consul.md) aka consul
 - [Traefik](./services/traefik.md) aka traefik
+- [Prometheus](./services/prometheus.md) aka prometheus
 
 ### Develop environment
 
@@ -32,6 +33,7 @@ With docker
 | Traefik      | Develop       | proxy.localhost:80           | /           | Reverse proxy HTTP (web)                        |
 | Traefik      | Develop       | proxy.localhost:433          | /           | Reverse proxy HTTP (websecure)                  |
 | Traefik      | Develop       | proxy.localhost:8080         | /           | Reverse proxy HTTP (monitoring, dashboard)      |
+| Prometheus   | Develop       | Prometheus.localhost:9090    | /           | Metrics monitoring                              |
 
 Without docker
 

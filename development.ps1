@@ -84,7 +84,7 @@ function Invoke-Consul {
     }
     else
     {
-        Write-Output "Skipping CONSUL for Executable..."
+        Write-Output "Configuring CONSUL for Executable..."
         $consulDir = "$baseDir/consul"
         $consulData = "$dataDir/consul"
         New-Item -ItemType Directory -Path $consulDir, $consulData -Force
@@ -103,6 +103,21 @@ function Invoke-Consul {
         $env:CONSUL_ADDR="http://127.0.0.1:8500"
         Write-Output " -- Starting executable ..."
         Start-Process -FilePath $consulExe -ArgumentList "agent", "-dev", "-config-dir $consulData" -WindowStyle Minimized
+    }
+}
+
+# FUNCTION: Configure and run prometheus
+function Invoke-Prometheus {
+    if ($docker -eq 'true')
+    {
+        Write-Output "Configuring PROMETHEUS for Docker..."
+        $prometheusData = "$dataDir/prometheus"
+        New-Item -ItemType Directory -Path $prometheusData -Force
+        Copy-Item -Path "./src/prometheus/*" -Destination $baseDir -Recurse
+    }
+    else
+    {
+        Write-Output "Skipping PROMETHEUS for Executable..."
     }
 }
 
@@ -130,6 +145,7 @@ New-Item -ItemType Directory -Path $baseDir, $certDir, $dataDir, $logsDir -Force
 
 # Configure and run keycloak
 Invoke-Consul
+Invoke-Prometheus
 
 if ($docker -eq 'true') {
     #
@@ -141,8 +157,9 @@ if ($docker -eq 'true') {
 
     # DEBUG AND TEST
     Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://consul.localhost:8500",                # Consul
+        "http://consul.localhost:8500",         # Consul
         "http://proxy.localhost/dashboard/#/",  # Traefik dashboard
+        "http://prometheus.localhost:9090",     # Prometheus dashboard
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window

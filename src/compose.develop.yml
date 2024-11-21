@@ -22,6 +22,7 @@ services:
     volumes:
       - ../.app/data/consul:/consul/data
       - ../.app/consul.traefik.json:/consul/config/traefik.json
+      - ../.app/consul.prometheus.json:/consul/config/prometheus.json
     healthcheck:
       test: ["CMD", "curl", "-f", "http://consul.localhost:8500/v1/status/leader"]
       interval: 10s
@@ -101,3 +102,20 @@ services:
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+
+  prometheus:
+    image: prom/prometheus:v2.43.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"  # Prometheus web interface
+    volumes:
+      - ../.app/prometheus.yml:/etc/prometheus/prometheus.yml  # Mount Prometheus configuration
+      - ../.app/data/prometheus:/prometheus
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.localhost`)"
+      - "traefik.http.routers.prometheus.entrypoints=web"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
