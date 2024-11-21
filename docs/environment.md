@@ -16,10 +16,29 @@ Whether you are setting up a local development instance, deploying to staging, o
 
 The table below provides a structured view of the domain configuration for the website. It outlines the various applications (e.g., web, API, admin, blog) across different environments, such as production and staging. Each domain is associated with a fully qualified domain name (FQDN) that is used to access the respective service in its environment.
 
+An overview of the used services:
+
+- [Consul](./services/consul.md) aka consul
+- [Traefik](./services/traefik.md) aka traefik
+
 ### Develop environment
+
+With docker
 
 | Service      | Environment   | Domain                       | Path        | Description                                     |
 |--------------|---------------|------------------------------|-------------|-------------------------------------------------|
+| Consul       | Develop       | consul.localhost:8500        | /           | Service configuration and discovery             |
+| Consul       | Develop       | consul.localhost:8600/udp    | /           | Raft gossip protocol                            |
+| Traefik      | Develop       | proxy.localhost:80           | /           | Reverse proxy HTTP (web)                        |
+| Traefik      | Develop       | proxy.localhost:433          | /           | Reverse proxy HTTP (websecure)                  |
+| Traefik      | Develop       | proxy.localhost:8080         | /           | Reverse proxy HTTP (monitoring, dashboard)      |
+
+Without docker
+
+| Service      | Environment   | Domain                       | Path        | Description                                     |
+|--------------|---------------|------------------------------|-------------|-------------------------------------------------|
+| Consul       | Develop       | localhost:8500               | /           | Service configuration and discovery             |
+| Consul       | Develop       | localhost:8600/udp           | /           | Raft gossip protocol                            |
 
 ### Test environment
 
