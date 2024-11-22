@@ -19,8 +19,9 @@ The table below provides a structured view of the domain configuration for the w
 An overview of the used services:
 
 - [Consul](./services/consul.md) aka consul
-- [Traefik](./services/traefik.md) aka traefik
+- [PostgreSql](./services/postgres.md) aka postgres
 - [Prometheus](./services/prometheus.md) aka prometheus
+- [Traefik](./services/traefik.md) aka traefik
 
 ### Develop environment
 
@@ -57,6 +58,23 @@ Without docker
 | Service      | Environment   | Domain                       | Path        | Description                                     |
 |--------------|---------------|------------------------------|-------------|-------------------------------------------------|
 
+### Environments and Secrets
+
+In modern application development, managing sensitive information such as credentials, API keys, and configuration settings is crucial for maintaining security and integrity. All environment variables (envvars) in our setup are utilized as secrets to protect sensitive data from exposure in code repositories and during runtime. These secrets are securely stored in GitHub environment secrets, ensuring that access is restricted and controlled.
+
+The deployment process is managed through our CI/CD pipeline, which automatically retrieves and injects these secrets into the application as needed. This streamlined approach enhances security by ensuring that sensitive information is not hard-coded into files or directly exposed in the source code.
+
+Below is an overview of all the secrets utilized in the pipeline, as well as those defined in Docker Compose files and application configuration files. They are maintained for each environment.
+
+| Secret Name         | Type   | Description                       | Example                                        |
+|---------------------|--------|-----------------------------------|------------------------------------------------|
+| `APP_HOST_USERNAME` | Secret | Server username                   | `user1`                                        |
+| `APP_HOST_PASSWORD` | Secret | Server password                   | `1234`                                         |
+| `APP_HOST_SERVER`   | Secret | Server IP                         | `10.0.0.1`                                     |
+| `APP_HOST_PORT`     | Secret | SSH Port                          | `22`                                           |
+| `REGISTRY_USERNAME` | Secret | Container registry username       | `user1`                                        |
+| `REGISTRY_PASSWORD` | Secret | Container registry password       | `1234`                                         |
+
 ### Application Structure
 
 The application is organized into a structured directory layout that facilitates efficient management and scalability. At the top level, the `app` directory contains several key subdirectories:
@@ -76,17 +94,6 @@ The application is organized into a structured directory layout that facilitates
     │ ├── logs +                #   Traefik logs
     └──
     ```
-
-### Environments and Secrets
-
-In modern application development, managing sensitive information such as credentials, API keys, and configuration settings is crucial for maintaining security and integrity. All environment variables (envvars) in our setup are utilized as secrets to protect sensitive data from exposure in code repositories and during runtime. These secrets are securely stored in GitHub environment secrets, ensuring that access is restricted and controlled.
-
-The deployment process is managed through our CI/CD pipeline, which automatically retrieves and injects these secrets into the application as needed. This streamlined approach enhances security by ensuring that sensitive information is not hard-coded into files or directly exposed in the source code.
-
-Below is an overview of all the secrets utilized in the pipeline, as well as those defined in Docker Compose files and application configuration files. They are maintained for each environment.
-
-| Secret Name         | Type   | Description                       | Example                                        |
-|---------------------|--------|-----------------------------------|------------------------------------------------|
 
 ## Environment types
 

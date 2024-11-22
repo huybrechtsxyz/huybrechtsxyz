@@ -109,6 +109,30 @@ function Invoke-Consul {
     }
 }
 
+# FUNCTION: Configure and run postgres
+function Invoke-postgres {
+    Write-Output "Configuring POSTGRESQL..."
+    $postgresDir = "$baseDir/postgres"
+    $postgresCert = "$postgresDir/data"
+    $postgresLogs = "$postgresDir/logs"
+    New-Item -ItemType Directory -Path $postgresDir, $postgresCert, $postgresLogs -Force
+    $postgresDir = Resolve-Path -Path $postgresDir
+    $postgresCert = Resolve-Path -Path $postgresCert
+    $postgresLogs = Resolve-Path -Path $postgresLogs
+
+    if ($docker -eq 'true')
+    {
+        Write-Output "Configuring POSTGRESQL for Docker..."
+        Write-Output " -- Setting environment ..."
+        $env:POSTGRES_USER="admin"  
+        $env:POSTGRES_PASSWORD="password"    
+    }
+    else
+    {
+        Write-Output "Skipping POSTGRESQL for Executable..."
+    }
+}
+
 # FUNCTION: Configure and run prometheus
 function Invoke-Prometheus {
     Write-Output "Configuring PROMETHEUS..."
@@ -175,6 +199,7 @@ New-Item -ItemType Directory -Path $baseDir -Force
 
 # Configure and run keycloak
 Invoke-Consul
+Invoke-Postgres
 Invoke-Prometheus
 Invoke-Traefik
 
