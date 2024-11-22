@@ -117,10 +117,10 @@ function Invoke-Prometheus {
     $prometheusData = "$prometheusDir/data"
     $prometheusLogs = "$prometheusDir/logs"
     New-Item -ItemType Directory -Path $prometheusDir, $prometheusConf, $prometheusData, $prometheusLogs -Force
-    $prometheusDir = Resolve-Path -Path $consulDir
-    $prometheusConf = Resolve-Path -Path $consulConf
-    $prometheusData = Resolve-Path -Path $consulData
-    $prometheusLogs = Resolve-Path -Path $consulLogs
+    $prometheusDir = Resolve-Path -Path $prometheusDir
+    $prometheusConf = Resolve-Path -Path $prometheusConf
+    $prometheusData = Resolve-Path -Path $prometheusData
+    $prometheusLogs = Resolve-Path -Path $prometheusLogs
     Copy-Item -Path "./src/prometheus/*" -Destination $prometheusConf -Recurse
 
     if ($docker -eq 'true')
@@ -140,9 +140,9 @@ function Invoke-Traefik {
     $traefikCert = "$traefikDir/cert"
     $traefikLogs = "$traefikDir/logs"
     New-Item -ItemType Directory -Path $traefikDir, $traefikCert, $traefikLogs -Force
-    $traefikDir = Resolve-Path -Path $consulDir
+    $traefikDir = Resolve-Path -Path $traefikDir
     $traefikCert = Resolve-Path -Path $traefikCert
-    $traefikLogs = Resolve-Path -Path $consulLogs
+    $traefikLogs = Resolve-Path -Path $traefikLogs
 
     if ($docker -eq 'true')
     {
