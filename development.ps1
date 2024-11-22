@@ -109,6 +109,41 @@ function Invoke-Consul {
     }
 }
 
+# FUNCTION: Configure and run consul
+function Invoke-Minio {
+    Write-Output "Configuring MINIO..."
+    $minioDir = "$baseDir/minio"
+    #$minioConf = "$minioDir/conf"
+    $minioData = "$minioDir/data"
+    #$minioLogs = "$minioDir/logs"
+    New-Item -ItemType Directory -Path $minioDir, $minioData -Force #, $minioConf $minioLogs 
+    $minioDir = Resolve-Path -Path $minioDir
+    #$minioConf = Resolve-Path -Path $minioConf
+    $minioData = Resolve-Path -Path $minioData
+    #$minioLogs = Resolve-Path -Path $minioLogs
+    $minioExe = "$minioDir/minio.exe"
+    Copy-Item -Path "./src/minio/*" -Destination $minioConf -Recurse
+
+    if ($docker -eq 'true')
+    {
+        Write-Output "Configuring MINIO for Docker..."
+    }
+    else
+    {
+        Write-Output "Configuring MINIO for Executable..."
+        
+        if (-Not (Test-Path -Path $minioExe)) {
+            Write-Output " -- Extracting minio..."
+            Expand-ZipFile -zipFile "./zips/minio-v202411.zip" -extractPath $minioDir
+        }
+    
+        Write-Output " -- Setting environment ..."
+        
+        Write-Output " -- Starting executable ..."
+        Start-Process -FilePath $minioExe -ArgumentList "agent", "-dev", "-config-dir $minioConf" -WindowStyle Minimized
+    }
+}
+
 # FUNCTION: Configure and run pgadmin
 function Invoke-PGAdmin {
     Write-Output "Configuring PGDADMIN..."
@@ -220,6 +255,7 @@ New-Item -ItemType Directory -Path $baseDir -Force
 
 # Configure and run keycloak
 Invoke-Consul
+Invoke-Minio
 Invoke-PGAdmin
 Invoke-Postgres
 Invoke-Prometheus
@@ -239,6 +275,7 @@ if ($docker -eq 'true') {
         "http://proxy.localhost/dashboard/#/",  # Traefik dashboard
         "http://prometheus.localhost:9090",     # Prometheus dashboard
         "http://admin.localhost:8800/pgadmin",  # Database administration
+        "http://minio.localhost:9001",          # Blob storage provider
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window
@@ -247,10 +284,11 @@ if ($docker -eq 'true') {
     # USE EXECUTABLES
     #
     Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://localhost:8500",             # Consul
-        "--inprivate",                       # Open in InPrivate mode
-        "--start-maximized",                 # Start maximized
-        "--new-window"                       # Open in a new window
+        "http://localhost:8500",                # Consul
+        "http://localhost:9001",                # Blob storage provider
+        "--inprivate",                          # Open in InPrivate mode
+        "--start-maximized",                    # Start maximized
+        "--new-window"                          # Open in a new window
 }
 
 # Stopping the development environment
@@ -266,6 +304,7 @@ if ($docker -eq 'true') {
     # STOPPING SERVICES
     Stop-Process -Name 'msedge' -ErrorAction Ignore
     Stop-Process -Name 'consul' -ErrorAction Ignore
+    Stop-Process -Name 'minio' -ErrorAction Ignore
 }
 
 # Stop the development environment

@@ -19,6 +19,7 @@ The table below provides a structured view of the domain configuration for the w
 An overview of the used services:
 
 - [Consul](./services/consul.md) aka consul
+- [Minio](./services/minio.md) aka minio
 - [PGAdmin4](./services/pgadmin.md) aka pgadmin
 - [PostgreSql](./services/postgres.md) aka postgres
 - [Prometheus](./services/prometheus.md) aka prometheus
@@ -32,6 +33,7 @@ With docker
 |--------------|---------------|------------------------------|-------------|-------------------------------------------------|
 | Consul       | Develop       | consul.localhost:8500        | /           | Service configuration and discovery             |
 | Consul       | Develop       | consul.localhost:8600/udp    | /           | Raft gossip protocol                            |
+| Minio        | Develop       | minio.localhost:9001         | /           | Blob storage provider                           |
 | PGAdmin4     | Develop       | admin.localhost:8800         | /pgadmin    | Database administration                         |
 | PostgreSql   | Develop       | localhost:5432               | /           | PostgreSQL Database                             |
 | PostgreSql   | Develop       | localhost:9187               | /           | PostgreSQL Prometheus Exporter                  |
@@ -46,6 +48,7 @@ Without docker
 |--------------|---------------|------------------------------|-------------|-------------------------------------------------|
 | Consul       | Develop       | localhost:8500               | /           | Service configuration and discovery             |
 | Consul       | Develop       | localhost:8600/udp           | /           | Raft gossip protocol                            |
+| Minio        | Develop       | localhost:9001               | /           | Blob storage provider                           |
 
 ### Test environment
 
@@ -89,6 +92,8 @@ The application is organized into a structured directory layout that facilitates
     │ ├── config +              #   Consul configuration
     │ ├── data +                #   Consul data
     │ ├── logs +                #   Consul logs
+    ├── minio +                 # Minio
+    │ ├── data +                #   Minio data
     ├── pgadmin +               # PGAdmin4
     │ ├── data +                #   PGAdmin4 data
     ├── postgres +              # PostgreSQL
