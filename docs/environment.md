@@ -19,6 +19,7 @@ The table below provides a structured view of the domain configuration for the w
 An overview of the used services:
 
 - [Consul](./services/consul.md) aka consul
+- [PGAdmin4](./services/pgadmin.md) aka pgadmin
 - [PostgreSql](./services/postgres.md) aka postgres
 - [Prometheus](./services/prometheus.md) aka prometheus
 - [Traefik](./services/traefik.md) aka traefik
@@ -31,6 +32,7 @@ With docker
 |--------------|---------------|------------------------------|-------------|-------------------------------------------------|
 | Consul       | Develop       | consul.localhost:8500        | /           | Service configuration and discovery             |
 | Consul       | Develop       | consul.localhost:8600/udp    | /           | Raft gossip protocol                            |
+| PGAdmin4     | Develop       | admin.localhost:8800         | /pgadmin    | Database administration                         |
 | PostgreSql   | Develop       | localhost:5432               | /           | PostgreSQL Database                             |
 | PostgreSql   | Develop       | localhost:9187               | /           | PostgreSQL Prometheus Exporter                  |
 | Prometheus   | Develop       | Prometheus.localhost:9090    | /           | Metrics monitoring                              |
@@ -87,6 +89,11 @@ The application is organized into a structured directory layout that facilitates
     │ ├── config +              #   Consul configuration
     │ ├── data +                #   Consul data
     │ ├── logs +                #   Consul logs
+    ├── pgadmin +               # PGAdmin4
+    │ ├── data +                #   PGAdmin4 data
+    ├── postgres +              # PostgreSQL
+    │ ├── config +              #   PostgreSQL configuration
+    │ ├── data +                #   PostgreSQL data
     ├── prometheus +            # Prometheus
     │ ├── config +              #   Prometheus configuration
     │ ├── data +                #   Prometheus data

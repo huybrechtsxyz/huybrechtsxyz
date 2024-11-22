@@ -91,6 +91,8 @@ services:
     volumes:
       - ../.app/consul/data:/consul/data
       - ../.app/consul/conf/traefik.json:/consul/config/traefik.json
+      - ../.app/consul/conf/pgadmin.json:/consul/config/pgadmin.json
+      - ../.app/consul/conf/postgres.json:/consul/config/postgres.json
       - ../.app/consul/conf/prometheus.json:/consul/config/prometheus.json
     healthcheck:
       test: ["CMD", "curl", "-f", "http://consul.localhost:8500/v1/status/leader"]
@@ -153,3 +155,25 @@ services:
       - "9187:9187"
     volumes:
       - ../.app/prometheus/conf/postgres_exporter.yml:/config/postgres_exporter.yml:ro
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_LISTEN_PORT: 8800
+      PGADMIN_DEFAULT_EMAIL: webmaster@huybrechts.xyz
+      PGADMIN_DEFAULT_PASSWORD: password
+      SCRIPT_NAME: /pgadmin
+    ports:
+      - "8800:8800"
+    networks:
+      - traefik
+      - intranet
+    volumes:
+      - ../.app/pgadmin/data:/var/lib/pgadmin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=test"
+      - "traefik.http.routers.pgadmin.rule=Host(`admin.localhost`) && PathPrefix(`/pgadmin`)"
+      - "traefik.http.services.pgadmin.loadbalancer.server.port=8800"
+      - "traefik.http.routers.pgadmin.entrypoints=web"

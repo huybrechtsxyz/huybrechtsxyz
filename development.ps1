@@ -79,12 +79,12 @@ function Invoke-Consul {
     $consulDir = "$baseDir/consul"
     $consulConf = "$consulDir/conf"
     $consulData = "$consulDir/data"
-    $consulLogs = "$consulDir/logs"
-    New-Item -ItemType Directory -Path $consulDir, $consulConf, $consulData, $consulLogs -Force
+    #$consulLogs = "$consulDir/logs"
+    New-Item -ItemType Directory -Path $consulDir, $consulConf, $consulData -Force #$consulLogs 
     $consulDir = Resolve-Path -Path $consulDir
     $consulConf = Resolve-Path -Path $consulConf
     $consulData = Resolve-Path -Path $consulData
-    $consulLogs = Resolve-Path -Path $consulLogs
+    #$consulLogs = Resolve-Path -Path $consulLogs
     $consulExe = "$consulDir/consul.exe"
     Copy-Item -Path "./src/consul/*" -Destination $consulConf -Recurse
 
@@ -109,16 +109,37 @@ function Invoke-Consul {
     }
 }
 
+# FUNCTION: Configure and run pgadmin
+function Invoke-PGAdmin {
+    Write-Output "Configuring PGDADMIN..."
+    $pgadminDir = "$baseDir/pgadmin"
+    $pgadminData = "$pgadminDir/data"
+    #$pgadminLogs = "$pgadminDir/logs"
+    New-Item -ItemType Directory -Path $pgadminDir, $pgadminData -Force #, $pgadminLogs
+    $pgadminDir = Resolve-Path -Path $pgadminDir
+    $pgadminData = Resolve-Path -Path $pgadminData
+    #$pgadminLogs = Resolve-Path -Path $pgadminLogs
+
+    if ($docker -eq 'true')
+    {
+        Write-Output "Configuring PGDADMIN for Docker..."
+    }
+    else
+    {
+        Write-Output "Skipping PGDADMIN for Executable..."
+    }
+}
+
 # FUNCTION: Configure and run postgres
 function Invoke-postgres {
     Write-Output "Configuring POSTGRESQL..."
     $postgresDir = "$baseDir/postgres"
-    $postgresCert = "$postgresDir/data"
-    $postgresLogs = "$postgresDir/logs"
-    New-Item -ItemType Directory -Path $postgresDir, $postgresCert, $postgresLogs -Force
+    $postgresData = "$postgresDir/data"
+    #$postgresLogs = "$postgresDir/logs"
+    New-Item -ItemType Directory -Path $postgresDir, $postgresData -Force #, $postgresLogs
     $postgresDir = Resolve-Path -Path $postgresDir
-    $postgresCert = Resolve-Path -Path $postgresCert
-    $postgresLogs = Resolve-Path -Path $postgresLogs
+    $postgresData = Resolve-Path -Path $postgresData
+    #$postgresLogs = Resolve-Path -Path $postgresLogs
 
     if ($docker -eq 'true')
     {
@@ -139,12 +160,12 @@ function Invoke-Prometheus {
     $prometheusDir = "$baseDir/prometheus"
     $prometheusConf = "$prometheusDir/conf"
     $prometheusData = "$prometheusDir/data"
-    $prometheusLogs = "$prometheusDir/logs"
-    New-Item -ItemType Directory -Path $prometheusDir, $prometheusConf, $prometheusData, $prometheusLogs -Force
+    #$prometheusLogs = "$prometheusDir/logs"
+    New-Item -ItemType Directory -Path $prometheusDir, $prometheusConf, $prometheusData -Force #, $prometheusLogs 
     $prometheusDir = Resolve-Path -Path $prometheusDir
     $prometheusConf = Resolve-Path -Path $prometheusConf
     $prometheusData = Resolve-Path -Path $prometheusData
-    $prometheusLogs = Resolve-Path -Path $prometheusLogs
+    #$prometheusLogs = Resolve-Path -Path $prometheusLogs
     Copy-Item -Path "./src/prometheus/*" -Destination $prometheusConf -Recurse
 
     if ($docker -eq 'true')
@@ -199,6 +220,7 @@ New-Item -ItemType Directory -Path $baseDir -Force
 
 # Configure and run keycloak
 Invoke-Consul
+Invoke-PGAdmin
 Invoke-Postgres
 Invoke-Prometheus
 Invoke-Traefik
@@ -216,6 +238,7 @@ if ($docker -eq 'true') {
         "http://consul.localhost:8500",         # Consul
         "http://proxy.localhost/dashboard/#/",  # Traefik dashboard
         "http://prometheus.localhost:9090",     # Prometheus dashboard
+        "http://admin.localhost:8800/pgadmin",  # Database administration
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window
