@@ -122,7 +122,6 @@ function Invoke-Minio {
     $minioData = Resolve-Path -Path $minioData
     #$minioLogs = Resolve-Path -Path $minioLogs
     $minioExe = "$minioDir/minio.exe"
-    Copy-Item -Path "./src/minio/*" -Destination $minioConf -Recurse
 
     if ($docker -eq 'true')
     {
@@ -271,11 +270,11 @@ if ($docker -eq 'true') {
 
     # DEBUG AND TEST
     Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://consul.localhost:8500",         # Consul
+        "http://localhost:8500",                # Consul
         "http://proxy.localhost/dashboard/#/",  # Traefik dashboard
-        "http://prometheus.localhost:9090",     # Prometheus dashboard
-        "http://admin.localhost:8800/pgadmin",  # Database administration
-        "http://minio.localhost:9001",          # Blob storage provider
+        "http://localhost:9090",                # Prometheus dashboard
+        "http://localhost:8800/pgadmin",        # Database administration
+        "http://localhost:9001",                # Blob storage provider
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window

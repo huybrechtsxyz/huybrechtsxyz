@@ -7,7 +7,7 @@
         {
           "id": "pgadmin-http-check",
           "name": "PGAdmin 4 HTTP Health Check",
-          "http": "http://pgadmin:8800",
+          "http": "http://pgadmin:8800/pgadmin",
           "interval": "10s",
           "timeout": "1s"
         }
