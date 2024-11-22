@@ -31,10 +31,12 @@ With docker
 |--------------|---------------|------------------------------|-------------|-------------------------------------------------|
 | Consul       | Develop       | consul.localhost:8500        | /           | Service configuration and discovery             |
 | Consul       | Develop       | consul.localhost:8600/udp    | /           | Raft gossip protocol                            |
+| PostgreSql   | Develop       | localhost:5432               | /           | PostgreSQL Database                             |
+| PostgreSql   | Develop       | localhost:9187               | /           | PostgreSQL Prometheus Exporter                  |
+| Prometheus   | Develop       | Prometheus.localhost:9090    | /           | Metrics monitoring                              |
 | Traefik      | Develop       | proxy.localhost:80           | /           | Reverse proxy HTTP (web)                        |
 | Traefik      | Develop       | proxy.localhost:433          | /           | Reverse proxy HTTP (websecure)                  |
 | Traefik      | Develop       | proxy.localhost:8080         | /           | Reverse proxy HTTP (monitoring, dashboard)      |
-| Prometheus   | Develop       | Prometheus.localhost:9090    | /           | Metrics monitoring                              |
 
 Without docker
 
