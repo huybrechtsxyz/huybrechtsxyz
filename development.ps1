@@ -75,25 +75,27 @@ function Set-Docker {
 
 # FUNCTION: Configure and run consul
 function Invoke-Consul {
+    Write-Output "Configuring CONSUL..."
+    $consulDir = "$baseDir/consul"
+    $consulConf = "$consulDir/conf"
+    $consulData = "$consulDir/data"
+    $consulLogs = "$consulDir/logs"
+    New-Item -ItemType Directory -Path $consulDir, $consulConf, $consulData, $consulLogs -Force
+    $consulDir = Resolve-Path -Path $consulDir
+    $consulConf = Resolve-Path -Path $consulConf
+    $consulData = Resolve-Path -Path $consulData
+    $consulLogs = Resolve-Path -Path $consulLogs
+    $consulExe = "$consulDir/consul.exe"
+    Copy-Item -Path "./src/consul/*" -Destination $consulConf -Recurse
+
     if ($docker -eq 'true')
     {
         Write-Output "Configuring CONSUL for Docker..."
-        $consulData = "$dataDir/consul"
-        New-Item -ItemType Directory -Path $consulData -Force
-        Copy-Item -Path "./src/consul/*" -Destination $baseDir -Recurse
     }
     else
     {
         Write-Output "Configuring CONSUL for Executable..."
-        $consulDir = "$baseDir/consul"
-        $consulData = "$dataDir/consul"
-        New-Item -ItemType Directory -Path $consulDir, $consulData -Force
-        $consulDir = Resolve-Path -Path $consulDir
-        $consulData = Resolve-Path -Path $consulData
-        $consulExe = "$consulDir/consul.exe"
-
-        Copy-Item -Path "./src/consul/*" -Destination $consulData -Recurse
-
+        
         if (-Not (Test-Path -Path $consulExe)) {
             Write-Output " -- Extracting Consul..."
             Expand-ZipFile -zipFile "./zips/consul_1.20.1.zip" -extractPath $consulDir
@@ -101,23 +103,54 @@ function Invoke-Consul {
     
         Write-Output " -- Setting environment ..."
         $env:CONSUL_ADDR="http://127.0.0.1:8500"
+
         Write-Output " -- Starting executable ..."
-        Start-Process -FilePath $consulExe -ArgumentList "agent", "-dev", "-config-dir $consulData" -WindowStyle Minimized
+        Start-Process -FilePath $consulExe -ArgumentList "agent", "-dev", "-config-dir $consulConf" -WindowStyle Minimized
     }
 }
 
 # FUNCTION: Configure and run prometheus
 function Invoke-Prometheus {
+    Write-Output "Configuring PROMETHEUS..."
+    $prometheusDir = "$baseDir/prometheus"
+    $prometheusConf = "$prometheusDir/conf"
+    $prometheusData = "$prometheusDir/data"
+    $prometheusLogs = "$prometheusDir/logs"
+    New-Item -ItemType Directory -Path $prometheusDir, $prometheusConf, $prometheusData, $prometheusLogs -Force
+    $prometheusDir = Resolve-Path -Path $consulDir
+    $prometheusConf = Resolve-Path -Path $consulConf
+    $prometheusData = Resolve-Path -Path $consulData
+    $prometheusLogs = Resolve-Path -Path $consulLogs
+    Copy-Item -Path "./src/prometheus/*" -Destination $prometheusConf -Recurse
+
     if ($docker -eq 'true')
     {
-        Write-Output "Configuring PROMETHEUS for Docker..."
-        $prometheusData = "$dataDir/prometheus"
-        New-Item -ItemType Directory -Path $prometheusData -Force
-        Copy-Item -Path "./src/prometheus/*" -Destination $baseDir -Recurse
+        Write-Output "Configuring PROMETHEUS for Docker..."        
     }
     else
     {
         Write-Output "Skipping PROMETHEUS for Executable..."
+    }
+}
+
+# FUNCTION: Configure and run traefik
+function Invoke-Traefik {
+    Write-Output "Configuring TRAEFIK..."
+    $traefikDir = "$baseDir/traefik"
+    $traefikCert = "$traefikDir/cert"
+    $traefikLogs = "$traefikDir/logs"
+    New-Item -ItemType Directory -Path $traefikDir, $traefikCert, $traefikLogs -Force
+    $traefikDir = Resolve-Path -Path $consulDir
+    $traefikCert = Resolve-Path -Path $traefikCert
+    $traefikLogs = Resolve-Path -Path $consulLogs
+
+    if ($docker -eq 'true')
+    {
+        Write-Output "Configuring TRAEFIK for Docker..."        
+    }
+    else
+    {
+        Write-Output "Skipping TRAEFIK for Executable..."
     }
 }
 
@@ -138,14 +171,12 @@ if ($docker -eq 'true') {
 # Basic paths
 Write-Output 'Creating APP directories...'
 $baseDir = "./.app"
-$certDir = "$baseDir/cert"
-$dataDir = "$baseDir/data"
-$logsDir = "$baseDir/logs"
-New-Item -ItemType Directory -Path $baseDir, $certDir, $dataDir, $logsDir -Force
+New-Item -ItemType Directory -Path $baseDir -Force
 
 # Configure and run keycloak
 Invoke-Consul
 Invoke-Prometheus
+Invoke-Traefik
 
 if ($docker -eq 'true') {
     #

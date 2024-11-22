@@ -57,6 +57,37 @@ Without docker
 | Service      | Environment   | Domain                       | Path        | Description                                     |
 |--------------|---------------|------------------------------|-------------|-------------------------------------------------|
 
+### Application Structure
+
+The application is organized into a structured directory layout that facilitates efficient management and scalability. At the top level, the `app` directory contains several key subdirectories:
+
+    ```powershell
+    app
+    ├── consul +                # Consul
+    │ ├── config +              #   Consul configuration
+    │ ├── data +                #   Consul data
+    │ ├── logs +                #   Consul logs
+    ├── prometheus +            # Prometheus
+    │ ├── config +              #   Prometheus configuration
+    │ ├── data +                #   Prometheus data
+    │ ├── logs +                #   Prometheus logs
+    ├── traefik +               # Traefik
+    │ ├── cert +                #   Traefik certificates
+    │ ├── logs +                #   Traefik logs
+    └──
+    ```
+
+### Environments and Secrets
+
+In modern application development, managing sensitive information such as credentials, API keys, and configuration settings is crucial for maintaining security and integrity. All environment variables (envvars) in our setup are utilized as secrets to protect sensitive data from exposure in code repositories and during runtime. These secrets are securely stored in GitHub environment secrets, ensuring that access is restricted and controlled.
+
+The deployment process is managed through our CI/CD pipeline, which automatically retrieves and injects these secrets into the application as needed. This streamlined approach enhances security by ensuring that sensitive information is not hard-coded into files or directly exposed in the source code.
+
+Below is an overview of all the secrets utilized in the pipeline, as well as those defined in Docker Compose files and application configuration files. They are maintained for each environment.
+
+| Secret Name         | Type   | Description                       | Example                                        |
+|---------------------|--------|-----------------------------------|------------------------------------------------|
+
 ## Environment types
 
 In modern software development, creating robust applications requires a structured approach to managing various environments throughout the lifecycle of an application. Each environment serves a distinct purpose, from local development on a developer’s laptop to production systems running in a private cloud.
@@ -174,46 +205,7 @@ In a Docker setup, a Docker Compose file is used to define and manage multi-cont
 > Each environment has its own docker compose file  
 > compose.{environment}.yml
 
-## Application Structure
-
-The application is organized into a structured directory layout that facilitates efficient management and scalability. At the top level, the `app` directory contains several key subdirectories:
-
-    ```powershell
-    app
-    ├── cert +          # Certificates
-    ├── data +          # Data directory
-    │ ├── consul +      # Consul data
-    │ ├── pgadmin +     # PG admin data
-    │ └── pgdata +      # PostgreSql databases
-    └── logs +          # Logging
-    ```
-
 ## Solution configuration
-
-### Environments and Secrets
-
-In modern application development, managing sensitive information such as credentials, API keys, and configuration settings is crucial for maintaining security and integrity. All environment variables (envvars) in our setup are utilized as secrets to protect sensitive data from exposure in code repositories and during runtime. These secrets are securely stored in GitHub environment secrets, ensuring that access is restricted and controlled.
-
-The deployment process is managed through our CI/CD pipeline, which automatically retrieves and injects these secrets into the application as needed. This streamlined approach enhances security by ensuring that sensitive information is not hard-coded into files or directly exposed in the source code.
-
-Below is an overview of all the secrets utilized in the pipeline, as well as those defined in Docker Compose files and application configuration files. They are maintained for each environment.
-
-| Secret Name         | Type   | Description                       | Example                                        |
-|---------------------|--------|-----------------------------------|------------------------------------------------|
-| `APP_DATA_USERNAME` | Secret | DB Admin                          | `admin1`                                       |
-| `APP_DATA_PASSWORD` | Secret | DB Password                       | `1234`                                         |
-| `APP_HOST_USERNAME` | Secret | Server username                   | `user1`                                        |
-| `APP_HOST_PASSWORD` | Secret | Server password                   | `1234`                                         |
-| `APP_HOST_SERVER`   | Secret | Server IP                         | `10.0.0.1`                                     |
-| `APP_HOST_PORT`     | Secret | SSH Port                          | `22`                                           |
-| `REGISTRY_USERNAME` | Secret | Container registry username       | `user1`                                        |
-| `REGISTRY_PASSWORD` | Secret | Container registry password       | `1234`                                         |
-| `APP_DATA_URL`      | Secret | Database connection               | `DS://{username}:{password}@{database}`        |
-| `APP_DATA_NAME`     | Secret | Database name                     | `appdata`                                      |
-| `APP_DATA_CONTEXT`  | Secret | Select specific connection string | `SqliteContext`                                |
-| `APP_HOST_EMAIL`    | Secret | Server email                      | `a@b.com`                                      |
-| `APP_AUTH_GOOGLE`   | Secret | JSON with client ID and secret    | `{ ClientId: abc, ClientSecret: 123 }`         |
-| `APP_SMTP_OPTIONS`  | Secret | JSON with SMTP server options     | `{ Server: ... }`                              |
 
 ### Continuous Integration and Delivery
 
