@@ -92,6 +92,7 @@ services:
     volumes:
       - ../.app/consul/data:/consul/data
       - ../.app/consul/conf/minio.json:/consul/config/minio.json
+      - ../.app/consul/conf/mkdocs.json:/consul/config/mkdocs.json
       - ../.app/consul/conf/pgadmin.json:/consul/config/pgadmin.json
       - ../.app/consul/conf/postgres.json:/consul/config/postgres.json
       - ../.app/consul/conf/prometheus.json:/consul/config/prometheus.json
@@ -199,3 +200,19 @@ services:
       - "traefik.http.routers.minio.rule=Host(`localhost`)"
       - "traefik.http.services.minio.loadbalancer.server.port=9001"
       - "traefik.http.routers.minio.entrypoints=web"
+
+  mkdocs:
+    image: squidfunk/mkdocs-material
+    command: serve -a 0.0.0.0:8200 -v  # Serve on all interfaces
+    ports:
+      - "8200:8200"
+    volumes:
+      - "../.app:/docs"
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      - "traefik.http.routers.mkdocs.rule=Host(`localhost`)"
+      - "traefik.http.services.mkdocs.loadbalancer.server.port=8200"
+      - "traefik.http.routers.mkdocs.entrypoints=web"

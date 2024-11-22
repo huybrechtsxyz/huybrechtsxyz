@@ -143,6 +143,14 @@ function Invoke-Minio {
     }
 }
 
+function Invoke-MKDocs {
+    # Documentation path
+    $docsData = "$baseDir/docs"
+    New-Item -ItemType Directory -Path $docsData -Force
+    Copy-Item -Path "./src/mkdocs/mkdocs.yml" -Destination "$baseDir/mkdocs.yml"
+    Copy-Item -Path "./docs/*" -Destination $docsData -Recurse -Force
+}
+
 # FUNCTION: Configure and run pgadmin
 function Invoke-PGAdmin {
     Write-Output "Configuring PGDADMIN..."
@@ -255,6 +263,7 @@ New-Item -ItemType Directory -Path $baseDir -Force
 # Configure and run keycloak
 Invoke-Consul
 Invoke-Minio
+Invoke-MKDocs
 Invoke-PGAdmin
 Invoke-Postgres
 Invoke-Prometheus
@@ -275,6 +284,7 @@ if ($docker -eq 'true') {
         "http://localhost:9090",                # Prometheus dashboard
         "http://localhost:8800/pgadmin",        # Database administration
         "http://localhost:9001",                # Blob storage provider
+        "http://localhost:8200",                # Documentation
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window

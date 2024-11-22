@@ -20,6 +20,7 @@ An overview of the used services:
 
 - [Consul](./services/consul.md) aka consul
 - [Minio](./services/minio.md) aka minio
+- [MKDocs](./services/mkdocs.md) aka mkdocs
 - [PGAdmin4](./services/pgadmin.md) aka pgadmin
 - [PostgreSql](./services/postgres.md) aka postgres
 - [Prometheus](./services/prometheus.md) aka prometheus
@@ -34,6 +35,7 @@ With docker
 | Consul       | Develop       | localhost:8500               | /           | Service configuration and discovery             |
 | Consul       | Develop       | localhost:8600/udp           | /           | Raft gossip protocol                            |
 | Minio        | Develop       | localhost:9001               | /           | Blob storage provider                           |
+| MKDocs       | Develop       | localhost:8200               | /           | Documentation generation                        |
 | PGAdmin4     | Develop       | localhost:8800               | /pgadmin    | Database administration                         |
 | PostgreSql   | Develop       | localhost:5432               | /           | PostgreSQL Database                             |
 | PostgreSql   | Develop       | localhost:9187               | /           | PostgreSQL Prometheus Exporter                  |
@@ -92,6 +94,7 @@ The application is organized into a structured directory layout that facilitates
     │ ├── config +              #   Consul configuration
     │ ├── data +                #   Consul data
     │ ├── logs +                #   Consul logs
+    ├── docs +                  # Documentation
     ├── minio +                 # Minio
     │ ├── data +                #   Minio data
     ├── pgadmin +               # PGAdmin4
