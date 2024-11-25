@@ -73,174 +73,6 @@ function Set-Docker {
     }
 }
 
-# FUNCTION: Configure and run consul
-function Invoke-Consul {
-    Write-Output "Configuring CONSUL..."
-    $consulDir = "$baseDir/consul"
-    $consulConf = "$consulDir/conf"
-    $consulData = "$consulDir/data"
-    #$consulLogs = "$consulDir/logs"
-    New-Item -ItemType Directory -Path $consulDir, $consulConf, $consulData -Force #$consulLogs 
-    $consulDir = Resolve-Path -Path $consulDir
-    $consulConf = Resolve-Path -Path $consulConf
-    $consulData = Resolve-Path -Path $consulData
-    #$consulLogs = Resolve-Path -Path $consulLogs
-    $consulExe = "$consulDir/consul.exe"
-    Copy-Item -Path "./src/consul/*" -Destination $consulConf -Recurse
-
-    if ($docker -eq 'true')
-    {
-        Write-Output "Configuring CONSUL for Docker..."
-    }
-    else
-    {
-        Write-Output "Configuring CONSUL for Executable..."
-        
-        if (-Not (Test-Path -Path $consulExe)) {
-            Write-Output " -- Extracting Consul..."
-            Expand-ZipFile -zipFile "./zips/consul_1.20.1.zip" -extractPath $consulDir
-        }
-    
-        Write-Output " -- Setting environment ..."
-        $env:CONSUL_ADDR="http://127.0.0.1:8500"
-
-        Write-Output " -- Starting executable ..."
-        Start-Process -FilePath $consulExe -ArgumentList "agent", "-dev", "-config-dir $consulConf" -WindowStyle Minimized
-    }
-}
-
-# FUNCTION: Configure and run consul
-function Invoke-Minio {
-    Write-Output "Configuring MINIO..."
-    $minioDir = "$baseDir/minio"
-    #$minioConf = "$minioDir/conf"
-    $minioData = "$minioDir/data"
-    #$minioLogs = "$minioDir/logs"
-    New-Item -ItemType Directory -Path $minioDir, $minioData -Force #, $minioConf $minioLogs 
-    $minioDir = Resolve-Path -Path $minioDir
-    #$minioConf = Resolve-Path -Path $minioConf
-    $minioData = Resolve-Path -Path $minioData
-    #$minioLogs = Resolve-Path -Path $minioLogs
-    $minioExe = "$minioDir/minio.exe"
-
-    if ($docker -eq 'true')
-    {
-        Write-Output "Configuring MINIO for Docker..."
-    }
-    else
-    {
-        Write-Output "Configuring MINIO for Executable..."
-        
-        if (-Not (Test-Path -Path $minioExe)) {
-            Write-Output " -- Extracting minio..."
-            Expand-ZipFile -zipFile "./zips/minio-v202411.zip" -extractPath $minioDir
-        }
-    
-        Write-Output " -- Setting environment ..."
-        
-        Write-Output " -- Starting executable ..."
-        Start-Process -FilePath $minioExe -ArgumentList "agent", "-dev", "-config-dir $minioConf" -WindowStyle Minimized
-    }
-}
-
-function Invoke-MKDocs {
-    # Documentation path
-    $docsData = "$baseDir/docs"
-    New-Item -ItemType Directory -Path $docsData -Force
-    Copy-Item -Path "./src/mkdocs/mkdocs.yml" -Destination "$baseDir/mkdocs.yml"
-    Copy-Item -Path "./docs/*" -Destination $docsData -Recurse -Force
-}
-
-# FUNCTION: Configure and run pgadmin
-function Invoke-PGAdmin {
-    Write-Output "Configuring PGDADMIN..."
-    $pgadminDir = "$baseDir/pgadmin"
-    $pgadminData = "$pgadminDir/data"
-    #$pgadminLogs = "$pgadminDir/logs"
-    New-Item -ItemType Directory -Path $pgadminDir, $pgadminData -Force #, $pgadminLogs
-    $pgadminDir = Resolve-Path -Path $pgadminDir
-    $pgadminData = Resolve-Path -Path $pgadminData
-    #$pgadminLogs = Resolve-Path -Path $pgadminLogs
-
-    if ($docker -eq 'true')
-    {
-        Write-Output "Configuring PGDADMIN for Docker..."
-    }
-    else
-    {
-        Write-Output "Skipping PGDADMIN for Executable..."
-    }
-}
-
-# FUNCTION: Configure and run postgres
-function Invoke-postgres {
-    Write-Output "Configuring POSTGRESQL..."
-    $postgresDir = "$baseDir/postgres"
-    $postgresData = "$postgresDir/data"
-    #$postgresLogs = "$postgresDir/logs"
-    New-Item -ItemType Directory -Path $postgresDir, $postgresData -Force #, $postgresLogs
-    $postgresDir = Resolve-Path -Path $postgresDir
-    $postgresData = Resolve-Path -Path $postgresData
-    #$postgresLogs = Resolve-Path -Path $postgresLogs
-
-    if ($docker -eq 'true')
-    {
-        Write-Output "Configuring POSTGRESQL for Docker..."
-        Write-Output " -- Setting environment ..."
-        $env:POSTGRES_USER="admin"  
-        $env:POSTGRES_PASSWORD="password"    
-    }
-    else
-    {
-        Write-Output "Skipping POSTGRESQL for Executable..."
-    }
-}
-
-# FUNCTION: Configure and run prometheus
-function Invoke-Prometheus {
-    Write-Output "Configuring PROMETHEUS..."
-    $prometheusDir = "$baseDir/prometheus"
-    $prometheusConf = "$prometheusDir/conf"
-    $prometheusData = "$prometheusDir/data"
-    #$prometheusLogs = "$prometheusDir/logs"
-    New-Item -ItemType Directory -Path $prometheusDir, $prometheusConf, $prometheusData -Force #, $prometheusLogs 
-    $prometheusDir = Resolve-Path -Path $prometheusDir
-    $prometheusConf = Resolve-Path -Path $prometheusConf
-    $prometheusData = Resolve-Path -Path $prometheusData
-    #$prometheusLogs = Resolve-Path -Path $prometheusLogs
-    Copy-Item -Path "./src/prometheus/*" -Destination $prometheusConf -Recurse
-
-    if ($docker -eq 'true')
-    {
-        Write-Output "Configuring PROMETHEUS for Docker..."        
-    }
-    else
-    {
-        Write-Output "Skipping PROMETHEUS for Executable..."
-    }
-}
-
-# FUNCTION: Configure and run traefik
-function Invoke-Traefik {
-    Write-Output "Configuring TRAEFIK..."
-    $traefikDir = "$baseDir/traefik"
-    $traefikCert = "$traefikDir/cert"
-    $traefikLogs = "$traefikDir/logs"
-    New-Item -ItemType Directory -Path $traefikDir, $traefikCert, $traefikLogs -Force
-    $traefikDir = Resolve-Path -Path $traefikDir
-    $traefikCert = Resolve-Path -Path $traefikCert
-    $traefikLogs = Resolve-Path -Path $traefikLogs
-
-    if ($docker -eq 'true')
-    {
-        Write-Output "Configuring TRAEFIK for Docker..."        
-    }
-    else
-    {
-        Write-Output "Skipping TRAEFIK for Executable..."
-    }
-}
-
 #
 # START DEVELOPMENT SERVICES
 #
@@ -260,15 +92,9 @@ Write-Output 'Creating APP directories...'
 $baseDir = "./.app"
 New-Item -ItemType Directory -Path $baseDir -Force
 
-# Configure and run keycloak
-Invoke-Consul
-Invoke-Minio
-Invoke-MKDocs
-Invoke-PGAdmin
-Invoke-Postgres
-Invoke-Prometheus
-Invoke-Traefik
+# Configure and run services
 
+# Debug and test
 if ($docker -eq 'true') {
     #
     # USE DOCKER
@@ -279,12 +105,7 @@ if ($docker -eq 'true') {
 
     # DEBUG AND TEST
     Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://localhost:8500",                # Consul
-        "http://proxy.localhost/dashboard/#/",  # Traefik dashboard
-        "http://localhost:9090",                # Prometheus dashboard
-        "http://localhost:8800/pgadmin",        # Database administration
-        "http://localhost:9001",                # Blob storage provider
-        "http://localhost:8200",                # Documentation
+        "http://localhost:x",                # x
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window
@@ -293,8 +114,7 @@ if ($docker -eq 'true') {
     # USE EXECUTABLES
     #
     Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://localhost:8500",                # Consul
-        "http://localhost:9001",                # Blob storage provider
+        "http://localhost:x",                # Consul
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window
@@ -312,8 +132,6 @@ if ($docker -eq 'true') {
 } else {
     # STOPPING SERVICES
     Stop-Process -Name 'msedge' -ErrorAction Ignore
-    Stop-Process -Name 'consul' -ErrorAction Ignore
-    Stop-Process -Name 'minio' -ErrorAction Ignore
 }
 
 # Stop the development environment
