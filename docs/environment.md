@@ -25,10 +25,14 @@ An overview of the used services:
 
 ### Variables overview
 
-| Secret Name           | Type   | Description                       | Example  |
-|-----------------------|--------|-----------------------------------|--------- |
-| `KAMATERA_API_KEY`    | Secret | Kamatera API Key                  | `123456` |
-| `KAMATERA_API_SECRET` | Secret | Kamatera API Key                  | `123546` |
+| Secret Name           | Type   | Description               | Example  |
+|-----------------------|--------|---------------------------|----------|
+| `KAMATERA_API_KEY`    | Secret | Kamatera API Key          | `123456` |
+| `KAMATERA_API_SECRET` | Secret | Kamatera API Key          | `123546` |
+| `APP_HOST_USERNAME`   | Secret | Server username           | `user1`  |
+| `APP_HOST_PASSWORD`   | Secret | Server password           | `1234`   |
+| `APP_HOST_SERVER`     | Secret | Server IP                 | `10.0.0.1` |
+| `APP_HOST_PORT`       | Secret | SSH Port                  | `22`     |
 
 ### Application overview
 

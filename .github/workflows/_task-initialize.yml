@@ -27,10 +27,12 @@ jobs:
         env:
           KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
           KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
+          KAMATERA_ENVIRONMENT: ${{ inputs.environment }}
         run: |
           echo "Setting up Kamatera credentials..."
           export TF_VAR_api_key=$KAMATERA_API_KEY
           export TF_VAR_api_secret=$KAMATERA_API_SECRET
+          export TF_VAR_environment=$KAMATERA_ENVIRONMENT
       - name: Terraform Init
         run: terraform init
       - name: Terraform Plan
