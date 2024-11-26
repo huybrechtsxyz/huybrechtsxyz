@@ -10,6 +10,8 @@ on:
     secrets:
       KAMATERA_API_KEY:
         required: true
+      KAMATERA_API_SECRET:
+        required: true
 
 jobs:
   terraform:
@@ -21,9 +23,17 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.7
+      - name: Configure Kamatera API
+        env:
+          KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
+          KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
+        run: |
+          echo "Setting up Kamatera credentials..."
+          export TF_VAR_api_key=$KAMATERA_API_KEY
+          export TF_VAR_api_secret=$KAMATERA_API_SECRET
       - name: Terraform Init
         run: terraform init
       - name: Terraform Plan
-        run: terraform plan -var="kamatera_api_key=${{ secrets.KAMATERA_API_KEY }}"
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -var="kamatera_api_key=${{ secrets.KAMATERA_API_KEY }}"
+        run: terraform plan -out=plan.tfplan
+      # - name: Terraform Apply
+      #   run: terraform apply -auto-approve plan.tfplan

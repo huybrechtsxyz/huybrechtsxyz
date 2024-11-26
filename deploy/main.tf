@@ -94,6 +94,18 @@ resource "kamatera_server" "manager" {
     environment = var.environment
     role        = "manager"
   }
+
+  connection {
+    type     = "ssh"
+    user     = "root"
+    password = var.password
+    host     = self.network_interfaces_elastic_ips[0]
+    timeout  = "5m"
+  }
+
+  provisioner "scripts" {
+    inline = var.install_docker_script
+  }
 }
 
 # Provision workernode 
@@ -117,6 +129,18 @@ resource "kamatera_server" "worker" {
   tags = {
     environment = var.environment
     role        = "worker"
+  }
+  
+  connection {
+    type     = "ssh"
+    user     = "root"
+    password = var.password
+    host     = self.network_interfaces_elastic_ips[0]
+    timeout  = "5m"
+  }
+
+  provisioner "scripts" {
+    inline = var.install_docker_script
   }
 }
 

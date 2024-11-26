@@ -25,10 +25,10 @@ An overview of the used services:
 
 ### Variables overview
 
-| Secret Name         | Type   | Description                       | Example                                        |
-|---------------------|--------|-----------------------------------|------------------------------------------------|
-| `KAMATERA_API_ID`   | Secret | Kamatera API Key                  | `123456`                                       |
-| `KAMATERA_API_KEY`  | Secret | Kamatera API Key                  | `123546`                                       |
+| Secret Name           | Type   | Description                       | Example  |
+|-----------------------|--------|-----------------------------------|--------- |
+| `KAMATERA_API_KEY`    | Secret | Kamatera API Key                  | `123456` |
+| `KAMATERA_API_SECRET` | Secret | Kamatera API Key                  | `123546` |
 
 ### Application overview
 

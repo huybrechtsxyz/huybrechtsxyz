@@ -1,5 +1,6 @@
 {
     "cSpell.enabledFileTypes": {
-        "tf": false
+        "tf": false,
+        "github-actions-workflow": false
     }
 }
