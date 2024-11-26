@@ -1,0 +1,26 @@
+# This workflow deploys all components to the test environment
+name: Deploy To Test
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'src/website/**'
+      - '!src/website/*.yml'
+
+jobs:
+  deploy_components:
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_pipeline.yml@main
+    with:
+      environment: test
+      initialize: 'true'
+      rebuild: 'true'
+    secrets:
+      KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
+      KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
+      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
+      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
+      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
+      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
