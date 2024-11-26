@@ -4,9 +4,9 @@ version: '3.9'
 networks:
 
   public:
-    driver: overlay
+    driver: bridge
   private:
-    driver: overlay
+    driver: bridge
 
 services:
 
@@ -29,11 +29,11 @@ services:
       - --accesslog.format=json
       - --accesslog.filepath=/app/logs/traefik-access.log
       # Prometheus metrics
-      - --metrics.prometheus=true
-      - --metrics.prometheus.addEntryPointsLabels=true
-      - --metrics.prometheus.addRoutersLabels=true
-      - --metrics.prometheus.addServicesLabels=true
-      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      # - --metrics.prometheus=true
+      # - --metrics.prometheus.addEntryPointsLabels=true
+      # - --metrics.prometheus.addRoutersLabels=true
+      # - --metrics.prometheus.addServicesLabels=true
+      # - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       # Consul configuration
       # - --providers.consulCatalog=true
       # - --providers.consulCatalog.cache=true
@@ -43,7 +43,7 @@ services:
       # - --providers.consulCatalog.exposedByDefault=false
       # - --providers.consulCatalog.defaultRule=Host(`localhost`)
       # Entry points
-      - --entrypoints.web.address=:8080
+      - --entrypoints.web.address=:80
       # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
       # Docker configuration
       - --providers.docker
@@ -55,13 +55,12 @@ services:
     ports:
       - "80:80"
       - "433:433"
-      - "8080:8080"
     networks:
       - public
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "../.app/cert:/app/cert"
-      - "../.app/logs:/app/logs"
+      - "../.app/traefik/cert:/app/cert"
+      - "../.app/traefik/logs:/app/logs"
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
       interval: 15s
@@ -73,56 +72,54 @@ services:
       - "traefik.enable=true"
       - "traefik.tags=develop"
       # Dashboard
-      - "traefik.http.routers.traefik.rule=Host(`proxy.localhost`)"
+      - "traefik.http.routers.traefik.rule=Host(`localhost`)"
       - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.entrypoints=web"
-      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
 
-  consul:
-    image: consul:latest
-    container_name: consul
-    environment:
-      - CONSUL_BIND_INTERFACE=eth0
-    command: agent -dev -client=0.0.0.0
-    ports:
-      - "8500:8500" # Web UI and API
-    networks:
-      - public
-    volumes:
-      - ../.app/consul/conf:/consul/config
-      - ../.app/consul/data:/consul/data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.tags=develop"
-      - "traefik.http.routers.consul.rule=Host(`localhost`)"
-      - "traefik.http.routers.consul.entrypoints=web"
-      - "traefik.http.services.consul.loadbalancer.server.port=8500"
+  # consul:
+  #   image: consul:latest
+  #   container_name: consul
+  #   environment:
+  #     - CONSUL_BIND_INTERFACE=eth0
+  #   command: agent -dev -client=0.0.0.0
+  #   ports:
+  #     - "8500:8500" # Web UI and API
+  #   networks:
+  #     - public
+  #   volumes:
+  #     - ../.app/consul/conf:/consul/config
+  #     - ../.app/consul/data:/consul/data
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+  #     interval: 15s
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 30s
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.tags=develop"
+  #     - "traefik.http.routers.consul.rule=Host(`localhost`)"
+  #     - "traefik.http.routers.consul.entrypoints=web"
+  #     - "traefik.http.services.consul.loadbalancer.server.port=8500"
 
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --storage.tsdb.path=/prometheus
-      - --web.external-url=http://localhost:9090
-    ports:
-      - "9090:9090"  # Prometheus web UI
-    networks:
-      - public
-    volumes:
-      - "../.app/prometheus/conf:/etc/prometheus"  # Prometheus config directory
-      - "../.app/prometheus/data:/prometheus"  # Data storage
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    labels:
-      - "traefik.enable=false" # grafana is used as UI
+  # prometheus:
+  #   image: prom/prometheus
+  #   container_name: prometheus
+  #   command:
+  #     - --config.file=/etc/prometheus/prometheus.yml
+  #     - --storage.tsdb.path=/prometheus
+  #     - --web.external-url=http://localhost:9090
+  #   ports:
+  #     - "9090:9090"  # Prometheus web UI
+  #   networks:
+  #     - public
+  #   volumes:
+  #     - "../.app/prometheus/conf:/etc/prometheus"  # Prometheus config directory
+  #     - "../.app/prometheus/data:/prometheus"  # Data storage
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+  #     interval: 15s
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 30s
+  #   labels:
+  #     - "traefik.enable=false" # grafana is used as UI

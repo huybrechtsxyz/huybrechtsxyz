@@ -162,11 +162,12 @@ if ($docker -eq 'true') {
     #
     $composeFile = "./src/compose.develop.yml"
     Write-Host "Starting Docker Compose..."
+    docker-compose -f $composeFile config
     docker-compose -f $composeFile up -d
 
     # DEBUG AND TEST
     Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://proxy.localhost:8080/dashboard/",   # Traefik dashboard
+        "http://localhost/dashboard/#/",        # Traefik dashboard
         "http://localhost:8500",                    # Consul dashboard
         "http://localhost:9090",                    # Prometheus dashboard
         "--inprivate",                          # Open in InPrivate mode

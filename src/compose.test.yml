@@ -47,11 +47,11 @@ services:
       # Prometheus metrics
       # https://doc.traefik.io/traefik/v3.0/observability/metrics/prometheus/
       # Prometheus metrics
-      - --metrics.prometheus=true
-      - --metrics.prometheus.addEntryPointsLabels=true
-      - --metrics.prometheus.addRoutersLabels=true
-      - --metrics.prometheus.addServicesLabels=true
-      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      # - --metrics.prometheus=true
+      # - --metrics.prometheus.addEntryPointsLabels=true
+      # - --metrics.prometheus.addRoutersLabels=true
+      # - --metrics.prometheus.addServicesLabels=true
+      # - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       # CONSUL
       # - --providers.consulCatalog=true
       # - --providers.consulCatalog.cache=true
@@ -89,9 +89,9 @@ services:
       - --certificatesresolvers.leresolver.acme.email=webmaster@huybrechts.xyz
       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
       # Use the Docker secrets for Versio credentials instead of a credentials file
-      - --certificatesresolvers.leresolver.acme.dnschallenge.usernameFile=/run/secrets/VERSIO_USERNAME
-      - --certificatesresolvers.leresolver.acme.dnschallenge.passwordFile=/run/secrets/VERSIO_PASSWORD
-      - --certificatesresolvers.leresolver.acme.dnschallenge.endpointFile=/run/secrets/VERSIO_ENDPOINT
+      #- --certificatesresolvers.leresolver.acme.dnschallenge.usernameFile=/run/secrets/VERSIO_USERNAME
+      #- --certificatesresolvers.leresolver.acme.dnschallenge.passwordFile=/run/secrets/VERSIO_PASSWORD
+      #- --certificatesresolvers.leresolver.acme.dnschallenge.endpointFile=/run/secrets/VERSIO_ENDPOINT
     ports:
       - "80:80"
       - "443:443"
@@ -112,7 +112,23 @@ services:
     deploy:
       replicas: 1
       restart_policy:
-        condition: any
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 30s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+        monitor: 10s
+        order: start-first
+      resources:
+        limits:
+          cpus: "1.0"         # Max 1 CPU core
+          memory: "512M"      # Max 512 MB RAM
+        # reservations:
+        #   cpus: "0.25"        # Reserve 0.25 CPU core
+        #   memory: "256M"      # Reserve 256 MB RAM
       placement:
         constraints: [node.role == manager]
       labels:
@@ -130,43 +146,43 @@ services:
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.middlewares=authadmin"
 
-  prometheus:
-    image: prom/prometheus
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --storage.tsdb.path=/prometheus
-      - --web.external-url=http://localhost:9090
-    ports:
-      - "9090:9090"  # Expose Prometheus web UI (adjust as necessary)
-    networks:
-      - public
-    volumes:
-      - "/app/prometheus/conf:/etc/prometheus"  # Configuration directory
-      - "/app/prometheus/conf:/prometheus"      # Data storage (for persistence)
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    deploy:
-      replicas: 2
-      placement:
-        constraints:
-          - node.role == manager  # Ensure Prometheus runs on manager nodes
-      resources:
-        # Set resource limits for better performance and stability
-        limits:
-          cpus: '1.0'
-          memory: 1G  
-        # Set resource reservations to ensure availability
-        # reservations:
-        #   cpus: '0.5'
-        #   memory: 512M  
-      restart_policy:
-        condition: on-failure  # Restart on failure
-      update_config:
-        parallelism: 1  # Limit how many instances are updated at once
-        delay: 10s  # Delay between instance updates to prevent downtime
-      labels:
-        - "traefik.enable=false"  # Disable Traefik routing for this service
+  # prometheus:
+  #   image: prom/prometheus
+  #   command:
+  #     - --config.file=/etc/prometheus/prometheus.yml
+  #     - --storage.tsdb.path=/prometheus
+  #     - --web.external-url=http://localhost:9090
+  #   ports:
+  #     - "9090:9090"  # Expose Prometheus web UI (adjust as necessary)
+  #   networks:
+  #     - public
+  #   volumes:
+  #     - "/app/prometheus/conf:/etc/prometheus"  # Configuration directory
+  #     - "/app/prometheus/conf:/prometheus"      # Data storage (for persistence)
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+  #     interval: 15s
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 30s
+  #   deploy:
+  #     replicas: 2
+  #     placement:
+  #       constraints:
+  #         - node.role == manager  # Ensure Prometheus runs on manager nodes
+  #     resources:
+  #       # Set resource limits for better performance and stability
+  #       limits:
+  #         cpus: '1.0'
+  #         memory: 1G  
+  #       # Set resource reservations to ensure availability
+  #       # reservations:
+  #       #   cpus: '0.5'
+  #       #   memory: 512M  
+  #     restart_policy:
+  #       condition: on-failure
+  #     update_config:
+  #       parallelism: 1  # Limit how many instances are updated at once
+  #       delay: 10s  # Delay between instance updates to prevent downtime
+  #     labels:
+  #       - "traefik.enable=false"  # Disable Traefik routing for this service
