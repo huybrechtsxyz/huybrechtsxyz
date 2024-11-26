@@ -46,11 +46,12 @@ services:
       - --accesslog.filepath=/app/logs/traefik-access.log
       # Prometheus metrics
       # https://doc.traefik.io/traefik/v3.0/observability/metrics/prometheus/
-      #Enable prometheus metrics
-      # - --metrics.prometheus=true
-      # - --metrics.prometheus.addEntryPointsLabels=true
-      # - --metrics.prometheus.addRoutersLabels=true
-      # - --metrics.prometheus.addServicesLabels=true
+      # Prometheus metrics
+      - --metrics.prometheus=true
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addRoutersLabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       # CONSUL
       # - --providers.consulCatalog=true
       # - --providers.consulCatalog.cache=true
@@ -104,10 +105,10 @@ services:
       # Run traefik healthcheck command
       # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
       test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     deploy:
       replicas: 1
       restart_policy:
@@ -128,3 +129,44 @@ services:
         - "traefik.http.routers.traefik.tls.certresolver=leresolver"
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.middlewares=authadmin"
+
+  prometheus:
+    image: prom/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.external-url=http://localhost:9090
+    ports:
+      - "9090:9090"  # Expose Prometheus web UI (adjust as necessary)
+    networks:
+      - public
+    volumes:
+      - "/app/prometheus/conf:/etc/prometheus"  # Configuration directory
+      - "/app/prometheus/conf:/prometheus"      # Data storage (for persistence)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      replicas: 2
+      placement:
+        constraints:
+          - node.role == manager  # Ensure Prometheus runs on manager nodes
+      resources:
+        # Set resource limits for better performance and stability
+        limits:
+          cpus: '1.0'
+          memory: 1G  
+        # Set resource reservations to ensure availability
+        # reservations:
+        #   cpus: '0.5'
+        #   memory: 512M  
+      restart_policy:
+        condition: on-failure  # Restart on failure
+      update_config:
+        parallelism: 1  # Limit how many instances are updated at once
+        delay: 10s  # Delay between instance updates to prevent downtime
+      labels:
+        - "traefik.enable=false"  # Disable Traefik routing for this service

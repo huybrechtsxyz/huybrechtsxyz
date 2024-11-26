@@ -97,8 +97,15 @@ jobs:
           echo Creating application directories
           cd /
           createpath "/app"
-          createpath "/app/cert"
-          createpath "/app/logs"
+          createpath "/app/traefik"
+          createpath "/app/traefik/cert"
+          createpath "/app/traefik/logs"
+          createpath "/app/consul"
+          createpath "/app/consul/conf"
+          createpath "/app/consul/data"
+          createpath "/app/prometheus"
+          createpath "/app/prometheus/conf"
+          createpath "/app/prometheus/data"
           #Create the PUBLIC network on docker
           echo Public Network
           docker network inspect public --format {{.Id}} 2>/dev/null \

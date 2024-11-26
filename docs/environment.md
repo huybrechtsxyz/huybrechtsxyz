@@ -18,31 +18,37 @@ The table below provides a structured view of the domain configuration for the w
 
 An overview of the used services:
 
-- [Traefik](./services/traefik.md) aka traefik
-
-- "80:80"
-      - "433:433"
-      - "8080:8080"
-
-#### Development services
-
-| Service | Ports | Domain | Path | Description |
-|---------|-------|--------|------|-------------|
-| Traefik | 80    | localhost       | /           | Traefik HTTP |
-| Traefik | 433   | localhost       | /           | Traefik HTTPS |
-| Traefik | 8080  | proxy.localhost | /dashboard/ | Traefik Dashboard |
+- [Consul](./services/consul.md) aka consul for discovery and configuration
+- [Prometheus](./services/prometheus.md) aka prometheus for monitoring
+- [Traefik](./services/traefik.md) aka traefik as reverse proxy
 
 #### Production services
 
-| Service | Ports | Domain  | Path | Description |
-|---------|-------|---------|------| ----------- |
-| Traefik | 80    | localhost       | /           | Traefik HTTP + Redirect |
-| Traefik | 433   | localhost       | /           | Traefik HTTPS |
+| Service    | Ports | Domain         | Path        | Description |
+|------------|-------|----------------|-------------| ----------- |
+| Traefik    |    80 | domain         | /           | Traefik HTTP + Redirect |
+| Traefik    |   433 | domain         | /           | Traefik HTTPS |
+| Traefik    |   433 | proxy.domain   | /dashboard  | Traefik dasboard |
+| Consul     |  8500 | disco.domain   | /           | Consul discovery and configuration |
+| Prometheus |  9090 | /              | /           | Prometheus monitoring |
+
+#### Development services
+
+| Service    | Ports | Domain          | Path        | Description |
+|------------|-------|-----------------|-------------|-------------|
+| Traefik    |    80 | localhost       | /           | Traefik HTTP |
+| Traefik    |   433 | localhost       | /           | Traefik HTTPS |
+| Traefik    |  8080 | localhost       | /dashboard/ | Traefik Dashboard |
+| Consul     |  8500 | localhost       | /           | Consul discovery and configuration
+| Prometheus |  9090 | localhost       | /           | Prometheus Dashboard |
 
 ### Variables overview
 
 | Secret Name           | Type   | Description               | Example  |
 |-----------------------|--------|---------------------------|----------|
+| `CONSUL_ADDR`         | Env    | Consul server address     | `http://path/to.link:8500'  |
+| `MINIO_USERNAME`      | Secret | Minio Username            | `user1`  |
+| `MINIO_PASSWORD`      | Secret | Minio Password            | `pass1`  |
 | `KAMATERA_API_KEY`    | Secret | Kamatera API Key          | `123456` |
 | `KAMATERA_API_SECRET` | Secret | Kamatera API Key          | `123546` |
 | `VERSIO_USERNAME`     | Secret | Versio Username           | `user1`  |
@@ -59,11 +65,15 @@ The application is organized into a structured directory layout that facilitates
 
     ```powershell
     app
-    ├── cert +                # Certificates
-    ├── logs +                # Logfiles
-
-    │ ├── x +              #   Consul configuration
-    │ ├── data +                #   Consul data
+    ├── consul +                 # Consul
+    │ ├── conf +                 #   Consul conf
+    │ ├── data +                 #   Consul data
+    ├── prometheus +             # Prometheus
+    │ ├── conf +                 #   Prometheus conf
+    │ ├── data +                 #   Prometheus data
+    ├── traefik +                # Traefik
+    │ ├── cert +                 #   Traefik certificates
+    │ ├── logs +                 #   Traefik logs
     ```
 
 ### Domain overview

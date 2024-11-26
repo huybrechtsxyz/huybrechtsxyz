@@ -73,12 +73,56 @@ function Set-Docker {
     }
 }
 
+# Function Configure and run Consul
+function Invoke-Consul {
+    Write-Host 'Configuring CONSUL ...'
+    $consulDir = "$baseDir/consul"
+    $consulConf = "$consulDir/conf"
+    $consulData = "$consulDir/data"
+    New-Item -ItemType Directory -Path $consulDir, $consulConf, $consulData -Force
+    $consulDir = Resolve-Path -Path $consulDir
+    $consulExe = "$consulDir/consul.exe"
+    Copy-Item -Path "./src/consul/*" -Destination $consulConf -Recurse
+    
+    if ($docker -eq 'true') {
+        Write-Host 'Configuring CONSUL ... for DOCKER'
+    } else {
+        Write-Host 'Configuring CONSUL ... for LOCALHOST'
+        if (-Not (Test-Path -Path $consulExe)) {
+            Write-Output " -- Extracting Consul..."
+            Extract-ZipFile -zipFile "./zips/consul_1.20.1.zip" -extractPath $consulDir
+        }
+        Write-Host " -- Setting environment ..."
+        $env:CONSUL_ADDR="http://127.0.0.1:8500"
+        Write-Host " -- Starting executable ..."
+        Start-Process -FilePath $consulExe -ArgumentList "agent", "-dev", "-config-dir $consulData" -WindowStyle Minimized
+    }
+    Write-Host 'Configuring CONSUL ... done'
+}
+
+# Function Configure and run Prometheus
+function Invoke-Prometheus {
+    Write-Host 'Configuring PROMETHEUS ...'
+    $prometheusDir = "$baseDir/prometheus"
+    $prometheusConf = "$prometheusDir/conf"
+    $prometheusData = "$prometheusDir/data"
+    New-Item -ItemType Directory -Path $prometheusDir, $prometheusConf, $prometheusData -Force
+    Copy-Item -Path "./src/prometheus/*" -Destination $prometheusConf -Recurse
+    if ($docker -eq 'true') {
+        Write-Host 'Configuring PROMETHEUS ... for DOCKER'
+    } else {
+        Write-Host 'Configuring PROMETHEUS ... skipping'
+    }
+    Write-Host 'Configuring PROMETHEUS ... done'
+}
+
 # Function Configure and run Traefik
 function Invoke-Traefik {
     Write-Host 'Configuring TRAEFIK ...'
-    $traefikCert = "$baseDir/cert"
-    $traefikLogs = "$baseDir/logs"
-    New-Item -ItemType Directory -Path $traefikCert, $traefikLogs -Force
+    $traefikDir = "$baseDir/traefik"
+    $traefikCert = "$traefikDir/cert"
+    $traefikLogs = "$traefikDir/logs"
+    New-Item -ItemType Directory -Path $traefikDir, $traefikCert, $traefikLogs -Force
     if ($docker -eq 'true') {
         Write-Host 'Configuring TRAEFIK ... for DOCKER'
     } else {
@@ -107,7 +151,9 @@ $baseDir = "./.app"
 New-Item -ItemType Directory -Path $baseDir -Force
 
 # Configure and run services
+Invoke-Consul
 Invoke-Traefik
+Invoke-Prometheus
 
 # Debug and test
 if ($docker -eq 'true') {
@@ -120,7 +166,9 @@ if ($docker -eq 'true') {
 
     # DEBUG AND TEST
     Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://localhost:x",                # x
+        "http://proxy.localhost:8080/dashboard/",   # Traefik dashboard
+        "http://localhost:8500",                    # Consul dashboard
+        "http://localhost:9090",                    # Prometheus dashboard
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window
@@ -129,7 +177,7 @@ if ($docker -eq 'true') {
     # USE EXECUTABLES
     #
     Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://localhost:x",                # Consul
+        "http://localhost:8500",                # Consul
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window

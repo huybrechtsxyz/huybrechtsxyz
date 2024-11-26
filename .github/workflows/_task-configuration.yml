@@ -25,7 +25,7 @@ jobs:
     steps:
     - name: Check out the repo
       uses: actions/checkout@v4
-    - name: Deploy generic files
+    - name: Deploy Generic Files
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.APP_HOST_SERVER }}
@@ -36,3 +36,25 @@ jobs:
         overwrite: true
         source: "src/compose.${{ inputs.environment }}.yml"
         target: /app
+    - name: Deploy Consul Files
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.APP_HOST_SERVER }}
+        username: ${{ secrets.APP_HOST_USERNAME }}
+        password: ${{ secrets.APP_HOST_PASSWORD }}
+        port: ${{ secrets.APP_HOST_PORT }}
+        strip_components: 1
+        overwrite: true
+        source: "src/consul/**"
+        target: /app/consul/conf
+    - name: Deploy Prometheus Files
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.APP_HOST_SERVER }}
+        username: ${{ secrets.APP_HOST_USERNAME }}
+        password: ${{ secrets.APP_HOST_PASSWORD }}
+        port: ${{ secrets.APP_HOST_PORT }}
+        strip_components: 1
+        overwrite: true
+        source: "src/prometheus/**"
+        target: /app/prometheus/conf
