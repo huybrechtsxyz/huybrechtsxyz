@@ -13,9 +13,9 @@ function Expand-ZipFile {
         # Load the compression assembly and extract the zip file
         Add-Type -AssemblyName System.IO.Compression.FileSystem
         [System.IO.Compression.ZipFile]::ExtractToDirectory($zipFile, $extractPath)
-        Write-Output "Zip file extracted successfully to $extractPath"
+        Write-Host "Zip file extracted successfully to $extractPath"
     } else {
-        Write-Output "Zip file not found at $zipFile"
+        Write-Error "Zip file not found at $zipFile"
     }
 }
 
@@ -26,28 +26,28 @@ function Get-Docker {
         $dockerVersion = & docker --version 2>&1
         # If Docker is available, $dockerVersion should contain version information, otherwise it throws an error
         if ($dockerVersion -match "Docker version") {
-            Write-Output " -- Docker is available"
+            Write-Host " -- Docker is available"
             # Check if Docker is running
             try {
                 $output = docker run --rm hello-world 2>&1
                 if ($output -like "*docker: error during connect*") {
-                    Write-Output " -- Docker is not running"
+                    Write-Host " -- Docker is not running"
                     return $false
                 } else {
-                    Write-Output " -- Docker is running"
+                    Write-Host " -- Docker is running"
                     return $true
                 }
             } catch {
-                Write-Output " -- Docker is not running."
+                Write-Host " -- Docker is not running."
                 return $false
             }
         } else {
-            Write-Output " -- Docker not found"
+            Write-Host " -- Docker not found"
             return $false
         }
     } catch {
         # Handle the case where Docker isn't available
-        Write-Output " -- Docker is not installed."
+        Write-Host " -- Docker is not installed."
         return $false
     }
 }
@@ -73,6 +73,20 @@ function Set-Docker {
     }
 }
 
+# Function Configure and run Traefik
+function Invoke-Traefik {
+    Write-Host 'Configuring TRAEFIK ...'
+    $traefikCert = "$baseDir/cert"
+    $traefikLogs = "$baseDir/logs"
+    New-Item -ItemType Directory -Path $traefikCert, $traefikLogs -Force
+    if ($docker -eq 'true') {
+        Write-Host 'Configuring TRAEFIK ... for DOCKER'
+    } else {
+        Write-Host 'Configuring TRAEFIK ... skipping'
+    }
+    Write-Host 'Configuring TRAEFIK ... done'
+}
+
 #
 # START DEVELOPMENT SERVICES
 #
@@ -93,6 +107,7 @@ $baseDir = "./.app"
 New-Item -ItemType Directory -Path $baseDir -Force
 
 # Configure and run services
+Invoke-Traefik
 
 # Debug and test
 if ($docker -eq 'true') {

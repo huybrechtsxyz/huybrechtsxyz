@@ -18,10 +18,26 @@ The table below provides a structured view of the domain configuration for the w
 
 An overview of the used services:
 
-- [x](x) aka x
+- [Traefik](./services/traefik.md) aka traefik
+
+- "80:80"
+      - "433:433"
+      - "8080:8080"
+
+#### Development services
 
 | Service | Ports | Domain | Path | Description |
-|---------|-------|------- | ---- | ----------- |
+|---------|-------|--------|------|-------------|
+| Traefik | 80    | localhost       | /           | Traefik HTTP |
+| Traefik | 433   | localhost       | /           | Traefik HTTPS |
+| Traefik | 8080  | proxy.localhost | /dashboard/ | Traefik Dashboard |
+
+#### Production services
+
+| Service | Ports | Domain  | Path | Description |
+|---------|-------|---------|------| ----------- |
+| Traefik | 80    | localhost       | /           | Traefik HTTP + Redirect |
+| Traefik | 433   | localhost       | /           | Traefik HTTPS |
 
 ### Variables overview
 
@@ -29,6 +45,9 @@ An overview of the used services:
 |-----------------------|--------|---------------------------|----------|
 | `KAMATERA_API_KEY`    | Secret | Kamatera API Key          | `123456` |
 | `KAMATERA_API_SECRET` | Secret | Kamatera API Key          | `123546` |
+| `VERSIO_USERNAME`     | Secret | Versio Username           | `user1`  |
+| `VERSIO_PASSWORD`     | Secret | Versio Password           | `pass1`  |
+| `VERSIO_ENDPOINT`     | Secret | Versio Endpoint           | `http://path/to.link' |
 | `APP_HOST_USERNAME`   | Secret | Server username           | `user1`  |
 | `APP_HOST_PASSWORD`   | Secret | Server password           | `1234`   |
 | `APP_HOST_SERVER`     | Secret | Server IP                 | `10.0.0.1` |
@@ -40,14 +59,18 @@ The application is organized into a structured directory layout that facilitates
 
     ```powershell
     app
-    ├── x +                # Consul
+    ├── cert +                # Certificates
+    ├── logs +                # Logfiles
+
     │ ├── x +              #   Consul configuration
     │ ├── data +                #   Consul data
     ```
 
 ### Domain overview
 
-| Subdomain                         | Type | Points to        | Description                                        |
-|-----------------------------------|------|------------------|----------------------------------------------------|
-| test.huybrechts.xyz               | A    | {ip-address}     | x           |
-
+| Subdomain                         | Type | Points to        | Description |
+|-----------------------------------|------|------------------|-------------|
+| test.huybrechts.xyz               | A    | {ip-address}     | The Huybrechts-XYZ landing page |
+| test.huybrechts.dev               | A    | {ip-address}     | The Huybrechts-DEV project system page |
+| test.meeus.family                 | A    | {ip-address}     | The Meeus.Family landing page |
+| test.theorderoftheblacklizard.be  | A    | {ip-address}     | The Black Lizard landing page |

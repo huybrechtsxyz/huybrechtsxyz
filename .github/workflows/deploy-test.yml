@@ -20,6 +20,9 @@ jobs:
     secrets:
       KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
       KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
+      VERSIO_USERNAME: ${{ secrets.VERSIO_USERNAME }}
+      VERSIO_PASSWORD: ${{ secrets.VERSIO_PASSWORD }}
+      VERSIO_ENDPOINT: ${{ secrets.VERSIO_ENDPOINT }}
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}

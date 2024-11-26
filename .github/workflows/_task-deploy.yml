@@ -8,6 +8,12 @@ on:
         required: true
         type: string
     secrets:
+      VERSIO_USERNAME:
+        required: true
+      VERSIO_PASSWORD:
+        required: true
+      VERSIO_ENDPOINT:
+        required: true
       APP_HOST_SERVER:
         required: true
       APP_HOST_PORT:

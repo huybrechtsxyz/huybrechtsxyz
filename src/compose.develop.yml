@@ -1,0 +1,77 @@
+# Docker Compose for the development environment
+version: '3.9'
+
+networks:
+
+  public:
+    driver: overlay
+  private:
+    driver: overlay
+
+services:
+
+  traefik:
+    image: "traefik:v3.1.6"
+    command:
+      # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+      # Enable the Traefik log, for configurations and errors
+      - --log=true
+      - --log.level=DEBUG
+      - --log.format=json
+      - --log.maxsize=5
+      - --log.maxage=5
+      - --log.filePath=/app/logs/traefik.log
+      # Checking the Health of Your Traefik Instances
+      - --ping=true
+      # Enable the access log, with HTTP requests
+      - --accesslog=true
+      - --accesslog.format=json
+      - --accesslog.filepath=/app/logs/traefik-access.log
+      # Prometheus metrics
+      # - --metrics.prometheus=true
+      # - --metrics.prometheus.addEntryPointsLabels=true
+      # - --metrics.prometheus.addRoutersLabels=true
+      # - --metrics.prometheus.addServicesLabels=true
+      # Consul configuration
+      # - --providers.consulCatalog=true
+      # - --providers.consulCatalog.cache=true
+      # - --providers.consulCatalog.refreshInterval=30s
+      # - --providers.consulCatalog.endpoint.address=http://consul:8500
+      # - --providers.consulCatalog.endpoint.scheme=http
+      # - --providers.consulCatalog.exposedByDefault=false
+      # - --providers.consulCatalog.defaultRule=Host(`localhost`)
+      # Entry points
+      - --entrypoints.web.address=:8080
+      # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
+      # Docker configuration
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=public
+      # Dashboard. Optional. Default: true. 
+      - --api
+      - --api.dashboard=true
+    ports:
+      - "80:80"
+      - "433:433"
+      - "8080:8080"
+    networks:
+      - public
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "../.app/cert:/app/cert"
+      - "../.app/logs:/app/logs"
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    labels:
+      # Enable for test
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      # Dashboard
+      - "traefik.http.routers.traefik.rule=Host(`localhost`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"

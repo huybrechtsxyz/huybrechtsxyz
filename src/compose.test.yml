@@ -1,0 +1,130 @@
+# Docker Compose for the test environment
+version: '3.9'
+
+networks:
+
+  public:
+    driver: overlay
+  private:
+    driver: overlay
+
+secrets:
+
+  VERSIO_USERNAME:
+    external: true
+  VERSIO_PASSWORD:
+    external: true
+  VERSIO_ENDPOINT:
+    external: true
+
+services:
+
+  traefik:
+    image: "traefik:v3.1.6"
+    secrets:
+      - VERSIO_USERNAME
+      - VERSIO_PASSWORD
+      - VERSIO_ENDPOINT
+    environment:
+      VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
+      VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
+      VERSIO_ENDPOINT_FILE: /run/secrets/VERSIO_ENDPOINT
+    command:
+      # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+      # Enable the Traefik log, for configurations and errors
+      - --log=true
+      - --log.level=INFO
+      - --log.format=json
+      - --log.maxsize=5
+      - --log.maxage=5
+      - --log.filePath=/app/logs/traefik.log
+      # Checking the Health of Your Traefik Instances
+      - --ping=true
+      # Enable the access log, with HTTP requests
+      - --accesslog=true
+      - --accesslog.format=json
+      - --accesslog.filepath=/app/logs/traefik-access.log
+      # Prometheus metrics
+      # https://doc.traefik.io/traefik/v3.0/observability/metrics/prometheus/
+      #Enable prometheus metrics
+      # - --metrics.prometheus=true
+      # - --metrics.prometheus.addEntryPointsLabels=true
+      # - --metrics.prometheus.addRoutersLabels=true
+      # - --metrics.prometheus.addServicesLabels=true
+      # CONSUL
+      # - --providers.consulCatalog=true
+      # - --providers.consulCatalog.cache=true
+      # - --providers.consulCatalog.refreshInterval=30s
+      # - --providers.consulCatalog.endpoint.address=consul:8500
+      # - --providers.consulCatalog.endpoint.scheme=http
+      # - --providers.consulCatalog.exposedByDefault=false
+      # - --providers.consulcatalog.defaultRule=Host(`disco.test.huybrechts.xyz`)
+      # Entry points
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
+      # https://doc.traefik.io/traefik/routing/entrypoints/#http2
+      # Do not expose all Docker services, only the ones explicitly exposed
+      # Docker swarm confiuration
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=public
+      - --providers.swarm
+      - --providers.swarm.constraints=Label(`traefik.tags`, `test`)
+      # Dashboard. Optional. Default: true. 
+      - --api
+      - --api.dashboard=true
+      # Enable ACME (Let's Encrypt): automatic SSL.
+      # CA server to use. Uncomment the line to use Let's Encrypt's staging server, leave commented to go to prod. Optional
+      # Default: "https://acme-v02.api.letsencrypt.org/directory"
+      # Email address used for registration. Required
+      # File or key used for certificates storage. Required
+      # Make sure the this file is available and permission is set correctly
+      - --certificatesresolvers.leresolver.acme.dnschallenge=true
+      - --certificatesresolvers.leresolver.acme.dnschallenge.provider=versio
+      - --certificatesresolvers.leresolver.acme.dnschallenge.delaybeforecheck=0
+      - --certificatesresolvers.leresolver.acme.email=webmaster@huybrechts.xyz
+      - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
+      # Use the Docker secrets for Versio credentials instead of a credentials file
+      - --certificatesresolvers.leresolver.acme.dnschallenge.usernameFile=/run/secrets/VERSIO_USERNAME
+      - --certificatesresolvers.leresolver.acme.dnschallenge.passwordFile=/run/secrets/VERSIO_PASSWORD
+      - --certificatesresolvers.leresolver.acme.dnschallenge.endpointFile=/run/secrets/VERSIO_ENDPOINT
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - public
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/app/cert:/app/cert"
+      - "/app/logs:/app/logs"
+    healthcheck:
+      # Run traefik healthcheck command
+      # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      placement:
+        constraints: [node.role == manager]
+      labels:
+        # Enable traefik
+        - "traefik.enable=true"
+        - "traefik.tags=test"
+        # Middlewares
+        - "traefik.http.middlewares.authadmin.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
+        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+        # Dashboard
+        - "traefik.http.routers.traefik.rule=Host(`proxy.test.huybrechts.dev`)"
+        - "traefik.http.routers.traefik.service=api@internal"
+        - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+        - "traefik.http.routers.traefik.tls.certresolver=leresolver"
+        - "traefik.http.routers.traefik.entrypoints=websecure"
+        - "traefik.http.routers.traefik.middlewares=authadmin"

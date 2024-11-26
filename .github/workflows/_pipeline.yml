@@ -18,6 +18,12 @@ on:
         required: true
       KAMATERA_API_SECRET:
         required: true
+      VERSIO_USERNAME:
+        required: true
+      VERSIO_PASSWORD:
+        required: true
+      VERSIO_ENDPOINT:
+        required: true
       APP_HOST_SERVER:
         required: true
       APP_HOST_PORT:
@@ -44,6 +50,9 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
     secrets:
+      VERSIO_USERNAME: ${{ secrets.VERSIO_USERNAME }}
+      VERSIO_PASSWORD: ${{ secrets.VERSIO_PASSWORD }}
+      VERSIO_ENDPOINT: ${{ secrets.VERSIO_ENDPOINT }}
       APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
       APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
       APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}

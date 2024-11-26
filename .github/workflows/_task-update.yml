@@ -8,6 +8,12 @@ on:
         required: true
         type: string
     secrets:
+      VERSIO_USERNAME:
+        required: true
+      VERSIO_PASSWORD:
+        required: true
+      VERSIO_ENDPOINT:
+        required: true
       APP_HOST_SERVER:
         required: true
       APP_HOST_PORT:
@@ -87,20 +93,24 @@ jobs:
           fi
           }
           # Start of scripts
-          # sudo chown -R 5050:5050 /app/data/pgadmin
           echo Updating server
           echo Creating application directories
           cd /
           createpath "/app"
-          #Create the traefik network on docker
-          echo Traefik Network
-          docker network inspect traefik --format {{.Id}} 2>/dev/null \
-          || docker network create --driver overlay traefik
-          #Create the intranet network on docker
-          echo Intranet Network
-          docker network inspect intranet --format {{.Id}} 2>/dev/null \
-          || docker network create --driver overlay intranet
+          createpath "/app/cert"
+          createpath "/app/logs"
+          #Create the PUBLIC network on docker
+          echo Public Network
+          docker network inspect public --format {{.Id}} 2>/dev/null \
+          || docker network create --driver overlay public
+          #Create the PRIVATE network on docker
+          echo Private Network
+          docker network inspect private --format {{.Id}} 2>/dev/null \
+          || docker network create --driver overlay private
           #Create the docker secrets
+          createsecret "Versio Username" "VERSIO_USERNAME" '${{ secrets.VERSIO_USERNAME }}'
+          createsecret "Versio Password" "VERSIO_PASSWORD" '${{ secrets.VERSIO_PASSWORD }}'
+          createsecret "Versio Endpoint" "VERSIO_ENDPOINT" '${{ secrets.VERSIO_ENDPOINT }}'
           createsecret "Server Server" "APP_HOST_SERVER" '${{ secrets.APP_HOST_SERVER }}'
           createsecret "Server Port" "APP_HOST_PORT" '${{ secrets.APP_HOST_PORT }}'
           createsecret "Server Username" "APP_HOST_USERNAME" '${{ secrets.APP_HOST_USERNAME }}'
