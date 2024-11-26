@@ -35,13 +35,13 @@ services:
       # - --metrics.prometheus.addServicesLabels=true
       # - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       # Consul configuration
-      # - --providers.consulCatalog=true
-      # - --providers.consulCatalog.cache=true
-      # - --providers.consulCatalog.refreshInterval=30s
-      # - --providers.consulCatalog.endpoint.address=http://consul:8500
-      # - --providers.consulCatalog.endpoint.scheme=http
-      # - --providers.consulCatalog.exposedByDefault=false
-      # - --providers.consulCatalog.defaultRule=Host(`localhost`)
+      - --providers.consulCatalog=true
+      - --providers.consulCatalog.cache=true
+      - --providers.consulCatalog.refreshInterval=30s
+      - --providers.consulCatalog.endpoint.address=http://consul:8500
+      - --providers.consulCatalog.endpoint.scheme=http
+      - --providers.consulCatalog.exposedByDefault=false
+      - --providers.consulCatalog.defaultRule=Host(`localhost`)
       # Entry points
       - --entrypoints.web.address=:80
       # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
@@ -75,31 +75,31 @@ services:
       - "traefik.http.routers.traefik.rule=Host(`localhost`)"
       - "traefik.http.routers.traefik.service=api@internal"
 
-  # consul:
-  #   image: consul:latest
-  #   container_name: consul
-  #   environment:
-  #     - CONSUL_BIND_INTERFACE=eth0
-  #   command: agent -dev -client=0.0.0.0
-  #   ports:
-  #     - "8500:8500" # Web UI and API
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ../.app/consul/conf:/consul/config
-  #     - ../.app/consul/data:/consul/data
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 5
-  #     start_period: 30s
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.tags=develop"
-  #     - "traefik.http.routers.consul.rule=Host(`localhost`)"
-  #     - "traefik.http.routers.consul.entrypoints=web"
-  #     - "traefik.http.services.consul.loadbalancer.server.port=8500"
+  consul:
+    image: consul:1.15.4
+    container_name: consul
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    command: agent -dev -client=0.0.0.0
+    ports:
+      - "8500:8500" # Web UI and API
+    networks:
+      - public
+    volumes:
+      - ../.app/consul/conf:/consul/config
+      - ../.app/consul/data:/consul/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      - "traefik.http.routers.consul.rule=Host(`localhost`)"
+      - "traefik.http.routers.consul.entrypoints=web"
+      - "traefik.http.services.consul.loadbalancer.server.port=8500"
 
   # prometheus:
   #   image: prom/prometheus

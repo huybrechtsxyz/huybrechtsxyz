@@ -53,13 +53,13 @@ services:
       # - --metrics.prometheus.addServicesLabels=true
       # - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       # CONSUL
-      # - --providers.consulCatalog=true
-      # - --providers.consulCatalog.cache=true
-      # - --providers.consulCatalog.refreshInterval=30s
-      # - --providers.consulCatalog.endpoint.address=consul:8500
-      # - --providers.consulCatalog.endpoint.scheme=http
-      # - --providers.consulCatalog.exposedByDefault=false
-      # - --providers.consulcatalog.defaultRule=Host(`disco.test.huybrechts.xyz`)
+      - --providers.consulCatalog=true
+      - --providers.consulCatalog.cache=true
+      - --providers.consulCatalog.refreshInterval=30s
+      - --providers.consulCatalog.endpoint.address=consul:8500
+      - --providers.consulCatalog.endpoint.scheme=http
+      - --providers.consulCatalog.exposedByDefault=false
+      - --providers.consulcatalog.defaultRule=Host(`disco.test.huybrechts.dev`)
       # Entry points
       - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
@@ -145,6 +145,49 @@ services:
         - "traefik.http.routers.traefik.tls.certresolver=leresolver"
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.middlewares=authadmin"
+
+  consul:
+    image: consul:1.15.4
+    ommand: "consul agent -server -ui -bootstrap-expect=1 -bind=0.0.0.0 -client=0.0.0.0 -advertise=consul:8500 -data-dir=/consul/data -config-dir=/consul/config"
+    ports:
+      - "8500:8500"  # Web UI port
+      - "8600:8600/udp"  # DNS port
+    volumes:
+      - "/app/consul/conf:/consul/conf"
+      - "/app/consul/data:/consul/data"
+    networks:
+      - public
+    restart: always
+    deploy:
+      replicas: 1  # Scale up to 3 replicas for production
+      restart_policy:
+        condition: on-failure
+        delay: 10s  # Delay before restarting the container after failure
+        max_attempts: 5  # Maximum attempts before giving up
+        window: 60s  # Time window for counting restart attempts
+      update_config:
+        parallelism: 1  # Number of replicas to update simultaneously (rolling update)
+        delay: 15s  # Delay between updating each replica
+        failure_action: rollback  # Rollback on failure
+        monitor: 30s  # Monitoring the health of the container during update
+        order: start-first  # Start the new container before stopping the old one
+      rollback_config:
+        parallelism: 1  # Rollback one container at a time
+        delay: 10s  # Delay before performing the rollback
+        failure_action: continue  # Continue if rollback fails
+        monitor: 30s  # Monitor during rollback
+      placement:
+        constraints: 
+          - node.role == manager  # Place Consul only on manager nodes
+        preferences:
+          - spread: node.id  # Spread replicas evenly across nodes
+      # resources:
+      #   limits:
+      #     cpus: "2.0"  # Max 2 CPUs
+      #     memory: "2G"  # Max 2GB of memory
+      #   reservations:
+      #     cpus: "0.5"  # Reserve 0.5 CPUs
+      #     memory: "512M"  # Reserve 512MB of memory
 
   # prometheus:
   #   image: prom/prometheus
