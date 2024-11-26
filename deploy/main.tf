@@ -148,7 +148,11 @@ resource "kamatera_block_storage" "block_storage" {
   name           = "${var.environment}-block-storage-${count.index + 1}"
   datacenter_id  = data.kamatera_datacenter.frankfurt.id
   size           = var.block_storage_size
-  attached_to    = kamatera_server.worker[count.index % length(kamatera_server.worker)].id
+
+  # Attach block storage based on worker count
+  attached_to = var.worker_count > 0 
+    ? kamatera_server.worker[count.index % var.worker_count].id 
+    : kamatera_server.manager[count.index % var.manager_count].id
 
   tags = {
     environment = var.environment
