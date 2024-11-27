@@ -119,7 +119,8 @@ function Invoke-Minio {
             Extract-ZipFile -zipFile "./zips/minio-v202411.zip" -extractPath $minioDir
         }
         Write-Host " -- Setting environment ..."
-        $env:minio_ADDR="http://127.0.0.1:8500"
+        $env:MINIO_ROOT_USER="admin"
+        $env:MINIO_ROOT_PASSWORD="password"
         Write-Host " -- Starting executable ..."
         Start-Process -FilePath $minioExe -ArgumentList "" -WindowStyle Minimized
     }
@@ -194,9 +195,10 @@ if ($docker -eq 'true') {
 
     # DEBUG AND TEST
     Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://localhost/dashboard/#/",        # Traefik dashboard
+        "http://proxy.localhost/dashboard/#/",  # Traefik dashboard
         "http://localhost:8500",                # Consul dashboard
         "http://localhost:9090",                # Prometheus dashboard
+        "http://localhost:9001",                # Minio dashboard
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window
@@ -206,6 +208,7 @@ if ($docker -eq 'true') {
     #
     Start-Process -FilePath "msedge.exe" -ArgumentList `
         "http://localhost:8500",                # Consul
+        "http://localhost:9001",                # Minio dashboard
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window

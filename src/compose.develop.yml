@@ -8,10 +8,6 @@ networks:
   private:
     driver: bridge
 
-volumes:
-  
-  minio_data:
-
 services:
 
   traefik:
@@ -33,11 +29,11 @@ services:
       - --accesslog.format=json
       - --accesslog.filepath=/app/logs/traefik-access.log
       # Prometheus metrics
-      # - --metrics.prometheus=true
-      # - --metrics.prometheus.addEntryPointsLabels=true
-      # - --metrics.prometheus.addRoutersLabels=true
-      # - --metrics.prometheus.addServicesLabels=true
-      # - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      - --metrics.prometheus=true
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addRoutersLabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
       # Consul configuration
       - --providers.consulCatalog=true
       - --providers.consulCatalog.cache=true
@@ -76,17 +72,19 @@ services:
       - "traefik.enable=true"
       - "traefik.tags=develop"
       # Dashboard
-      - "traefik.http.routers.traefik.rule=Host(`localhost`)"
+      - "traefik.http.routers.traefik.rule=Host(`proxy.localhost`)"
       - "traefik.http.routers.traefik.service=api@internal"
 
   consul:
     image: consul:1.15.4
     container_name: consul
     environment:
-      - CONSUL_BIND_INTERFACE=eth0
-    command: agent -dev -client=0.0.0.0
+      CONSUL_BIND_INTERFACE: eth0
+      CONSUL_LOCAL_CONFIG: '{ "datacenter": "develop", "log_level": "INFO" }'
+    command: agent -server -bootstrap -ui -client 0.0.0.0
     ports:
       - "8500:8500" # Web UI and API
+      - "8600:8600/udp"
     networks:
       - public
     volumes:
@@ -132,19 +130,17 @@ services:
     image: "minio/minio:latest"
     container_name: minio
     environment:
-      MINIO_USERNAME: "admin"
-      MINIO_PASSWORD: "password"
-      MINIO_ACCESS_KEY: "minioaccesskey"
-      MINIO_SECRET_KEY: "miniosecretkey"
+      MINIO_ROOT_USER: "admin"
+      MINIO_ROOT_PASSWORD: "password"
       MINIO_REGION: "eu-frankfurt-test"
-    command: server /data
+    command: server /data --console-address ":9001"
     ports:
       - "9000:9000"  # MinIO Dataservice
       - "9001:9001"  # MinIO Console (optional)
     networks:
       - public
     volumes:
-      - minio_data:/data
+      - "../.app/minio/data:/data"
     healthcheck:
       test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
       interval: 15s

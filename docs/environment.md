@@ -30,9 +30,9 @@ An overview of the used services:
 | Traefik    |    80 | domain         | /           | Traefik HTTP + Redirect |
 | Traefik    |   433 | domain         | /           | Traefik HTTPS |
 | Traefik    |   433 | proxy.domain   | /dashboard  | Traefik dasboard |
-| Consul     |  8500 | disco.domain   | /           | Consul discovery and configuration |
+| Consul     |  8500 | config.domain   | /           | Consul discovery and configuration |
 | Prometheus |  9090 | /              | /           | Prometheus monitoring |
-| Minio      |  9001 | data.domain    | /           | Minio data storage | 
+| Minio      |  9001 | data.domain    | /           | Minio data storage |
 
 #### Development services
 
@@ -40,7 +40,7 @@ An overview of the used services:
 |------------|-------|-----------------|-------------|-------------|
 | Traefik    |    80 | localhost       | /           | Traefik HTTP |
 | Traefik    |   433 | localhost       | /           | Traefik HTTPS |
-| Traefik    |  8080 | localhost       | /dashboard/ | Traefik Dashboard |
+| Traefik    |  8080 | proxy.localhost | /dashboard/ | Traefik Dashboard |
 | Consul     |  8500 | localhost       | /           | Consul discovery and configuration
 | Prometheus |  9090 | localhost       | /           | Prometheus Dashboard |
 | Minio      |  9001 | localhost       | /           | Minio data storage |
@@ -50,10 +50,8 @@ An overview of the used services:
 | Secret Name           | Type   | Description               | Example  |
 |-----------------------|--------|---------------------------|----------|
 | `CONSUL_ADDR`         | Env    | Consul server address     | `http://path/to.link:8500'  |
-| `MINIO_USERNAME`      | Secret | Minio Username            | `user1`  |
-| `MINIO_PASSWORD`      | Secret | Minio Password            | `pass1`  |
-| `MINIO_ACCESS_KEY`    | Secret | Minio Access Key          | `access1` |
-| `MINIO_SECRET_KEY`    | Secret | Minio Secret Key          | `secret1` |
+| `MINIO_ROOT_USER`     | Secret | Minio Username            | `user1`  |
+| `MINIO_ROOT_PASSWORD` | Secret | Minio Password            | `pass1`  |
 | `MINIO_REGION`        | Secret | Minio Username            | `user1`  |
 | `KAMATERA_API_KEY`    | Secret | Kamatera API Key          | `123456` |
 | `KAMATERA_API_SECRET` | Secret | Kamatera API Key          | `123546` |
