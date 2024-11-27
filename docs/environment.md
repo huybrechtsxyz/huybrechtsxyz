@@ -21,6 +21,7 @@ An overview of the used services:
 - [Consul](./services/consul.md) aka consul for discovery and configuration
 - [Minio](./services/minio.md) aka minio for block storage
 - [Prometheus](./services/prometheus.md) aka prometheus for monitoring
+- [Thanos](./services/thanos.md) aka thanos for storing prometheus data
 - [Traefik](./services/traefik.md) aka traefik as reverse proxy
 
 #### Production services
@@ -30,9 +31,12 @@ An overview of the used services:
 | Traefik    |    80 | domain         | /           | Traefik HTTP + Redirect |
 | Traefik    |   433 | domain         | /           | Traefik HTTPS |
 | Traefik    |   433 | proxy.domain   | /dashboard  | Traefik dasboard |
-| Consul     |  8500 | config.domain   | /           | Consul discovery and configuration |
+| Consul     |  8500 | config.domain  | /           | Consul discovery and configuration |
 | Prometheus |  9090 | /              | /           | Prometheus monitoring |
 | Minio      |  9001 | data.domain    | /           | Minio data storage |
+| Thanos     |  9091 | /              | /           | Thanos query 
+| Thanos     | 10901 | /
+| Thanos     | 10902 | /
 
 #### Development services
 

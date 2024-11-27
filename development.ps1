@@ -108,7 +108,7 @@ function Invoke-Minio {
     New-Item -ItemType Directory -Path $minioDir, $minioData -Force
     $minioDir = Resolve-Path -Path $minioDir
     $minioExe = "$minioDir/minio.exe"
-    Copy-Item -Path "./src/minio/*" -Destination $minioConf -Recurse
+    #Copy-Item -Path "./src/minio/*" -Destination $minioConf -Recurse
     
     if ($docker -eq 'true') {
         Write-Host 'Configuring MINIO ... for DOCKER'
