@@ -168,8 +168,8 @@ if ($docker -eq 'true') {
     # DEBUG AND TEST
     Start-Process -FilePath "msedge.exe" -ArgumentList `
         "http://localhost/dashboard/#/",        # Traefik dashboard
-        "http://localhost:8500",                    # Consul dashboard
-        "http://localhost:9090",                    # Prometheus dashboard
+        "http://localhost:8500",                # Consul dashboard
+        "http://localhost:9090",                # Prometheus dashboard
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window

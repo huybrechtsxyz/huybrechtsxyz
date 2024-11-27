@@ -101,25 +101,25 @@ services:
       - "traefik.http.routers.consul.entrypoints=web"
       - "traefik.http.services.consul.loadbalancer.server.port=8500"
 
-  # prometheus:
-  #   image: prom/prometheus
-  #   container_name: prometheus
-  #   command:
-  #     - --config.file=/etc/prometheus/prometheus.yml
-  #     - --storage.tsdb.path=/prometheus
-  #     - --web.external-url=http://localhost:9090
-  #   ports:
-  #     - "9090:9090"  # Prometheus web UI
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - "../.app/prometheus/conf:/etc/prometheus"  # Prometheus config directory
-  #     - "../.app/prometheus/data:/prometheus"  # Data storage
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 5
-  #     start_period: 30s
-  #   labels:
-  #     - "traefik.enable=false" # grafana is used as UI
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.external-url=http://localhost:9090
+    ports:
+      - "9090:9090"  # Prometheus web UI
+    networks:
+      - public
+    volumes:
+      - "../.app/prometheus/conf:/etc/prometheus"
+      - "../.app/prometheus/data:/prometheus"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    labels:
+      - "traefik.enable=false" # grafana is used as UI
