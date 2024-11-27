@@ -110,6 +110,8 @@ services:
       retries: 5
       start_period: 30s
     deploy:
+      placement:
+        constraints: [node.role == manager]
       replicas: 1
       restart_policy:
         condition: on-failure
@@ -129,8 +131,6 @@ services:
         # reservations:
         #   cpus: "0.25"        # Reserve 0.25 CPU core
         #   memory: "256M"      # Reserve 256 MB RAM
-      placement:
-        constraints: [node.role == manager]
       labels:
         # Enable traefik
         - "traefik.enable=true"
@@ -148,6 +148,8 @@ services:
 
   consul:
     image: consul:1.15.4
+    environment:
+      CONSUL_LOCAL_CONFIG: '{ "datacenter": "EU-Frankfurt-Test", "log_level": "INFO" }'
     command: "consul agent -server -ui -bootstrap-expect=1 -bind=0.0.0.0 -client=0.0.0.0 -advertise=consul:8500 -data-dir=/consul/data -config-dir=/consul/config"
     ports:
       - "8500:8500"  # Web UI port
@@ -166,6 +168,11 @@ services:
       retries: 5
       start_period: 30s
     deploy:
+      placement:
+        constraints: 
+          - node.role == manager  # Place Consul only on manager nodes
+        preferences:
+          - spread: node.id  # Spread replicas evenly across nodes
       replicas: 1  # Scale up to 3 replicas for production
       restart_policy:
         condition: on-failure
@@ -183,11 +190,6 @@ services:
         delay: 10s  # Delay before performing the rollback
         failure_action: continue  # Continue if rollback fails
         monitor: 30s  # Monitor during rollback
-      placement:
-        constraints: 
-          - node.role == manager  # Place Consul only on manager nodes
-        preferences:
-          - spread: node.id  # Spread replicas evenly across nodes
       # resources:
       #   limits:
       #     cpus: "2.0"  # Max 2 CPUs
@@ -195,44 +197,65 @@ services:
       #   reservations:
       #     cpus: "0.5"  # Reserve 0.5 CPUs
       #     memory: "512M"  # Reserve 512MB of memory
+      labels:
+        # Enable traefik
+        - "traefik.enable=true"
+        - "traefik.tags=test"
+        # Configuration
+        - "traefik.http.routers.consul.rule=Host(`disco.test.huybrechts.com`)" # Replace with your domain
+        - "traefik.http.routers.consul.entrypoints=websecure"
+        - "traefik.http.routers.consul.tls.certresolver=leresolver"
+        - "traefik.http.services.consul.loadbalancer.server.port=8500"
 
-  # prometheus:
-  #   image: prom/prometheus
-  #   command:
-  #     - --config.file=/etc/prometheus/prometheus.yml
-  #     - --storage.tsdb.path=/prometheus
-  #     - --web.external-url=http://localhost:9090
-  #   ports:
-  #     - "9090:9090"  # Expose Prometheus web UI (adjust as necessary)
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - "/app/prometheus/conf:/etc/prometheus"  # Configuration directory
-  #     - "/app/prometheus/conf:/prometheus"      # Data storage (for persistence)
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 5
-  #     start_period: 30s
-  #   deploy:
-  #     replicas: 2
-  #     placement:
-  #       constraints:
-  #         - node.role == manager  # Ensure Prometheus runs on manager nodes
-  #     resources:
-  #       # Set resource limits for better performance and stability
-  #       limits:
-  #         cpus: '1.0'
-  #         memory: 1G  
-  #       # Set resource reservations to ensure availability
-  #       # reservations:
-  #       #   cpus: '0.5'
-  #       #   memory: 512M  
-  #     restart_policy:
-  #       condition: on-failure
-  #     update_config:
-  #       parallelism: 1  # Limit how many instances are updated at once
-  #       delay: 10s  # Delay between instance updates to prevent downtime
-  #     labels:
-  #       - "traefik.enable=false"  # Disable Traefik routing for this service
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"   # Path to Prometheus config
+      - "--storage.tsdb.path=/prometheus"                # Data storage directory
+      - "--web.enable-lifecycle"                         # Enable lifecycle API
+      - "--storage.tsdb.retention.time=15d"              # Retention period for metrics
+    ports:
+      - "9090:9090"
+    networks:
+      - public
+      - private
+    volumes:
+      - "/app/prometheus/conf/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "/app/prometheus/data:/prometheus"               # Persistent storage for metrics
+    healthcheck:
+      # Run traefik healthcheck command
+      # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      placement:
+        constraints:
+          - "node.role == manager"
+        preferences:
+        - spread: node.id  # Spread replicas evenly across nodes
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 5
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+      # resources:
+      #   limits:
+      #     cpus: "1.0"        # Maximum 1 CPU core
+      #     memory: "512M"     # Maximum 512MB RAM
+      #   reservations:
+      #     cpus: "0.25"       # Reserve 0.25 CPU core
+      #     memory: "256M"     # Reserve 256MB RAM
+      labels:
+        - "traefik.enable=false"  # Disable Traefik routing for this service
