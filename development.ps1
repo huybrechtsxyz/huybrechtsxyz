@@ -100,6 +100,32 @@ function Invoke-Consul {
     Write-Host 'Configuring CONSUL ... done'
 }
 
+# Function Configure and run minio
+function Invoke-Minio {
+    Write-Host 'Configuring MINIO ...'
+    $minioDir = "$baseDir/minio"
+    $minioData = "$minioDir/data"
+    New-Item -ItemType Directory -Path $minioDir, $minioData -Force
+    $minioDir = Resolve-Path -Path $minioDir
+    $minioExe = "$minioDir/minio.exe"
+    Copy-Item -Path "./src/minio/*" -Destination $minioConf -Recurse
+    
+    if ($docker -eq 'true') {
+        Write-Host 'Configuring MINIO ... for DOCKER'
+    } else {
+        Write-Host 'Configuring MINIO ... for LOCALHOST'
+        if (-Not (Test-Path -Path $minioExe)) {
+            Write-Output " -- Extracting minio..."
+            Extract-ZipFile -zipFile "./zips/minio-v202411.zip" -extractPath $minioDir
+        }
+        Write-Host " -- Setting environment ..."
+        $env:minio_ADDR="http://127.0.0.1:8500"
+        Write-Host " -- Starting executable ..."
+        Start-Process -FilePath $minioExe -ArgumentList "" -WindowStyle Minimized
+    }
+    Write-Host 'Configuring MINIO ... done'
+}
+
 # Function Configure and run Prometheus
 function Invoke-Prometheus {
     Write-Host 'Configuring PROMETHEUS ...'
@@ -152,6 +178,7 @@ New-Item -ItemType Directory -Path $baseDir -Force
 
 # Configure and run services
 Invoke-Consul
+Invoke-Minio
 Invoke-Traefik
 Invoke-Prometheus
 
@@ -196,6 +223,8 @@ if ($docker -eq 'true') {
 } else {
     # STOPPING SERVICES
     Stop-Process -Name 'msedge' -ErrorAction Ignore
+    Stop-Process -Name 'consul' -ErrorAction Ignore
+    Stop-Process -Name 'minio' -ErrorAction Ignore
 }
 
 # Stop the development environment

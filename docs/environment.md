@@ -19,6 +19,7 @@ The table below provides a structured view of the domain configuration for the w
 An overview of the used services:
 
 - [Consul](./services/consul.md) aka consul for discovery and configuration
+- [Minio](./services/minio.md) aka minio for block storage
 - [Prometheus](./services/prometheus.md) aka prometheus for monitoring
 - [Traefik](./services/traefik.md) aka traefik as reverse proxy
 
@@ -31,6 +32,7 @@ An overview of the used services:
 | Traefik    |   433 | proxy.domain   | /dashboard  | Traefik dasboard |
 | Consul     |  8500 | disco.domain   | /           | Consul discovery and configuration |
 | Prometheus |  9090 | /              | /           | Prometheus monitoring |
+| Minio      |  9001 | data.domain    | /           | Minio data storage | 
 
 #### Development services
 
@@ -41,6 +43,7 @@ An overview of the used services:
 | Traefik    |  8080 | localhost       | /dashboard/ | Traefik Dashboard |
 | Consul     |  8500 | localhost       | /           | Consul discovery and configuration
 | Prometheus |  9090 | localhost       | /           | Prometheus Dashboard |
+| Minio      |  9001 | localhost       | /           | Minio data storage |
 
 ### Variables overview
 
@@ -49,6 +52,9 @@ An overview of the used services:
 | `CONSUL_ADDR`         | Env    | Consul server address     | `http://path/to.link:8500'  |
 | `MINIO_USERNAME`      | Secret | Minio Username            | `user1`  |
 | `MINIO_PASSWORD`      | Secret | Minio Password            | `pass1`  |
+| `MINIO_ACCESS_KEY`    | Secret | Minio Access Key          | `access1` |
+| `MINIO_SECRET_KEY`    | Secret | Minio Secret Key          | `secret1` |
+| `MINIO_REGION`        | Secret | Minio Username            | `user1`  |
 | `KAMATERA_API_KEY`    | Secret | Kamatera API Key          | `123456` |
 | `KAMATERA_API_SECRET` | Secret | Kamatera API Key          | `123546` |
 | `VERSIO_USERNAME`     | Secret | Versio Username           | `user1`  |
@@ -68,6 +74,9 @@ The application is organized into a structured directory layout that facilitates
     ├── consul +                 # Consul
     │ ├── conf +                 #   Consul conf
     │ ├── data +                 #   Consul data
+    ├── minio +                  # Minio
+    │ ├── conf +                 #   Minio conf
+    │ ├── data +                 #   Minio data
     ├── prometheus +             # Prometheus
     │ ├── conf +                 #   Prometheus conf
     │ ├── data +                 #   Prometheus data

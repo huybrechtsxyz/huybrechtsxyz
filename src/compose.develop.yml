@@ -8,6 +8,10 @@ networks:
   private:
     driver: bridge
 
+volumes:
+  
+  minio_data:
+
 services:
 
   traefik:
@@ -123,3 +127,32 @@ services:
       start_period: 30s
     labels:
       - "traefik.enable=false" # grafana is used as UI
+
+  minio:
+    image: "minio/minio:latest"
+    container_name: minio
+    environment:
+      MINIO_USERNAME: "admin"
+      MINIO_PASSWORD: "password"
+      MINIO_ACCESS_KEY: "minioaccesskey"
+      MINIO_SECRET_KEY: "miniosecretkey"
+      MINIO_REGION: "eu-frankfurt-test"
+    command: server /data
+    ports:
+      - "9000:9000"  # MinIO Dataservice
+      - "9001:9001"  # MinIO Console (optional)
+    networks:
+      - public
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio.rule=Host(`localhost`)"
+      - "traefik.http.services.minio.loadbalancer.server.port=9000"
+      - "traefik.http.routers.minio.entrypoints=web"

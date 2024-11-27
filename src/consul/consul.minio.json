@@ -1,0 +1,21 @@
+{
+    "service": {
+      "id": "minio",
+      "name": "minio",
+      "tags": ["storage", "minio", "object-store"],
+      "address": "minio",
+      "port": 9000,
+      "check": {
+        "id": "minio-http-check",
+        "name": "MinIO Health Check",
+        "http": "http://minio:9000/minio/health/live",
+        "interval": "30s",
+        "timeout": "5s",
+        "retries": 3
+      },
+      "meta": {
+        "prometheus_path": "/minio/metrics"
+      }
+    }
+  }
+  
