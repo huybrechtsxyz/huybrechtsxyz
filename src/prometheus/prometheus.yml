@@ -2,18 +2,22 @@ global:
   scrape_interval: 15s  # How often to scrape targets by default.
 
 scrape_configs:
-  # Scrape metrics from Traefik
-  - job_name: "traefik"
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ["traefik:8080"]
-
-  # Scrape metrics from Consul
-  - job_name: "consul"
-    metrics_path: "/v1/agent/metrics"
-    static_configs:
-      - targets: ["consul:8500"]
-
+  # Scrape metrics from services registered with consul
+  - job_name: 'consul'
+    consul_sd_configs:
+      - server: 'consul:8500'      # Address of the Consul server
+        services: []              # Discover all services (optional: specify specific services)
+    relabel_configs:
+      - source_labels: [__meta_consul_service]
+        action: keep
+        regex: prometheus         # Only keep the "prometheus" service
+      - source_labels: [__meta_consul_service_metadata_prometheus_path]
+        target_label: __metrics_path__
+        action: replace
+      - source_labels: [__address__, __meta_consul_service_metadata_prometheus_port]
+        target_label: __address__
+        action: replace
+  
   # Scrape metrics from Prometheus itself
   - job_name: "prometheus"
     static_configs:

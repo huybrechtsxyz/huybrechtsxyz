@@ -1,15 +1,20 @@
 {
   "service": {
-    "name": "traefik",
+    "id": "traefik",
+    "name": "Traefik Proxy",
     "tags": ["traefik", "proxy"],
+    "address": "traefik",
     "port": 8080,
+    "meta": {
+      "traefik_path": "/ping"
+    },
     "checks": [
       {
         "id": "traefik-http-check",
         "name": "Traefik HTTP Health Check",
         "http": "http://traefik:8080/ping",
-        "interval": "10s",
-        "timeout": "1s"
+        "interval": "15s",
+        "timeout": "5s"
       }
     ]
   }
