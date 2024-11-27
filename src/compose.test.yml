@@ -148,7 +148,7 @@ services:
 
   consul:
     image: consul:1.15.4
-    ommand: "consul agent -server -ui -bootstrap-expect=1 -bind=0.0.0.0 -client=0.0.0.0 -advertise=consul:8500 -data-dir=/consul/data -config-dir=/consul/config"
+    command: "consul agent -server -ui -bootstrap-expect=1 -bind=0.0.0.0 -client=0.0.0.0 -advertise=consul:8500 -data-dir=/consul/data -config-dir=/consul/config"
     ports:
       - "8500:8500"  # Web UI port
       - "8600:8600/udp"  # DNS port
@@ -157,7 +157,14 @@ services:
       - "/app/consul/data:/consul/data"
     networks:
       - public
-    restart: always
+    healthcheck:
+      # Run traefik healthcheck command
+      # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     deploy:
       replicas: 1  # Scale up to 3 replicas for production
       restart_policy:
