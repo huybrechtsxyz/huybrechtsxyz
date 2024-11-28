@@ -66,7 +66,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     labels:
       # Enable for test
       - "traefik.enable=true"
@@ -75,13 +75,19 @@ services:
       - "traefik.http.routers.traefik.rule=Host(`proxy.localhost`)"
       - "traefik.http.routers.traefik.service=api@internal"
 
+  # https://developer.hashicorp.com/consul/docs/agent#running-an-agent
   consul:
     image: consul:1.15.4
     container_name: consul
     environment:
-      CONSUL_BIND_INTERFACE: eth0
-      CONSUL_LOCAL_CONFIG: '{ "datacenter": "develop", "log_level": "INFO" }'
-    command: agent -server -bootstrap -ui -client 0.0.0.0
+      CONSUL_LOCAL_CONFIG: '{ "datacenter": "develop", "log_level": "DEBUG", "bind_addr": "0.0.0.0",  "client_addr": "0.0.0.0"}'
+    command: 
+      - "consul"
+      - "agent"
+      - "-server"
+      - "-ui"
+      - "-data-dir=/consul/data"
+      - "-config-dir=/consul/config"
     ports:
       - "8500:8500" # Web UI and API
       - "8600:8600/udp"
@@ -95,7 +101,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     labels:
       - "traefik.enable=true"
       - "traefik.tags=develop"
@@ -106,6 +112,8 @@ services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
+    depends_on:
+      - minio
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
@@ -157,8 +165,10 @@ services:
     image: "quay.io/thanos/thanos:v0.37.0"
     container_name: thanos-sidecar
     depends_on:
-      - prometheus
-      - minio
+      prometheus:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
     command:
       - sidecar
       - "--tsdb.path=/prometheus"
@@ -181,6 +191,13 @@ services:
   thanos-query:
     image: "quay.io/thanos/thanos:v0.37.0"
     container_name: thanos-query
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      thanos-sidecar:
+        condition: service_healthy
     command:
       - query
       - "--http-address=0.0.0.0:9091"
@@ -190,8 +207,6 @@ services:
       - "9091:9091"
     networks:
       - public
-    depends_on:
-      - thanos-sidecar
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:9091/-/healthy"]
       interval: 15s

@@ -1,7 +1,7 @@
 {
   "service": {
     "id": "minio",
-    "name": "Minio Storage",
+    "name": "minio",
     "tags": ["storage","minio","object-store"],
     "address": "minio",
     "port": 9000,

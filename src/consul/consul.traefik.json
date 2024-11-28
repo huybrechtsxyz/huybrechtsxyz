@@ -1,7 +1,7 @@
 {
   "service": {
     "id": "traefik",
-    "name": "Traefik Proxy",
+    "name": "traefik",
     "tags": ["traefik", "proxy"],
     "address": "traefik",
     "port": 8080,
