@@ -10,6 +10,12 @@ networks:
 
 secrets:
 
+  MINIO_ROOT_USER:
+    external: true
+  MINIO_ROOT_PASSWORD:
+    external: true
+  MINIO_REGION:
+    external: true
   VERSIO_USERNAME:
     external: true
   VERSIO_PASSWORD:
@@ -89,9 +95,9 @@ services:
       - --certificatesresolvers.leresolver.acme.email=webmaster@huybrechts.xyz
       - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
       # Use the Docker secrets for Versio credentials instead of a credentials file
-      #- --certificatesresolvers.leresolver.acme.dnschallenge.usernameFile=/run/secrets/VERSIO_USERNAME
-      #- --certificatesresolvers.leresolver.acme.dnschallenge.passwordFile=/run/secrets/VERSIO_PASSWORD
-      #- --certificatesresolvers.leresolver.acme.dnschallenge.endpointFile=/run/secrets/VERSIO_ENDPOINT
+      - --certificatesresolvers.leresolver.acme.dnschallenge.usernameFile=/run/secrets/VERSIO_USERNAME
+      - --certificatesresolvers.leresolver.acme.dnschallenge.passwordFile=/run/secrets/VERSIO_PASSWORD
+      - --certificatesresolvers.leresolver.acme.dnschallenge.endpointFile=/run/secrets/VERSIO_ENDPOINT
     ports:
       - "80:80"
       - "443:443"
