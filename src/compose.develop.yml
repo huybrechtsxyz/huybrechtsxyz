@@ -85,6 +85,7 @@ services:
       - "consul"
       - "agent"
       - "-server"
+      - "-dev"
       - "-ui"
       - "-data-dir=/consul/data"
       - "-config-dir=/consul/config"
@@ -101,38 +102,13 @@ services:
       interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 15s
+      start_period: 5s
     labels:
       - "traefik.enable=true"
       - "traefik.tags=develop"
       - "traefik.http.routers.consul.rule=Host(`localhost`)"
       - "traefik.http.routers.consul.entrypoints=web"
       - "traefik.http.services.consul.loadbalancer.server.port=8500"
-
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    depends_on:
-      - minio
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --storage.tsdb.path=/prometheus
-      - --web.external-url=http://localhost:9090
-    ports:
-      - "9090:9090"  # Prometheus web UI
-    networks:
-      - public
-    volumes:
-      - "../.app/prometheus/conf:/etc/prometheus"
-      - "../.app/prometheus/data:/prometheus"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    labels:
-      - "traefik.enable=false" # grafana is used as UI
 
   minio:
     image: "minio/minio:latest"
@@ -141,6 +117,8 @@ services:
       MINIO_ROOT_USER: "admin"
       MINIO_ROOT_PASSWORD: "password"
       MINIO_REGION: "eu-frankfurt-test"
+      MINIO_HTTP2_DISABLE: "on"
+      #MINIO_HTTP2_FRAME_SIZE: "1048576"
     command: server /data --console-address ":9001"
     ports:
       - "9000:9000"  # MinIO Dataservice
@@ -154,12 +132,76 @@ services:
       interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 5s
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.minio.rule=Host(`localhost`)"
       - "traefik.http.services.minio.loadbalancer.server.port=9000"
       - "traefik.http.routers.minio.entrypoints=web"
+
+  minio-init:
+    image: minio/mc
+    container_name: minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: "admin"
+      MINIO_ROOT_PASSWORD: "password"
+    entrypoint: >
+      /bin/sh -c "
+        echo 'Setting MinIO alias...';
+        export MINIO_ROOT_USER="$MINIO_ROOT_USER"
+        export MINIO_ROOT_PASSWORD="$MINIO_ROOT_PASSWORD"
+        echo \$MINIO_ROOT_USER;
+        echo \$MINIO_ROOT_PASSWORD;
+        mc alias set myminio http://minio:9000 \$MINIO_ROOT_USER \$MINIO_ROOT_PASSWORD &&
+        
+        # Check if bucket exists and create it if not
+        echo 'Checking if bucket thanos exists...';
+        if ! mc ls myminio/thanos > /dev/null 2>&1; then
+            echo 'Creating bucket thanos...';
+            mc mb myminio/thanos || { echo 'Failed to create bucket'; exit 1; }
+            echo 'Created bucket thanos'
+        else
+            echo 'Bucket thanos already exists'
+        fi &&
+        
+        # Set read-write access policy for the bucket
+        echo 'Setting read-write policy for thanos bucket...';
+        mc anonymous set public myminio/thanos || { echo 'Failed to set policy'; exit 1; }
+        echo 'Set read-write policy for thanos bucket'
+      "
+    networks:
+      - public
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    depends_on:
+      minio:
+        condition: service_healthy
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.min-block-duration=2h
+      - --storage.tsdb.max-block-duration=2h
+      - --web.external-url=http://localhost:9090
+    ports:
+      - "9090:9090"  # Prometheus web UI
+    networks:
+      - public
+    volumes:
+      - "../.app/prometheus/conf:/etc/prometheus"
+      - "../.app/prometheus/data:/prometheus"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    labels:
+      - "traefik.enable=false" # grafana is used as UI
 
   thanos-sidecar:
     image: "quay.io/thanos/thanos:v0.37.0"
@@ -172,15 +214,17 @@ services:
     command:
       - sidecar
       - "--tsdb.path=/prometheus"
-      - "--objstore.config-file=/etc/thanos/thanos-bucket.yml"
+      - "--objstore.config-file=/etc/thanos/thanos-bucket.develop.yml"
       - "--prometheus.url=http://prometheus:9090"
+    ports:
+      - "10901:10901"
     networks:
       - public
     volumes:
       - ../.app/prometheus/data:/prometheus
       - ../.app/prometheus/conf:/etc/thanos
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:10902/-/healthy"]
+      test: ["CMD", "wget", "--spider", "http://localhost:10902/-/healthy"]
       interval: 15s
       timeout: 10s
       retries: 3
@@ -208,7 +252,7 @@ services:
     networks:
       - public
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:9091/-/healthy"]
+      test: ["CMD", "wget", "--spider", "http://localhost:9091/-/healthy"]
       interval: 15s
       timeout: 10s
       retries: 3

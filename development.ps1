@@ -104,12 +104,16 @@ function Invoke-Consul {
 function Invoke-Minio {
     Write-Host 'Configuring MINIO ...'
     $minioDir = "$baseDir/minio"
+    #$minioConf = "$minioDir/conf"
     $minioData = "$minioDir/data"
     New-Item -ItemType Directory -Path $minioDir, $minioData -Force
     $minioDir = Resolve-Path -Path $minioDir
     $minioExe = "$minioDir/minio.exe"
     #Copy-Item -Path "./src/minio/*" -Destination $minioConf -Recurse
-    
+    Write-Host " -- Setting environment ..."
+    $env:MINIO_ROOT_USER="admin"
+    $env:MINIO_ROOT_PASSWORD="password"
+
     if ($docker -eq 'true') {
         Write-Host 'Configuring MINIO ... for DOCKER'
     } else {
@@ -118,9 +122,6 @@ function Invoke-Minio {
             Write-Output " -- Extracting minio..."
             Extract-ZipFile -zipFile "./zips/minio-v202411.zip" -extractPath $minioDir
         }
-        Write-Host " -- Setting environment ..."
-        $env:MINIO_ROOT_USER="admin"
-        $env:MINIO_ROOT_PASSWORD="password"
         Write-Host " -- Starting executable ..."
         Start-Process -FilePath $minioExe -ArgumentList "" -WindowStyle Minimized
     }
