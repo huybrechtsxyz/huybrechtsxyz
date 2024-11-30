@@ -20,6 +20,8 @@ An overview of the used services:
 
 - [Consul](./services/consul.md) aka consul for discovery and configuration
 - [Minio](./services/minio.md) aka minio for block storage
+- [PGAdmin4](./services/pgadmin.md) aka pgadmin for Sql Management
+- [PostgreSql](./services/postgres.md) aka postgres for Sql database
 - [Prometheus](./services/prometheus.md) aka prometheus for monitoring
 - [Thanos](./services/thanos.md) aka thanos for storing prometheus data
 - [Traefik](./services/traefik.md) aka traefik as reverse proxy
@@ -34,9 +36,11 @@ An overview of the used services:
 | Consul     |  8500 | config.domain  | /           | Consul discovery and configuration |
 | Prometheus |  9090 | /              | /           | Prometheus monitoring |
 | Minio      |  9001 | data.domain    | /           | Minio data storage |
-| Thanos     |  9091 | /              | /           | Thanos query 
-| Thanos     | 10901 | /
-| Thanos     | 10902 | /
+| Thanos     |  9091 | /              | /           | Thanos query  |
+| Thanos     | 10901 | /              | /           | Thanos sidecar |
+| Thanos     | 10902 | /              | /           | Thanos gateway |
+| Postgres   |  5432 | /              | /           | PostgreSql server |
+| PGAdmin    |  8880 | /              | /pgadmin    | PostgreSql management |
 
 #### Development services
 
@@ -45,23 +49,30 @@ An overview of the used services:
 | Traefik    |    80 | localhost       | /           | Traefik HTTP |
 | Traefik    |   433 | localhost       | /           | Traefik HTTPS |
 | Traefik    |  8080 | proxy.localhost | /dashboard/ | Traefik Dashboard |
-| Consul     |  8500 | localhost       | /           | Consul discovery and configuration
+| Consul     |  8500 | localhost       | /           | Consul discovery and configuration |
 | Prometheus |  9090 | localhost       | /           | Prometheus Dashboard |
 | Minio      |  9001 | localhost       | /           | Minio data storage |
+| Postgres   |  5432 | /               |             | PostgreSql server |
 
 ### Variables overview
 
 | Secret Name           | Type   | Description               | Example  |
 |-----------------------|--------|---------------------------|----------|
-| `CONSUL_ADDR`         | Env    | Consul server address     | `http://path/to.link:8500'  |
+| `CONSUL_ADDR`         | Env    | Consul server address     | `http://path/to.link:8500`  |
 | `MINIO_ROOT_USER`     | Secret | Minio Username            | `user1`  |
 | `MINIO_ROOT_PASSWORD` | Secret | Minio Password            | `pass1`  |
 | `MINIO_REGION`        | Secret | Minio Username            | `user1`  |
 | `KAMATERA_API_KEY`    | Secret | Kamatera API Key          | `123456` |
 | `KAMATERA_API_SECRET` | Secret | Kamatera API Key          | `123546` |
+| `POSTGRES_DB`         | Secret | Postgres DB name          | `xyzdb`  |
+| `POSTGRES_USER`       | Secret | Postgres Username         | `user1`  |
+| `POSTGRES_PASSWORD`   | Secret | Postgres Password         | `pass1`  |
 | `VERSIO_USERNAME`     | Secret | Versio Username           | `user1`  |
 | `VERSIO_PASSWORD`     | Secret | Versio Password           | `pass1`  |
-| `VERSIO_ENDPOINT`     | Secret | Versio Endpoint           | `http://path/to.link' |
+| `VERSIO_ENDPOINT`     | Secret | Versio Endpoint           | `http://path/to.link` |
+
+| Secret Name           | Type   | Description               | Example  |
+|-----------------------|--------|---------------------------|----------|
 | `APP_HOST_USERNAME`   | Secret | Server username           | `user1`  |
 | `APP_HOST_PASSWORD`   | Secret | Server password           | `1234`   |
 | `APP_HOST_SERVER`     | Secret | Server IP                 | `10.0.0.1` |
@@ -79,9 +90,15 @@ The application is organized into a structured directory layout that facilitates
     ├── minio +                  # Minio
     │ ├── conf +                 #   Minio conf
     │ ├── data +                 #   Minio data
+    ├── postgres +               # PostgreSql
+    │ ├── data +                 #   PostgreSql conf
+    │ ├── pgadmin +              #   PostgreSql data
     ├── prometheus +             # Prometheus
     │ ├── conf +                 #   Prometheus conf
     │ ├── data +                 #   Prometheus data
+    ├── thanos +                 # Thanos
+    │ ├── conf +                 #   Thanos conf
+    │ ├── data +                 #   Thanos data
     ├── traefik +                # Traefik
     │ ├── cert +                 #   Traefik certificates
     │ ├── logs +                 #   Traefik logs

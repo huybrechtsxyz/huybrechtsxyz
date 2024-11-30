@@ -128,6 +128,22 @@ function Invoke-Minio {
     Write-Host 'Configuring MINIO ... done'
 }
 
+# Function Configure and run Postgres
+function Invoke-Postgres {
+    Write-Host 'Configuring POSTGRESQL ...'
+    $postgresDir = "$baseDir/postgres"
+    $postgresData = "$postgresDir/dbdata"
+    $postgresAdmin = "$postgresDir/pgadmin"
+    New-Item -ItemType Directory -Path $postgresDir, $postgresData, $postgresAdmin -Force
+    #Copy-Item -Path "./src/postgres/*" -Destination $postgresConf -Recurse
+    if ($docker -eq 'true') {
+        Write-Host 'Configuring POSTGRESQL ... for DOCKER'
+    } else {
+        Write-Host 'Configuring POSTGRESQL ... skipping'
+    }
+    Write-Host 'Configuring POSTGRESQL ... done'
+}
+
 # Function Configure and run Prometheus
 function Invoke-Prometheus {
     Write-Host 'Configuring PROMETHEUS ...'
@@ -144,7 +160,7 @@ function Invoke-Prometheus {
     Write-Host 'Configuring PROMETHEUS ... done'
 }
 
-# Function Configure and run thanos
+# Function Configure and run Thanos
 function Invoke-Thanos {
     Write-Host 'Configuring THANOS ...'
     $thanosDir = "$baseDir/thanos"
@@ -200,6 +216,7 @@ Invoke-Minio
 Invoke-Traefik
 Invoke-Prometheus
 Invoke-Thanos
+Invoke-Postgres
 
 # Debug and test
 if ($docker -eq 'true') {
@@ -217,6 +234,8 @@ if ($docker -eq 'true') {
         "http://localhost:8500",                # Consul dashboard
         "http://localhost:9090",                # Prometheus dashboard
         "http://localhost:9001",                # Minio dashboard
+        "http://localhost:9091",                # Thanos Query dashboard
+        "http://localhost:8080",                # PGAdmin dashboard
         "--inprivate",                          # Open in InPrivate mode
         "--start-maximized",                    # Start maximized
         "--new-window"                          # Open in a new window

@@ -8,6 +8,18 @@ networks:
   private:
     driver: bridge
 
+
+volumes:
+
+  # Use a Temporary Docker Volume for Development, use WSL2 for a Linux-Compatible Filesystem
+  # Thanos Sidecar in Docker on Windows due to its lack of support for Unix-style hard links in some configurations.
+  prometheus-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ../.app/prometheus/data
+      o: bind
+
 services:
 
   traefik:
@@ -64,9 +76,9 @@ services:
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
       interval: 15s
-      timeout: 10s
+      timeout: 5s
       retries: 5
-      start_period: 15s
+      start_period: 10s
     labels:
       # Enable for test
       - "traefik.enable=true"
@@ -100,7 +112,7 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
       interval: 15s
-      timeout: 10s
+      timeout: 5s
       retries: 5
       start_period: 5s
     labels:
@@ -130,7 +142,7 @@ services:
     healthcheck:
       test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
       interval: 15s
-      timeout: 10s
+      timeout: 5s
       retries: 5
       start_period: 5s
     labels:
@@ -193,13 +205,13 @@ services:
       - public
     volumes:
       - "../.app/prometheus/conf:/etc/prometheus"
-      - "../.app/prometheus/data:/prometheus"
+      - ../.app/prometheus/data:/prometheus:rw
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
       interval: 15s
-      timeout: 10s
+      timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 10s
     labels:
       - "traefik.enable=false" # grafana is used as UI
 
@@ -221,14 +233,14 @@ services:
     networks:
       - public
     volumes:
-      - ../.app/prometheus/data:/prometheus
+      - ../.app/prometheus/data:/prometheus:rw
       - ../.app/thanos/conf:/etc/thanos
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:10902/-/healthy"]
       interval: 15s
-      timeout: 10s
+      timeout: 5s
       retries: 3
-      start_period: 30s
+      start_period: 10s
     labels:
       - "traefik.enable=false"
 
@@ -254,9 +266,9 @@ services:
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:10902/-/healthy"]
       interval: 15s
-      timeout: 10s
+      timeout: 5s
       retries: 3
-      start_period: 30s
+      start_period: 10s
     labels:
       - "traefik.enable=false"
 
@@ -289,3 +301,83 @@ services:
       start_period: 30s
     labels:
       - "traefik.enable=false"
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: xyzdevdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    networks:
+      - public
+    volumes:
+      - ../.app/postgres/dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d xyzdevdb -U admin"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    labels:
+      - "traefik.enable=false"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_LISTEN_PORT: 9080
+      PGADMIN_DEFAULT_EMAIL: admin@localhost.dev
+      PGADMIN_DEFAULT_PASSWORD: password
+      SCRIPT_NAME: /pgadmin
+    networks:
+      - public
+    volumes:
+      - ../.app/postgres/pgadmin:/var/lib/pgadmin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      - "traefik.http.routers.pgadmin.rule=Host(`localhost`) && PathPrefix(`/pgadmin`)"
+      - "traefik.http.services.pgadmin.loadbalancer.server.port=9080"
+      - "traefik.http.routers.pgadmin.entrypoints=web"
+
+  keycloak:
+    image: keycloak/keycloak:latest
+    container_name: keycloak
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: password
+      KEYCLOAK_USER: admin               # Admin username for Keycloak
+      KEYCLOAK_PASSWORD: password        # Admin password for Keycloak
+      DB_VENDOR: POSTGRES                # Set the database vendor to PostgreSQL
+      DB_ADDR: postgres:5432             # The address of the PostgreSQL service (replace `postgres` with the name of the container)
+      DB_DATABASE: keycloak              # The database name defined in the PostgreSQL service
+      DB_USER: admin                     # The user for the PostgreSQL connection
+      DB_PASSWORD: password              # The password for the PostgreSQL connection
+      KEYCLOAK_IMPORT: /tmp/realm.json   # Optionally, if you're importing a custom realm
+    command: start-dev
+    ports:
+      - "8080:8080"                      # Expose Keycloak admin console on port 8080
+    networks:
+      - public
+    volumes:
+      - ../.app/keycloak/realm.json:/tmp/realm.json  # Optional, for realm import
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8080/auth/realms/master"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      - "traefik.http.routers.keycloak.rule=Host(`localhost`) && PathPrefix(`/keycloak`)"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      - "traefik.http.routers.keycloak.entrypoints=web"
+
+# grafana
+# loki
+# keykloak
