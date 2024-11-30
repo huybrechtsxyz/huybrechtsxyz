@@ -214,7 +214,7 @@ services:
     command:
       - sidecar
       - "--tsdb.path=/prometheus"
-      - "--objstore.config-file=/etc/thanos/thanos-bucket.develop.yml"
+      - "--objstore.config-file=/etc/thanos/thanos.develop.yml"
       - "--prometheus.url=http://prometheus:9090"
     ports:
       - "10901:10901"
@@ -222,7 +222,35 @@ services:
       - public
     volumes:
       - ../.app/prometheus/data:/prometheus
-      - ../.app/prometheus/conf:/etc/thanos
+      - ../.app/thanos/conf:/etc/thanos
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:10902/-/healthy"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    labels:
+      - "traefik.enable=false"
+
+  thanos-gateway:
+    image: "quay.io/thanos/thanos:v0.37.0"
+    container_name: thanos-gateway
+    depends_on:
+      minio:
+        condition: service_healthy
+    command:
+      - store
+      - "--objstore.config-file=/etc/thanos/thanos.develop.yml"
+      - "--http-address=0.0.0.0:10902"
+      - "--grpc-address=0.0.0.0:10901"
+    volumes:
+      - ../.app/thanos/conf:/etc/thanos
+      - ../.app/thanos/data:/data
+    ports:
+      #   - "10901:10901"
+      - "10902:10902"
+    networks:
+      - public
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:10902/-/healthy"]
       interval: 15s
@@ -242,11 +270,13 @@ services:
         condition: service_healthy
       thanos-sidecar:
         condition: service_healthy
+      thanos-gateway:
+        condition: service_healthy
     command:
       - query
       - "--http-address=0.0.0.0:9091"
       - "--store=thanos-sidecar:10901"
-      - "--store=minio:9000"
+      - "--store=thanos-gateway:10902"
     ports:
       - "9091:9091"
     networks:

@@ -120,10 +120,10 @@ function Invoke-Minio {
         Write-Host 'Configuring MINIO ... for LOCALHOST'
         if (-Not (Test-Path -Path $minioExe)) {
             Write-Output " -- Extracting minio..."
-            Extract-ZipFile -zipFile "./zips/minio-v202411.zip" -extractPath $minioDir
+            Expand-ZipFile -zipFile "./zips/minio-v202411.zip" -extractPath $minioDir
         }
         Write-Host " -- Starting executable ..."
-        Start-Process -FilePath $minioExe -ArgumentList "" -WindowStyle Minimized
+        Start-Process -FilePath $minioExe -ArgumentList 'server /data --console-address ":9001"' -WindowStyle Minimized
     }
     Write-Host 'Configuring MINIO ... done'
 }
@@ -142,6 +142,22 @@ function Invoke-Prometheus {
         Write-Host 'Configuring PROMETHEUS ... skipping'
     }
     Write-Host 'Configuring PROMETHEUS ... done'
+}
+
+# Function Configure and run thanos
+function Invoke-Thanos {
+    Write-Host 'Configuring THANOS ...'
+    $thanosDir = "$baseDir/thanos"
+    $thanosConf = "$thanosDir/conf"
+    $thanosData = "$thanosDir/data"
+    New-Item -ItemType Directory -Path $thanosDir, $thanosConf, $thanosData -Force
+    Copy-Item -Path "./src/thanos/*" -Destination $thanosConf -Recurse
+    if ($docker -eq 'true') {
+        Write-Host 'Configuring THANOS ... for DOCKER'
+    } else {
+        Write-Host 'Configuring THANOS ... skipping'
+    }
+    Write-Host 'Configuring THANOS ... done'
 }
 
 # Function Configure and run Traefik
@@ -183,6 +199,7 @@ Invoke-Consul
 Invoke-Minio
 Invoke-Traefik
 Invoke-Prometheus
+Invoke-Thanos
 
 # Debug and test
 if ($docker -eq 'true') {
