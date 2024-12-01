@@ -1,0 +1,10 @@
+storage_config:
+  aws:
+    s3: http://minio:9000/loki
+    access_key_id: admin
+    secret_access_key: password
+    s3forcepathstyle: true
+  boltdb_shipper:
+    active_index_directory: /loki-data/index
+    shared_store: s3
+    cache_location: /loki-data/cache

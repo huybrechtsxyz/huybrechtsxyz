@@ -100,6 +100,22 @@ function Invoke-Consul {
     Write-Host 'Configuring CONSUL ... done'
 }
 
+# Function Configure and run Loki
+function Invoke-Loki {
+    Write-Host 'Configuring LOKI ...'
+    $lokiDir = "$baseDir/loki"
+    $lokiConf = "$lokiDir/conf"
+    $lokiData = "$lokiDir/data"
+    New-Item -ItemType Directory -Path $lokiDir, $lokiConf, $lokiData -Force
+    Copy-Item -Path "./src/loki/*" -Destination $lokiConf -Recurse
+    if ($docker -eq 'true') {
+        Write-Host 'Configuring LOKI ... for DOCKER'
+    } else {
+        Write-Host 'Configuring LOKI ... skipping'
+    }
+    Write-Host 'Configuring LOKI ... done'
+}
+
 # Function Configure and run minio
 function Invoke-Minio {
     Write-Host 'Configuring MINIO ...'
@@ -216,6 +232,7 @@ Invoke-Minio
 Invoke-Traefik
 Invoke-Prometheus
 Invoke-Thanos
+Invoke-Loki
 Invoke-Postgres
 
 # Debug and test

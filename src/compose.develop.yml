@@ -183,6 +183,21 @@ services:
         echo 'Setting read-write policy for thanos bucket...';
         mc anonymous set public myminio/thanos || { echo 'Failed to set policy'; exit 1; }
         echo 'Set read-write policy for thanos bucket'
+
+        # Check if bucket exists and create it if not
+        echo 'Checking if bucket loki exists...';
+        if ! mc ls myminio/loki > /dev/null 2>&1; then
+            echo 'Creating bucket loki...';
+            mc mb myminio/loki || { echo 'Failed to create bucket'; exit 1; }
+            echo 'Created bucket loki'
+        else
+            echo 'Bucket loki already exists'
+        fi &&
+        
+        # Set read-write access policy for the bucket
+        echo 'Setting read-write policy for loki bucket...';
+        mc anonymous set public myminio/loki || { echo 'Failed to set policy'; exit 1; }
+        echo 'Set read-write policy for loki bucket'
       "
     networks:
       - public
@@ -302,6 +317,26 @@ services:
     labels:
       - "traefik.enable=false"
 
+  loki:
+    image: grafana/loki
+    container_name: loki
+    command: -config.file=/etc/loki/loki-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - public
+    volumes:
+      - ../.app/loki/conf:/etc/loki # Loki configuration directory
+      - ../.app/loki/data:/loki-data # Data storage
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3100/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "traefik.enable=false"
+
   postgres:
     image: postgres
     container_name: postgres
@@ -379,5 +414,4 @@ services:
       - "traefik.http.routers.keycloak.entrypoints=web"
 
 # grafana
-# loki
 # keykloak

@@ -20,13 +20,14 @@ An overview of the used services:
 
 - [Consul](./services/consul.md) aka consul for discovery and configuration
 - [Minio](./services/minio.md) aka minio for block storage
+- [Loki](./services/loki.md) aka loki for logging aggretation
 - [PGAdmin4](./services/pgadmin.md) aka pgadmin for Sql Management
 - [PostgreSql](./services/postgres.md) aka postgres for Sql database
 - [Prometheus](./services/prometheus.md) aka prometheus for monitoring
 - [Thanos](./services/thanos.md) aka thanos for storing prometheus data
 - [Traefik](./services/traefik.md) aka traefik as reverse proxy
 
-#### Production services
+The service domains, paths, and ports:
 
 | Service    | Ports | Domain         | Path        | Description |
 |------------|-------|----------------|-------------| ----------- |
@@ -39,20 +40,9 @@ An overview of the used services:
 | Thanos     |  9091 | /              | /           | Thanos query  |
 | Thanos     | 10901 | /              | /           | Thanos sidecar |
 | Thanos     | 10902 | /              | /           | Thanos gateway |
+| Loki       |  3100 | /              | /           | Loki logging |
 | Postgres   |  5432 | /              | /           | PostgreSql server |
 | PGAdmin    |  8880 | /              | /pgadmin    | PostgreSql management |
-
-#### Development services
-
-| Service    | Ports | Domain          | Path        | Description |
-|------------|-------|-----------------|-------------|-------------|
-| Traefik    |    80 | localhost       | /           | Traefik HTTP |
-| Traefik    |   433 | localhost       | /           | Traefik HTTPS |
-| Traefik    |  8080 | proxy.localhost | /dashboard/ | Traefik Dashboard |
-| Consul     |  8500 | localhost       | /           | Consul discovery and configuration |
-| Prometheus |  9090 | localhost       | /           | Prometheus Dashboard |
-| Minio      |  9001 | localhost       | /           | Minio data storage |
-| Postgres   |  5432 | /               |             | PostgreSql server |
 
 ### Variables overview
 
@@ -90,6 +80,9 @@ The application is organized into a structured directory layout that facilitates
     ├── minio +                  # Minio
     │ ├── conf +                 #   Minio conf
     │ ├── data +                 #   Minio data
+    ├── loki +                   # Loki
+    │ ├── conf +                 #   Loki conf
+    │ ├── data +                 #   Loki data
     ├── postgres +               # PostgreSql
     │ ├── data +                 #   PostgreSql conf
     │ ├── pgadmin +              #   PostgreSql data
