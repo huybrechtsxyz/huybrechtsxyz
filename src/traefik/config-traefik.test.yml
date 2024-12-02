@@ -1,0 +1,64 @@
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: "websecure"
+          scheme: "https"
+  websecure:
+    address: ":443"
+
+providers:
+  consulCatalog:
+    endpoint:
+      address: consul:8500
+      scheme: http
+    exposedByDefault: false
+    cache: true
+    refreshInterval: 30s
+    defaultRule: "Host(`disco.test.huybrechts.dev`)"
+  docker:
+    exposedByDefault: false
+    network: "public"
+  swarm:
+    constraints: "Label(`traefik.tags`, `test`)"
+
+api:
+  dashboard: true
+
+ping: true
+
+certificatesResolvers:
+  leresolver:
+    acme:
+      email: "webmaster@huybrechts.xyz"
+      storage: "/app/data/acme.json"
+      dnsChallenge:
+        provider: "versio"
+        delayBeforeCheck: 0
+        usernameFile: "/run/secrets/VERSIO_USERNAME"
+        passwordFile: "/run/secrets/VERSIO_PASSWORD"
+        endpointFile: "/run/secrets/VERSIO_ENDPOINT"
+
+metrics:
+  prometheus:
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
+    buckets:
+      - 0.1
+      - 0.3
+      - 1.2
+      - 5.0
+
+log:
+  level: "INFO"
+  format: "json"
+  filePath: "/app/logs/traefik.log"
+  maxSize: 5
+  maxAge: 5
+
+accessLog:
+  format: "json"
+  filePath: "/app/logs/traefik-access.log"

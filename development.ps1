@@ -82,15 +82,16 @@ function Invoke-Consul {
     New-Item -ItemType Directory -Path $consulDir, $consulConf, $consulData -Force
     $consulDir = Resolve-Path -Path $consulDir
     $consulExe = "$consulDir/consul.exe"
-    Copy-Item -Path "./src/consul/*" -Destination $consulConf -Recurse
+    Copy-Item -Path "./src/consul/*develop*" -Destination $consulConf -Recurse
     
     if ($docker -eq 'true') {
         Write-Host 'Configuring CONSUL ... for DOCKER'
+
     } else {
         Write-Host 'Configuring CONSUL ... for LOCALHOST'
         if (-Not (Test-Path -Path $consulExe)) {
             Write-Output " -- Extracting Consul..."
-            Extract-ZipFile -zipFile "./zips/consul_1.20.1.zip" -extractPath $consulDir
+            Expand-ZipFile -zipFile "./zips/consul_1.20.1.zip" -extractPath $consulDir
         }
         Write-Host " -- Setting environment ..."
         $env:CONSUL_ADDR="http://127.0.0.1:8500"
@@ -196,9 +197,12 @@ function Invoke-Thanos {
 function Invoke-Traefik {
     Write-Host 'Configuring TRAEFIK ...'
     $traefikDir = "$baseDir/traefik"
-    $traefikCert = "$traefikDir/cert"
+    $traefikConf = "$traefikDir/conf"
+    $traefikData = "$traefikDir/data"
     $traefikLogs = "$traefikDir/logs"
-    New-Item -ItemType Directory -Path $traefikDir, $traefikCert, $traefikLogs -Force
+    New-Item -ItemType Directory -Path $traefikDir, $traefikData, $traefikConf, $traefikLogs -Force
+    $traefikConf = Resolve-Path -Path $traefikConf
+    Copy-Item -Path "./src/traefik/*develop*" -Destination $traefikConf -Recurse
     if ($docker -eq 'true') {
         Write-Host 'Configuring TRAEFIK ... for DOCKER'
     } else {
@@ -228,12 +232,13 @@ New-Item -ItemType Directory -Path $baseDir -Force
 
 # Configure and run services
 Invoke-Consul
-Invoke-Minio
 Invoke-Traefik
-Invoke-Prometheus
-Invoke-Thanos
-Invoke-Loki
-Invoke-Postgres
+# Invoke-Minio
+
+# Invoke-Prometheus
+# Invoke-Thanos
+# Invoke-Loki
+# Invoke-Postgres
 
 # Debug and test
 if ($docker -eq 'true') {

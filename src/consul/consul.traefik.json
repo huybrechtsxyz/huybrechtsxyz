@@ -2,7 +2,6 @@
   "service": {
     "id": "traefik",
     "name": "traefik",
-    "tags": ["traefik", "proxy"],
     "address": "traefik",
     "port": 8080,
     "meta": {
@@ -16,6 +15,19 @@
         "interval": "15s",
         "timeout": "5s"
       }
+    ],
+    "tags":[
+      "traefik",
+      "proxy",
+      "- traefik.enable=true",
+      "- traefik.tags=test",
+      "- traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https",
+      "- traefik.http.routers.traefik.rule=Host(`proxy.test.huybrechts.dev`)",
+      "- traefik.http.routers.traefik.service=api@internal",
+      "- traefik.http.services.traefik.loadbalancer.server.port=8080",
+      "- traefik.http.routers.traefik.tls.certresolver=leresolver",
+      "- traefik.http.routers.traefik.entrypoints=websecure",
+      "- traefik.http.routers.traefik.middlewares=authadmin"
     ]
   }
 }
