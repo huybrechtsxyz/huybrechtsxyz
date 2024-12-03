@@ -133,6 +133,7 @@ jobs:
           createpath "/app/postgres"
           createpath "/app/postgres/admin"
           createpath "/app/postgres/data"
+          createpath "/app/postgres/backups"
           createpath "/app/traefik"
           createpath "/app/traefik/conf"
           createpath "/app/traefik/data"

@@ -67,6 +67,25 @@ function Get-Docker {
 
 # FUNCTION: Configure required docker networks
 function Set-Docker {
+    # Check if the current node is already part of a swarm
+    $swarmState = docker info --format '{{.Swarm.LocalNodeState}}'
+
+    if ($swarmState -eq "active") {
+        Write-Host "Swarm is already initialized." -ForegroundColor Green
+    } else {
+        # Initialize a new swarm
+        Write-Host "Initializing a new Docker Swarm..." -ForegroundColor Yellow
+        $initResult = docker swarm init
+
+        if ($initResult -like "*is now a manager*") {
+            Write-Host "Swarm initialized successfully!" -ForegroundColor Green
+        } else {
+            Write-Host "Swarm initialization failed. Check Docker logs for more information." -ForegroundColor Red
+            Write-Host $initResult
+            exit 1
+        }
+    }
+
     # Check and create the "traefik" network if it doesn't exist
     $traefikNetwork = "traefik"
     if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$traefikNetwork$")) {
@@ -90,19 +109,26 @@ function Set-Docker {
 
 function Update-Secrets {
     $SecretFilePath = "C:\Users\vhuybrec\AppData\Roaming\Microsoft\UserSecrets\acbede3b-f8f8-41b2-ad78-d1f3e176949f\secrets.json"
+    if (-not (Test-Path -Path $SecretFilePath)){
+        $SecretFilePath = "C:\Users\vince\AppData\Roaming\Microsoft\UserSecrets\acbede3b-f8f8-41b2-ad78-d1f3e176949f\secrets.json"
+    }
+    if (-not (Test-Path -Path $SecretFilePath)){
+        throw 'User secrets not found'
+    }
+
     $Secrets = Get-Content -Path $SecretFilePath | ConvertFrom-Json
     foreach ($Key in $Secrets.PSObject.Properties.Name) {
         $Value = $Secrets.$Key
 
         # Remove the secret if it already exists
-        if (docker secret inspect $Key -ErrorAction SilentlyContinue) {
+        if (docker secret inspect $Key > $null 2>&1) {
             Write-Host "Removing existing secret: $Key"
             docker secret rm $Key
         }
 
         # Create the Docker secret
         Write-Host "Creating secret: $Key"
-        $Value | docker secret create $Key -
+        $Value | docker secret create $Key - > $null 2>&1
     }
 }
 
@@ -119,7 +145,7 @@ function Invoke-Consul {
 }
 
 # FUNCTION: Configure and run Keycloak
-function Invoke-Traefik {
+function Invoke-Keycloak {
     Write-Host 'Configuring KEYCLOAK ... for DOCKER'
     
     Write-Host 'Configuring KEYCLOAK ... Done'
@@ -141,7 +167,7 @@ function Invoke-Postgres {
     $postgresDir = "$baseDir/postgres"
     $postgresData = "$postgresDir/data"
     $postgresAdmin = "$postgresDir/admin"
-    $postgresBackup = "$postgresDir/backup"
+    $postgresBackup = "$postgresDir/backups"
     New-Item -ItemType Directory -Path $postgresDir, $postgresData, $postgresAdmin, $postgresBackup -Force
     Write-Host 'Configuring POSTGRESQL ... Done'
 }
@@ -190,10 +216,27 @@ Invoke-Postgres
 Invoke-Keycloak
 
 # Debug and test
-$composeFile = "./src/compose.develop.yml"
-Write-Host "Starting Docker Compose..."
-docker-compose -f $composeFile config --env-file develop.env
-docker-compose -f $composeFile up -d --env-file develop.env
+$composeFile = "./src/compose.yml"
+$environmentFile = "./src/develop.env"
+
+# Importing the .env file and exporting the variables
+$env:HOSTNAME=$env:COMPUTERNAME
+if (Test-Path $environmentFile) {
+    Get-Content $environmentFile | ForEach-Object {
+        $key, $value = $_ -split '='
+        [System.Environment]::SetEnvironmentVariable($key.Trim(), $value.Trim(), [System.EnvironmentVariableTarget]::Process)
+    }
+}
+
+Write-Host "Validating Docker Compose..."
+docker compose -f $composeFile --env-file $environmentFile config
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Error: Invalid Docker Compose configuration or environment file." -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "Starting Docker Swarm..."
+docker stack deploy -c $composeFile app
 
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" `
