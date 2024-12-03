@@ -35,6 +35,8 @@ jobs:
             set -e
             cd /
             cd /app
+            # Get the number of Swarm managers
+            SWARM_MANAGERS=$(docker node ls --filter "role=manager" --format "{{.ID}}" | wc -l)
             # Set the appropriate security on the application subdirectories
             echo APPY SECURITY
             sudo chmod -R 600 /app/traefik/data

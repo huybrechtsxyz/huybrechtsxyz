@@ -2,7 +2,6 @@
 #
 # Environment Variables
 # =======================================
-# DOCKER_SWARM_IPS
 # DOCKER_SWARM_MANAGERS
 # VERSIO_USERNAME
 # VERSIO_PASSWORD
@@ -16,15 +15,14 @@ services:
   consul:
     image: consul:1.15.4    
     environment:
-      DOCKER_SWARM_MANAGERS: ${DOCKER_SWARM_MANAGERS}
+      SWARM_MANAGERS: ${SWARM_MANAGERS}
     command:
       - consul
       - agent
       - -data-dir=/consul/data
       - -config-dir=/consul/config
       - -config-file=/consul/config/consul.test.json
-      - -bootstrap-expect=${DOCKER_SWARM_MANAGERS}
-      - -retry-join=${DOCKER_SWARM_IPS}
+      - -bootstrap-expect=${SWARM_MANAGERS}
     networks:
       - public
     volumes:
