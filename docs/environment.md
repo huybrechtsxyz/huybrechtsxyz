@@ -22,7 +22,7 @@ An overview of the used services:
 - [Minio](./services/minio.md) aka minio for block storage
 +- [Loki](./services/loki.md) aka loki for logging aggretation
 +- [PGAdmin4](./services/pgadmin.md) aka pgadmin for Sql Management
-+- [PostgreSql](./services/postgres.md) aka postgres for Sql database
+- [PostgreSql](./services/postgres.md) aka postgres for Sql database
 +- [Prometheus](./services/prometheus.md) aka prometheus for monitoring
 +- [Thanos](./services/thanos.md) aka thanos for storing prometheus data
 - [Traefik](./services/traefik.md) aka traefik as reverse proxy
@@ -38,13 +38,13 @@ The service domains, paths, and ports:
 | Consul     |  8600 | config.domain  | /           | Consul DNS discovery |
 | Minio      |  9000 | data.domain    | /           | Minio data storage |
 | Minio      |  9001 | data.domain    | /           | Minio ui |
+| Postgres   |  5432 | /              | /           | PostgreSql server |
 
 | Prometheus |  9090 | /              | /           | Prometheus monitoring |x
 | Thanos     |  9091 | /              | /           | Thanos query  |x
 | Thanos     | 10901 | /              | /           | Thanos sidecar |x
 | Thanos     | 10902 | /              | /           | Thanos gateway |x
 | Loki       |  3100 | /              | /           | Loki logging |x
-| Postgres   |  5432 | /              | /           | PostgreSql server |x
 | PGAdmin    |  8880 | /              | /pgadmin    | PostgreSql management |x
 
 ### Variables overview
@@ -55,11 +55,10 @@ The service domains, paths, and ports:
 | `MINIO_ROOT_USER`     | Secret | Minio Username            | `user1`  |
 | `MINIO_ROOT_PASSWORD` | Secret | Minio Password            | `pass1`  |
 | `MINIO_REGION`        | Secret | Minio Username            | `user1`  |
-| `KAMATERA_API_KEY`    | Secret | Kamatera API Key          | `123456` |x
-| `KAMATERA_API_SECRET` | Secret | Kamatera API Key          | `123546` |x
-| `POSTGRES_DB`         | Secret | Postgres DB name          | `xyzdb`  |x
-| `POSTGRES_USER`       | Secret | Postgres Username         | `user1`  |x
-| `POSTGRES_PASSWORD`   | Secret | Postgres Password         | `pass1`  |x
+| `KAMATERA_API_KEY`    | Secret | Kamatera API Key          | `123456` |
+| `KAMATERA_API_SECRET` | Secret | Kamatera API Key          | `123546` |
+| `POSTGRES_USER`       | Secret | Postgres Username         | `user1`  |
+| `POSTGRES_PASSWORD`   | Secret | Postgres Password         | `pass1`  |
 | `VERSIO_USERNAME`     | Secret | Versio Username           | `user1`  |
 | `VERSIO_PASSWORD`     | Secret | Versio Password           | `pass1`  |
 | `VERSIO_ENDPOINT`     | Secret | Versio Endpoint           | `http://path/to.link` |
@@ -85,9 +84,9 @@ The application is organized into a structured directory layout that facilitates
     x├── loki +                   # Loki
     x│ ├── conf +                 #   Loki conf
     x│ ├── data +                 #   Loki data
-    x├── postgres +               # PostgreSql
-    x│ ├── data +                 #   PostgreSql conf
-    x│ ├── pgadmin +              #   PostgreSql data
+    ├── postgres +               # PostgreSql
+    │ ├── data +                 #   PostgreSql conf
+    │ ├── pgadmin +              #   PostgreSql data
     x├── prometheus +             # Prometheus
     x│ ├── conf +                 #   Prometheus conf
     x│ ├── data +                 #   Prometheus data

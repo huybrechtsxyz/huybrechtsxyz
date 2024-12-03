@@ -8,12 +8,16 @@ on:
         required: true
         type: string
     secrets:
-       MINIO_ROOT_USER:
-         required: true
-       MINIO_ROOT_PASSWORD:
-         required: true
-       MINIO_REGION:
-         required: true
+      MINIO_ROOT_USER:
+        required: true
+      MINIO_ROOT_PASSWORD:
+        required: true
+      MINIO_REGION:
+        required: true
+      POSTGRES_USER:
+        required: true
+      POSTGRES_PASSWORD:
+        required: true
       VERSIO_USERNAME:
         required: true
       VERSIO_PASSWORD:
@@ -110,9 +114,9 @@ jobs:
           createpath "/app/consul"
           createpath "/app/consul/conf"
           createpath "/app/consul/data"
-          createpath "/app/prometheus"
-          createpath "/app/prometheus/conf"
-          createpath "/app/prometheus/data"
+          # createpath "/app/prometheus"
+          # createpath "/app/prometheus/conf"
+          # createpath "/app/prometheus/data"
           #Create the PUBLIC network on docker
           echo Public Network
           docker network inspect public --format {{.Id}} 2>/dev/null \
@@ -125,6 +129,8 @@ jobs:
           createsecret "Minio Username" "MINIO_ROOT_USER" '${{ secrets.MINIO_ROOT_USER }}'
           createsecret "Minoi Password" "MINIO_ROOT_PASSWORD" '${{ secrets.MINIO_ROOT_PASSWORD }}'
           createsecret "Minio Region" "MINIO_REGION" '${{ secrets.MINIO_REGION }}'
+          createsecret "Postgres User" "POSTGRES_USER" '${{ secrets.POSTGRES_USER }}'
+          createsecret "Postgres Password" "POSTGRES_PASSWORD" '${{ secrets.POSTGRES_PASSWORD }}'
           createsecret "Versio Username" "VERSIO_USERNAME" '${{ secrets.VERSIO_USERNAME }}'
           createsecret "Versio Password" "VERSIO_PASSWORD" '${{ secrets.VERSIO_PASSWORD }}'
           createsecret "Versio Endpoint" "VERSIO_ENDPOINT" '${{ secrets.VERSIO_ENDPOINT }}'

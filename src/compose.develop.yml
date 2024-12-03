@@ -73,6 +73,24 @@ services:
       retries: 5
       start_period: 5s
 
+  postgres:
+    image: postgres
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: xyzdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    networks:
+      - private
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d xyzdb -U admin"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
 volumes:
 
   consul-conf:
@@ -108,6 +126,13 @@ volumes:
       o: bind
 
   minio-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /app/minio/data
+      o: bind
+
+  postgres-data:
     driver: local
     driver_opts:
       type: none

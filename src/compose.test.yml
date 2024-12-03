@@ -3,6 +3,11 @@
 # Environment Variables
 # =======================================
 # DOCKER_SWARM_MANAGERS
+# MINIO_ROOT_USER
+# MINIO_ROOT_PASSWORD
+# MINIO_REGION
+# POSTGRES_USER
+# POSTGRES_PASSWORD
 # VERSIO_USERNAME
 # VERSIO_PASSWORD
 # VERSIO_ENDPOINT
@@ -149,13 +154,26 @@ services:
     deploy:
       replicas: 1
       placement:
-        constraints:
+        constraints: 
           - node.role == worker
+        preferences:
+          - spread: node.id
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 3
         window: 120s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
       # resources:
       #   limits:
       #     cpus: "1.5"
@@ -163,6 +181,57 @@ services:
       #   reservations:
       #     cpus: "1.0"
       #     memory: "2G"
+
+  postgres:
+    image: postgres
+    secrets:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: xyzdb
+      POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
+    networks:
+      - traefik
+    volumes:
+      - /app/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d xyzdb -U admin"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    deploy:
+      replicas: 1
+      placement:
+        constraints: 
+          - node.role == worker
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "2.0"     # Max 2 CPUs
+      #     memory: "2G"    # Max 2GB of memory
+      #   reservations:
+      #     cpus: "0.5"     # Reserve 0.5 CPUs
+      #     memory: "512M"  # Reserve 512MB of memory
 
 volumes:
 
@@ -205,6 +274,13 @@ volumes:
       device: /mnt/data
       o: bind
 
+  postgres-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /app/postgres/data
+      o: bind
+
 networks:
   public:
     external: true
@@ -224,6 +300,11 @@ secrets:
   MINIO_ROOT_PASSWORD:
     external: true
   MINIO_REGION:
+    external: true
+
+  POSTGRES_USER:
+    external: true
+  POSTGRES_PASSWORD:
     external: true
 
 #configs:

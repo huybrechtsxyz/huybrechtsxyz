@@ -232,11 +232,12 @@ New-Item -ItemType Directory -Path $baseDir -Force
 Invoke-Consul
 Invoke-Traefik
 Invoke-Minio
+Invoke-Postgres
 
 # Invoke-Prometheus
 # Invoke-Thanos
 # Invoke-Loki
-# Invoke-Postgres
+
 
 # Debug and test
 if ($docker -eq 'true') {

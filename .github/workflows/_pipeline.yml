@@ -24,6 +24,10 @@ on:
         required: true
       KAMATERA_API_SECRET:
         required: true
+      POSTGRES_USER:
+        required: true
+      POSTGRES_PASSWORD:
+        required: true
       VERSIO_USERNAME:
         required: true
       VERSIO_PASSWORD:
@@ -56,9 +60,11 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
     secrets:
-      #MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
-      #MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
-      #MINIO_REGION: ${{ secrets.MINIO_REGION }}
+      MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
+      MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+      MINIO_REGION: ${{ secrets.MINIO_REGION }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       VERSIO_USERNAME: ${{ secrets.VERSIO_USERNAME }}
       VERSIO_PASSWORD: ${{ secrets.VERSIO_PASSWORD }}
       VERSIO_ENDPOINT: ${{ secrets.VERSIO_ENDPOINT }}
