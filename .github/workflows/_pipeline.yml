@@ -18,12 +18,6 @@ on:
         required: true
       MINIO_ROOT_PASSWORD:
         required: true
-      MINIO_REGION:
-        required: true
-      KAMATERA_API_KEY:
-        required: true
-      KAMATERA_API_SECRET:
-        required: true
       POSTGRES_USER:
         required: true
       POSTGRES_PASSWORD:
@@ -32,19 +26,23 @@ on:
         required: true
       PGADMIN_PASSWORD:
         required: true
+      REGISTRY_USERNAME:
+        required: true
+      REGISTRY_PASSWORD:
+        required: true
+      SERVER_ENDPOINT:
+        required: true
+      SERVER_PORT:
+        required: true
+      SERVER_USERNAME:
+        required: true
+      SERVER_PASSWORD:
+        required: true
       VERSIO_USERNAME:
         required: true
       VERSIO_PASSWORD:
         required: true
       VERSIO_ENDPOINT:
-        required: true
-      APP_HOST_SERVER:
-        required: true
-      APP_HOST_PORT:
-        required: true
-      APP_HOST_USERNAME:
-        required: true
-      APP_HOST_PASSWORD:
         required: true
 
 jobs:
@@ -66,18 +64,30 @@ jobs:
     secrets:
       MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
       MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
-      MINIO_REGION: ${{ secrets.MINIO_REGION }}
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       PGADMIN_USER: ${{ secrets.PGADMIN_USER }}
       PGADMIN_PASSWORD: ${{ secrets.PGADMIN_PASSWORD }}
+      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
       VERSIO_USERNAME: ${{ secrets.VERSIO_USERNAME }}
       VERSIO_PASSWORD: ${{ secrets.VERSIO_PASSWORD }}
       VERSIO_ENDPOINT: ${{ secrets.VERSIO_ENDPOINT }}
-      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
-      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
-      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+
+  build-backup:
+    name: Build Backup Job
+    if: inputs.rebuild == 'true'
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-docker.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+      imagename: 'huybrechts/backup'
+      sourcepath: 'backup'
+      projectname: 'backup'
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   deploy-config:
     name: Deploy Configuration Job
@@ -86,23 +96,23 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
     secrets:
-      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
-      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
-      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
 
   deploy-stack-rebuild:
     name: Deploy Docker Swarm Stack (Rebuild)
     if: inputs.rebuild == 'true'
-    needs: [deploy-config]
+    needs: [deploy-config, build-backup]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@main
     with:
       environment: ${{ inputs.environment }}
     secrets:
-      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
-      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
-      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
 
   deploy-stack-nobuild:
     name: Deploy Docker Swarm Stack (Build)
@@ -112,7 +122,7 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
     secrets:
-      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
-      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
-      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}

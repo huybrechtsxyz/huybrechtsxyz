@@ -1,4 +1,20 @@
 <#
+
+Application Structure
+
+    app
+    ├── consul +                 # Consul
+    │ ├── conf +                 #   Consul conf
+    │ ├── data +                 #   Consul data
+
+Secret example
+
+    {
+        "VERSIO_USERNAME": "",
+        "VERSIO_PASSWORD": "",
+        "VERSIO_ENDPOINT": ""
+    }
+
 #>
 
 # FUNCTION: Extract zipfile for local development
@@ -73,140 +89,70 @@ function Set-Docker {
     }
 }
 
-# Function Configure and run Consul
+# FUNCTION: Read jsons and create docker secrets
+
+function Update-Secrets {
+    $SecretFilePath = "C:\Users\vhuybrec\AppData\Roaming\Microsoft\UserSecrets\acbede3b-f8f8-41b2-ad78-d1f3e176949f\secrets.json"
+    $Secrets = Get-Content -Path $SecretFilePath | ConvertFrom-Json
+    foreach ($Key in $Secrets.PSObject.Properties.Name) {
+        $Value = $Secrets.$Key
+
+        # Remove the secret if it already exists
+        if (docker secret inspect $Key -ErrorAction SilentlyContinue) {
+            Write-Host "Removing existing secret: $Key"
+            docker secret rm $Key
+        }
+
+        # Create the Docker secret
+        Write-Host "Creating secret: $Key"
+        $Value | docker secret create $Key -
+    }
+}
+
+# FUNCTION: Configure and run Consul
 function Invoke-Consul {
-    Write-Host 'Configuring CONSUL ...'
+    Write-Host 'Configuring CONSUL ... for DOCKER'
     $consulDir = "$baseDir/consul"
     $consulConf = "$consulDir/conf"
     $consulData = "$consulDir/data"
     New-Item -ItemType Directory -Path $consulDir, $consulConf, $consulData -Force
     $consulDir = Resolve-Path -Path $consulDir
-    $consulExe = "$consulDir/consul.exe"
-    Copy-Item -Path "./src/consul/*develop*" -Destination $consulConf -Recurse
-    
-    if ($docker -eq 'true') {
-        Write-Host 'Configuring CONSUL ... for DOCKER'
-
-    } else {
-        Write-Host 'Configuring CONSUL ... for LOCALHOST'
-        if (-Not (Test-Path -Path $consulExe)) {
-            Write-Output " -- Extracting Consul..."
-            Expand-ZipFile -zipFile "./zips/consul_1.20.1.zip" -extractPath $consulDir
-        }
-        Write-Host " -- Setting environment ..."
-        $env:CONSUL_ADDR="http://127.0.0.1:8500"
-        Write-Host " -- Starting executable ..."
-        Start-Process -FilePath $consulExe -ArgumentList "agent", "-dev", "-config-dir $consulData" -WindowStyle Minimized
-    }
-    Write-Host 'Configuring CONSUL ... done'
+    Copy-Item -Path "./src/consul/*" -Destination $consulConf -Recurse
+    Write-Host 'Configuring CONSUL ... Done'
 }
 
-# Function Configure and run Loki
-function Invoke-Loki {
-    Write-Host 'Configuring LOKI ...'
-    $lokiDir = "$baseDir/loki"
-    $lokiConf = "$lokiDir/conf"
-    $lokiData = "$lokiDir/data"
-    New-Item -ItemType Directory -Path $lokiDir, $lokiConf, $lokiData -Force
-    Copy-Item -Path "./src/loki/*" -Destination $lokiConf -Recurse
-    if ($docker -eq 'true') {
-        Write-Host 'Configuring LOKI ... for DOCKER'
-    } else {
-        Write-Host 'Configuring LOKI ... skipping'
-    }
-    Write-Host 'Configuring LOKI ... done'
-}
-
-# Function Configure and run minio
+# FUNCTION: Configure and run MinIO
 function Invoke-Minio {
-    Write-Host 'Configuring MINIO ...'
+    Write-Host 'Configuring MINIO ... for DOCKER'
     $minioDir = "$baseDir/minio"
     $minioData = "$minioDir/data"
     New-Item -ItemType Directory -Path $minioDir, $minioData -Force
     $minioDir = Resolve-Path -Path $minioDir
-    $minioExe = "$minioDir/minio.exe"
-    Write-Host " -- Setting environment ..."
-    $env:MINIO_ROOT_USER="admin"
-    $env:MINIO_ROOT_PASSWORD="password"
-
-    if ($docker -eq 'true') {
-        Write-Host 'Configuring MINIO ... for DOCKER'
-    } else {
-        Write-Host 'Configuring MINIO ... for LOCALHOST'
-        if (-Not (Test-Path -Path $minioExe)) {
-            Write-Output " -- Extracting minio..."
-            Expand-ZipFile -zipFile "./zips/minio-v202411.zip" -extractPath $minioDir
-        }
-        Write-Host " -- Starting executable ..."
-        Start-Process -FilePath $minioExe -ArgumentList 'server /data --console-address ":9001"' -WindowStyle Minimized
-    }
-    Write-Host 'Configuring MINIO ... done'
+    Write-Host 'Configuring MINIO ... Done'    
 }
 
-# Function Configure and run Postgres
+# FUNCTION: Configure and run Postgres
 function Invoke-Postgres {
-    Write-Host 'Configuring POSTGRESQL ...'
+    Write-Host 'Configuring POSTGRESQL ... for DOCKER'
     $postgresDir = "$baseDir/postgres"
-    $postgresData = "$postgresDir/dbdata"
-    $postgresAdmin = "$postgresDir/pgadmin"
-    New-Item -ItemType Directory -Path $postgresDir, $postgresData, $postgresAdmin -Force
-    #Copy-Item -Path "./src/postgres/*" -Destination $postgresConf -Recurse
-    if ($docker -eq 'true') {
-        Write-Host 'Configuring POSTGRESQL ... for DOCKER'
-    } else {
-        Write-Host 'Configuring POSTGRESQL ... skipping'
-    }
-    Write-Host 'Configuring POSTGRESQL ... done'
+    $postgresData = "$postgresDir/data"
+    $postgresAdmin = "$postgresDir/admin"
+    $postgresBackup = "$postgresDir/backup"
+    New-Item -ItemType Directory -Path $postgresDir, $postgresData, $postgresAdmin, $postgresBackup -Force
+    Write-Host 'Configuring POSTGRESQL ... Done'
 }
 
-# Function Configure and run Prometheus
-function Invoke-Prometheus {
-    Write-Host 'Configuring PROMETHEUS ...'
-    $prometheusDir = "$baseDir/prometheus"
-    $prometheusConf = "$prometheusDir/conf"
-    $prometheusData = "$prometheusDir/data"
-    New-Item -ItemType Directory -Path $prometheusDir, $prometheusConf, $prometheusData -Force
-    Copy-Item -Path "./src/prometheus/*" -Destination $prometheusConf -Recurse
-    if ($docker -eq 'true') {
-        Write-Host 'Configuring PROMETHEUS ... for DOCKER'
-    } else {
-        Write-Host 'Configuring PROMETHEUS ... skipping'
-    }
-    Write-Host 'Configuring PROMETHEUS ... done'
-}
-
-# Function Configure and run Thanos
-function Invoke-Thanos {
-    Write-Host 'Configuring THANOS ...'
-    $thanosDir = "$baseDir/thanos"
-    $thanosConf = "$thanosDir/conf"
-    $thanosData = "$thanosDir/data"
-    New-Item -ItemType Directory -Path $thanosDir, $thanosConf, $thanosData -Force
-    Copy-Item -Path "./src/thanos/*" -Destination $thanosConf -Recurse
-    if ($docker -eq 'true') {
-        Write-Host 'Configuring THANOS ... for DOCKER'
-    } else {
-        Write-Host 'Configuring THANOS ... skipping'
-    }
-    Write-Host 'Configuring THANOS ... done'
-}
-
-# Function Configure and run Traefik
+# FUNCTION: Configure and run Traefik
 function Invoke-Traefik {
-    Write-Host 'Configuring TRAEFIK ...'
+    Write-Host 'Configuring TRAEFIK ... for DOCKER'
     $traefikDir = "$baseDir/traefik"
     $traefikConf = "$traefikDir/conf"
     $traefikData = "$traefikDir/data"
     $traefikLogs = "$traefikDir/logs"
     New-Item -ItemType Directory -Path $traefikDir, $traefikData, $traefikConf, $traefikLogs -Force
     $traefikConf = Resolve-Path -Path $traefikConf
-    Copy-Item -Path "./src/traefik/*develop*" -Destination $traefikConf -Recurse
-    if ($docker -eq 'true') {
-        Write-Host 'Configuring TRAEFIK ... for DOCKER'
-    } else {
-        Write-Host 'Configuring TRAEFIK ... skipping'
-    }
-    Write-Host 'Configuring TRAEFIK ... done'
+    Copy-Item -Path "./src/traefik/*" -Destination $traefikConf -Recurse
+    Write-Host 'Configuring TRAEFIK ... Done'
 }
 
 #
@@ -219,14 +165,18 @@ Write-Output 'Starting DEVELOPMENT environment...'
 # Check if Docker is available by running the `docker` command
 Write-Output 'Validating docker...'
 $docker = Get-Docker
-if ($docker -eq 'true') {
-    Set-Docker
+if ($docker -ne 'true') {
+    throw 'Docker is not installed or active'
 }
+Set-Docker
+Update-Secrets
 
 # Basic paths
 Write-Output 'Creating APP directories...'
-$baseDir = "./.app"
-New-Item -ItemType Directory -Path $baseDir -Force
+$baseDir = './.app'
+$scriptDir = "$baseDir/scripts"
+New-Item -ItemType Directory -Path $baseDir, $scriptDir -Force
+Copy-Item -Path "./src/scripts/*" -Destination $scriptDir -Recurse
 
 # Configure and run services
 Invoke-Consul
@@ -234,59 +184,26 @@ Invoke-Traefik
 Invoke-Minio
 Invoke-Postgres
 
-# Invoke-Prometheus
-# Invoke-Thanos
-# Invoke-Loki
-
-
 # Debug and test
-if ($docker -eq 'true') {
-    #
-    # USE DOCKER
-    #
-    $composeFile = "./src/compose.develop.yml"
-    Write-Host "Starting Docker Compose..."
-    docker-compose -f $composeFile config
-    docker-compose -f $composeFile up -d
+$composeFile = "./src/compose.develop.yml"
+Write-Host "Starting Docker Compose..."
+docker-compose -f $composeFile config --env-file develop.env
+docker-compose -f $composeFile up -d --env-file develop.env
 
-    # DEBUG AND TEST
-    Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://proxy.localhost/dashboard/#/",  # Traefik dashboard
-        "http://localhost:8500",                # Consul dashboard
-        "http://localhost:9090",                # Prometheus dashboard
-        "http://localhost:9001",                # Minio dashboard
-        "http://localhost:9091",                # Thanos Query dashboard
-        "http://localhost:8080",                # PGAdmin dashboard
-        "--inprivate",                          # Open in InPrivate mode
-        "--start-maximized",                    # Start maximized
-        "--new-window"                          # Open in a new window
-} else {
-    #
-    # USE EXECUTABLES
-    #
-    Start-Process -FilePath "msedge.exe" -ArgumentList `
-        "http://localhost:8500",                # Consul
-        "http://localhost:9001",                # Minio dashboard
-        "--inprivate",                          # Open in InPrivate mode
-        "--start-maximized",                    # Start maximized
-        "--new-window"                          # Open in a new window
-}
+# DEBUG AND TEST
+Start-Process -FilePath "msedge.exe" `
+    "--inprivate",                          # Open in InPrivate mode
+    "--start-maximized",                    # Start maximized
+    "--new-window"                          # Open in a new window
 
 # Stopping the development environment
 Pause 'Press any key to stop debugging'
 Write-Output 'Stopping DEVELOPMENT environment...'
 Stop-Process -Name 'msedge' -ErrorAction Ignore
 
-if ($docker -eq 'true') {
-    # Stop Docker Compose
-    Write-Host "Stopping Docker Compose..."
-    docker-compose -f $composeFile down
-} else {
-    # STOPPING SERVICES
-    Stop-Process -Name 'msedge' -ErrorAction Ignore
-    Stop-Process -Name 'consul' -ErrorAction Ignore
-    Stop-Process -Name 'minio' -ErrorAction Ignore
-}
+# Stop Docker Compose
+Write-Host "Stopping Docker Compose..."
+docker-compose -f $composeFile down
 
 # Stop the development environment
 Write-Output 'DEVELOPMENT environment stopped.'

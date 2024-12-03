@@ -1,4 +1,17 @@
 # Update Server Task
+# 
+#   app
+#   ├── consul +                 # Consul
+#   │ ├── conf +                 #   Consul conf
+#   │ ├── data +                 #   Consul data
+#   ├── postgres +               # Postgres and PGAdmin
+#   │ ├── admin +                #   PGAdmin data
+#   │ ├── data +                 #   Postgres databases
+#   ├── traefik +                # Traefik
+#   │ ├── conf +                 #   Traefik conf
+#   │ ├── data +                 #   Traefik data
+#   │ ├── logs +                 #   Traefik data
+#
 name: Update Server Task
 
 on:
@@ -8,11 +21,9 @@ on:
         required: true
         type: string
     secrets:
-      MINIO_ROOT_USER:
+      MINIO_ROOT_USER: 
         required: true
       MINIO_ROOT_PASSWORD:
-        required: true
-      MINIO_REGION:
         required: true
       POSTGRES_USER:
         required: true
@@ -22,19 +33,19 @@ on:
         required: true
       PGADMIN_PASSWORD:
         required: true
+      SERVER_ENDPOINT:
+        required: true
+      SERVER_PORT:
+        required: true
+      SERVER_USERNAME:
+        required: true
+      SERVER_PASSWORD:
+        required: true
       VERSIO_USERNAME:
         required: true
       VERSIO_PASSWORD:
         required: true
       VERSIO_ENDPOINT:
-        required: true
-      APP_HOST_SERVER:
-        required: true
-      APP_HOST_PORT:
-        required: true
-      APP_HOST_USERNAME:
-        required: true
-      APP_HOST_PASSWORD:
         required: true
 
 jobs:
@@ -46,10 +57,10 @@ jobs:
     - name: Update server script
       uses: appleboy/ssh-action@v1.0.2
       with:
-        host: ${{ secrets.APP_HOST_SERVER }}
-        username: ${{ secrets.APP_HOST_USERNAME }}
-        password: ${{ secrets.APP_HOST_PASSWORD }}
-        port: ${{ secrets.APP_HOST_PORT }}
+        host: ${{ secrets.SERVER_ENDPOINT }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        port: ${{ secrets.SERVER_PORT }}
         script: |
           cd /
           # Function to create a path if it does not already exist
@@ -111,15 +122,17 @@ jobs:
           echo Creating application directories
           cd /
           createpath "/app"
+          createpath "/app/scripts"
+          createpath "/app/consul"
+          createpath "/app/consul/conf"
+          createpath "/app/consul/data"
+          createpath "/app/postgres"
+          createpath "/app/postgres/admin"
+          createpath "/app/postgres/data"
           createpath "/app/traefik"
           createpath "/app/traefik/conf"
           createpath "/app/traefik/data"
           createpath "/app/traefik/logs"
-          createpath "/app/consul"
-          createpath "/app/consul/conf"
-          createpath "/app/consul/data"
-          createpath "/app/postgres/admin"
-          createpath "/app/postgres/data"
           # createpath "/app/prometheus"
           # createpath "/app/prometheus/conf"
           # createpath "/app/prometheus/data"
@@ -134,15 +147,14 @@ jobs:
           #Create the docker secrets
           createsecret "Minio Username" "MINIO_ROOT_USER" '${{ secrets.MINIO_ROOT_USER }}'
           createsecret "Minoi Password" "MINIO_ROOT_PASSWORD" '${{ secrets.MINIO_ROOT_PASSWORD }}'
-          createsecret "Minio Region" "MINIO_REGION" '${{ secrets.MINIO_REGION }}'
           createsecret "Postgres User" "POSTGRES_USER" '${{ secrets.POSTGRES_USER }}'
           createsecret "Postgres Password" "POSTGRES_PASSWORD" '${{ secrets.POSTGRES_PASSWORD }}'
           createsecret "PG Admin User" "PGADMIN_USER" '${{ secrets.PGADMIN_USER }}'
           createsecret "PG Admin Password" "PGADMIN_PASSWORD" '${{ secrets.PGADMIN_PASSWORD }}'
+          createsecret "Server Endpoint" "SERVER_ENDPOINT" '${{ secrets.SERVER_ENDPOINT }}'
+          createsecret "Server Port" "SERVER_PORT" '${{ secrets.SERVER_PORT }}'
+          createsecret "Server Username" "SERVER_USERNAME" '${{ secrets.SERVER_USERNAME }}'
+          createsecret "Server Password" "SERVER_PASSWORD" '${{ secrets.SERVER_PASSWORD }}'
           createsecret "Versio Username" "VERSIO_USERNAME" '${{ secrets.VERSIO_USERNAME }}'
           createsecret "Versio Password" "VERSIO_PASSWORD" '${{ secrets.VERSIO_PASSWORD }}'
           createsecret "Versio Endpoint" "VERSIO_ENDPOINT" '${{ secrets.VERSIO_ENDPOINT }}'
-          createsecret "Server Server" "APP_HOST_SERVER" '${{ secrets.APP_HOST_SERVER }}'
-          createsecret "Server Port" "APP_HOST_PORT" '${{ secrets.APP_HOST_PORT }}'
-          createsecret "Server Username" "APP_HOST_USERNAME" '${{ secrets.APP_HOST_USERNAME }}'
-          createsecret "Server Password" "APP_HOST_PASSWORD" '${{ secrets.APP_HOST_PASSWORD }}'

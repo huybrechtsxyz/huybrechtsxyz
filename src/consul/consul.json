@@ -1,0 +1,47 @@
+{
+  "datacenter": "${DATACENTER}",
+  "node_name": "${HOSTNAME}",
+  "server": true,
+  "bind_addr": "0.0.0.0",
+  "client_addr": "0.0.0.0",
+  "ui_config": {
+    "enabled": true
+  },
+  "retry_join": ["provider=docker"],
+  "log_level": "INFO",
+  "ports": {
+    "dns": 8600,
+    "http": 8500,
+    "serf_lan": 8301,
+    "serf_wan": 8302,
+    "server": 8300
+  },
+  "service": {
+    "id": "consul",
+    "name": "consul",
+    "address": "consul",
+    "port": 8500,
+    "meta": {
+      "consul_path": "/"
+    },
+    "checks": [
+      {
+        "id": "consul-http-check",
+        "name": "Consul HTTP Health Check",
+        "http":  "http://localhost:8500/v1/status/leader",
+        "interval": "15s",
+        "timeout": "5s"
+      }
+    ],
+    "tags":[
+      "consul","dns","discovery","configuration","docker-swarm","system",
+      "- traefik.enable=true",
+      "- traefik.tags=test",
+      "- traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)",
+      "- traefik.http.routers.consul.entrypoints=websecure",
+      "- traefik.http.routers.consul.tls.certresolver=leresolver",
+      "- traefik.http.services.consul.loadbalancer.server.scheme=http",
+      "- traefik.http.services.consul.loadbalancer.server.port=8500"
+    ]
+  }
+}

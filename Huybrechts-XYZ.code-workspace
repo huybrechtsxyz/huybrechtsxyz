@@ -1,8 +1,7 @@
 {
   "folders": [
-    {
-      "path": "."
-    }
+    { "path": "." },
+    { "path": "C:/Users/vhuybrec/AppData/Roaming/Microsoft/UserSecrets/acbede3b-f8f8-41b2-ad78-d1f3e176949f", "name": "UserSecrets" }
   ],
   "settings": {
     "files.exclude":{

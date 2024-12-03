@@ -8,13 +8,13 @@ on:
         required: true
         type: string
     secrets:
-      APP_HOST_SERVER:
+      SERVER_ENDPOINT:
         required: true
-      APP_HOST_PORT:
+      SERVER_PORT:
         required: true
-      APP_HOST_USERNAME:
+      SERVER_USERNAME:
         required: true
-      APP_HOST_PASSWORD:
+      SERVER_PASSWORD:
         required: true
 
 jobs:
@@ -26,21 +26,21 @@ jobs:
       - name: Update docker stack
         uses: appleboy/ssh-action@v1.0.2
         with:
-          host: ${{ secrets.APP_HOST_SERVER }}
-          username: ${{ secrets.APP_HOST_USERNAME }}
-          password: ${{ secrets.APP_HOST_PASSWORD }}
-          port: ${{ secrets.APP_HOST_PORT }}
+          host: ${{ secrets.SERVER_ENDPOINT }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
           script_stop: true
           script: |
             set -e
             cd /
+            # Set the application path
             cd /app
-            # Get the number of Swarm managers
-            SWARM_MANAGERS=$(docker node ls --filter "role=manager" --format "{{.ID}}" | wc -l)
             # Set the appropriate security on the application subdirectories
-            echo APPY SECURITY
+            #echo APPY SECURITY
             sudo chmod -R 600 /app/traefik/data
             sudo chmod -R 777 /app/traefik/logs
+            sudo chmod -R +x /app/scripts
             # Redeploy the new docker compose
             echo DOCKER DEPLOY
-            docker stack deploy -c compose.${{ inputs.environment }}.yml app &> /app/logs/deploy-stack.log
+            docker stack deploy -c compose.${{ inputs.environment }}.yml --env-file ${{ inputs.environment }}.env app &> /app/deploy-stack.log

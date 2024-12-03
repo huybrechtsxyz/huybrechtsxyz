@@ -1,0 +1,458 @@
+# Docker Compose for the test environment
+#
+# ENVIRONMENT VARIABLES
+# ---------------------
+# APP_PATH            -> Set in env-file
+# DATACENTER          -> Set in env-file
+# DOMAIN_DEV          -> Set in env-file
+# DOMAIN_XYZ          -> Set in env-file
+# DOMAIN_MEEUS        -> Set in env-file
+# DOMAIN_LIZARD       -> Set in env-file
+# DOCKER_MANAGERS     -> Set in env-file
+# ENVIRONMENT         -> Set in env-file
+# MINIO_PATH          -> Set in env-file
+# MINIO_REGIO         -> Set in env-file
+#
+version: '3.9'
+
+services:
+
+  consul:
+    image: consul:1.15.4
+    environment:
+      DATACENTER: ${DATACENTER}
+      DOCKER_MANAGERS: ${DOCKER_MANAGERS}
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      HOSTNAME: ${HOSTNAME}
+    command:
+      - consul
+      - agent
+      - -data-dir=/consul/data
+      - -config-dir=/consul/config
+      - -config-file=/consul/config/consul.test.json
+      - -bootstrap-expect=${DOCKER_MANAGERS}
+    networks:
+      - public
+    volumes:
+      - consul-conf:/consul/config
+      - consul-data:/consul/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    deploy:
+      replicas: ${DOCKER_MANAGERS}
+      placement:
+        constraints: 
+          - node.role == manager
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "1.0"
+      #     memory: "1G"
+      #   reservations:
+      #     cpus: "0.5"
+      #     memory: "512M"
+
+  traefik:
+    image: "traefik:v3.1.6"
+    secrets:
+      - VERSIO_USERNAME
+      - VERSIO_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
+      VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
+      VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - public
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - traefik-conf/traefik.yml:/etc/traefik/traefik.yml:ro
+      - traefik-data:/app/data
+      - traefik-logs:/app/logs
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      replicas: 1
+      placement:
+        constraints: 
+          - node.role == manager
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "1.0"     # Max 1 CPUs
+      #     memory: "512M"  # Max 512Mb of memory
+      #   reservations:
+      #     cpus: "0.25"    # Reserve 0.25 CPUs
+      #     memory: "512M"  # Reserve 512MB of memory
+
+  minio:
+    image: "minio/minio:latest"
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"  # MinIO API
+      - "9001:9001"  # MinIO Console
+    networks:
+      - public
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      replicas: 1
+      placement:
+        constraints: 
+          - node.role == worker
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "1.5"
+      #     memory: "3G"
+      #   reservations:
+      #     cpus: "1.0"
+      #     memory: "2G"
+
+  minio-init:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
+    entrypoint: >
+      /bin/sh -c "
+        # Function to create bucket if it doesn't exist and set the read-write policy
+        create_bucket_if_not_exists() {
+          local bucket_name=\$1
+          echo 'Checking if bucket' \$bucket_name 'exists...';
+          if ! mc ls myminio/\$bucket_name > /dev/null 2>&1; then
+              echo 'Creating bucket' \$bucket_name '...';
+              mc mb myminio/\$bucket_name || { echo 'Failed to create bucket'; exit 1; }
+              echo 'Created bucket' \$bucket_name
+          else
+              echo 'Bucket' \$bucket_name 'already exists'
+          fi &&
+          
+          echo 'Setting read-write policy for' \$bucket_name 'bucket...';
+          mc anonymous set public myminio/\$bucket_name || { echo 'Failed to set policy'; exit 1; }
+          echo 'Set read-write policy for' \$bucket_name 'bucket'
+        }
+
+        # Main script execution
+        echo 'Setting MinIO alias...';
+        export MINIO_ROOT_USER=\$(cat \$MINIO_ROOT_USER_FILE)
+        export MINIO_ROOT_PASSWORD=\$(cat \$MINIO_ROOT_PASSWORD_FILE)
+        echo \$MINIO_ROOT_USER;
+        echo \$MINIO_ROOT_PASSWORD;
+        mc alias set myminio http://minio:9000 \$MINIO_ROOT_USER \$MINIO_ROOT_PASSWORD &&
+
+        # Create and configure buckets
+        create_bucket_if_not_exists backups;
+        #create_bucket_if_not_exists thanos;
+        #create_bucket_if_not_exists loki;
+      "
+    networks:
+      - public
+
+  postgres:
+    image: postgres
+    secrets:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: xyzdb
+      POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
+    networks:
+      - public
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d xyzdb -U $(cat /run/secrets/POSTGRES_USER)"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    deploy:
+      replicas: 1
+      placement:
+        constraints: 
+          - node.role == worker
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "2.0"     # Max 2 CPUs
+      #     memory: "2G"    # Max 2GB of memory
+      #   reservations:
+      #     cpus: "0.5"     # Reserve 0.5 CPUs
+      #     memory: "512M"  # Reserve 512MB of memory
+
+  pgadmin:
+    image: dpage/pgadmin4
+    secrets:
+      - PGADMIN_USER
+      - PGADMIN_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      PGADMIN_LISTEN_PORT: 9080
+      PGADMIN_DEFAULT_EMAIL_FILE: PGADMIN_USER
+      PGADMIN_DEFAULT_PASSWORD_FILE: PGADMIN_PASSWORD
+      SCRIPT_NAME: /pgadmin
+    networks:
+      - public
+      - private
+    volumes:
+      - postgres-admin:/var/lib/pgadmin
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9080/pgadmin"]
+      interval: 15s
+      retries: 3
+      timeout: 5s
+      start_period: 10s
+    deploy:
+      replicas: 1
+      placement:
+        constraints: 
+          - node.role == worker
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "2.0"     # Max 2 CPUs
+      #     memory: "2G"    # Max 2GB of memory
+      #   reservations:
+      #     cpus: "0.5"     # Reserve 0.5 CPUs
+      #     memory: "512M"  # Reserve 512MB of memory
+
+  backup:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
+      POSTGRES_HOST: http://postgres
+      POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
+    volumes:
+      - postgres_backups:/backups
+      - scripts:/scripts
+      - scripts/backup.sh:/scripts/backup.sh  # Mount the local backup script
+      - scripts/backup.cron:/etc/crontabs/root  # Mount the local crontab file
+    command: ["sh", "/scripts/backup.sh"]
+
+networks:
+  public:
+    external: true
+  private:
+    external: true
+
+volumes:
+  scripts:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APP_PATH}/scripts
+      o: bind
+  consul-conf:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APP_PATH}/consul/conf
+      o: bind
+  consul-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APP_PATH}/consul/data
+      o: bind
+  minio-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${MINIO_PATH}
+      o: bind
+  postgres-admin:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APP_PATH}/postgres/admin
+      o: bind
+  postgres-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APP_PATH}/postgres/data
+      o: bind
+  postgres-backup:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APP_PATH}/postgres/backup
+      o: bind
+  traefik-conf:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APP_PATH}/traefik/conf
+      o: bind
+  traefik-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APP_PATH}/traefik/data
+      o: bind
+  traefik-logs:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${APP_PATH}/traefik/logs
+      o: bind
+
+secrets:
+  MINIO_ROOT_USER:
+    external: true
+  MINIO_ROOT_PASSWORD:
+    external: true
+  POSTGRES_USER:
+    external: true
+  POSTGRES_PASSWORD:
+    external: true
+  PGADMIN_USER:
+    external: true
+  PGADMIN_PASSWORD:
+    external: true
+  VERSIO_USERNAME:
+    external: true
+  VERSIO_PASSWORD:
+    external: true
+  VERSIO_ENDPOINT:
+    external: true
+
+#configs:

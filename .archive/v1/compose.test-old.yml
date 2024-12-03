@@ -1,0 +1,322 @@
+# Docker Compose for the test environment
+version: '3.9'
+
+networks:
+
+  public:
+    driver: overlay
+  private:
+    driver: overlay
+
+secrets:
+
+  MINIO_ROOT_USER:
+    external: true
+  MINIO_ROOT_PASSWORD:
+    external: true
+  MINIO_REGION:
+    external: true
+  VERSIO_USERNAME:
+    external: true
+  VERSIO_PASSWORD:
+    external: true
+  VERSIO_ENDPOINT:
+    external: true
+
+services:
+
+  traefik:
+    image: "traefik:v3.1.6"
+    secrets:
+      - VERSIO_USERNAME
+      - VERSIO_PASSWORD
+      - VERSIO_ENDPOINT
+    environment:
+      VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
+      VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
+      VERSIO_ENDPOINT_FILE: /run/secrets/VERSIO_ENDPOINT
+    command:
+      # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+      # Enable the Traefik log, for configurations and errors
+      - --log=true
+      - --log.level=INFO
+      - --log.format=json
+      - --log.maxsize=5
+      - --log.maxage=5
+      - --log.filePath=/app/logs/traefik.log
+      # Checking the Health of Your Traefik Instances
+      - --ping=true
+      # Enable the access log, with HTTP requests
+      - --accesslog=true
+      - --accesslog.format=json
+      - --accesslog.filepath=/app/logs/traefik-access.log
+      # Prometheus metrics
+      # https://doc.traefik.io/traefik/v3.0/observability/metrics/prometheus/
+      # Prometheus metrics
+      - --metrics.prometheus=true
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addRoutersLabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      # CONSUL
+      - --providers.consulCatalog=true
+      - --providers.consulCatalog.cache=true
+      - --providers.consulCatalog.refreshInterval=30s
+      - --providers.consulCatalog.endpoint.address=consul:8500
+      - --providers.consulCatalog.endpoint.scheme=http
+      - --providers.consulCatalog.exposedByDefault=false
+      - --providers.consulcatalog.defaultRule=Host(`disco.test.huybrechts.dev`)
+      # Entry points
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
+      # https://doc.traefik.io/traefik/routing/entrypoints/#http2
+      # Do not expose all Docker services, only the ones explicitly exposed
+      # Docker swarm confiuration
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=public
+      - --providers.swarm
+      - --providers.swarm.constraints=Label(`traefik.tags`, `test`)
+      # Dashboard. Optional. Default: true. 
+      - --api
+      - --api.dashboard=true
+      # Enable ACME (Let's Encrypt): automatic SSL.
+      # CA server to use. Uncomment the line to use Let's Encrypt's staging server, leave commented to go to prod. Optional
+      # Default: "https://acme-v02.api.letsencrypt.org/directory"
+      # Email address used for registration. Required
+      # File or key used for certificates storage. Required
+      # Make sure the this file is available and permission is set correctly
+      - --certificatesresolvers.leresolver.acme.dnschallenge=true
+      - --certificatesresolvers.leresolver.acme.dnschallenge.provider=versio
+      - --certificatesresolvers.leresolver.acme.dnschallenge.delaybeforecheck=0
+      - --certificatesresolvers.leresolver.acme.email=webmaster@huybrechts.xyz
+      - --certificatesresolvers.leresolver.acme.storage=/app/cert/acme.json
+      # Use the Docker secrets for Versio credentials instead of a credentials file
+      - --certificatesresolvers.leresolver.acme.dnschallenge.usernameFile=/run/secrets/VERSIO_USERNAME
+      - --certificatesresolvers.leresolver.acme.dnschallenge.passwordFile=/run/secrets/VERSIO_PASSWORD
+      - --certificatesresolvers.leresolver.acme.dnschallenge.endpointFile=/run/secrets/VERSIO_ENDPOINT
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - public
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/app/cert:/app/cert"
+      - "/app/logs:/app/logs"
+    healthcheck:
+      # Run traefik healthcheck command
+      # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 30s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+        monitor: 10s
+        order: start-first
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+        # reservations:
+        #   cpus: "0.25"
+        #   memory: "256M"
+      labels:
+        # Enable traefik
+        - "traefik.enable=true"
+        - "traefik.tags=test"
+        # Middlewares
+        - "traefik.http.middlewares.authadmin.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU."
+        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+        # Dashboard
+        - "traefik.http.routers.traefik.rule=Host(`proxy.test.huybrechts.dev`)"
+        - "traefik.http.routers.traefik.service=api@internal"
+        - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+        - "traefik.http.routers.traefik.tls.certresolver=leresolver"
+        - "traefik.http.routers.traefik.entrypoints=websecure"
+        - "traefik.http.routers.traefik.middlewares=authadmin"
+
+  consul:
+    image: consul:1.15.4
+    environment:
+      CONSUL_LOCAL_CONFIG: '{ "datacenter": "EU-Frankfurt-Test", "log_level": "INFO" }'
+    command: "consul agent -server -ui -bootstrap-expect=1 -bind=0.0.0.0 -client=0.0.0.0 -advertise=consul:8500 -data-dir=/consul/data -config-dir=/consul/config"
+    ports:
+      - "8500:8500"       # Web UI port
+      - "8600:8600/udp"   # DNS port
+    volumes:
+      - "/app/consul/conf:/consul/conf"
+      - "/app/consul/data:/consul/data"
+    networks:
+      - public
+    healthcheck:
+      # Run traefik healthcheck command
+      # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      replicas: 1
+      placement:
+        constraints: 
+          - node.role == manager
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "2.0"  # Max 2 CPUs
+      #     memory: "2G"  # Max 2GB of memory
+      #   reservations:
+      #     cpus: "0.5"  # Reserve 0.5 CPUs
+      #     memory: "512M"  # Reserve 512MB of memory
+      labels:
+        # Enable traefik
+        - "traefik.enable=true"
+        - "traefik.tags=test"
+        # Configuration
+        - "traefik.http.routers.consul.rule=Host(`config.test.huybrechts.com`)" # Replace with your domain
+        - "traefik.http.routers.consul.entrypoints=websecure"
+        - "traefik.http.routers.consul.tls.certresolver=leresolver"
+        - "traefik.http.services.consul.loadbalancer.server.port=8500"
+
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+      - "--storage.tsdb.retention.time=15d"
+    ports:
+      - "9090:9090"
+    networks:
+      - public
+      - private
+    volumes:
+      - "/app/prometheus/conf/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "/app/prometheus/data:/prometheus"
+    healthcheck:
+      # Run traefik healthcheck command
+      # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      placement:
+        constraints:
+          - "node.role == manager"
+        preferences:
+        - spread: node.id
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 5
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+      # resources:
+      #   limits:
+      #     cpus: "1.0"
+      #     memory: "512M"
+      #   reservations:
+      #     cpus: "0.25"
+      #     memory: "256M"
+      labels:
+        # Disable Traefik routing for this service
+        - "traefik.enable=false"
+
+  minio:
+    image: "minio/minio:latest"
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+      - MINIO_REGION
+    environment:
+      MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
+      MINIO_REGION_FILE: /run/secrets/MINIO_REGION
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"  # MinIO API
+      - "9001:9001"  # MinIO Console
+    networks:
+      - public
+    volumes:
+      - /mnt/data:/data
+    healthcheck:
+      # Run traefik healthcheck command
+      # https://doc.traefik.io/traefik/v3.0/operations/cli/#healthcheck
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      # resources:
+      #   limits:
+      #     cpus: "1.5"
+      #     memory: "3G"
+      #   reservations:
+      #     cpus: "1.0"
+      #     memory: "2G"
+      labels:
+        # Enable traefik
+        - "traefik.enable=true"
+        - "traefik.tags=test"
+        # Configuration
+        - "traefik.http.routers.minio.rule=Host(`data.test.huybrechts.dev`)"
+        - "traefik.http.routers.minio.entrypoints=websecure"
+        - "traefik.http.routers.minio.tls.certresolver=leresolver"
+        - "traefik.http.services.minio.loadbalancer.server.port=9000"
+        - "traefik.http.routers.minio.middlewares=authadmin"

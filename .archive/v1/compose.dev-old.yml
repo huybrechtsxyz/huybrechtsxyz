@@ -1,0 +1,417 @@
+# Docker Compose for the development environment
+version: '3.9'
+
+networks:
+
+  public:
+    driver: bridge
+  private:
+    driver: bridge
+
+
+volumes:
+
+  # Use a Temporary Docker Volume for Development, use WSL2 for a Linux-Compatible Filesystem
+  # Thanos Sidecar in Docker on Windows due to its lack of support for Unix-style hard links in some configurations.
+  prometheus-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ../.app/prometheus/data
+      o: bind
+
+services:
+
+  traefik:
+    image: "traefik:v3.1.6"
+    container_name: traefik
+    command:
+      # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+      # Enable the Traefik log, for configurations and errors
+      - --log=true
+      - --log.level=DEBUG
+      - --log.format=json
+      - --log.maxsize=5
+      - --log.maxage=5
+      - --log.filePath=/app/logs/traefik.log
+      # Checking the Health of Your Traefik Instances
+      - --ping=true
+      # Enable the access log, with HTTP requests
+      - --accesslog=true
+      - --accesslog.format=json
+      - --accesslog.filepath=/app/logs/traefik-access.log
+      # Prometheus metrics
+      - --metrics.prometheus=true
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addRoutersLabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      # Consul configuration
+      - --providers.consulCatalog=true
+      - --providers.consulCatalog.cache=true
+      - --providers.consulCatalog.refreshInterval=30s
+      - --providers.consulCatalog.endpoint.address=http://consul:8500
+      - --providers.consulCatalog.endpoint.scheme=http
+      - --providers.consulCatalog.exposedByDefault=false
+      - --providers.consulCatalog.defaultRule=Host(`localhost`)
+      # Entry points
+      - --entrypoints.web.address=:80
+      # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
+      # Docker configuration
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=public
+      # Dashboard. Optional. Default: true. 
+      - --api
+      - --api.dashboard=true
+    ports:
+      - "80:80"
+      - "433:433"
+    networks:
+      - public
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "../.app/traefik/cert:/app/cert"
+      - "../.app/traefik/logs:/app/logs"
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    labels:
+      # Enable for test
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      # Dashboard
+      - "traefik.http.routers.traefik.rule=Host(`proxy.localhost`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+
+  # https://developer.hashicorp.com/consul/docs/agent#running-an-agent
+  consul:
+    image: consul:1.15.4
+    container_name: consul
+    environment:
+      CONSUL_LOCAL_CONFIG: '{ "datacenter": "develop", "log_level": "DEBUG", "bind_addr": "0.0.0.0",  "client_addr": "0.0.0.0"}'
+    command: 
+      - "consul"
+      - "agent"
+      - "-server"
+      - "-dev"
+      - "-ui"
+      - "-data-dir=/consul/data"
+      - "-config-dir=/consul/config"
+    ports:
+      - "8500:8500" # Web UI and API
+      - "8600:8600/udp"
+    networks:
+      - public
+    volumes:
+      - ../.app/consul/conf:/consul/config
+      - ../.app/consul/data:/consul/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      - "traefik.http.routers.consul.rule=Host(`localhost`)"
+      - "traefik.http.routers.consul.entrypoints=web"
+      - "traefik.http.services.consul.loadbalancer.server.port=8500"
+
+  minio:
+    image: "minio/minio:latest"
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: "admin"
+      MINIO_ROOT_PASSWORD: "password"
+      MINIO_REGION: "eu-frankfurt-test"
+      MINIO_HTTP2_DISABLE: "on"
+      #MINIO_HTTP2_FRAME_SIZE: "1048576"
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"  # MinIO Dataservice
+      - "9001:9001"  # MinIO Console (optional)
+    networks:
+      - public
+    volumes:
+      - "../.app/minio/data:/data"
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio.rule=Host(`localhost`)"
+      - "traefik.http.services.minio.loadbalancer.server.port=9000"
+      - "traefik.http.routers.minio.entrypoints=web"
+
+  minio-init:
+    image: minio/mc
+    container_name: minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: "admin"
+      MINIO_ROOT_PASSWORD: "password"
+    entrypoint: >
+      /bin/sh -c "
+        echo 'Setting MinIO alias...';
+        export MINIO_ROOT_USER="$MINIO_ROOT_USER"
+        export MINIO_ROOT_PASSWORD="$MINIO_ROOT_PASSWORD"
+        echo \$MINIO_ROOT_USER;
+        echo \$MINIO_ROOT_PASSWORD;
+        mc alias set myminio http://minio:9000 \$MINIO_ROOT_USER \$MINIO_ROOT_PASSWORD &&
+        
+        # Check if bucket exists and create it if not
+        echo 'Checking if bucket thanos exists...';
+        if ! mc ls myminio/thanos > /dev/null 2>&1; then
+            echo 'Creating bucket thanos...';
+            mc mb myminio/thanos || { echo 'Failed to create bucket'; exit 1; }
+            echo 'Created bucket thanos'
+        else
+            echo 'Bucket thanos already exists'
+        fi &&
+        
+        # Set read-write access policy for the bucket
+        echo 'Setting read-write policy for thanos bucket...';
+        mc anonymous set public myminio/thanos || { echo 'Failed to set policy'; exit 1; }
+        echo 'Set read-write policy for thanos bucket'
+
+        # Check if bucket exists and create it if not
+        echo 'Checking if bucket loki exists...';
+        if ! mc ls myminio/loki > /dev/null 2>&1; then
+            echo 'Creating bucket loki...';
+            mc mb myminio/loki || { echo 'Failed to create bucket'; exit 1; }
+            echo 'Created bucket loki'
+        else
+            echo 'Bucket loki already exists'
+        fi &&
+        
+        # Set read-write access policy for the bucket
+        echo 'Setting read-write policy for loki bucket...';
+        mc anonymous set public myminio/loki || { echo 'Failed to set policy'; exit 1; }
+        echo 'Set read-write policy for loki bucket'
+      "
+    networks:
+      - public
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    depends_on:
+      minio:
+        condition: service_healthy
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.min-block-duration=2h
+      - --storage.tsdb.max-block-duration=2h
+      - --web.external-url=http://localhost:9090
+    ports:
+      - "9090:9090"  # Prometheus web UI
+    networks:
+      - public
+    volumes:
+      - "../.app/prometheus/conf:/etc/prometheus"
+      - ../.app/prometheus/data:/prometheus:rw
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    labels:
+      - "traefik.enable=false" # grafana is used as UI
+
+  thanos-sidecar:
+    image: "quay.io/thanos/thanos:v0.37.0"
+    container_name: thanos-sidecar
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    command:
+      - sidecar
+      - "--tsdb.path=/prometheus"
+      - "--objstore.config-file=/etc/thanos/thanos.develop.yml"
+      - "--prometheus.url=http://prometheus:9090"
+    ports:
+      - "10901:10901"
+    networks:
+      - public
+    volumes:
+      - ../.app/prometheus/data:/prometheus:rw
+      - ../.app/thanos/conf:/etc/thanos
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:10902/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "traefik.enable=false"
+
+  thanos-gateway:
+    image: "quay.io/thanos/thanos:v0.37.0"
+    container_name: thanos-gateway
+    depends_on:
+      minio:
+        condition: service_healthy
+    command:
+      - store
+      - "--objstore.config-file=/etc/thanos/thanos.develop.yml"
+      - "--http-address=0.0.0.0:10902"
+      - "--grpc-address=0.0.0.0:10901"
+    volumes:
+      - ../.app/thanos/conf:/etc/thanos
+      - ../.app/thanos/data:/data
+    ports:
+      #   - "10901:10901"
+      - "10902:10902"
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:10902/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "traefik.enable=false"
+
+  thanos-query:
+    image: "quay.io/thanos/thanos:v0.37.0"
+    container_name: thanos-query
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      thanos-sidecar:
+        condition: service_healthy
+      thanos-gateway:
+        condition: service_healthy
+    command:
+      - query
+      - "--http-address=0.0.0.0:9091"
+      - "--store=thanos-sidecar:10901"
+      - "--store=thanos-gateway:10902"
+    ports:
+      - "9091:9091"
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9091/-/healthy"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    labels:
+      - "traefik.enable=false"
+
+  loki:
+    image: grafana/loki
+    container_name: loki
+    command: -config.file=/etc/loki/loki-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - public
+    volumes:
+      - ../.app/loki/conf:/etc/loki # Loki configuration directory
+      - ../.app/loki/data:/loki-data # Data storage
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3100/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "traefik.enable=false"
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: xyzdevdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    networks:
+      - public
+    volumes:
+      - ../.app/postgres/dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d xyzdevdb -U admin"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    labels:
+      - "traefik.enable=false"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_LISTEN_PORT: 9080
+      PGADMIN_DEFAULT_EMAIL: admin@localhost.dev
+      PGADMIN_DEFAULT_PASSWORD: password
+      SCRIPT_NAME: /pgadmin
+    networks:
+      - public
+    volumes:
+      - ../.app/postgres/pgadmin:/var/lib/pgadmin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      - "traefik.http.routers.pgadmin.rule=Host(`localhost`) && PathPrefix(`/pgadmin`)"
+      - "traefik.http.services.pgadmin.loadbalancer.server.port=9080"
+      - "traefik.http.routers.pgadmin.entrypoints=web"
+
+  keycloak:
+    image: keycloak/keycloak:latest
+    container_name: keycloak
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: password
+      KEYCLOAK_USER: admin               # Admin username for Keycloak
+      KEYCLOAK_PASSWORD: password        # Admin password for Keycloak
+      DB_VENDOR: POSTGRES                # Set the database vendor to PostgreSQL
+      DB_ADDR: postgres:5432             # The address of the PostgreSQL service (replace `postgres` with the name of the container)
+      DB_DATABASE: keycloak              # The database name defined in the PostgreSQL service
+      DB_USER: admin                     # The user for the PostgreSQL connection
+      DB_PASSWORD: password              # The password for the PostgreSQL connection
+      KEYCLOAK_IMPORT: /tmp/realm.json   # Optionally, if you're importing a custom realm
+    command: start-dev
+    ports:
+      - "8080:8080"                      # Expose Keycloak admin console on port 8080
+    networks:
+      - public
+    volumes:
+      - ../.app/keycloak/realm.json:/tmp/realm.json  # Optional, for realm import
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8080/auth/realms/master"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tags=develop"
+      - "traefik.http.routers.keycloak.rule=Host(`localhost`) && PathPrefix(`/keycloak`)"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      - "traefik.http.routers.keycloak.entrypoints=web"
+
+# grafana
+# keykloak
