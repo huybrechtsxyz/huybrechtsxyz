@@ -236,6 +236,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Starting Docker Swarm..."
+Write-Error "Multiple private IPv4 addresses found. Please configure one with 'bind' and/or 'advertise'."
 #docker compose -f $composeFile up -d
 docker stack deploy -c $composeFile app
 
