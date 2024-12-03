@@ -49,7 +49,7 @@ jobs:
             export DOCKER_SWARM_IPS
             # Set the appropriate security on the application subdirectories
             echo APPY SECURITY
-            sudo chmod -R 600 /app/traefik/cert
+            sudo chmod -R 600 /app/traefik/data
             sudo chmod -R 777 /app/traefik/logs
             # Redeploy the new docker compose
             echo DOCKER DEPLOY

@@ -34,7 +34,8 @@ The service domains, paths, and ports:
 | Traefik    |    80 | domain         | /           | Traefik HTTP + Redirect |
 | Traefik    |   433 | domain         | /           | Traefik HTTPS |
 | Traefik    |   433 | proxy.domain   | /dashboard  | Traefik dasboard |
-| Consul     |  8500 | config.domain  | /           | Consul discovery and configuration |
+| Consul     |  8500 | config.domain  | /           | Consul configuration |
+| Consul     |  8600 | config.domain  | /           | Consul DNS discovery |
 | Prometheus |  9090 | /              | /           | Prometheus monitoring |
 | Minio      |  9001 | data.domain    | /           | Minio data storage |
 | Thanos     |  9091 | /              | /           | Thanos query  |
@@ -93,7 +94,8 @@ The application is organized into a structured directory layout that facilitates
     │ ├── conf +                 #   Thanos conf
     │ ├── data +                 #   Thanos data
     ├── traefik +                # Traefik
-    │ ├── cert +                 #   Traefik certificates
+    │ ├── conf +                 #   Traefik configuration
+    │ ├── data +                 #   Traefik certificates
     │ ├── logs +                 #   Traefik logs
     ```
 

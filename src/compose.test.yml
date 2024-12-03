@@ -22,7 +22,7 @@ services:
       - agent
       - -data-dir=/consul/data
       - -config-dir=/consul/config
-      - -config-file=/consul/config/config-consul.test.json
+      - -config-file=/consul/config/consul.test.json
       - -bootstrap-expect=${DOCKER_SWARM_MANAGERS}
       - -retry-join=${DOCKER_SWARM_IPS}
     networks:
@@ -84,7 +84,7 @@ services:
       - public
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - traefik-conf/conf-traefik.test.yml:/etc/traefik/traefik.yml:ro
+      - traefik-conf/traefik.test.yml:/etc/traefik/traefik.yml:ro
       - traefik-data:/app/data
       - traefik-logs:/app/logs
     healthcheck:
@@ -164,6 +164,12 @@ networks:
   private:
     external: true
 
-#secrets:
+secrets:
+  VERSIO_USERNAME:
+    external: true
+  VERSIO_PASSWORD:
+    external: true
+  VERSIO_ENDPOINT:
+    external: true
 
 #configs:

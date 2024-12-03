@@ -17,7 +17,7 @@ services:
       - -dev
       - -data-dir=/consul/data
       - -config-dir=/consul/config
-      - -config-file=/consul/config/config-consul.develop.json
+      - -config-file=/consul/config/consul.develop.json
     networks:
       - public
     volumes:
@@ -29,6 +29,26 @@ services:
       timeout: 10s
       retries: 5
       start_period: 5s
+
+  traefik:
+    image: "traefik:v3.1.6"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    networks:
+      - public
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - traefik-conf/traefik.develop.yml:/etc/traefik/traefik.yml:ro
+      - traefik-data:/app/data
+      - traefik-logs:/app/logs
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
 volumes:
 

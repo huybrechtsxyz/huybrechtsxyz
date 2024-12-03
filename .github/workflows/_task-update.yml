@@ -104,7 +104,8 @@ jobs:
           cd /
           createpath "/app"
           createpath "/app/traefik"
-          createpath "/app/traefik/cert"
+          createpath "/app/traefik/conf"
+          createpath "/app/traefik/data"
           createpath "/app/traefik/logs"
           createpath "/app/consul"
           createpath "/app/consul/conf"

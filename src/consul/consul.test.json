@@ -1,0 +1,49 @@
+{
+  "datacenter": "eu-frankfurt-test",
+  "node_name": "${HOSTNAME}",
+  "server": true,
+  "bind_addr": "0.0.0.0",
+  "client_addr": "0.0.0.0",
+  "ui_config": {
+    "enabled": true
+  },
+  "log_level": "DEBUG",
+  "ports": {
+    "dns": 8600,
+    "http": 8500,
+    "serf_lan": 8301,
+    "serf_wan": 8302,
+    "server": 8300
+  },
+  "service": {
+    "id": "consul",
+    "name": "consul",
+    "address": "consul",
+    "port": 8500,
+    "meta": {
+      "consul_path": "/metrics"
+    },
+    "checks": [
+      {
+        "id": "traefik-http-check",
+        "name": "Traefik HTTP Health Check",
+        "http": "http://traefik:8080/ping",
+        "interval": "15s",
+        "timeout": "5s"
+      }
+    ],
+    "tags":[
+      "traefik",
+      "proxy",
+      "- traefik.enable=true",
+      "- traefik.tags=test",
+      "- traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https",
+      "- traefik.http.routers.traefik.rule=Host(`proxy.test.huybrechts.dev`)",
+      "- traefik.http.routers.traefik.service=api@internal",
+      "- traefik.http.services.traefik.loadbalancer.server.port=8080",
+      "- traefik.http.routers.traefik.tls.certresolver=leresolver",
+      "- traefik.http.routers.traefik.entrypoints=websecure",
+      "- traefik.http.routers.traefik.middlewares=authadmin"
+    ]
+  }
+}

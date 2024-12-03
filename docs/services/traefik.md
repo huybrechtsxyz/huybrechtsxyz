@@ -13,9 +13,3 @@ Clear Responsibilities
 - Routers analyze the requests (host, path, headers, SSL, ...)
 - Services forward the request to your services (load balancing, ...)
 - Middlewares may update the request or make decisions based on the request (authentication, rate limiting, headers, ...)
-
-## Way of Thinking
-
-## Way of Working
-
-## Way of Writing
