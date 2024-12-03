@@ -34,15 +34,13 @@
       }
     ],
     "tags":[
-      "consul",
-      "proxy",
-      "docker-swarm",
-      "system",
+      "consul","dns","discovery","configuration","docker-swarm","system",
       "- traefik.enable=true",
-      "- traefik.tags=test",
+      "- traefik.tags=develop",
       "- traefik.http.routers.consul.rule=Host(`disco.localhost`)",
-      "- traefik.http.routers.consul.tls.certresolver=leresolver",
-      "- traefik.http.routers.consul.entrypoints=web",
+      "- traefik.http.routers.consul.entrypoints=websecure",
+      "- traefik.http.routers.consul.tls.certresolver=tmpresolver",
+      "- traefik.http.services.consul.loadbalancer.server.scheme=http",
       "- traefik.http.services.consul.loadbalancer.server.port=8500"
     ]
   }

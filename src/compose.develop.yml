@@ -50,6 +50,29 @@ services:
       retries: 5
       start_period: 30s
 
+  minio:
+    image: "minio/minio:latest"
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: "admin"
+      MINIO_ROOT_PASSWORD: "password"
+      MINIO_REGION: "develop"
+      MINIO_HTTP2_DISABLE: "on"
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"  # MinIO Dataservice
+      - "9001:9001"  # MinIO Console (optional)
+    networks:
+      - public
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
 volumes:
 
   consul-conf:
@@ -63,6 +86,32 @@ volumes:
     driver_opts:
       type: none
       device: ../.app/consul/data
+      o: bind
+
+  traefik-conf:
+    driver: local
+    driver_opts:
+      type: none
+      device: /app/traefik/conf
+      o: bind
+  traefik-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /app/traefik/data
+      o: bind
+  traefik-logs:
+    driver: local
+    driver_opts:
+      type: none
+      device: /app/traefik/logs
+      o: bind
+
+  minio-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /app/minio/data
       o: bind
 
 networks:

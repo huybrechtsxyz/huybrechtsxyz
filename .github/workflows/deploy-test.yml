@@ -18,9 +18,9 @@ jobs:
       initialize: 'true'
       rebuild: 'true'
     secrets:
-      #MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
-      #MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
-      #MINIO_REGION: ${{ secrets.MINIO_REGION }}
+      MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
+      MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+      MINIO_REGION: ${{ secrets.MINIO_REGION }}
       KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
       KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
       VERSIO_USERNAME: ${{ secrets.VERSIO_USERNAME }}

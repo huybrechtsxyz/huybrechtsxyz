@@ -122,6 +122,48 @@ services:
       #     cpus: "0.25"    # Reserve 0.25 CPUs
       #     memory: "512M"  # Reserve 512MB of memory
 
+  minio:
+    image: "minio/minio:latest"
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+      - MINIO_REGION
+    environment:
+      MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
+      MINIO_REGION_FILE: /run/secrets/MINIO_REGION
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"  # MinIO API
+      - "9001:9001"  # MinIO Console
+    networks:
+      - public
+    volumes:
+      - minio-dat:/data
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      # resources:
+      #   limits:
+      #     cpus: "1.5"
+      #     memory: "3G"
+      #   reservations:
+      #     cpus: "1.0"
+      #     memory: "2G"
+
 volumes:
 
   consul-conf:
@@ -156,6 +198,13 @@ volumes:
       device: /app/traefik/logs
       o: bind
 
+  minio-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /mnt/data
+      o: bind
+
 networks:
   public:
     external: true
@@ -168,6 +217,13 @@ secrets:
   VERSIO_PASSWORD:
     external: true
   VERSIO_ENDPOINT:
+    external: true
+
+  MINIO_ROOT_USER:
+    external: true
+  MINIO_ROOT_PASSWORD:
+    external: true
+  MINIO_REGION:
     external: true
 
 #configs:

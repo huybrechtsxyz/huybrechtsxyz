@@ -8,12 +8,12 @@ on:
         required: true
         type: string
     secrets:
-      # MINIO_ROOT_USER:
-      #   required: true
-      # MINIO_ROOT_PASSWORD:
-      #   required: true
-      # MINIO_REGION:
-      #   required: true
+       MINIO_ROOT_USER:
+         required: true
+       MINIO_ROOT_PASSWORD:
+         required: true
+       MINIO_REGION:
+         required: true
       VERSIO_USERNAME:
         required: true
       VERSIO_PASSWORD:
@@ -122,9 +122,9 @@ jobs:
           docker network inspect private --format {{.Id}} 2>/dev/null \
           || docker network create --driver overlay private
           #Create the docker secrets
-          #createsecret "Minio Username" "MINIO_ROOT_USER" '${{ secrets.MINIO_ROOT_USER }}'
-          #createsecret "Minoi Password" "MINIO_ROOT_PASSWORD" '${{ secrets.MINIO_ROOT_PASSWORD }}'
-          #createsecret "Minio Region" "MINIO_REGION" '${{ secrets.MINIO_REGION }}'
+          createsecret "Minio Username" "MINIO_ROOT_USER" '${{ secrets.MINIO_ROOT_USER }}'
+          createsecret "Minoi Password" "MINIO_ROOT_PASSWORD" '${{ secrets.MINIO_ROOT_PASSWORD }}'
+          createsecret "Minio Region" "MINIO_REGION" '${{ secrets.MINIO_REGION }}'
           createsecret "Versio Username" "VERSIO_USERNAME" '${{ secrets.VERSIO_USERNAME }}'
           createsecret "Versio Password" "VERSIO_PASSWORD" '${{ secrets.VERSIO_PASSWORD }}'
           createsecret "Versio Endpoint" "VERSIO_ENDPOINT" '${{ secrets.VERSIO_ENDPOINT }}'

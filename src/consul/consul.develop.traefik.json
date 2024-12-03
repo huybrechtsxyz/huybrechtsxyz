@@ -17,17 +17,14 @@
       }
     ],
     "tags":[
-      "traefik",
-      "proxy",
+      "traefik","proxy","docker-swarm","system",
       "- traefik.enable=true",
-      "- traefik.tags=test",
-      "- traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https",
-      "- traefik.http.routers.traefik.rule=Host(`proxy.test.huybrechts.dev`)",
-      "- traefik.http.routers.traefik.service=api@internal",
-      "- traefik.http.services.traefik.loadbalancer.server.port=8080",
-      "- traefik.http.routers.traefik.tls.certresolver=leresolver",
+      "- traefik.tags=develop",
+      "- traefik.http.routers.traefik.rule=Host(`proxy.localhost`)",
       "- traefik.http.routers.traefik.entrypoints=websecure",
-      "- traefik.http.routers.traefik.middlewares=authadmin"
+      "- traefik.http.routers.traefik.tls.certresolver=tmpresolver",
+      "- traefik.http.routers.traefik.service=api@internal",
+      "- traefik.http.services.traefik.loadbalancer.server.port=8080"
     ]
   }
 }

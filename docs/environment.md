@@ -20,11 +20,11 @@ An overview of the used services:
 
 - [Consul](./services/consul.md) aka consul for discovery and configuration
 - [Minio](./services/minio.md) aka minio for block storage
-- [Loki](./services/loki.md) aka loki for logging aggretation
-- [PGAdmin4](./services/pgadmin.md) aka pgadmin for Sql Management
-- [PostgreSql](./services/postgres.md) aka postgres for Sql database
-- [Prometheus](./services/prometheus.md) aka prometheus for monitoring
-- [Thanos](./services/thanos.md) aka thanos for storing prometheus data
++- [Loki](./services/loki.md) aka loki for logging aggretation
++- [PGAdmin4](./services/pgadmin.md) aka pgadmin for Sql Management
++- [PostgreSql](./services/postgres.md) aka postgres for Sql database
++- [Prometheus](./services/prometheus.md) aka prometheus for monitoring
++- [Thanos](./services/thanos.md) aka thanos for storing prometheus data
 - [Traefik](./services/traefik.md) aka traefik as reverse proxy
 
 The service domains, paths, and ports:
@@ -36,8 +36,10 @@ The service domains, paths, and ports:
 | Traefik    |   433 | proxy.domain   | /dashboard  | Traefik dasboard |
 | Consul     |  8500 | config.domain  | /           | Consul configuration |
 | Consul     |  8600 | config.domain  | /           | Consul DNS discovery |
+| Minio      |  9000 | data.domain    | /           | Minio data storage |
+| Minio      |  9001 | data.domain    | /           | Minio ui |
+
 | Prometheus |  9090 | /              | /           | Prometheus monitoring |x
-| Minio      |  9001 | data.domain    | /           | Minio data storage |x
 | Thanos     |  9091 | /              | /           | Thanos query  |x
 | Thanos     | 10901 | /              | /           | Thanos sidecar |x
 | Thanos     | 10902 | /              | /           | Thanos gateway |x
@@ -50,9 +52,9 @@ The service domains, paths, and ports:
 | Secret Name           | Type   | Description               | Example  |
 |-----------------------|--------|---------------------------|----------|
 | `CONSUL_ADDR`         | Env    | Consul server address     | `http://path/to.link:8500`  |
-| `MINIO_ROOT_USER`     | Secret | Minio Username            | `user1`  |x
-| `MINIO_ROOT_PASSWORD` | Secret | Minio Password            | `pass1`  |x
-| `MINIO_REGION`        | Secret | Minio Username            | `user1`  |x
+| `MINIO_ROOT_USER`     | Secret | Minio Username            | `user1`  |
+| `MINIO_ROOT_PASSWORD` | Secret | Minio Password            | `pass1`  |
+| `MINIO_REGION`        | Secret | Minio Username            | `user1`  |
 | `KAMATERA_API_KEY`    | Secret | Kamatera API Key          | `123456` |x
 | `KAMATERA_API_SECRET` | Secret | Kamatera API Key          | `123546` |x
 | `POSTGRES_DB`         | Secret | Postgres DB name          | `xyzdb`  |x
@@ -64,9 +66,10 @@ The service domains, paths, and ports:
 
 | Secret Name           | Type   | Description               | Example  |
 |-----------------------|--------|---------------------------|----------|
-| `APP_HOST_USERNAME`   | Secret | Server username           | `user1`  |x
-| `APP_HOST_PASSWORD`   | Secret | Server password           | `1234`   |x
-| `APP_HOST_SERVER`     | Secret | Server IP                 | `10.0.0.1` |x
+| `APP_HOST_USERNAME`   | Secret | Server username           | `user1`  |
+| `APP_HOST_PASSWORD`   | Secret | Server password           | `1234`   |
+| `APP_HOST_SERVER`     | Secret | Server IP                 | `10.0.0.1` |
+| `APP_HOST_PORT`       | Secret | Server Port               | `10.0.0.1` |
 
 ### Application overview
 
@@ -77,9 +80,8 @@ The application is organized into a structured directory layout that facilitates
     ├── consul +                 # Consul
     │ ├── conf +                 #   Consul conf
     │ ├── data +                 #   Consul data
-    x├── minio +                  # Minio
-    x│ ├── conf +                 #   Minio conf
-    x│ ├── data +                 #   Minio data
+    ├── minio +                  # Minio
+    │ ├── data +                 #   Minio data
     x├── loki +                   # Loki
     x│ ├── conf +                 #   Loki conf
     x│ ├── data +                 #   Loki data
