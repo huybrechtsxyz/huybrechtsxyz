@@ -35,18 +35,6 @@ jobs:
             set -e
             cd /
             cd /app
-            # Fetch the Swarm manager IPs
-            DOCKER_SWARM_IPS=$(docker node ls --filter "role=manager" --format "{{.ID}}" | while read id; do
-              docker node inspect $id --format '{{ .Status.Addr }}'
-            done)
-            # Create a retry-join string
-            RETRY_JOIN=""
-            for ip in $MANAGER_IPS; do
-              RETRY_JOIN="$RETRY_JOIN,http://$ip:8500"
-            done
-            # Remove the leading comma
-            DOCKER_SWARM_IPS=${RETRY_JOIN:1}
-            export DOCKER_SWARM_IPS
             # Set the appropriate security on the application subdirectories
             echo APPY SECURITY
             sudo chmod -R 600 /app/traefik/data

@@ -7,6 +7,7 @@
   "ui_config": {
     "enabled": true
   },
+  "retry_join": ["provider=docker"],
   "log_level": "DEBUG",
   "ports": {
     "dns": 8600,
@@ -14,5 +15,35 @@
     "serf_lan": 8301,
     "serf_wan": 8302,
     "server": 8300
+  },
+  "service": {
+    "id": "consul",
+    "name": "consul",
+    "address": "consul",
+    "port": 8500,
+    "meta": {
+      "consul_path": "/"
+    },
+    "checks": [
+      {
+        "id": "consul-http-check",
+        "name": "Consul HTTP Health Check",
+        "http":  "http://localhost:8500/v1/status/leader",
+        "interval": "15s",
+        "timeout": "5s"
+      }
+    ],
+    "tags":[
+      "consul",
+      "proxy",
+      "docker-swarm",
+      "system",
+      "- traefik.enable=true",
+      "- traefik.tags=test",
+      "- traefik.http.routers.consul.rule=Host(`disco.localhost`)",
+      "- traefik.http.routers.consul.tls.certresolver=leresolver",
+      "- traefik.http.routers.consul.entrypoints=web",
+      "- traefik.http.services.consul.loadbalancer.server.port=8500"
+    ]
   }
 }

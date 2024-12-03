@@ -36,38 +36,37 @@ The service domains, paths, and ports:
 | Traefik    |   433 | proxy.domain   | /dashboard  | Traefik dasboard |
 | Consul     |  8500 | config.domain  | /           | Consul configuration |
 | Consul     |  8600 | config.domain  | /           | Consul DNS discovery |
-| Prometheus |  9090 | /              | /           | Prometheus monitoring |
-| Minio      |  9001 | data.domain    | /           | Minio data storage |
-| Thanos     |  9091 | /              | /           | Thanos query  |
-| Thanos     | 10901 | /              | /           | Thanos sidecar |
-| Thanos     | 10902 | /              | /           | Thanos gateway |
-| Loki       |  3100 | /              | /           | Loki logging |
-| Postgres   |  5432 | /              | /           | PostgreSql server |
-| PGAdmin    |  8880 | /              | /pgadmin    | PostgreSql management |
+| Prometheus |  9090 | /              | /           | Prometheus monitoring |x
+| Minio      |  9001 | data.domain    | /           | Minio data storage |x
+| Thanos     |  9091 | /              | /           | Thanos query  |x
+| Thanos     | 10901 | /              | /           | Thanos sidecar |x
+| Thanos     | 10902 | /              | /           | Thanos gateway |x
+| Loki       |  3100 | /              | /           | Loki logging |x
+| Postgres   |  5432 | /              | /           | PostgreSql server |x
+| PGAdmin    |  8880 | /              | /pgadmin    | PostgreSql management |x
 
 ### Variables overview
 
 | Secret Name           | Type   | Description               | Example  |
 |-----------------------|--------|---------------------------|----------|
 | `CONSUL_ADDR`         | Env    | Consul server address     | `http://path/to.link:8500`  |
-| `MINIO_ROOT_USER`     | Secret | Minio Username            | `user1`  |
-| `MINIO_ROOT_PASSWORD` | Secret | Minio Password            | `pass1`  |
-| `MINIO_REGION`        | Secret | Minio Username            | `user1`  |
-| `KAMATERA_API_KEY`    | Secret | Kamatera API Key          | `123456` |
-| `KAMATERA_API_SECRET` | Secret | Kamatera API Key          | `123546` |
-| `POSTGRES_DB`         | Secret | Postgres DB name          | `xyzdb`  |
-| `POSTGRES_USER`       | Secret | Postgres Username         | `user1`  |
-| `POSTGRES_PASSWORD`   | Secret | Postgres Password         | `pass1`  |
+| `MINIO_ROOT_USER`     | Secret | Minio Username            | `user1`  |x
+| `MINIO_ROOT_PASSWORD` | Secret | Minio Password            | `pass1`  |x
+| `MINIO_REGION`        | Secret | Minio Username            | `user1`  |x
+| `KAMATERA_API_KEY`    | Secret | Kamatera API Key          | `123456` |x
+| `KAMATERA_API_SECRET` | Secret | Kamatera API Key          | `123546` |x
+| `POSTGRES_DB`         | Secret | Postgres DB name          | `xyzdb`  |x
+| `POSTGRES_USER`       | Secret | Postgres Username         | `user1`  |x
+| `POSTGRES_PASSWORD`   | Secret | Postgres Password         | `pass1`  |x
 | `VERSIO_USERNAME`     | Secret | Versio Username           | `user1`  |
 | `VERSIO_PASSWORD`     | Secret | Versio Password           | `pass1`  |
 | `VERSIO_ENDPOINT`     | Secret | Versio Endpoint           | `http://path/to.link` |
 
 | Secret Name           | Type   | Description               | Example  |
 |-----------------------|--------|---------------------------|----------|
-| `APP_HOST_USERNAME`   | Secret | Server username           | `user1`  |
-| `APP_HOST_PASSWORD`   | Secret | Server password           | `1234`   |
-| `APP_HOST_SERVER`     | Secret | Server IP                 | `10.0.0.1` |
-| `APP_HOST_PORT`       | Secret | SSH Port                  | `22`     |
+| `APP_HOST_USERNAME`   | Secret | Server username           | `user1`  |x
+| `APP_HOST_PASSWORD`   | Secret | Server password           | `1234`   |x
+| `APP_HOST_SERVER`     | Secret | Server IP                 | `10.0.0.1` |x
 
 ### Application overview
 
@@ -78,21 +77,21 @@ The application is organized into a structured directory layout that facilitates
     ├── consul +                 # Consul
     │ ├── conf +                 #   Consul conf
     │ ├── data +                 #   Consul data
-    ├── minio +                  # Minio
-    │ ├── conf +                 #   Minio conf
-    │ ├── data +                 #   Minio data
-    ├── loki +                   # Loki
-    │ ├── conf +                 #   Loki conf
-    │ ├── data +                 #   Loki data
-    ├── postgres +               # PostgreSql
-    │ ├── data +                 #   PostgreSql conf
-    │ ├── pgadmin +              #   PostgreSql data
-    ├── prometheus +             # Prometheus
-    │ ├── conf +                 #   Prometheus conf
-    │ ├── data +                 #   Prometheus data
-    ├── thanos +                 # Thanos
-    │ ├── conf +                 #   Thanos conf
-    │ ├── data +                 #   Thanos data
+    x├── minio +                  # Minio
+    x│ ├── conf +                 #   Minio conf
+    x│ ├── data +                 #   Minio data
+    x├── loki +                   # Loki
+    x│ ├── conf +                 #   Loki conf
+    x│ ├── data +                 #   Loki data
+    x├── postgres +               # PostgreSql
+    x│ ├── data +                 #   PostgreSql conf
+    x│ ├── pgadmin +              #   PostgreSql data
+    x├── prometheus +             # Prometheus
+    x│ ├── conf +                 #   Prometheus conf
+    x│ ├── data +                 #   Prometheus data
+    x├── thanos +                 # Thanos
+    x│ ├── conf +                 #   Thanos conf
+    x│ ├── data +                 #   Thanos data
     ├── traefik +                # Traefik
     │ ├── conf +                 #   Traefik configuration
     │ ├── data +                 #   Traefik certificates

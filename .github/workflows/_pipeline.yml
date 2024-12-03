@@ -56,9 +56,9 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
     secrets:
-      MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
-      MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
-      MINIO_REGION: ${{ secrets.MINIO_REGION }}
+      #MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
+      #MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+      #MINIO_REGION: ${{ secrets.MINIO_REGION }}
       VERSIO_USERNAME: ${{ secrets.VERSIO_USERNAME }}
       VERSIO_PASSWORD: ${{ secrets.VERSIO_PASSWORD }}
       VERSIO_ENDPOINT: ${{ secrets.VERSIO_ENDPOINT }}

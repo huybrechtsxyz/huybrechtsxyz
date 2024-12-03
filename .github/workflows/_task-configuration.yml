@@ -47,7 +47,7 @@ jobs:
         overwrite: true
         source: "src/consul/**"
         target: /app/consul/conf
-    - name: Deploy Prometheus Files
+    - name: Deploy Traefik Files
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.APP_HOST_SERVER }}
@@ -56,5 +56,5 @@ jobs:
         port: ${{ secrets.APP_HOST_PORT }}
         strip_components: 1
         overwrite: true
-        source: "src/prometheus/**"
-        target: /app/prometheus/conf
+        source: "src/traefik/**"
+        target: /app/traefik/conf
