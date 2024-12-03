@@ -18,6 +18,10 @@ on:
         required: true
       POSTGRES_PASSWORD:
         required: true
+      PGADMIN_USER:
+        required: true
+      PGADMIN_PASSWORD:
+        required: true
       VERSIO_USERNAME:
         required: true
       VERSIO_PASSWORD:
@@ -114,6 +118,8 @@ jobs:
           createpath "/app/consul"
           createpath "/app/consul/conf"
           createpath "/app/consul/data"
+          createpath "/app/postgres/admin"
+          createpath "/app/postgres/data"
           # createpath "/app/prometheus"
           # createpath "/app/prometheus/conf"
           # createpath "/app/prometheus/data"
@@ -131,6 +137,8 @@ jobs:
           createsecret "Minio Region" "MINIO_REGION" '${{ secrets.MINIO_REGION }}'
           createsecret "Postgres User" "POSTGRES_USER" '${{ secrets.POSTGRES_USER }}'
           createsecret "Postgres Password" "POSTGRES_PASSWORD" '${{ secrets.POSTGRES_PASSWORD }}'
+          createsecret "PG Admin User" "PGADMIN_USER" '${{ secrets.PGADMIN_USER }}'
+          createsecret "PG Admin Password" "PGADMIN_PASSWORD" '${{ secrets.PGADMIN_PASSWORD }}'
           createsecret "Versio Username" "VERSIO_USERNAME" '${{ secrets.VERSIO_USERNAME }}'
           createsecret "Versio Password" "VERSIO_PASSWORD" '${{ secrets.VERSIO_PASSWORD }}'
           createsecret "Versio Endpoint" "VERSIO_ENDPOINT" '${{ secrets.VERSIO_ENDPOINT }}'

@@ -25,6 +25,8 @@ jobs:
       KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      PGADMIN_USER: ${{ secrets.PGADMIN_USER }}
+      PGADMIN_PASSWORD: ${{ secrets.PGADMIN_PASSWORD }}
       VERSIO_USERNAME: ${{ secrets.VERSIO_USERNAME }}
       VERSIO_PASSWORD: ${{ secrets.VERSIO_PASSWORD }}
       VERSIO_ENDPOINT: ${{ secrets.VERSIO_ENDPOINT }}

@@ -21,9 +21,7 @@
     "name": "consul",
     "address": "consul",
     "port": 8500,
-    "meta": {
-      "consul_path": "/"
-    },
+    "meta": {},
     "checks": [
       {
         "id": "consul-http-check",
@@ -37,7 +35,7 @@
       "consul","dns","discovery","configuration","docker-swarm","system",
       "- traefik.enable=true",
       "- traefik.tags=develop",
-      "- traefik.http.routers.consul.rule=Host(`disco.localhost`)",
+      "- traefik.http.routers.consul.rule=Host(`config.localhost`)",
       "- traefik.http.routers.consul.entrypoints=websecure",
       "- traefik.http.routers.consul.tls.certresolver=tmpresolver",
       "- traefik.http.services.consul.loadbalancer.server.scheme=http",

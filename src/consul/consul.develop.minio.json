@@ -4,9 +4,7 @@
     "name": "minio",
     "address": "minio",
     "port": 9000,
-    "meta": {
-      "prometheus_path": "/minio/metrics"
-    },
+    "meta": {},
     "checks": [
       {
         "id": "minio-http-check",

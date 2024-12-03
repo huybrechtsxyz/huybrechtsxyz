@@ -21,7 +21,7 @@ An overview of the used services:
 - [Consul](./services/consul.md) aka consul for discovery and configuration
 - [Minio](./services/minio.md) aka minio for block storage
 +- [Loki](./services/loki.md) aka loki for logging aggretation
-+- [PGAdmin4](./services/pgadmin.md) aka pgadmin for Sql Management
+- [PGAdmin4](./services/pgadmin.md) aka pgadmin for Sql Management
 - [PostgreSql](./services/postgres.md) aka postgres for Sql database
 +- [Prometheus](./services/prometheus.md) aka prometheus for monitoring
 +- [Thanos](./services/thanos.md) aka thanos for storing prometheus data
@@ -39,13 +39,13 @@ The service domains, paths, and ports:
 | Minio      |  9000 | data.domain    | /           | Minio data storage |
 | Minio      |  9001 | data.domain    | /           | Minio ui |
 | Postgres   |  5432 | /              | /           | PostgreSql server |
+| PGAdmin    |  9080 | data.domain    | /pgadmin    | PostgreSql management |
 
 | Prometheus |  9090 | /              | /           | Prometheus monitoring |x
 | Thanos     |  9091 | /              | /           | Thanos query  |x
 | Thanos     | 10901 | /              | /           | Thanos sidecar |x
 | Thanos     | 10902 | /              | /           | Thanos gateway |x
 | Loki       |  3100 | /              | /           | Loki logging |x
-| PGAdmin    |  8880 | /              | /pgadmin    | PostgreSql management |x
 
 ### Variables overview
 
