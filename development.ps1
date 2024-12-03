@@ -87,19 +87,19 @@ function Set-Docker {
     }
 
     # Check and create the "traefik" network if it doesn't exist
-    $traefikNetwork = "traefik"
+    $traefikNetwork = "public"
     if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$traefikNetwork$")) {
         Write-Host "Creating external network '$traefikNetwork'..."
-        docker network create --driver=bridge --attachable $traefikNetwork
+        docker network create --driver overlay --attachable $traefikNetwork
     } else {
         Write-Host "Network '$traefikNetwork' already exists."
     }
 
     # Check and create the "intranet" network if it doesn't exist
-    $intranetNetwork = "intranet"
+    $intranetNetwork = "private"
     if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$intranetNetwork$")) {
         Write-Host "Creating bridge network '$intranetNetwork'..."
-        docker network create --driver=bridge $intranetNetwork
+        docker network create --driver overlay --attachable $intranetNetwork
     } else {
         Write-Host "Network '$intranetNetwork' already exists."
     }
@@ -236,6 +236,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Starting Docker Swarm..."
+#docker compose -f $composeFile up -d
 docker stack deploy -c $composeFile app
 
 # DEBUG AND TEST
@@ -250,8 +251,9 @@ Write-Output 'Stopping DEVELOPMENT environment...'
 Stop-Process -Name 'msedge' -ErrorAction Ignore
 
 # Stop Docker Compose
-Write-Host "Stopping Docker Compose..."
-docker-compose -f $composeFile down
+Write-Host "Stopping Docker Swarm..."
+#docker compose -f $composeFile down
+docker stack rm app
 
 # Stop the development environment
 Write-Output 'DEVELOPMENT environment stopped.'

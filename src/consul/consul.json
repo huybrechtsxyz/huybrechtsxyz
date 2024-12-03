@@ -2,8 +2,9 @@
   "datacenter": "${DATACENTER}",
   "node_name": "${HOSTNAME}",
   "server": true,
-  "bind_addr": "0.0.0.0",
   "client_addr": "0.0.0.0",
+  "bind_addr": "0.0.0.0",
+  "advertise_addr": "${CONSUL_ADVERTISE_ADDRESS}",
   "ui_config": {
     "enabled": true
   },
