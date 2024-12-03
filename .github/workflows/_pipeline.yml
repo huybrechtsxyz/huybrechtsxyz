@@ -49,7 +49,7 @@ jobs:
   initialize-server:
     name: Initialize Server Job
     if: inputs.initialize == 'true'
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-initialize.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-initialize.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
     secrets:
@@ -58,7 +58,7 @@ jobs:
 
   update-server:
     name: Update Server Job
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-update.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-update.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
     secrets:
@@ -79,7 +79,7 @@ jobs:
   build-backup:
     name: Build Backup Job
     if: inputs.rebuild == 'true'
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-docker.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-docker.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
       imagename: 'huybrechts/backup'
@@ -92,7 +92,7 @@ jobs:
   deploy-config:
     name: Deploy Configuration Job
     needs: [update-server]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_configuration.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-configuration.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
     secrets:
@@ -105,7 +105,7 @@ jobs:
     name: Deploy Docker Swarm Stack (Rebuild)
     if: inputs.rebuild == 'true'
     needs: [deploy-config, build-backup]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
     secrets:
@@ -118,7 +118,7 @@ jobs:
     name: Deploy Docker Swarm Stack (Build)
     if: inputs.rebuild != 'true'
     needs: [deploy-config]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
     secrets:
