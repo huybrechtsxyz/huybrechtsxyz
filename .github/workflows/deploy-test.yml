@@ -18,6 +18,8 @@ jobs:
       initialize: 'true'
       rebuild: 'true'
     secrets:
+      KEYCLOAK_USER: ${{ secrets.KEYCLOAK_USER }}
+      KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
       MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
       MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}

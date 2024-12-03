@@ -1,20 +1,17 @@
 <#
-
-Application Structure
-
-    app
-    ├── consul +                 # Consul
-    │ ├── conf +                 #   Consul conf
-    │ ├── data +                 #   Consul data
-
-Secret example
-
+Secrets examples
     {
+        "KEYCLOAK_USER": "admin",
+        "KEYCLOAK_PASSWORD": "password",
+        "MINIO_ROOT_USER": "admin",
+        "MINIO_ROOT_PASSWORD": "password",
+        "POSTGRES_USER": "admin",
+        "POSTGRES_PASSWORD": "password",
+        "PGADMIN_USER": "admin",
+        "PGADMIN_PASSWORD": "password",
         "VERSIO_USERNAME": "",
         "VERSIO_PASSWORD": "",
-        "VERSIO_ENDPOINT": ""
     }
-
 #>
 
 # FUNCTION: Extract zipfile for local development
@@ -121,6 +118,13 @@ function Invoke-Consul {
     Write-Host 'Configuring CONSUL ... Done'
 }
 
+# FUNCTION: Configure and run Keycloak
+function Invoke-Traefik {
+    Write-Host 'Configuring KEYCLOAK ... for DOCKER'
+    
+    Write-Host 'Configuring KEYCLOAK ... Done'
+}
+
 # FUNCTION: Configure and run MinIO
 function Invoke-Minio {
     Write-Host 'Configuring MINIO ... for DOCKER'
@@ -183,6 +187,7 @@ Invoke-Consul
 Invoke-Traefik
 Invoke-Minio
 Invoke-Postgres
+Invoke-Keycloak
 
 # Debug and test
 $composeFile = "./src/compose.develop.yml"

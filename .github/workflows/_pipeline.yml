@@ -14,6 +14,10 @@ on:
         required: true
         type: string
     secrets:
+      KEYCLOAK_USER:
+        required: true
+      KEYCLOAK_PASSWORD:
+        required: true
       MINIO_ROOT_USER:
         required: true
       MINIO_ROOT_PASSWORD:
@@ -62,6 +66,8 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
     secrets:
+      KEYCLOAK_USER: ${{ secrets.KEYCLOAK_USER }}
+      KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
       MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
       MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}

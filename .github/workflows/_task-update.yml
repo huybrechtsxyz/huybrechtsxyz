@@ -21,6 +21,10 @@ on:
         required: true
         type: string
     secrets:
+      KEYCLOAK_USER:
+        required: true
+      KEYCLOAK_PASSWORD:
+        required: true
       MINIO_ROOT_USER: 
         required: true
       MINIO_ROOT_PASSWORD:
@@ -145,8 +149,10 @@ jobs:
           docker network inspect private --format {{.Id}} 2>/dev/null \
           || docker network create --driver overlay private
           #Create the docker secrets
+          createsecret "Keycloak Username" "KEYCLOAK_USER" '${{ secrets.KEYCLOAK_USER }}'
+          createsecret "Keycloak Password" "KEYCLOAK_PASSWORD" '${{ secrets.KEYCLOAK_PASSWORD }}'
           createsecret "Minio Username" "MINIO_ROOT_USER" '${{ secrets.MINIO_ROOT_USER }}'
-          createsecret "Minoi Password" "MINIO_ROOT_PASSWORD" '${{ secrets.MINIO_ROOT_PASSWORD }}'
+          createsecret "Minio Password" "MINIO_ROOT_PASSWORD" '${{ secrets.MINIO_ROOT_PASSWORD }}'
           createsecret "Postgres User" "POSTGRES_USER" '${{ secrets.POSTGRES_USER }}'
           createsecret "Postgres Password" "POSTGRES_PASSWORD" '${{ secrets.POSTGRES_PASSWORD }}'
           createsecret "PG Admin User" "PGADMIN_USER" '${{ secrets.PGADMIN_USER }}'

@@ -1,0 +1,30 @@
+{
+  "services": [
+    {
+      "id": "keycloak",
+      "name": "keycloak",
+      "address": "keycloak",
+      "port": 8080,
+      "meta": {},
+      "checks": [
+        {
+          "id": "keycloak-http-check",
+          "name": "Keycloak Health Check",
+          "http": "http://keycloak:8080/realms/master/protocol/openid-connect/token",
+          "interval": "30s",
+          "timeout": "5s"
+        }
+      ],
+      "tags": [
+        "keycloak","authentication","authorization","identity","docker-swarm","system",
+        "- traefik.enable=true",
+        "- traefik.tags=${ENVIRONMENT}",
+        "- traefik.http.routers.keycloak.rule=Host(`identity.${DOMAIN_DEV}`)",
+        "- traefik.http.routers.keycloak.entrypoints=websecure",
+        "- traefik.http.routers.keycloak.tls.certresolver=leresolver",
+        "- traefik.http.services.keycloak.loadbalancer.server.scheme=http",
+        "- traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      ]
+    }
+  ]
+}
