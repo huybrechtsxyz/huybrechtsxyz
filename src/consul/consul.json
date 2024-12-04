@@ -1,15 +1,11 @@
 {
-  "datacenter": "${DATACENTER}",
-  "node_name": "${HOSTNAME}",
   "server": true,
   "client_addr": "0.0.0.0",
-  "bind_addr": "0.0.0.0",
-  "advertise_addr": "${CONSUL_ADVERTISE_ADDRESS}",
   "ui_config": {
     "enabled": true
   },
   "retry_join": ["provider=docker"],
-  "log_level": "INFO",
+  "log_level": "DEBUG",
   "ports": {
     "dns": 8600,
     "http": 8500,
@@ -36,13 +32,13 @@
     ],
     "tags":[
       "consul","dns","discovery","configuration","docker-swarm","system",
-      "- traefik.enable=true",
-      "- traefik.tags=test",
-      "- traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)",
-      "- traefik.http.routers.consul.entrypoints=websecure",
-      "- traefik.http.routers.consul.tls.certresolver=leresolver",
-      "- traefik.http.services.consul.loadbalancer.server.scheme=http",
-      "- traefik.http.services.consul.loadbalancer.server.port=8500"
+      "traefik.enable=true",
+      "traefik.tags=test",
+      "traefik.http.routers.consul.rule=Host(`config.localhost`)",
+      "traefik.http.routers.consul.entrypoints=websecure",
+      "traefik.http.routers.consul.tls.certresolver=leresolver",
+      "traefik.http.services.consul.loadbalancer.server.scheme=http",
+      "traefik.http.services.consul.loadbalancer.server.port=8500"
     ]
   }
 }

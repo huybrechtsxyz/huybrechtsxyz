@@ -33,14 +33,5 @@ jobs:
           script_stop: true
           script: |
             set -e
-            cd /
-            # Set the application path
-            cd /app
-            # Set the appropriate security on the application subdirectories
-            #echo APPY SECURITY
-            sudo chmod -R 600 /app/traefik/data
-            sudo chmod -R 777 /app/traefik/logs
-            sudo chmod -R +x /app/scripts
-            # Redeploy the new docker compose
-            echo DOCKER DEPLOY
-            docker stack deploy -c compose.${{ inputs.environment }}.yml --env-file ${{ inputs.environment }}.env app &> /app/deploy-stack.log
+            # Execute the previously uploaded script
+            /app/src/scripts/deploy-stack.sh ${{ inputs.environment }}

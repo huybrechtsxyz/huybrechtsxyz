@@ -86,23 +86,35 @@ function Set-Docker {
         }
     }
 
-    # Check and create the "traefik" network if it doesn't exist
-    $traefikNetwork = "public"
-    if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$traefikNetwork$")) {
-        Write-Host "Creating external network '$traefikNetwork'..."
-        docker network create --driver overlay --attachable $traefikNetwork
+    # Check and create the "public" network if it doesn't exist
+    $publicNetwork = "public"
+    if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$publicNetwork$")) {
+        Write-Host "Creating external network '$publicNetwork'..."
+        docker network create --driver overlay $publicNetwork
     } else {
-        Write-Host "Network '$traefikNetwork' already exists."
+        Write-Host "Network '$publicNetwork' already exists."
     }
 
+    $publicDetails = docker network inspect $publicNetwork | ConvertFrom-Json
+    #$publicSubnetIP = $publicDetails.IPAM.Config[0].Subnet # For Subnet
+    $publicGatewayIP = $publicDetails.IPAM.Config[0].Gateway # For Gateway
+    Write-Host "Public Network IP: $publicGatewayIP"
+    [System.Environment]::SetEnvironmentVariable("DOCKER_PUBLIC_IP", $publicGatewayIP, [System.EnvironmentVariableTarget]::Process)
+
     # Check and create the "intranet" network if it doesn't exist
-    $intranetNetwork = "private"
-    if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$intranetNetwork$")) {
-        Write-Host "Creating bridge network '$intranetNetwork'..."
-        docker network create --driver overlay --attachable $intranetNetwork
-    } else {
-        Write-Host "Network '$intranetNetwork' already exists."
-    }
+    # $intranetNetwork = "private"
+    # if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$intranetNetwork$")) {
+    #     Write-Host "Creating bridge network '$intranetNetwork'..."
+    #     docker network create --driver overlay $intranetNetwork
+    # } else {
+    #     Write-Host "Network '$intranetNetwork' already exists."
+    # }
+
+    # $privateDetails = docker network inspect $intranetNetwork | ConvertFrom-Json
+    # #$privateSubnetIP = $privateDetails.IPAM.Config[0].Subnet # For Subnet
+    # $privateGatewayIP = $privateDetails.IPAM.Config[0].Gateway # For Gateway
+    # Write-Host "Private Network IP: $privateGatewayIP"
+    # [System.Environment]::SetEnvironmentVariable("DOCKER_PRIVATE_IP", $privateGatewayIP, [System.EnvironmentVariableTarget]::Process)
 }
 
 # FUNCTION: Read jsons and create docker secrets
@@ -121,7 +133,7 @@ function Update-Secrets {
         $Value = $Secrets.$Key
 
         # Remove the secret if it already exists
-        if (docker secret inspect $Key > $null 2>&1) {
+        if (docker secret inspect $Key 2>&1) {
             Write-Host "Removing existing secret: $Key"
             docker secret rm $Key
         }
@@ -190,10 +202,10 @@ function Invoke-Traefik {
 #
 
 # Start development environment
-Write-Output 'Starting DEVELOPMENT environment...'
+Write-Host 'Starting DEVELOPMENT environment...'
 
 # Check if Docker is available by running the `docker` command
-Write-Output 'Validating docker...'
+Write-Host 'Validating docker...'
 $docker = Get-Docker
 if ($docker -ne 'true') {
     throw 'Docker is not installed or active'
@@ -202,7 +214,7 @@ Set-Docker
 Update-Secrets
 
 # Basic paths
-Write-Output 'Creating APP directories...'
+Write-Host 'Creating APP directories...'
 $baseDir = './.app'
 $scriptDir = "$baseDir/scripts"
 New-Item -ItemType Directory -Path $baseDir, $scriptDir -Force
@@ -220,11 +232,16 @@ $composeFile = "./src/compose.yml"
 $environmentFile = "./src/develop.env"
 
 # Importing the .env file and exporting the variables
+Write-Host "Environment variables are:" 
 $env:HOSTNAME=$env:COMPUTERNAME
+Write-Host " -- HOSTNAME: $env:HOSTNAME" 
+Write-Host " -- DOCKER_PUBLIC_IP: $env:DOCKER_PUBLIC_IP" 
+Write-Host " -- DOCKER_PRIVATE_IP: $env:DOCKER_PRIVATE_IP" 
 if (Test-Path $environmentFile) {
     Get-Content $environmentFile | ForEach-Object {
         $key, $value = $_ -split '='
         [System.Environment]::SetEnvironmentVariable($key.Trim(), $value.Trim(), [System.EnvironmentVariableTarget]::Process)
+        Write-Host " -- $key : $value" 
     }
 }
 
@@ -236,7 +253,6 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Starting Docker Swarm..."
-Write-Error "Multiple private IPv4 addresses found. Please configure one with 'bind' and/or 'advertise'."
 #docker compose -f $composeFile up -d
 docker stack deploy -c $composeFile app
 
@@ -248,7 +264,7 @@ Start-Process -FilePath "msedge.exe" `
 
 # Stopping the development environment
 Pause 'Press any key to stop debugging'
-Write-Output 'Stopping DEVELOPMENT environment...'
+Write-Host 'Stopping DEVELOPMENT environment...'
 Stop-Process -Name 'msedge' -ErrorAction Ignore
 
 # Stop Docker Compose
@@ -257,4 +273,4 @@ Write-Host "Stopping Docker Swarm..."
 docker stack rm app
 
 # Stop the development environment
-Write-Output 'DEVELOPMENT environment stopped.'
+Write-Host 'DEVELOPMENT environment stopped.'

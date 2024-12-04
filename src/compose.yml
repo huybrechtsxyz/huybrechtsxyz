@@ -25,8 +25,10 @@ services:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
       HOSTNAME: ${HOSTNAME}
-      CONSUL_BIND_ADDRESS: ${CONSUL_BIND_ADDRESS}
-      CONSUL_ADVERTISE_ADDRESS: ${CONSUL_ADVERTISE_ADDRESS}
+      DOCKER_PUBLIC_IP: ${DOCKER_PUBLIC_IP}
+      DOCKER_PRIVATE_IP: ${DOCKER_PRIVATE_IP}
+      CONSUL_BIND_INTERFACE: eth0
+      CONSUL_CLIENT_INTERFACE: eth0
     command:
       - consul
       - agent
@@ -34,10 +36,13 @@ services:
       - -config-dir=/consul/config
       - -config-file=/consul/config/consul.json
       - -bootstrap-expect=${DOCKER_MANAGERS}
-      - -bind=${CONSUL_BIND_ADDRESS}
-      - -advertise=${CONSUL_ADVERTISE_ADDRESS}
+      - -datacenter=${DATACENTER}
+      - -node=${HOSTNAME}
+      #- -bind=10.0.3.1
+      #- -advertise=10.0.3.1
     networks:
       - public
+      #- private
     volumes:
       - ${APP_PATH}/consul/conf:/consul/config
       - ${APP_PATH}/consul/data:/consul/data
@@ -393,9 +398,11 @@ services:
 
 networks:
   public:
-    external: true
-  private:
-    external: true
+    driver: overlay
+    #external: true
+
+  # private:
+  #   external: true
 
 volumes:
   minio-data:
