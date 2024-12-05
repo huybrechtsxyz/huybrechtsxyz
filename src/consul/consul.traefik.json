@@ -16,16 +16,6 @@
         "timeout": "5s"
       }
     ],
-    "tags":[
-      "traefik","proxy","docker-swarm","system",
-      "- traefik.enable=true",
-      "- traefik.tags=${ENVIRONMENT}",
-      "- traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https",
-      "- traefik.http.routers.traefik.rule=Host(`proxy.${DOMAIN_DEV}`)",
-      "- traefik.http.routers.traefik.entrypoints=websecure",
-      "- traefik.http.routers.traefik.tls.certresolver=leresolver",
-      "- traefik.http.routers.traefik.service=api@internal",
-      "- traefik.http.services.traefik.loadbalancer.server.port=8080"
-    ]
+    "tags":[ "traefik","proxy","docker-swarm","system" ]
   }
 }

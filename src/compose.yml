@@ -81,6 +81,14 @@ services:
       #   reservations:
       #     cpus: "0.5"
       #     memory: "512M"
+      labels:
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
+        - traefik.http.routers.consul.entrypoints=websecure
+        - traefik.http.routers.consul.tls.certresolver=versioresolver
+        - traefik.http.services.consul.loadbalancer.server.scheme=http
+        - traefik.http.services.consul.loadbalancer.server.port=8500
 
   traefik:
     image: "traefik:v3.1.6"
@@ -187,7 +195,17 @@ services:
       #   reservations:
       #     cpus: "0.25"    # Reserve 0.25 CPUs
       #     memory: "512M"  # Reserve 512MB of memory
-
+      labels:
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+        - traefik.http.routers.traefik.rule=Host(`proxy.${DOMAIN_DEV}`)
+        - traefik.http.routers.traefik.service=api@internal
+        - traefik.http.routers.traefik.entrypoints=websecure
+        - traefik.http.routers.traefik.tls.certresolver=versioresolver
+        - traefik.http.services.traefik.loadbalancer.server.scheme=http
+        - traefik.http.services.traefik.loadbalancer.server.port=8080
+        
   # minio:
   #   image: "minio/minio:latest"
   #   secrets:
