@@ -8,7 +8,6 @@
 #   │ ├── admin +                #   PGAdmin data
 #   │ ├── data +                 #   Postgres databases
 #   ├── traefik +                # Traefik
-#   │ ├── conf +                 #   Traefik conf
 #   │ ├── data +                 #   Traefik data
 #   │ ├── logs +                 #   Traefik data
 #
@@ -135,7 +134,6 @@ jobs:
           createpath "/app/postgres/data"
           createpath "/app/postgres/backups"
           createpath "/app/traefik"
-          createpath "/app/traefik/conf"
           createpath "/app/traefik/data"
           createpath "/app/traefik/logs"
           # createpath "/app/prometheus"

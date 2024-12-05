@@ -206,74 +206,90 @@ services:
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
         
-  # minio:
-  #   image: "minio/minio:latest"
-  #   secrets:
-  #     - MINIO_ROOT_USER
-  #     - MINIO_ROOT_PASSWORD
-  #   environment:
-  #     DOMAIN_DEV: ${DOMAIN_DEV}
-  #     ENVIRONMENT: ${ENVIRONMENT}
-  #     MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
-  #     MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
-  #   command: server /data --console-address ":9001"
-  #   ports:
-  #     - "9000:9000"  # MinIO API
-  #     - "9001:9001"  # MinIO Console
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - minio-data:/data
-  #   healthcheck:
-  #     test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 5
-  #     start_period: 30s
-  #   deploy:
-  #     replicas: 1
-  #     placement:
-  #       constraints: 
-  #         - node.role == worker
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 5s
-  #       max_attempts: 3
-  #       window: 120s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     # resources:
-  #     #   limits:
-  #     #     cpus: "1.5"
-  #     #     memory: "3G"
-  #     #   reservations:
-  #     #     cpus: "1.0"
-  #     #     memory: "2G"
+  minio:
+    image: "minio/minio:latest"
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"  # MinIO API
+      - "9001:9001"  # MinIO Console
+    networks:
+      - public
+    volumes:
 
-  # minio-init:
-  #   image: minio/mc
-  #   secrets:
-  #     - MINIO_ROOT_USER
-  #     - MINIO_ROOT_PASSWORD
-  #   environment:
-  #     MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
-  #     MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/scripts/minio-init.sh:/usr/local/bin/entrypoint.sh
-  #   entrypoint: usr/local/bin/entrypoint.sh
+      => to do replace the minio-data volume with a env-var
+
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      replicas: 1
+      placement:
+        constraints: 
+          - node.role == worker
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "1.5"
+      #     memory: "3G"
+      #   reservations:
+      #     cpus: "1.0"
+      #     memory: "2G"
+      labels:
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-data.entrypoints=websecure
+        - traefik.http.routers.minio-data.tls.certresolver=versioresolver
+        - traefik.http.services.minio-data.loadbalancer.server.scheme=http
+        - traefik.http.services.minio-data.loadbalancer.server.port=9000
+        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-ui.entrypoints=websecure
+        - traefik.http.routers.minio-ui.tls.certresolver=versioresolver
+        - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
+        - traefik.http.services.minio-ui.loadbalancer.server.port=9001
+
+  minio-init:
+    image: minio/mc
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/scripts/minio-init.sh:/usr/local/bin/entrypoint.sh
+    entrypoint: usr/local/bin/entrypoint.sh
 
   # postgres:
   #   image: postgres
