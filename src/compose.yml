@@ -18,7 +18,7 @@ version: '3.9'
 services:
 
   consul:
-    image: consul:1.15.4
+    image: hashicorp/consul:1.20
     environment:
       DATACENTER: ${DATACENTER}
       DOCKER_MANAGERS: ${DOCKER_MANAGERS}
@@ -28,7 +28,6 @@ services:
       DOCKER_PUBLIC_IP: ${DOCKER_PUBLIC_IP}
       DOCKER_PRIVATE_IP: ${DOCKER_PRIVATE_IP}
       CONSUL_BIND_INTERFACE: eth0
-      CONSUL_CLIENT_INTERFACE: eth0
     command:
       - consul
       - agent
@@ -38,8 +37,8 @@ services:
       - -bootstrap-expect=${DOCKER_MANAGERS}
       - -datacenter=${DATACENTER}
       - -node=${HOSTNAME}
-      #- -bind=10.0.3.1
-      #- -advertise=10.0.3.1
+      - -bind=0.0.0.0 #${DOCKER_PUBLIC_IP}
+      - -advertise={{ GetPrivateIP }} #${DOCKER_PUBLIC_IP}
     networks:
       - public
       #- private

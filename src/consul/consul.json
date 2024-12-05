@@ -6,13 +6,6 @@
   },
   "retry_join": ["provider=docker"],
   "log_level": "DEBUG",
-  "ports": {
-    "dns": 8600,
-    "http": 8500,
-    "serf_lan": 8301,
-    "serf_wan": 8302,
-    "server": 8300
-  },
   "service": {
     "id": "consul",
     "name": "consul",

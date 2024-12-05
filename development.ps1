@@ -259,7 +259,8 @@ docker stack deploy -c $composeFile app
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" `
     "--inprivate",                          # Open in InPrivate mode
-    "--start-maximized",                    # Start maximized
+    #"--start-maximized",                    # Start maximized
+    "--start-minimized",
     "--new-window"                          # Open in a new window
 
 # Stopping the development environment
