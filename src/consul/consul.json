@@ -26,10 +26,10 @@
     "tags":[
       "consul","dns","discovery","configuration","docker-swarm","system",
       "traefik.enable=true",
-      "traefik.tags=test",
-      "traefik.http.routers.consul.rule=Host(`config.localhost`)",
+      "traefik.tags=${ENVIRONMENT}",
+      "traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)",
       "traefik.http.routers.consul.entrypoints=websecure",
-      "traefik.http.routers.consul.tls.certresolver=leresolver",
+      "traefik.http.routers.consul.tls.certresolver=versioresolver",
       "traefik.http.services.consul.loadbalancer.server.scheme=http",
       "traefik.http.services.consul.loadbalancer.server.port=8500"
     ]

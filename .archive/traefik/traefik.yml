@@ -9,6 +9,7 @@ entryPoints:
   websecure:
     address: ":443"
 
+
 providers:
   consulCatalog:
     endpoint:
@@ -37,9 +38,6 @@ certificatesResolvers:
       dnsChallenge:
         provider: "versio"
         delayBeforeCheck: 0
-        usernameFile: "/run/secrets/VERSIO_USERNAME"
-        passwordFile: "/run/secrets/VERSIO_PASSWORD"
-        endpointFile: "/run/secrets/VERSIO_ENDPOINT"
 
 metrics:
   prometheus:

@@ -82,63 +82,111 @@ services:
       #     cpus: "0.5"
       #     memory: "512M"
 
-  # traefik:
-  #   image: "traefik:v3.1.6"
-  #   secrets:
-  #     - VERSIO_USERNAME
-  #     - VERSIO_PASSWORD
-  #   environment:
-  #     DOMAIN_DEV: ${DOMAIN_DEV}
-  #     ENVIRONMENT: ${ENVIRONMENT}
-  #     VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
-  #     VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
-  #     VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     - ${APP_PATH}/traefik/conf/traefik.yml:/etc/traefik/traefik.yml:ro
-  #     - traefik-data:/app/data
-  #     - traefik-logs:/app/logs
-  #   healthcheck:
-  #     test: ["CMD", "traefik", "healthcheck", "--ping"]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 5
-  #     start_period: 30s
-  #   deploy:
-  #     replicas: 1
-  #     placement:
-  #       constraints: 
-  #         - node.role == manager
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     # resources:
-  #     #   limits:
-  #     #     cpus: "1.0"     # Max 1 CPUs
-  #     #     memory: "512M"  # Max 512Mb of memory
-  #     #   reservations:
-  #     #     cpus: "0.25"    # Reserve 0.25 CPUs
-  #     #     memory: "512M"  # Reserve 512MB of memory
+  traefik:
+    image: "traefik:v3.1.6"
+    secrets:
+      - VERSIO_USERNAME
+      - VERSIO_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
+      VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
+      VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
+    command:
+      # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+      # Enable the Traefik log, for configurations and errors
+      - --log=true
+      - --log.level=DEBUG
+      - --log.format=json
+      - --log.maxsize=5
+      - --log.maxage=5
+      - --log.filePath=/app/logs/traefik.log
+      # Checking the Health of Your Traefik Instances
+      - --ping=true
+      # Dashboard. Optional. Default: true. 
+      - --api
+      - --api.dashboard=true
+      # Enable the access log, with HTTP requests
+      - --accesslog=true
+      - --accesslog.format=json
+      - --accesslog.filepath=/app/logs/traefik-access.log
+      # Entry points
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      # Prometheus metrics
+      - --metrics.prometheus=true
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addRoutersLabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
+      # Docker configuration
+      - --providers.docker
+      - --providers.docker.network=public
+      - --providers.docker.exposedbydefault=false
+      - --providers.swarm
+      - --providers.swarm.constraints=Label(`traefik.tags`, `${ENVIRONMENT}`)
+      # Consul configuration
+      - --providers.consulCatalog=true
+      - --providers.consulCatalog.cache=true
+      - --providers.consulCatalog.refreshInterval=30s
+      - --providers.consulCatalog.endpoint.address=http://consul:8500
+      - --providers.consulCatalog.endpoint.scheme=http
+      - --providers.consulCatalog.exposedByDefault=false
+      - --providers.consulCatalog.defaultRule=Host(`config.${DOMAIN_DEV}`)
+      # Enable ACME (Let's Encrypt): automatic SSL.
+      - --certificatesResolvers.versioresolver.acme.email=your-email@example.com
+      - --certificatesResolvers.versioresolver.acme.storage=/app/data/acme.json
+      - --certificatesResolvers.versioresolver.acme.dnsChallenge=true
+      - --certificatesResolvers.versioresolver.acme.dnsChallenge.delayBeforeCheck=0
+      - --certificatesResolvers.versioresolver.acme.dnsChallenge.provider=versio
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - public
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APP_PATH}/traefik/data:/app/data
+      - ${APP_PATH}/traefik/logs:/app/logs
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      replicas: 1
+      placement:
+        constraints: 
+          - node.role == manager
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "1.0"     # Max 1 CPUs
+      #     memory: "512M"  # Max 512Mb of memory
+      #   reservations:
+      #     cpus: "0.25"    # Reserve 0.25 CPUs
+      #     memory: "512M"  # Reserve 512MB of memory
 
   # minio:
   #   image: "minio/minio:latest"
@@ -427,24 +475,6 @@ volumes:
     driver_opts:
       type: none
       device: ${APP_PATH}/postgres/backups
-      o: bind
-  traefik-conf:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APP_PATH}/traefik/conf
-      o: bind
-  traefik-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APP_PATH}/traefik/data
-      o: bind
-  traefik-logs:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APP_PATH}/traefik/logs
       o: bind
 
 secrets:

@@ -188,12 +188,11 @@ function Invoke-Postgres {
 function Invoke-Traefik {
     Write-Host 'Configuring TRAEFIK ... for DOCKER'
     $traefikDir = "$baseDir/traefik"
-    $traefikConf = "$traefikDir/conf"
     $traefikData = "$traefikDir/data"
     $traefikLogs = "$traefikDir/logs"
-    New-Item -ItemType Directory -Path $traefikDir, $traefikData, $traefikConf, $traefikLogs -Force
-    $traefikConf = Resolve-Path -Path $traefikConf
-    Copy-Item -Path "./src/traefik/*" -Destination $traefikConf -Recurse
+    New-Item -ItemType Directory -Path $traefikDir, $traefikData, $traefikLogs -Force
+    #$traefikConf = Resolve-Path -Path $traefikConf
+    #Copy-Item -Path "./src/traefik/*" -Destination $traefikConf -Recurse
     Write-Host 'Configuring TRAEFIK ... Done'
 }
 
@@ -258,6 +257,8 @@ docker stack deploy -c $composeFile app
 
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" `
+    "http://proxy.localhost",
+    "http://config.localhost",
     "--inprivate",                          # Open in InPrivate mode
     #"--start-maximized",                    # Start maximized
     "--start-minimized",
