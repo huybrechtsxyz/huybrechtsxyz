@@ -13,6 +13,9 @@ on:
       rebuild:
         required: true
         type: string
+      minio_data:
+        required: true
+        type: string
     secrets:
       KEYCLOAK_USER:
         required: true
@@ -114,6 +117,7 @@ jobs:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
+      minio_data: ${{ inputs.minio_data }}
     secrets:
       SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
@@ -127,6 +131,7 @@ jobs:
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
+      minio_data: ${{ inputs.minio_data }}
     secrets:
       SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}

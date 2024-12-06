@@ -17,6 +17,7 @@ jobs:
       environment: test
       initialize: 'true'
       rebuild: 'true'
+      minio_data: ${{ inputs.MINIO_DATA }}
     secrets:
       KEYCLOAK_USER: ${{ secrets.KEYCLOAK_USER }}
       KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}

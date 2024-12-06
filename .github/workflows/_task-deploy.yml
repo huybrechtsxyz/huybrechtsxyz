@@ -7,6 +7,9 @@ on:
       environment:
         required: true
         type: string
+      minio_data:
+        required: true
+        type: string
     secrets:
       SERVER_ENDPOINT:
         required: true
@@ -34,4 +37,6 @@ jobs:
           script: |
             set -e
             # Execute the previously uploaded script
-            /app/src/scripts/deploy-stack.sh ${{ inputs.environment }}
+            export ENVIRONMENT=${{ inputs.environment }}
+            export MINIO_DATA=${{ inputs.minio_data }}
+            /app/src/scripts/deploy-stack.sh

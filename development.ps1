@@ -170,7 +170,7 @@ function Invoke-Minio {
     $minioData = "$minioDir/data"
     New-Item -ItemType Directory -Path $minioDir, $minioData -Force
     $minioDir = Resolve-Path -Path $minioDir
-    Write-Host 'Configuring MINIO ... Done'    
+    Write-Host 'Configuring MINIO ... Done'
 }
 
 # FUNCTION: Configure and run Postgres

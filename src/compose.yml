@@ -26,7 +26,7 @@ services:
       ENVIRONMENT: ${ENVIRONMENT}
       HOSTNAME: ${HOSTNAME}
       DOCKER_PUBLIC_IP: ${DOCKER_PUBLIC_IP}
-      DOCKER_PRIVATE_IP: ${DOCKER_PRIVATE_IP}
+      #DOCKER_PRIVATE_IP: ${DOCKER_PRIVATE_IP}
       CONSUL_BIND_INTERFACE: eth0
     command:
       - consul
@@ -205,28 +205,23 @@ services:
         - traefik.http.routers.traefik.tls.certresolver=versioresolver
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
-        
+
   minio:
-    image: "minio/minio:latest"
+    image: minio/minio
     secrets:
       - MINIO_ROOT_USER
       - MINIO_ROOT_PASSWORD
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
+      MINIO_DATA: ${MINIO_DATA}
       MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
     command: server /data --console-address ":9001"
-    ports:
-      - "9000:9000"  # MinIO API
-      - "9001:9001"  # MinIO Console
     networks:
       - public
     volumes:
-
-      => to do replace the minio-data volume with a env-var
-
-      - minio-data:/data
+      - ${MINIO_DATA}:/data
     healthcheck:
       test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
       interval: 15s
@@ -256,17 +251,17 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      # resources:
-      #   limits:
-      #     cpus: "1.5"
-      #     memory: "3G"
-      #   reservations:
-      #     cpus: "1.0"
-      #     memory: "2G"
+      # # resources:
+      # #   limits:
+      # #     cpus: "1.5"
+      # #     memory: "3G"
+      # #   reservations:
+      # #     cpus: "1.0"
+      # #     memory: "2G"
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
-        - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-data.rule=HostRegexp(`s3.${DOMAIN_DEV}`)
         - traefik.http.routers.minio-data.entrypoints=websecure
         - traefik.http.routers.minio-data.tls.certresolver=versioresolver
         - traefik.http.services.minio-data.loadbalancer.server.scheme=http
@@ -290,6 +285,13 @@ services:
     volumes:
       - ${APP_PATH}/scripts/minio-init.sh:/usr/local/bin/entrypoint.sh
     entrypoint: usr/local/bin/entrypoint.sh
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: none # Ensure this runs only once
+      placement:
+        constraints:
+          - node.role == manager # Run only on the manager node
 
   # postgres:
   #   image: postgres
@@ -486,12 +488,6 @@ networks:
   #   external: true
 
 volumes:
-  minio-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${MINIO_PATH}
-      o: bind
   postgres-admin:
     driver: local
     driver_opts:

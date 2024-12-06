@@ -3,8 +3,13 @@
 # Ensure the script exits on errors
 set -e
 
-# Validate input
-ENVIRONMENT="${1:?Usage: ./deploy-stack.sh <environment>}"
+# Validate that the ENVIRONMENT variable is set
+: "${ENVIRONMENT:?Environment variable ENVIRONMENT is not set. Please set it before running the script.}"
+echo "Deploying to environment: $ENVIRONMENT"
+
+# The minio path
+echo "S3 Storage path: $MINIO_DATA" 
+export MINIO_DATA
 
 # Function to retrieve overlay network IP
 get_overlay_network_ip() {
