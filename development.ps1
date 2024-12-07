@@ -259,7 +259,7 @@ docker stack deploy -c $composeFile app
 Start-Process -FilePath "msedge.exe" `
     "http://proxy.localhost/dashboard/",
     "http://config.localhost",
-    "http://store.localhost",
+    "http://s3.localhost",
     "--inprivate",                          # Open in InPrivate mode
     #"--start-maximized",                    # Start maximized
     "--start-minimized",
