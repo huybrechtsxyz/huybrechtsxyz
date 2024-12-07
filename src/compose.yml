@@ -84,11 +84,11 @@ services:
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.consul.loadbalancer.server.scheme=http
+        - traefik.http.services.consul.loadbalancer.server.port=8500
         - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
         - traefik.http.routers.consul.entrypoints=websecure
         - traefik.http.routers.consul.tls.certresolver=versioresolver
-        - traefik.http.services.consul.loadbalancer.server.scheme=http
-        - traefik.http.services.consul.loadbalancer.server.port=8500
 
   traefik:
     image: "traefik:v3.1.6"
@@ -198,13 +198,13 @@ services:
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.traefik.loadbalancer.server.scheme=http
+        - traefik.http.services.traefik.loadbalancer.server.port=8080
         - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
         - traefik.http.routers.traefik.rule=Host(`proxy.${DOMAIN_DEV}`)
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.tls.certresolver=versioresolver
-        - traefik.http.services.traefik.loadbalancer.server.scheme=http
-        - traefik.http.services.traefik.loadbalancer.server.port=8080
 
   minio:
     image: minio/minio
@@ -261,18 +261,20 @@ services:
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
+        #
+        - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
+        - traefik.http.services.minio-ui.loadbalancer.server.port=9001
+        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`) # && PathPrefix(`/minio`)
+        - traefik.http.routers.minio-ui.entrypoints=websecure
+        - traefik.http.routers.minio-ui.tls.certresolver=versioresolver
+        - traefik.http.routers.minio-ui.service=minio-ui
+        #
+        - traefik.http.services.minio-data.loadbalancer.server.scheme=http
+        - traefik.http.services.minio-data.loadbalancer.server.port=9000
         - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
         - traefik.http.routers.minio-data.entrypoints=websecure
         - traefik.http.routers.minio-data.tls.certresolver=versioresolver
         - traefik.http.routers.minio-data.service=minio-data
-        - traefik.http.services.minio-data.loadbalancer.server.scheme=http
-        - traefik.http.services.minio-data.loadbalancer.server.port=9000
-        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
-        - traefik.http.routers.minio-ui.entrypoints=websecure
-        - traefik.http.routers.minio-ui.tls.certresolver=versioresolver
-        - traefik.http.routers.minio-data.service=minio-ui
-        - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
-        - traefik.http.services.minio-ui.loadbalancer.server.port=9001
 
   minio-init:
     image: minio/mc
