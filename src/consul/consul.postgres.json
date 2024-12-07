@@ -15,10 +15,7 @@
           "timeout": "1s"
         }
       ],
-      "tags": [
-        "postgres","storage","data-store","data","docker-swarm","system",
-        "- traefik.enable=false"
-      ]
+      "tags": [ "postgres","storage","data-store","data","docker-swarm","system" ]
     },
     {
       "id": "pgadmin",
