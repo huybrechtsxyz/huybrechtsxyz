@@ -442,10 +442,11 @@ services:
       DB_DATABASE: keycloakdb
       DB_USER_FILE: /run/secrets/POSTGRES_USER
       DB_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
+    command: start-dev
     networks:
       - public
     healthcheck:
-      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:8080/realms/master/protocol/openid-connect/token"]
+      test: ["CMD", "wget", "--spider", "http://localhost:8080/realms/master/protocol/openid-connect/token"]
       interval: 15s
       retries: 3
       timeout: 5s
@@ -516,9 +517,6 @@ networks:
   public:
     driver: overlay
     #external: true
-
-  # private:
-  #   external: true
 
 volumes:
   postgres-backups:
