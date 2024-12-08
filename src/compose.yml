@@ -2,16 +2,29 @@
 #
 # ENVIRONMENT VARIABLES
 # ---------------------
-# APP_PATH            -> Set in env-file
-# DATACENTER          -> Set in env-file
-# DOMAIN_DEV          -> Set in env-file
-# DOMAIN_XYZ          -> Set in env-file
-# DOMAIN_MEEUS        -> Set in env-file
-# DOMAIN_LIZARD       -> Set in env-file
-# DOCKER_MANAGERS     -> Set in env-file
-# ENVIRONMENT         -> Set in env-file
-# MINIO_PATH          -> Set in env-file
-# MINIO_REGIO         -> Set in env-file
+# APP_PATH            -> /app
+# DATACENTER          -> dc1
+# DOMAIN_DEV          -> localhost
+# DOMAIN_XYZ          -> localhost
+# DOMAIN_MEEUS        -> localhost
+# DOMAIN_LIZARD       -> localhost
+# DOCKER_MANAGERS     -> 1
+# ENVIRONMENT         -> develop
+# MINIO_PATH          -> /data
+# MINIO_REGIO         -> europe
+# PGADMIN_USER        -> email
+#
+# SECRETS
+# -------
+# KEYCLOAK_USER       -> admin
+# KEYCLOAK_PASSWORD   -> password
+# MINIO_ROOT_USER     -> admin
+# MINIO_ROOT_PASSWORD -> password
+# POSTGRES_USER       -> admin
+# POSTGRES_PASSWORD   -> password
+# PGADMIN_PASSWORD    -> password
+# VERSIO_USERNAME     -> email
+# VERSIO_PASSWORD     -> abc123
 #
 version: '3.9'
 
@@ -264,14 +277,14 @@ services:
         #
         - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
         - traefik.http.services.minio-ui.loadbalancer.server.port=9001
-        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`) # && PathPrefix(`/minio`)
+        - traefik.http.routers.minio-ui.rule=Host(`data.${DOMAIN_DEV}`) # && PathPrefix(`/minio`)
         - traefik.http.routers.minio-ui.entrypoints=websecure
         - traefik.http.routers.minio-ui.tls.certresolver=versioresolver
         - traefik.http.routers.minio-ui.service=minio-ui
         #
         - traefik.http.services.minio-data.loadbalancer.server.scheme=http
         - traefik.http.services.minio-data.loadbalancer.server.port=9000
-        - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.data.${DOMAIN_DEV}`)
         - traefik.http.routers.minio-data.entrypoints=websecure
         - traefik.http.routers.minio-data.tls.certresolver=versioresolver
         - traefik.http.routers.minio-data.service=minio-data
@@ -352,60 +365,66 @@ services:
       labels:
         - traefik.enable=false
 
-  # pgadmin:
-  #   image: dpage/pgadmin4
-  #   secrets:
-  #     - PGADMIN_USER
-  #     - PGADMIN_PASSWORD
-  #   environment:
-  #     DOMAIN_DEV: ${DOMAIN_DEV}
-  #     ENVIRONMENT: ${ENVIRONMENT}
-  #     PGADMIN_LISTEN_PORT: 9080
-  #     PGADMIN_DEFAULT_EMAIL_FILE: PGADMIN_USER
-  #     PGADMIN_DEFAULT_PASSWORD_FILE: PGADMIN_PASSWORD
-  #     SCRIPT_NAME: /pgadmin
-  #   networks:
-  #     - public
-  #     - private
-  #   volumes:
-  #     - postgres-admin:/var/lib/pgadmin
-  #   healthcheck:
-  #     test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9080/pgadmin"]
-  #     interval: 15s
-  #     retries: 3
-  #     timeout: 5s
-  #     start_period: 10s
-  #   deploy:
-  #     replicas: 1
-  #     placement:
-  #       constraints: 
-  #         - node.role == worker
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     # resources:
-  #     #   limits:
-  #     #     cpus: "2.0"     # Max 2 CPUs
-  #     #     memory: "2G"    # Max 2GB of memory
-  #     #   reservations:
-  #     #     cpus: "0.5"     # Reserve 0.5 CPUs
-  #     #     memory: "512M"  # Reserve 512MB of memory
-
+  pgadmin:
+    image: dpage/pgadmin4
+    secrets:
+      - PGADMIN_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      PGADMIN_LISTEN_PORT: 9080
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/PGADMIN_PASSWORD
+      SCRIPT_NAME: /pgadmin
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9080/pgadmin"]
+      interval: 15s
+      retries: 3
+      timeout: 5s
+      start_period: 10s
+    deploy:
+      replicas: 1
+      # placement:
+      #   constraints: 
+      #     - node.role == worker
+      #   preferences:
+      #     - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "2.0"     # Max 2 CPUs
+      #     memory: "2G"    # Max 2GB of memory
+      #   reservations:
+      #     cpus: "0.5"     # Reserve 0.5 CPUs
+      #     memory: "512M"  # Reserve 512MB of memory
+      labels:
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
+        - traefik.http.services.pgadmin.loadbalancer.server.port=9080
+        - traefik.http.routers.pgadmin.rule=Host(`data.${DOMAIN_DEV}`) && PathPrefix(`/pdgadmin`)",
+        - traefik.http.routers.pgadmin.entrypoints=websecure",
+        - traefik.http.routers.pgadmin.tls.certresolver=leresolver",
+        
   # keycloak:
   #   image: keycloak/keycloak:latest
   #   secrets:
@@ -494,18 +513,6 @@ networks:
   #   external: true
 
 volumes:
-  postgres-admin:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APP_PATH}/postgres/admin
-      o: bind
-  postgres-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APP_PATH}/postgres/data
-      o: bind
   postgres-backups:
     driver: local
     driver_opts:

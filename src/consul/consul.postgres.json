@@ -32,16 +32,7 @@
           "timeout": "1s"
         }
       ],
-      "tags": [
-        "pgadmin","admin","data","docker-swarm","system",
-        "- traefik.enable=true",
-        "- traefik.tags=${ENVIRONMENT}",
-        "- traefik.http.routers.pgadmin.rule=Host(`data.${DOMAIN_DEV}`) && PathPrefix(`/pdgadmin`)",
-        "- traefik.http.routers.pgadmin.entrypoints=websecure",
-        "- traefik.http.routers.pgadmin.tls.certresolver=leresolver",
-        "- traefik.http.services.pgadmin.loadbalancer.server.scheme=http",
-        "- traefik.http.services.pgadmin.loadbalancer.server.port=9080"
-      ]
+      "tags": [ "pgadmin","admin","data","docker-swarm","system" ]
     }
   ]
 }
