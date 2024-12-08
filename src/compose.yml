@@ -277,14 +277,14 @@ services:
         #
         - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
         - traefik.http.services.minio-ui.loadbalancer.server.port=9001
-        - traefik.http.routers.minio-ui.rule=Host(`data.${DOMAIN_DEV}`) # && PathPrefix(`/minio`)
+        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`) # && PathPrefix(`/minio`)
         - traefik.http.routers.minio-ui.entrypoints=websecure
         - traefik.http.routers.minio-ui.tls.certresolver=versioresolver
         - traefik.http.routers.minio-ui.service=minio-ui
         #
         - traefik.http.services.minio-data.loadbalancer.server.scheme=http
         - traefik.http.services.minio-data.loadbalancer.server.port=9000
-        - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.data.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
         - traefik.http.routers.minio-data.entrypoints=websecure
         - traefik.http.routers.minio-data.tls.certresolver=versioresolver
         - traefik.http.routers.minio-data.service=minio-data
@@ -381,7 +381,7 @@ services:
     volumes:
       - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
     healthcheck:
-      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9080/pgadmin"]
+      test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
       interval: 15s
       retries: 3
       timeout: 5s
@@ -421,9 +421,9 @@ services:
         - traefik.tags=${ENVIRONMENT}
         - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
         - traefik.http.services.pgadmin.loadbalancer.server.port=9080
-        - traefik.http.routers.pgadmin.rule=Host(`data.${DOMAIN_DEV}`) && PathPrefix(`/pdgadmin`)",
-        - traefik.http.routers.pgadmin.entrypoints=websecure",
-        - traefik.http.routers.pgadmin.tls.certresolver=leresolver",
+        - traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
+        - traefik.http.routers.pgadmin.entrypoints=websecure
+        - traefik.http.routers.pgadmin.tls.certresolver=leresolver
         
   # keycloak:
   #   image: keycloak/keycloak:latest
