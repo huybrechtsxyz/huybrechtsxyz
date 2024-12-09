@@ -131,16 +131,22 @@ function Update-Secrets {
     $Secrets = Get-Content -Path $SecretFilePath | ConvertFrom-Json
     foreach ($Key in $Secrets.PSObject.Properties.Name) {
         $Value = $Secrets.$Key
-
+        Write-Host "Creating or updating secret: $Key"
+        
         # Remove the secret if it already exists
         if (docker secret inspect $Key 2>&1) {
-            Write-Host "Removing existing secret: $Key"
-            docker secret rm $Key
+            docker secret rm $Key 2>&1
         }
 
         # Create the Docker secret
-        Write-Host "Creating secret: $Key"
-        $Value | docker secret create $Key - > $null 2>&1
+        $TempSecretFile = [System.IO.Path]::GetTempFileName()
+        Set-Content -Path $TempSecretFile -Value $Value -NoNewLine
+        $WrittenValue = Get-Content -Path $TempSecretFile -Raw
+        if ($WrittenValue -ne $Value) {
+            throw "The written secret value for '$Key' does not match the original."
+        }
+        docker secret create $Key $TempSecretFile
+        Remove-Item -Path $TempSecretFile
     }
 }
 
@@ -261,6 +267,7 @@ Start-Process -FilePath "msedge.exe" `
     "http://config.localhost",
     "http://s3.localhost",
     "http://db.localhost/pgadmin",
+    "http://iam.localhost/",
     "--inprivate",                          # Open in InPrivate mode
     #"--start-maximized",                    # Start maximized
     "--start-minimized",
