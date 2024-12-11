@@ -459,9 +459,9 @@ services:
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
-      KC_HOSTNAME: ${HOSTNAME}
-      KC_HOSTNAME_PORT: 7080
-      KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
+      #KC_HOSTNAME: iam.${HOSTNAME}
+      #KC_HOSTNAME_PORT: 7080
+      #KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
       KC_LOG_LEVEL: DEBUG
@@ -472,7 +472,7 @@ services:
       KC_DB: postgres
       KC_DB_URL_HOST: postgres
       KC_DB_URL_DATABASE: xyzdb
-      #KC_DB_SCHEMA: keycloak
+      KC_DB_SCHEMA: keycloak
       KC_DB_USERNAME_FILE: /run/secrets/POSTGRES_USER
       KC_DB_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
     entrypoint: "usr/local/bin/entrypoint.sh --http-port 7080 --https-port 7443"
