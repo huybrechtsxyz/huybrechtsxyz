@@ -297,11 +297,11 @@ services:
     environment:
       MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
+    entrypoint: usr/local/bin/entrypoint.sh
     networks:
       - public
     volumes:
-      - ${APP_PATH}/scripts/minio-init.sh:/usr/local/bin/entrypoint.sh
-    entrypoint: usr/local/bin/entrypoint.sh
+      - ${APP_PATH}/scripts/minio-init.sh:/usr/local/bin/entrypoint.sh:ro
     deploy:
       replicas: 1
       restart_policy:
@@ -326,7 +326,6 @@ services:
       - public
     volumes:
       - ${APP_PATH}/postgres/data:/var/lib/postgresql/data
-      - ${APP_PATH}/scripts/init:/docker-entrypoint-initdb.d 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d xyzdb -U $$(cat /run/secrets/POSTGRES_USER)"]
       interval: 1s
@@ -365,6 +364,30 @@ services:
       #     memory: "512M"  # Reserve 512MB of memory
       labels:
         - traefik.enable=false
+
+  postgres-init:
+    image: postgres
+    secrets:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    environment:
+      POSTGRES_DB: xyzdb
+      POSTGRES_URL: postgres
+      POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
+    entrypoint: usr/local/bin/entrypoint.sh
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/scripts/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
+      - ${APP_PATH}/scripts/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: none # Ensure this runs only once
+      placement:
+        constraints:
+          - node.role == manager # Run only on the manager node
 
   pgadmin:
     image: dpage/pgadmin4
@@ -452,10 +475,9 @@ services:
       #KC_DB_SCHEMA: keycloak
       KC_DB_USERNAME_FILE: /run/secrets/POSTGRES_USER
       KC_DB_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
-    #command: ["start-dev", "--http-port", "7080", "--https-port", "7443"]
-    volumes:
-      - ${APP_PATH}/scripts/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
     entrypoint: "usr/local/bin/entrypoint.sh --http-port 7080 --https-port 7443"
+    volumes:
+      - ${APP_PATH}/scripts/keycloak-entry.sh:/usr/local/bin/entrypoint.sh    
     networks:
       - public
     healthcheck:
