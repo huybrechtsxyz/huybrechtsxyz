@@ -104,7 +104,7 @@ services:
         - traefik.http.routers.consul.tls.certresolver=versioresolver
 
   traefik:
-    image: "traefik:v3.1.6"
+    image: "traefik:v3.2"
     secrets:
       - VERSIO_USERNAME
       - VERSIO_PASSWORD
@@ -144,10 +144,11 @@ services:
       - --metrics.prometheus.addServicesLabels=true
       # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
       # Docker configuration
-      - --providers.docker
-      - --providers.docker.network=public
-      - --providers.docker.exposedbydefault=false
+      #- --providers.docker
+      #- --providers.docker.network=public
+      #- --providers.docker.exposedbydefault=false
       - --providers.swarm
+      - --providers.swarm.exposedbydefault=false
       - --providers.swarm.constraints=Label(`traefik.tags`, `${ENVIRONMENT}`)
       # Consul configuration
       - --providers.consulCatalog=true
@@ -459,18 +460,30 @@ services:
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
+      KC_LOG: console,file
       KC_LOG_LEVEL: DEBUG
+      KC_LOG_FILE: /home/keycloak.log
+      KC_HTTP_ENABLED: "true"
+      KC_HTTPS_ENABLED: "false"
+      KC_HOSTNAME: https://iam.localhost
+      KC_HOSTNAME_STRICT: "false"
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      #KC_IMPORT_REALM: /opt/keycloak/data/import
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: password
-    command: start
+    command: start --proxy-headers forwarded --hostname-debug=true
     networks:
       - public
+    volumes:
+      - ${APP_PATH}/logs:/home
     deploy:
       labels:
         - traefik.enable=true
         - traefik.tags=develop
         - traefik.http.services.keycloak.loadbalancer.server.scheme=http
         - traefik.http.services.keycloak.loadbalancer.server.port=8080
+        - traefik.http.routers.keycloak.middlewares=redirect-to-https
         - traefik.http.routers.keycloak.rule=Host(`iam.localhost`)
         - traefik.http.routers.keycloak.entrypoints=websecure
         - traefik.http.routers.keycloak.tls.certresolver=versioresolver

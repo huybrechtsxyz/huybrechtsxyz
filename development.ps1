@@ -222,7 +222,8 @@ Update-Secrets
 Write-Host 'Creating APP directories...'
 $baseDir = './.app'
 $scriptDir = "$baseDir/scripts"
-New-Item -ItemType Directory -Path $baseDir, $scriptDir -Force
+$logDir = "$baseDir/logs"
+New-Item -ItemType Directory -Path $baseDir, $scriptDir, $logDir -Force
 Copy-Item -Path "./src/scripts/*" -Destination $scriptDir -Recurse
 
 # Configure and run services
@@ -259,7 +260,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "Starting Docker Swarm..."
 #docker compose -f $composeFile up -d
-docker stack deploy -c $composeFile app
+docker stack deploy -c $composeFile app --detach=true
 
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" `
