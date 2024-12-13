@@ -53,7 +53,6 @@ process_file_env_vars() {
 
 # Example usage of the function
 process_file_env_vars 'KC_.*_FILE'
-process_file_env_vars 'KEYCLOAK.*_FILE'
 
 # Pass all command parameters
-exec /opt/keycloak/bin/kc.sh start-dev "$@"
+exec /opt/keycloak/bin/kc.sh start "$@"
