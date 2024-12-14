@@ -195,8 +195,7 @@ function Invoke-Traefik {
     Write-Host 'Configuring TRAEFIK ... for DOCKER'
     $traefikDir = "$baseDir/traefik"
     $traefikData = "$traefikDir/data"
-    $traefikLogs = "$traefikDir/logs"
-    New-Item -ItemType Directory -Path $traefikDir, $traefikData, $traefikLogs -Force
+    New-Item -ItemType Directory -Path $traefikDir, $traefikData -Force
     #$traefikConf = Resolve-Path -Path $traefikConf
     #Copy-Item -Path "./src/traefik/*" -Destination $traefikConf -Recurse
     Write-Host 'Configuring TRAEFIK ... Done'

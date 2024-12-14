@@ -2,29 +2,42 @@
 #
 # ENVIRONMENT VARIABLES
 # ---------------------
-# APP_PATH            -> /app
-# DATACENTER          -> dc1
-# DOMAIN_DEV          -> localhost
-# DOMAIN_XYZ          -> localhost
-# DOMAIN_MEEUS        -> localhost
-# DOMAIN_LIZARD       -> localhost
-# DOCKER_MANAGERS     -> 1
-# ENVIRONMENT         -> develop
-# MINIO_PATH          -> /data
-# MINIO_REGIO         -> europe
-# PGADMIN_USER        -> email
+#"realm": "${MY_REALM_NAME}",
+# APP_ROLE_ADMIN_NAME   -> admin
+# APP_ROLE_ADMIN_DESC   -> admin
+# APP_ROLE_USER_NAME    -> admin
+# APP_ROLE_USER_DESC    -> admin
+#
+# APP_PATH              -> /app
+# DATACENTER            -> dc1
+# DOMAIN_DEV            -> localhost
+# DOMAIN_XYZ            -> localhost
+# DOMAIN_MEEUS          -> localhost
+# DOMAIN_LIZARD         -> localhost
+# DOCKER_MANAGERS       -> 1
+# ENVIRONMENT           -> develop
+# MINIO_PATH            -> /data
+# MINIO_REGIO           -> europe
+# PGADMIN_USER          -> email
 #
 # SECRETS
 # -------
-# KEYCLOAK_USER       -> admin
-# KEYCLOAK_PASSWORD   -> password
-# MINIO_ROOT_USER     -> admin
-# MINIO_ROOT_PASSWORD -> password
-# POSTGRES_USER       -> admin
-# POSTGRES_PASSWORD   -> password
-# PGADMIN_PASSWORD    -> password
-# VERSIO_USERNAME     -> email
-# VERSIO_PASSWORD     -> abc123
+# APP_ADMIN_USERNAME    -> admin
+# APP_ADMIN_PASSWORD    -> password
+# APP_ADMIN_EMAIL       -> email
+#
+# GOOGLE_CLIENT_ID      -> abc132
+# GOOGLE_CLIENT_SECRET  -> 1234
+#
+# KEYCLOAK_USER         -> admin
+# KEYCLOAK_PASSWORD     -> password
+# MINIO_ROOT_USER       -> admin
+# MINIO_ROOT_PASSWORD   -> password
+# POSTGRES_USER         -> admin
+# POSTGRES_PASSWORD     -> password
+# PGADMIN_PASSWORD      -> password
+# VERSIO_USERNAME       -> email
+# VERSIO_PASSWORD       -> abc123
 #
 version: '3.9'
 
@@ -161,7 +174,7 @@ services:
       # Enable ACME (Let's Encrypt): automatic SSL.
       - --certificatesresolvers.letlsresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
       - --certificatesresolvers.letlsresolver.acme.email=webmaster@huybrechts.xyz
-      - --certificatesresolvers.letlsresolver.acme.storage=/app/cert/acme-letls.json
+      - --certificatesresolvers.letlsresolver.acme.storage=/app/data/acme-letls.json
       - --certificatesresolvers.letlsresolver.acme.tlschallenge=true
       # Enable ACME (Versio): automatic SSL.
       - --certificatesResolvers.versioresolver.acme.email=webmaster@huybrechts.xyz
@@ -169,6 +182,9 @@ services:
       - --certificatesResolvers.versioresolver.acme.dnsChallenge=true
       - --certificatesResolvers.versioresolver.acme.dnsChallenge.delayBeforeCheck=0
       - --certificatesResolvers.versioresolver.acme.dnsChallenge.provider=versio
+      # Plugin for keycloak authentication
+      - --experimental.plugins.keycloakopenid.moduleName=github.com/Gwojda/keycloakopenid
+      - --experimental.plugins.keycloakopenid.version=v0.1.34
     ports:
       - "80:80"
       - "443:443"
@@ -177,7 +193,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APP_PATH}/traefik/data:/app/data
-      - ${APP_PATH}/traefik/logs:/app/logs
+      - ${APP_PATH}/logs:/app/logs
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
       interval: 15s
@@ -217,13 +233,27 @@ services:
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.KeycloakURL=http://keycloak:8080/auth
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.ClientID=traefik
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.ClientSecret=uNuyaDpZyxxvxpKR9JgqbqWQjDGZkCTE
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.Scope=openid profile email
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.UseAuthHeader=false
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.issuer=https://iam.${DOMAIN_DEV}/realms/huybrechts
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.requiredTokenType=access_token
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.roles=default-roles-huybrechts
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.secureCookie=true
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.validateMethodPath=true
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.redirectUrl="https://iam.${DOMAIN_DEV}/"
+        - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
-        - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
         - traefik.http.routers.traefik.rule=Host(`proxy.${DOMAIN_DEV}`)
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.tls.certresolver=versioresolver
+        - traefik.http.routers.traefik.middlewares=keycloakopenid
 
   minio:
     image: minio/minio
@@ -473,7 +503,8 @@ services:
       KC_HOSTNAME: https://iam.${DOMAIN_DEV}
       KC_HOSTNAME_STRICT: "false"
       KC_HEALTH_ENABLED: "true"
-      KC_METRICS_ENABLED: "true"
+      #KC_METRICS_ENABLED: "true"
+      #KC_TRACING_ENABLED: "true"
       KC_DB: postgres
       KC_DB_URL_HOST: postgres
       KC_DB_URL_DATABASE: xyzdb
@@ -482,12 +513,12 @@ services:
       KC_DB_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
       KC_BOOTSTRAP_ADMIN_USERNAME_FILE: /run/secrets/KEYCLOAK_USER
       KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/KEYCLOAK_PASSWORD
-    entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true
+    entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true #--features=opentelemetry --import-realm
     networks:
       - public
     volumes:
       - ${APP_PATH}/scripts/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
-      - ${APP_PATH}/logs:/home
+      #- ${APP_PATH}/scripts/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
     healthcheck:
       # TODO: Replace with real health check !
       test: ["CMD-SHELL", "exit 0"]
@@ -535,6 +566,9 @@ services:
         - traefik.http.routers.keycloak.entrypoints=websecure
         - traefik.http.routers.keycloak.tls.certresolver=versioresolver
 
+  # prometheus
+  # loki
+  # jaeger
   # backup:
   #   image: minio/mc:latest
   #   secrets:
