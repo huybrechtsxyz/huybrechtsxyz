@@ -273,10 +273,22 @@ Start-Process -FilePath "msedge.exe" `
     "--start-minimized",
     "--new-window"                          # Open in a new window
 
-# Stopping the development environment
-Pause 'Press any key to stop debugging'
-Write-Host 'Stopping DEVELOPMENT environment...'
-Stop-Process -Name 'msedge' -ErrorAction Ignore
+# Wait for user input to redeploy or stop the environment
+$continue = $true
+while ($continue) {
+    $key = Read-Host "Press any key to stop debugging or 'r' to redeploy stack"
+    
+    if ($key -eq 'r' -or $key -eq 'R') {
+        Write-Host "Redeploying Docker stack..."
+        docker stack deploy -c $composeFile app --detach=true
+        Write-Host "Docker stack redeployed with updated compose file."
+    }
+    elseif ($key -eq '') {
+        Write-Host 'Stopping DEVELOPMENT environment...'
+        Stop-Process -Name 'msedge' -ErrorAction Ignore
+        $continue = $false
+    }
+}
 
 # Stop Docker Compose
 Write-Host "Stopping Docker Swarm..."

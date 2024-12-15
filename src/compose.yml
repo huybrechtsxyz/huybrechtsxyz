@@ -185,6 +185,7 @@ services:
       # Plugin for keycloak authentication
       - --experimental.plugins.keycloakopenid.moduleName=github.com/Gwojda/keycloakopenid
       - --experimental.plugins.keycloakopenid.version=v0.1.34
+      - --serversTransport.insecureSkipVerify=true
     ports:
       - "80:80"
       - "443:443"
@@ -233,27 +234,29 @@ services:
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.KeycloakURL=http://keycloak:8080/auth
+        # Keycloak OpenId Plugin Middleware
+        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.KeycloakURL=http://iam.localhost
+        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.issuer=https://keycloak:8080/realms/huybrechts
         - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.ClientID=traefik
         - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.ClientSecret=uNuyaDpZyxxvxpKR9JgqbqWQjDGZkCTE
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.Scope=openid profile email
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.UseAuthHeader=false
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.issuer=https://iam.${DOMAIN_DEV}/realms/huybrechts
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.requiredTokenType=access_token
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.roles=default-roles-huybrechts
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.secureCookie=true
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.validateMethodPath=true
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.redirectUrl="https://iam.${DOMAIN_DEV}/"
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.Scopes=openid profile email
+        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.redirectUrl=https://traefik/_plugins/keycloakopenid/callback
+        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
+        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.UseAuthHeader=false
+        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.requiredTokenType=access_token
+        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.roles=default-roles-huybrechts
+        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.secureCookie=true
+        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.validateMethodPath=true
         - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
+        - traefik.http.services.traefik.loadbalancer.serverstransport=insecureSkipVerify
         - traefik.http.routers.traefik.rule=Host(`proxy.${DOMAIN_DEV}`)
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.tls.certresolver=versioresolver
-        - traefik.http.routers.traefik.middlewares=keycloakopenid
+        #- traefik.http.routers.traefik.middlewares=keycloak-auth
 
   minio:
     image: minio/minio
@@ -561,7 +564,7 @@ services:
         - traefik.tags=develop
         - traefik.http.services.keycloak.loadbalancer.server.scheme=http
         - traefik.http.services.keycloak.loadbalancer.server.port=8080
-        - traefik.http.routers.keycloak.middlewares=redirect-to-https
+        #- traefik.http.services.keycloak.loadbalancer.serverstransport=insecureSkipVerify
         - traefik.http.routers.keycloak.rule=Host(`iam.localhost`)
         - traefik.http.routers.keycloak.entrypoints=websecure
         - traefik.http.routers.keycloak.tls.certresolver=versioresolver
