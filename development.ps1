@@ -1,17 +1,4 @@
 <#
-Secrets examples
-    {
-        "KEYCLOAK_USER": "admin",
-        "KEYCLOAK_PASSWORD": "password",
-        "MINIO_ROOT_USER": "admin",
-        "MINIO_ROOT_PASSWORD": "password",
-        "POSTGRES_USER": "admin",
-        "POSTGRES_PASSWORD": "password",
-        "PGADMIN_USER": "admin",
-        "PGADMIN_PASSWORD": "password",
-        "VERSIO_USERNAME": "",
-        "VERSIO_PASSWORD": "",
-    }
 #>
 
 # FUNCTION: Extract zipfile for local development
@@ -269,8 +256,10 @@ Start-Process -FilePath "msedge.exe" `
     "http://db.localhost/pgadmin",
     "http://iam.localhost/",
     "--inprivate",                          # Open in InPrivate mode
-    #"--start-maximized",                    # Start maximized
-    "--start-minimized",
+    "--ignore-certificate-errors",
+    "--ignore-urlfetcher-cert-requests",
+    "--start-maximized",                    # Start maximized
+    #"--start-minimized",
     "--new-window"                          # Open in a new window
 
 # Wait for user input to redeploy or stop the environment
