@@ -19,6 +19,8 @@
 # MINIO_PATH            -> /data
 # MINIO_REGIO           -> europe
 # PGADMIN_USER          -> email
+# TRAEFIK_AUTH          -> blank | openid-auth
+# TRAEFIK_RESOLVER      -> httpresolver | letlsresolver | versioresolver
 #
 # SECRETS
 # -------
@@ -52,7 +54,6 @@ services:
       ENVIRONMENT: ${ENVIRONMENT}
       HOSTNAME: ${HOSTNAME}
       DOCKER_PUBLIC_IP: ${DOCKER_PUBLIC_IP}
-      #DOCKER_PRIVATE_IP: ${DOCKER_PRIVATE_IP}
       CONSUL_BIND_INTERFACE: eth0
     command:
       - consul
@@ -63,11 +64,10 @@ services:
       - -bootstrap-expect=${DOCKER_MANAGERS}
       - -datacenter=${DATACENTER}
       - -node=${HOSTNAME}
-      - -bind=0.0.0.0 #${DOCKER_PUBLIC_IP}
-      - -advertise={{ GetPrivateIP }} #${DOCKER_PUBLIC_IP}
+      - -bind=0.0.0.0
+      - -advertise={{ GetPrivateIP }}
     networks:
       - public
-      #- private
     volumes:
       - ${APP_PATH}/consul/conf:/consul/config
       - ${APP_PATH}/consul/data:/consul/data
@@ -114,7 +114,7 @@ services:
         - traefik.http.services.consul.loadbalancer.server.port=8500
         - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
         - traefik.http.routers.consul.entrypoints=websecure
-        - traefik.http.routers.consul.tls.certresolver=versioresolver
+        - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
 
   traefik:
     image: "traefik:v3.2"
@@ -127,6 +127,9 @@ services:
       VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
       VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
       VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
+      TRAEFIK_AUTH: ${TRAEFIK_AUTH}
+      TRAEFIK_CASERVER: ${TRAEFIK_CASERVER}
+      TRAEFIK_RESOLVER: ${TRAEFIK_RESOLVER}
     command:
       # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
       # Enable the Traefik log, for configurations and errors
@@ -171,12 +174,19 @@ services:
       - --providers.consulCatalog.endpoint.scheme=http
       - --providers.consulCatalog.exposedByDefault=false
       - --providers.consulCatalog.defaultRule=Host(`config.${DOMAIN_DEV}`)
+      # Enable Staging SSL
+      - --certificatesresolvers.httpresolver.acme.caServer=${TRAEFIK_CASERVER}
+      - --certificatesresolvers.httpresolver.acme.email=webmaster@huybrechts.xyz
+      - --certificatesresolvers.httpresolver.acme.storage=app/data/acme-http.json
+      - --certificatesresolvers.httpresolver.acme.httpChallenge=true
+      - --certificatesresolvers.httpresolver.acme.httpChallenge.entryPoint=web
       # Enable ACME (Let's Encrypt): automatic SSL.
-      - --certificatesresolvers.letlsresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.letlsresolver.acme.caserver==${TRAEFIK_CASERVER}
       - --certificatesresolvers.letlsresolver.acme.email=webmaster@huybrechts.xyz
       - --certificatesresolvers.letlsresolver.acme.storage=/app/data/acme-letls.json
       - --certificatesresolvers.letlsresolver.acme.tlschallenge=true
       # Enable ACME (Versio): automatic SSL.
+      - --certificatesresolvers.versioresolver.acme.caServer=${TRAEFIK_CASERVER}
       - --certificatesResolvers.versioresolver.acme.email=webmaster@huybrechts.xyz
       - --certificatesResolvers.versioresolver.acme.storage=/app/data/acme-versio.json
       - --certificatesResolvers.versioresolver.acme.dnsChallenge=true
@@ -184,8 +194,7 @@ services:
       - --certificatesResolvers.versioresolver.acme.dnsChallenge.provider=versio
       # Plugin for keycloak authentication
       - --experimental.plugins.keycloakopenid.moduleName=github.com/Gwojda/keycloakopenid
-      - --experimental.plugins.keycloakopenid.version=v0.1.34
-      - --serversTransport.insecureSkipVerify=true
+      - --experimental.plugins.keycloakopenid.version=v0.1.35
     ports:
       - "80:80"
       - "443:443"
@@ -234,29 +243,33 @@ services:
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
+        # Redirection Middleware
+        - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+        # Transport Middleware
+        - traefik.http.serversTransports.secureTransport.insecureSkipVerify=false;
+        - traefik.http.serversTransports.insecureTransport.insecureSkipVerify=true;
         # Keycloak OpenId Plugin Middleware
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.KeycloakURL=http://iam.localhost
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
-        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.issuer=https://iam.localhost/realms/huybrechts
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.ClientID=traefik
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.ClientSecret=uNuyaDpZyxxvxpKR9JgqbqWQjDGZkCTE
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.Scope=openid profile email
-        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.redirectUrl=https://traefik/_plugins/keycloakopenid/callback
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
-        - traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.UseAuthHeader=false
-        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.requiredTokenType=access_token
-        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.roles=default-roles-huybrechts
-        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.secureCookie=true
-        #- traefik.http.middlewares.keycloak-auth.plugin.keycloakopenid.validateMethodPath=true
-        #- traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakURL=https://iam.localhost
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientID=traefik
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientSecret=uNuyaDpZyxxvxpKR9JgqbqWQjDGZkCTE
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.Scope=openid profile email
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.UseAuthHeader=false
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.IgnorePathPrefixes=/favicon.ico
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.InsecureSkipVerify=true
+        # Traefik dashboard
+
+        https://stackoverflow.com/questions/78903102/traefik-serverstransport-not-taking-effect-tls-verification-issues
+        
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
-        - traefik.http.services.traefik.loadbalancer.serverstransport=insecureSkipVerify
+        - traefik.http.services.traefik.loadBalancer.serversTransport=insecureTransport
         - traefik.http.routers.traefik.rule=Host(`proxy.${DOMAIN_DEV}`)
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=websecure
-        #- traefik.http.routers.traefik.tls.certresolver=versioresolver
-        #- traefik.http.routers.traefik.middlewares=keycloak-auth
+        - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.traefik.middlewares=${TRAEFIK_AUTH}
 
   minio:
     image: minio/minio
@@ -313,19 +326,19 @@ services:
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
-        #
+        # MinIO UI Service
         - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
         - traefik.http.services.minio-ui.loadbalancer.server.port=9001
-        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`) # && PathPrefix(`/minio`)
+        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
         - traefik.http.routers.minio-ui.entrypoints=websecure
-        - traefik.http.routers.minio-ui.tls.certresolver=versioresolver
+        - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.minio-ui.service=minio-ui
-        #
+        # MinIO Data Service
         - traefik.http.services.minio-data.loadbalancer.server.scheme=http
         - traefik.http.services.minio-data.loadbalancer.server.port=9000
         - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
         - traefik.http.routers.minio-data.entrypoints=websecure
-        - traefik.http.routers.minio-data.tls.certresolver=versioresolver
+        - traefik.http.routers.minio-data.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.minio-data.service=minio-data
 
   minio-init:
@@ -486,7 +499,7 @@ services:
         - traefik.http.services.pgadmin.loadbalancer.server.port=9080
         - traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
         - traefik.http.routers.pgadmin.entrypoints=websecure
-        - traefik.http.routers.pgadmin.tls.certresolver=leresolver
+        - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_RESOLVER}
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
@@ -564,10 +577,9 @@ services:
         - traefik.tags=develop
         - traefik.http.services.keycloak.loadbalancer.server.scheme=http
         - traefik.http.services.keycloak.loadbalancer.server.port=8080
-        #- traefik.http.services.keycloak.loadbalancer.serverstransport=insecureSkipVerify
-        - traefik.http.routers.keycloak.rule=Host(`iam.localhost`)
+        - traefik.http.routers.keycloak.rule=Host(`iam.${DOMAIN_DEV}`)
         - traefik.http.routers.keycloak.entrypoints=websecure
-        - traefik.http.routers.keycloak.tls.certresolver=versioresolver
+        - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
 
   # prometheus
   # loki
@@ -597,8 +609,8 @@ services:
 
 networks:
   public:
-    driver: overlay
-    #external: true
+    external: true
+    #driver: overlay
 
 volumes:
   postgres-backups:
