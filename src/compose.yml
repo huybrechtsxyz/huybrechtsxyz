@@ -45,6 +45,21 @@ version: '3.9'
 
 services:
 
+  dnsmasq:
+    image: dockurr/dnsmasq:2.90
+    environment:
+      DNSMASQ_CONF: /etc/
+      DNSMASQ_LISTENING: all
+      DNSMASQ_SERVER: 8.8.8.8  # Forward DNS queries to Google DNS (can be changed)
+    volumes:
+      - ./dnsmasq.conf:/etc/dnsmasq.conf
+      - ./dnsmasq/hosts:/etc/hosts:ro  # Path to custom hosts file for dnsmasq
+    ports:
+      - 53:53/udp   # Expose DNS service (port 53)
+      - 53:53/tcp   # Expose DNS service (port 53)
+    networks:
+      - public
+
   consul:
     image: hashicorp/consul:1.20
     environment:
@@ -130,71 +145,7 @@ services:
       TRAEFIK_AUTH: ${TRAEFIK_AUTH}
       TRAEFIK_CASERVER: ${TRAEFIK_CASERVER}
       TRAEFIK_RESOLVER: ${TRAEFIK_RESOLVER}
-    command:
-      # Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
-      # Enable the Traefik log, for configurations and errors
-      - --log=true
-      - --log.level=DEBUG
-      - --log.format=json
-      - --log.maxsize=5
-      - --log.maxage=5
-      - --log.filePath=/app/logs/traefik.log
-      # Checking the Health of Your Traefik Instances
-      - --ping=true
-      # Dashboard. Optional. Default: true. 
-      - --api
-      - --api.dashboard=true
-      # Enable the access log, with HTTP requests
-      - --accesslog=true
-      - --accesslog.format=json
-      - --accesslog.filepath=/app/logs/traefik-access.log
-      # Entry points
-      - --entrypoints.web.address=:80
-      - --entrypoints.web.http.redirections.entryPoint.to=websecure
-      - --entrypoints.web.http.redirections.entryPoint.scheme=https
-      - --entrypoints.websecure.address=:443
-      # Prometheus metrics
-      - --metrics.prometheus=true
-      - --metrics.prometheus.addEntryPointsLabels=true
-      - --metrics.prometheus.addRoutersLabels=true
-      - --metrics.prometheus.addServicesLabels=true
-      # Specifies the number of concurrent streams per connection that each client is allowed to initiate for http/2
-      # Docker configuration
-      #- --providers.docker
-      #- --providers.docker.network=public
-      #- --providers.docker.exposedbydefault=false
-      - --providers.swarm
-      - --providers.swarm.exposedbydefault=false
-      - --providers.swarm.constraints=Label(`traefik.tags`, `${ENVIRONMENT}`)
-      # Consul configuration
-      - --providers.consulCatalog=true
-      - --providers.consulCatalog.cache=true
-      - --providers.consulCatalog.refreshInterval=30s
-      - --providers.consulCatalog.endpoint.address=http://consul:8500
-      - --providers.consulCatalog.endpoint.scheme=http
-      - --providers.consulCatalog.exposedByDefault=false
-      - --providers.consulCatalog.defaultRule=Host(`config.${DOMAIN_DEV}`)
-      # Enable Staging SSL
-      - --certificatesresolvers.httpresolver.acme.caServer=${TRAEFIK_CASERVER}
-      - --certificatesresolvers.httpresolver.acme.email=webmaster@huybrechts.xyz
-      - --certificatesresolvers.httpresolver.acme.storage=app/data/acme-http.json
-      - --certificatesresolvers.httpresolver.acme.httpChallenge=true
-      - --certificatesresolvers.httpresolver.acme.httpChallenge.entryPoint=web
-      # Enable ACME (Let's Encrypt): automatic SSL.
-      - --certificatesresolvers.letlsresolver.acme.caserver==${TRAEFIK_CASERVER}
-      - --certificatesresolvers.letlsresolver.acme.email=webmaster@huybrechts.xyz
-      - --certificatesresolvers.letlsresolver.acme.storage=/app/data/acme-letls.json
-      - --certificatesresolvers.letlsresolver.acme.tlschallenge=true
-      # Enable ACME (Versio): automatic SSL.
-      - --certificatesresolvers.versioresolver.acme.caServer=${TRAEFIK_CASERVER}
-      - --certificatesResolvers.versioresolver.acme.email=webmaster@huybrechts.xyz
-      - --certificatesResolvers.versioresolver.acme.storage=/app/data/acme-versio.json
-      - --certificatesResolvers.versioresolver.acme.dnsChallenge=true
-      - --certificatesResolvers.versioresolver.acme.dnsChallenge.delayBeforeCheck=0
-      - --certificatesResolvers.versioresolver.acme.dnsChallenge.provider=versio
-      # Plugin for keycloak authentication
-      - --experimental.plugins.keycloakopenid.moduleName=github.com/Gwojda/keycloakopenid
-      - --experimental.plugins.keycloakopenid.version=v0.1.35
+    command: traefik --configFile=/etc/traefik/treafik.yml
     ports:
       - "80:80"
       - "443:443"
@@ -202,6 +153,8 @@ services:
       - public
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ${APP_PATH}/traefik/conf/traefik.${ENVIRONMENT}.yml:/etc/traefik/traefik.yml
+      - ${APP_PATH}/traefik/conf/traefik-config.yml:/etc/traefik/dynamic.yml
       - ${APP_PATH}/traefik/data:/app/data
       - ${APP_PATH}/logs:/app/logs
     healthcheck:
@@ -245,13 +198,10 @@ services:
         - traefik.tags=${ENVIRONMENT}
         # Redirection Middleware
         - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-        # Transport Middleware
-        - traefik.http.serversTransports.secureTransport.insecureSkipVerify=false;
-        - traefik.http.serversTransports.insecureTransport.insecureSkipVerify=true;
         # Keycloak OpenId Plugin Middleware
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakURL=https://iam.localhost
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakURL=http://iam.${DOMAIN_DEV}:8080/
         - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientID=traefik
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientSecret=uNuyaDpZyxxvxpKR9JgqbqWQjDGZkCTE
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientSecret=c0QqHNpYnQbK9YRx8pzuVtDv58H3V5Fq
         - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
         - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.Scope=openid profile email
         - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
@@ -259,9 +209,6 @@ services:
         - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.IgnorePathPrefixes=/favicon.ico
         - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.InsecureSkipVerify=true
         # Traefik dashboard
-
-        https://stackoverflow.com/questions/78903102/traefik-serverstransport-not-taking-effect-tls-verification-issues
-        
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
         - traefik.http.services.traefik.loadBalancer.serversTransport=insecureTransport

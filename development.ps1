@@ -181,10 +181,11 @@ function Invoke-Postgres {
 function Invoke-Traefik {
     Write-Host 'Configuring TRAEFIK ... for DOCKER'
     $traefikDir = "$baseDir/traefik"
+    $traefikConf = "$traefikDir/conf"
     $traefikData = "$traefikDir/data"
-    New-Item -ItemType Directory -Path $traefikDir, $traefikData -Force
-    #$traefikConf = Resolve-Path -Path $traefikConf
-    #Copy-Item -Path "./src/traefik/*" -Destination $traefikConf -Recurse
+    New-Item -ItemType Directory -Path $traefikDir, $traefikConf, $traefikData -Force
+    $traefikConf = Resolve-Path -Path $traefikConf
+    Copy-Item -Path "./src/traefik/*" -Destination $traefikConf -Recurse
     Write-Host 'Configuring TRAEFIK ... Done'
 }
 
