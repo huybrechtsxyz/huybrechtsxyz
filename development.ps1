@@ -149,10 +149,25 @@ function Invoke-Consul {
     Write-Host 'Configuring CONSUL ... Done'
 }
 
+# FUNCTION: Configure and run DNSMasq
+function Invoke-Dnsmasq {
+    Write-Host 'Configuring DNSMasq ... for DOCKER'
+    $dnsmasqDir = "$baseDir/dnsmasq"
+    $dnsmasqConf = "$dnsmasqDir/conf"
+    $dnsmasqLogs = "$dnsmasqDir/logs"
+    New-Item -ItemType Directory -Path $dnsmasqdir, $dnsmasqConf, $dnsmasqLogs -Force
+    $dnsmasqConf = Resolve-Path -Path $dnsmasqConf
+    Copy-Item -Path "./src/dnsmasq/*" -Destination $dnsmasqConf -Recurse
+    Write-Host 'Configuring DNSMasq ... Done'
+}
+
 # FUNCTION: Configure and run Keycloak
 function Invoke-Keycloak {
     Write-Host 'Configuring KEYCLOAK ... for DOCKER'
-    
+    $keycloakDir = "$baseDir/keycloak"
+    New-Item -ItemType Directory -Path $keycloakDir -Force
+    $keycloakDir = Resolve-Path -Path $keycloakDir
+    Copy-Item -Path "./src/keycloak/*" -Destination $keycloakDir -Recurse
     Write-Host 'Configuring KEYCLOAK ... Done'
 }
 
@@ -160,9 +175,12 @@ function Invoke-Keycloak {
 function Invoke-Minio {
     Write-Host 'Configuring MINIO ... for DOCKER'
     $minioDir = "$baseDir/minio"
+    $minioConf = "$minioDir/conf"
     $minioData = "$minioDir/data"
-    New-Item -ItemType Directory -Path $minioDir, $minioData -Force
-    $minioDir = Resolve-Path -Path $minioDir
+    $minioLogs = "$minioDir/logs"
+    New-Item -ItemType Directory -Path $minioDir, $minioConf, $minioData, $minioLogs -Force
+    $minioConf = Resolve-Path -Path $minioConf
+    Copy-Item -Path "./src/minio/*" -Destination $minioConf -Recurse
     Write-Host 'Configuring MINIO ... Done'
 }
 
@@ -170,10 +188,13 @@ function Invoke-Minio {
 function Invoke-Postgres {
     Write-Host 'Configuring POSTGRESQL ... for DOCKER'
     $postgresDir = "$baseDir/postgres"
+    $postgresConf = "$postgresDir/conf"
     $postgresData = "$postgresDir/data"
     $postgresAdmin = "$postgresDir/admin"
     $postgresBackup = "$postgresDir/backups"
-    New-Item -ItemType Directory -Path $postgresDir, $postgresData, $postgresAdmin, $postgresBackup -Force
+    New-Item -ItemType Directory -Path $postgresDir, $postgresConf, $postgresData, $postgresAdmin, $postgresBackup -Force
+    $postgresConf = Resolve-Path -Path $postgresConf
+    Copy-Item -Path "./src/postgres/*" -Destination $postgresConf -Recurse
     Write-Host 'Configuring POSTGRESQL ... Done'
 }
 
@@ -183,7 +204,8 @@ function Invoke-Traefik {
     $traefikDir = "$baseDir/traefik"
     $traefikConf = "$traefikDir/conf"
     $traefikData = "$traefikDir/data"
-    New-Item -ItemType Directory -Path $traefikDir, $traefikConf, $traefikData -Force
+    $traefikLogs = "$traefikDir/logs"
+    New-Item -ItemType Directory -Path $traefikDir, $traefikConf, $traefikData, $traefikLogs -Force
     $traefikConf = Resolve-Path -Path $traefikConf
     Copy-Item -Path "./src/traefik/*" -Destination $traefikConf -Recurse
     Write-Host 'Configuring TRAEFIK ... Done'
@@ -208,14 +230,15 @@ Update-Secrets
 # Basic paths
 Write-Host 'Creating APP directories...'
 $baseDir = './.app'
-$scriptDir = "$baseDir/scripts"
-$logDir = "$baseDir/logs"
-New-Item -ItemType Directory -Path $baseDir, $scriptDir, $logDir -Force
-Copy-Item -Path "./src/scripts/*" -Destination $scriptDir -Recurse
+#$scriptDir = "$baseDir/scripts"
+#$logDir = "$baseDir/logs"
+New-Item -ItemType Directory -Path $baseDir -Force #, $scriptDir, $logDir -Force
+#Copy-Item -Path "./src/scripts/*" -Destination $scriptDir -Recurse
 
 # Configure and run services
 Invoke-Consul
 Invoke-Traefik
+Invoke-Dnsmasq
 Invoke-Minio
 Invoke-Postgres
 Invoke-Keycloak

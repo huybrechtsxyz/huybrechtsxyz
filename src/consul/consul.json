@@ -6,6 +6,8 @@
   },
   "retry_join": ["provider=docker"],
   "log_level": "DEBUG",
+  "ports": { "dns": 8600, "http": 8500 },
+  "recursors": [ "10.0.0.10" ],
   "service": {
     "id": "consul",
     "name": "consul",

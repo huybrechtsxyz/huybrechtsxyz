@@ -2,7 +2,6 @@
 #
 # ENVIRONMENT VARIABLES
 # ---------------------
-#"realm": "${MY_REALM_NAME}",
 # APP_ROLE_ADMIN_NAME   -> admin
 # APP_ROLE_ADMIN_DESC   -> admin
 # APP_ROLE_USER_NAME    -> admin
@@ -19,7 +18,7 @@
 # MINIO_PATH            -> /data
 # MINIO_REGIO           -> europe
 # PGADMIN_USER          -> email
-# TRAEFIK_AUTH          -> blank | openid-auth
+# TRAEFIK_AUTH          -> blank | openid-auth | basic-auth
 # TRAEFIK_RESOLVER      -> httpresolver | letlsresolver | versioresolver
 #
 # SECRETS
@@ -38,27 +37,14 @@
 # POSTGRES_USER         -> admin
 # POSTGRES_PASSWORD     -> password
 # PGADMIN_PASSWORD      -> password
+# TRAEFIK_CLIENTID      -> admin
+# TRAEFIK_CLIENTSECRET  -> password
 # VERSIO_USERNAME       -> email
 # VERSIO_PASSWORD       -> abc123
 #
 version: '3.9'
 
 services:
-
-  dnsmasq:
-    image: dockurr/dnsmasq:2.90
-    environment:
-      DNSMASQ_CONF: /etc/
-      DNSMASQ_LISTENING: all
-      DNSMASQ_SERVER: 8.8.8.8  # Forward DNS queries to Google DNS (can be changed)
-    volumes:
-      - ./dnsmasq.conf:/etc/dnsmasq.conf
-      - ./dnsmasq/hosts:/etc/hosts:ro  # Path to custom hosts file for dnsmasq
-    ports:
-      - 53:53/udp   # Expose DNS service (port 53)
-      - 53:53/tcp   # Expose DNS service (port 53)
-    networks:
-      - public
 
   consul:
     image: hashicorp/consul:1.20
@@ -82,7 +68,8 @@ services:
       - -bind=0.0.0.0
       - -advertise={{ GetPrivateIP }}
     networks:
-      - public
+      public:
+        ipv4_address: 10.0.0.20
     volumes:
       - ${APP_PATH}/consul/conf:/consul/config
       - ${APP_PATH}/consul/data:/consul/data
@@ -115,13 +102,13 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      # resources:
-      #   limits:
-      #     cpus: "1.0"
-      #     memory: "1G"
-      #   reservations:
-      #     cpus: "0.5"
-      #     memory: "512M"
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "1G"
+        # reservations:
+        #   cpus: "0.5"
+        #   memory: "512M"
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
@@ -130,10 +117,13 @@ services:
         - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
         - traefik.http.routers.consul.entrypoints=websecure
         - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
+        #- traefik.http.routers.consul.middlewares=${TRAEFIK_AUTH}
 
   traefik:
     image: "traefik:v3.2"
     secrets:
+      - TRAEFIK_CLIENTID
+      - TRAEFIK_CLIENTSECRET
       - VERSIO_USERNAME
       - VERSIO_PASSWORD
     environment:
@@ -145,18 +135,27 @@ services:
       TRAEFIK_AUTH: ${TRAEFIK_AUTH}
       TRAEFIK_CASERVER: ${TRAEFIK_CASERVER}
       TRAEFIK_RESOLVER: ${TRAEFIK_RESOLVER}
+      TRAEFIK_CLIENTID: ${TRAEFIK_CLIENTID}
+      TRAEFIK_CLIENTSECRET: ${TRAEFIK_CLIENTSECRET}
+    configs:
+      - source: traefik_static
+        target: /etc/traefik/traefik.yml
+      - source: traefik_dynamic
+        target: /etc/traefik/dynamic.yml
     command: traefik --configFile=/etc/traefik/treafik.yml
     ports:
-      - "80:80"
-      - "443:443"
+      - 53:53/udp
+      - 53:53/tcp
+      - 80:80
+      - 443:443
+    dns:
+      - 10.0.0.20
     networks:
       - public
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${APP_PATH}/traefik/conf/traefik.${ENVIRONMENT}.yml:/etc/traefik/traefik.yml
-      - ${APP_PATH}/traefik/conf/traefik-config.yml:/etc/traefik/dynamic.yml
       - ${APP_PATH}/traefik/data:/app/data
-      - ${APP_PATH}/logs:/app/logs
+      - ${APP_PATH}/traefik/logs:/app/logs
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
       interval: 15s
@@ -165,11 +164,11 @@ services:
       start_period: 30s
     deploy:
       replicas: 1
-      # placement:
-      #   constraints: 
-      #     - node.role == manager
-      #   preferences:
-      #    - spread: node.id
+      placement:
+        constraints: 
+          - node.role == manager
+        preferences:
+          - spread: node.id
       restart_policy:
         condition: on-failure
         delay: 10s
@@ -186,10 +185,10 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      # resources:
-      #   limits:
-      #     cpus: "1.0"     # Max 1 CPUs
-      #     memory: "512M"  # Max 512Mb of memory
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
       #   reservations:
       #     cpus: "0.25"    # Reserve 0.25 CPUs
       #     memory: "512M"  # Reserve 512MB of memory
@@ -198,26 +197,81 @@ services:
         - traefik.tags=${ENVIRONMENT}
         # Redirection Middleware
         - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+        # Basic Auth Middleware
+        - traefik.http.middlewares.basic-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU.
         # Keycloak OpenId Plugin Middleware
         - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakURL=http://iam.${DOMAIN_DEV}:8080/
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientID=traefik
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientSecret=c0QqHNpYnQbK9YRx8pzuVtDv58H3V5Fq
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientIDFile=${TRAEFIK_CLIENTID}
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientSecretFile=${TRAEFIK_CLIENTSECRET}
         - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
         - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.Scope=openid profile email
         - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
         - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.UseAuthHeader=false
         - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.IgnorePathPrefixes=/favicon.ico
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.InsecureSkipVerify=true
         # Traefik dashboard
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
-        - traefik.http.services.traefik.loadBalancer.serversTransport=insecureTransport
         - traefik.http.routers.traefik.rule=Host(`proxy.${DOMAIN_DEV}`)
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_RESOLVER}
-        - traefik.http.routers.traefik.middlewares=${TRAEFIK_AUTH}
+        #- traefik.http.routers.traefik.middlewares=${TRAEFIK_AUTH}
 
+  dnsmasq:
+    image: dockurr/dnsmasq:2.90
+    cap_add:
+      - NET_ADMIN  # Granting network administrative privileges
+    environment:
+      DOCKER_MANAGERS: ${DOCKER_MANAGERS}
+      DNSMASQ_CONF: /etc/
+      DNSMASQ_LISTENING: all
+      DNSMASQ_SERVER: 8.8.8.8
+    configs:
+      - source: dnsmasq_conf
+        target: /etc/dnsmasq.conf
+    networks:
+      public:
+        ipv4_address: 10.0.0.10
+    volumes:
+      - ${APP_PATH}/dnsmasq/logs:/var/log/
+    deploy:
+      replicas: ${DOCKER_MANAGERS}
+      placement:
+        constraints:
+          - node.role == manager
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 30s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"
+      #  reservations:
+      #    cpus: "0.25"
+      #    memory: "128M"
+      labels:
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.tcp.services.dnsmasq.loadbalancer.server.scheme=tcp
+        - traefik.tcp.services.dnsmasq.loadbalancer.server.port=53
+        - traefik.tcp.routers.dnsmasq.rule=HostSNI(`*`)
+        - traefik.tcp.routers.dnsmasq.entrypoints=dns
+  
   minio:
     image: minio/minio
     secrets:
@@ -230,10 +284,13 @@ services:
       MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
     command: server /data --console-address ":9001"
+    dns:
+      - 10.0.0.20
     networks:
       - public
     volumes:
       - ${MINIO_DATA}:/data
+      - ${APP_PATH}/minio/logs:/root/.minio/logs
     healthcheck:
       test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
       interval: 15s
@@ -246,7 +303,7 @@ services:
       #   constraints: 
       #     - node.role == worker
       #   preferences:
-      #     - spread: node.id # Spread replicas across all available nodes
+      #     - spread: node.id
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -263,10 +320,10 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      # resources:
-      #   limits:
-      #     cpus: "1.5"
-      #     memory: "3G"
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "2G"
       #   reservations:
       #     cpus: "1.0"
       #     memory: "2G"
@@ -280,6 +337,7 @@ services:
         - traefik.http.routers.minio-ui.entrypoints=websecure
         - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.minio-ui.service=minio-ui
+        #- traefik.http.routers.minio-ui.middlewares=${TRAEFIK_AUTH}
         # MinIO Data Service
         - traefik.http.services.minio-data.loadbalancer.server.scheme=http
         - traefik.http.services.minio-data.loadbalancer.server.port=9000
@@ -297,10 +355,12 @@ services:
       MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
     entrypoint: usr/local/bin/entrypoint.sh
+    dns:
+      - 10.0.0.20
     networks:
       - public
     volumes:
-      - ${APP_PATH}/scripts/minio-init.sh:/usr/local/bin/entrypoint.sh:ro
+      - ${APP_PATH}/minio/conf/minio-init.sh:/usr/local/bin/entrypoint.sh:ro
     deploy:
       replicas: 1
       restart_policy:
@@ -308,6 +368,8 @@ services:
       placement:
         constraints:
           - node.role == manager # Run only on the manager node
+      labels:
+        - traefik.enable=false
 
   postgres:
     image: postgres
@@ -321,10 +383,12 @@ services:
       POSTGRES_DB: xyzdb
       POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
       POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
+    dns:
+      - 10.0.0.20
     networks:
       - public
     volumes:
-      - ${APP_PATH}/postgres/data:/var/lib/postgresql/data
+      - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d xyzdb -U $$(cat /run/secrets/POSTGRES_USER)"]
       interval: 1s
@@ -354,13 +418,13 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      # resources:
-      #   limits:
-      #     cpus: "2.0"     # Max 2 CPUs
-      #     memory: "2G"    # Max 2GB of memory
-      #   reservations:
-      #     cpus: "0.5"     # Reserve 0.5 CPUs
-      #     memory: "512M"  # Reserve 512MB of memory
+      resources:
+        limits:
+          cpus: "2.0"     # Max 2 CPUs
+          memory: "2G"    # Max 2GB of memory
+        # reservations:
+        #   cpus: "0.5"     # Reserve 0.5 CPUs
+        #   memory: "512M"  # Reserve 512MB of memory
       labels:
         - traefik.enable=false
 
@@ -375,11 +439,13 @@ services:
       POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
       POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
     entrypoint: usr/local/bin/entrypoint.sh
+    dns:
+      - 10.0.0.20
     networks:
       - public
     volumes:
-      - ${APP_PATH}/scripts/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
-      - ${APP_PATH}/scripts/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
+      - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
+      - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
     deploy:
       replicas: 1
       restart_policy:
@@ -387,6 +453,8 @@ services:
       placement:
         constraints:
           - node.role == manager # Run only on the manager node
+      labels:
+        - traefik.enable=false
 
   pgadmin:
     image: dpage/pgadmin4
@@ -399,6 +467,8 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
       PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/PGADMIN_PASSWORD
       SCRIPT_NAME: /pgadmin
+    dns:
+      - 10.0.0.20
     networks:
       - public
     volumes:
@@ -432,13 +502,13 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      # resources:
-      #   limits:
-      #     cpus: "2.0"     # Max 2 CPUs
-      #     memory: "2G"    # Max 2GB of memory
-      #   reservations:
-      #     cpus: "0.5"     # Reserve 0.5 CPUs
-      #     memory: "512M"  # Reserve 512MB of memory
+      resources:
+        limits:
+          cpus: "2.0"     # Max 2 CPUs
+          memory: "2G"    # Max 2GB of memory
+        # reservations:
+        #   cpus: "0.5"     # Reserve 0.5 CPUs
+        #   memory: "512M"  # Reserve 512MB of memory
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
@@ -447,6 +517,7 @@ services:
         - traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
         - traefik.http.routers.pgadmin.entrypoints=websecure
         - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_RESOLVER}
+        #- traefik.http.routers.pgadmin.middlewares=${TRAEFIK_AUTH}
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
@@ -477,11 +548,13 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME_FILE: /run/secrets/KEYCLOAK_USER
       KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/KEYCLOAK_PASSWORD
     entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true #--features=opentelemetry --import-realm
+    dns:
+      - 10.0.0.20
     networks:
       - public
     volumes:
-      - ${APP_PATH}/scripts/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
-      #- ${APP_PATH}/scripts/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
+      - ${APP_PATH}/keycloak/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
+      #- ${APP_PATH}/keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
     healthcheck:
       # TODO: Replace with real health check !
       test: ["CMD-SHELL", "exit 0"]
@@ -512,13 +585,13 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      # resources:
-      #   limits:
-      #     cpus: "2.0"     # Max 2 CPUs
-      #     memory: "2G"    # Max 2GB of memory
-      #   reservations:
-      #     cpus: "0.5"     # Reserve 0.5 CPUs
-      #     memory: "512M"  # Reserve 512MB of memory
+      resources:
+        limits:
+          cpus: "2.0"     # Max 2 CPUs
+          memory: "2G"    # Max 2GB of memory
+        # reservations:
+        #   cpus: "0.5"     # Reserve 0.5 CPUs
+        #   memory: "512M"  # Reserve 512MB of memory
       labels:
         - traefik.enable=true
         - traefik.tags=develop
@@ -527,37 +600,14 @@ services:
         - traefik.http.routers.keycloak.rule=Host(`iam.${DOMAIN_DEV}`)
         - traefik.http.routers.keycloak.entrypoints=websecure
         - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
-
-  # prometheus
-  # loki
-  # jaeger
-  # backup:
-  #   image: minio/mc:latest
-  #   secrets:
-  #     - MINIO_ROOT_USER
-  #     - MINIO_ROOT_PASSWORD
-  #     - POSTGRES_USER
-  #     - POSTGRES_PASSWORD
-  #   environment:
-  #     DOMAIN_DEV: ${DOMAIN_DEV}
-  #     ENVIRONMENT: ${ENVIRONMENT}
-  #     MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
-  #     MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
-  #     POSTGRES_HOST: http://postgres
-  #     POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
-  #     POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
-  #   networks:
-  #     - public
-  #     - private
-  #   volumes:
-  #     - postgres-backups:/backups
-  #     - scripts:/scripts
-  #   command: ["sh", "/scripts/backup.sh"]
+        #- traefik.http.routers.keycloak.middlewares=${TRAEFIK_AUTH}
 
 networks:
   public:
     external: true
-    #driver: overlay
+    ipam:
+      config:
+        - subnet: "10.0.0.0/24"
 
 volumes:
   postgres-backups:
@@ -582,6 +632,10 @@ secrets:
     external: true
   PGADMIN_PASSWORD:
     external: true
+  TRAEFIK_CLIENTID:
+    external: true
+  TRAEFIK_CLIENTSECRET:
+    external: true
   VERSIO_USERNAME:
     external: true
   VERSIO_PASSWORD:
@@ -589,5 +643,11 @@ secrets:
   VERSIO_ENDPOINT:
     external: true
 
-#configs:
-   
+configs:
+  traefik_static:
+    file: ${APP_PATH}/traefik/conf/traefik.${ENVIRONMENT}.yml
+  traefik_dynamic:
+    file: ${APP_PATH}/traefik/conf/traefik-config.yml
+  dnsmasq_conf:
+    file: ${APP_PATH}/dnsmasq/conf/dnsmasq.conf
+  

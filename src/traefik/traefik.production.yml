@@ -7,7 +7,7 @@ providers:
     watch: true
   swarm:
     exposedByDefault: false
-    constraints: Label(`traefik.tags`, `develop`)
+    constraints: Label(`traefik.tags`, `production`)
   consulcatalog:
     cache: true
     refreshInterval: 30s
@@ -15,7 +15,7 @@ providers:
       address: http://consul:8500
       scheme: http
     exposedByDefault: false
-    defaultRule: "Host(`config.localhost`)"
+    defaultRule: "Host(`config.huybrechts.dev`)"
 
 # ENTRYPOINT
 entryPoints:
@@ -32,27 +32,25 @@ entryPoints:
     address: ":443"
     http3:
       advertisedPort: 443
-  dns:
-    address: ":53"
 
 ## HTTPS & TLS
 certificatesResolvers:
   httpresolver:
     acme:
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      caServer: https://acme-v02.api.letsencrypt.org/directory
       email: webmaster@huybrechts.xyz
       storage: "app/data/acme-http.json"
       httpChallenge:
         entryPoint: "web"
   letlsresolver:
     acme:
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      caServer: https://acme-v02.api.letsencrypt.org/directory
       email: webmaster@huybrechts.xyz
       storage: "/app/data/acme-letls.json"
       tlsChallenge: true
   versioresolver:
     acme:
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      caServer: https://acme-v02.api.letsencrypt.org/directory
       email: webmaster@huybrechts.xyz
       storage: "/app/data/acme-versio.json"
       dnsChallenge:
