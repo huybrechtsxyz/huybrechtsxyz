@@ -1,0 +1,19 @@
+{
+  "service": {
+    "id": "dnsmasq",
+    "name": "dnsmasq",
+    "address": "dnsmasq",
+    "port": 53,
+    "meta": {},
+    "checks": [
+      {
+        "id": "dnsmasq-health-check",
+        "name": "DNSMasq Health Check",
+        "tcp": "dnsmasq:53",
+        "interval": "10s",
+        "timeout": "5s"
+      }
+    ],
+    "tags": [ "dnsmasq","dns","discovery","docker-swarm","system" ]
+  }
+}

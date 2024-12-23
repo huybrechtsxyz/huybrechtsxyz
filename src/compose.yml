@@ -267,7 +267,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
-        - traefik.tcp.services.dnsmasq.loadbalancer.server.scheme=tcp
+        #- traefik.tcp.services.dnsmasq.loadbalancer.server.scheme=tcp
         - traefik.tcp.services.dnsmasq.loadbalancer.server.port=53
         - traefik.tcp.routers.dnsmasq.rule=HostSNI(`*`)
         - traefik.tcp.routers.dnsmasq.entrypoints=dns
