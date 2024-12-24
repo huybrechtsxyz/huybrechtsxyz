@@ -42,12 +42,72 @@
 # VERSIO_USERNAME       -> email
 # VERSIO_PASSWORD       -> abc123
 #
-version: '3.9'
 
 services:
 
+  dnsmasq:
+    image: dockurr/dnsmasq:2.90
+    cap_add:
+      - NET_ADMIN  # Granting network administrative privileges
+    environment:
+      DOCKER_MANAGERS: ${DOCKER_MANAGERS}
+      DNSMASQ_CONF: /etc/
+      DNSMASQ_LISTENING: all
+      DNSMASQ_SERVER: 8.8.8.8
+    configs:
+      - source: dnsmasq_conf
+        target: /etc/dnsmasq.conf
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/dnsmasq/logs:/var/log/
+    healthcheck:
+      test: ["CMD", "dig", "google.com", "@127.0.0.1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: ${DOCKER_MANAGERS}
+      placement:
+        constraints:
+          - node.role == manager
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 30s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"
+      #  reservations:
+      #    cpus: "0.25"
+      #    memory: "128M"
+      labels:
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        #- traefik.tcp.services.dnsmasq.loadbalancer.server.scheme=tcp
+        - traefik.tcp.services.dnsmasq.loadbalancer.server.port=53
+        - traefik.tcp.routers.dnsmasq.rule=HostSNI(`*`)
+        - traefik.tcp.routers.dnsmasq.entrypoints=dns
+  
   consul:
     image: hashicorp/consul:1.20
+    # depends_on:
+    #   - dnsmasq
     environment:
       DATACENTER: ${DATACENTER}
       DOCKER_MANAGERS: ${DOCKER_MANAGERS}
@@ -68,8 +128,7 @@ services:
       - -bind=0.0.0.0
       - -advertise={{ GetPrivateIP }}
     networks:
-      public:
-        ipv4_address: 10.0.0.20
+      - public
     volumes:
       - ${APP_PATH}/consul/conf:/consul/config
       - ${APP_PATH}/consul/data:/consul/data
@@ -121,6 +180,8 @@ services:
 
   traefik:
     image: "traefik:v3.2"
+    # depends_on:
+    #   - consul
     secrets:
       - TRAEFIK_CLIENTID
       - TRAEFIK_CLIENTSECRET
@@ -149,7 +210,7 @@ services:
       - 80:80
       - 443:443
     dns:
-      - 10.0.0.20
+      - "consul:8600"
     networks:
       - public
     volumes:
@@ -217,63 +278,10 @@ services:
         - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_RESOLVER}
         #- traefik.http.routers.traefik.middlewares=${TRAEFIK_AUTH}
 
-  dnsmasq:
-    image: dockurr/dnsmasq:2.90
-    cap_add:
-      - NET_ADMIN  # Granting network administrative privileges
-    environment:
-      DOCKER_MANAGERS: ${DOCKER_MANAGERS}
-      DNSMASQ_CONF: /etc/
-      DNSMASQ_LISTENING: all
-      DNSMASQ_SERVER: 8.8.8.8
-    configs:
-      - source: dnsmasq_conf
-        target: /etc/dnsmasq.conf
-    networks:
-      public:
-        ipv4_address: 10.0.0.10
-    volumes:
-      - ${APP_PATH}/dnsmasq/logs:/var/log/
-    deploy:
-      replicas: ${DOCKER_MANAGERS}
-      placement:
-        constraints:
-          - node.role == manager
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 30s
-      update_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: "256M"
-      #  reservations:
-      #    cpus: "0.25"
-      #    memory: "128M"
-      labels:
-        - traefik.enable=true
-        - traefik.tags=${ENVIRONMENT}
-        #- traefik.tcp.services.dnsmasq.loadbalancer.server.scheme=tcp
-        - traefik.tcp.services.dnsmasq.loadbalancer.server.port=53
-        - traefik.tcp.routers.dnsmasq.rule=HostSNI(`*`)
-        - traefik.tcp.routers.dnsmasq.entrypoints=dns
-  
   minio:
     image: minio/minio
+    # depends_on:
+    #   - consul
     secrets:
       - MINIO_ROOT_USER
       - MINIO_ROOT_PASSWORD
@@ -285,7 +293,7 @@ services:
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
     command: server /data --console-address ":9001"
     dns:
-      - 10.0.0.20
+      - "consul:8600"
     networks:
       - public
     volumes:
@@ -348,6 +356,8 @@ services:
 
   minio-init:
     image: minio/mc
+    # depends_on:
+    #   - minio
     secrets:
       - MINIO_ROOT_USER
       - MINIO_ROOT_PASSWORD
@@ -356,7 +366,7 @@ services:
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
     entrypoint: usr/local/bin/entrypoint.sh
     dns:
-      - 10.0.0.20
+      - "consul:8600"
     networks:
       - public
     volumes:
@@ -373,6 +383,8 @@ services:
 
   postgres:
     image: postgres
+    # depends_on:
+    #   - consul
     secrets:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
@@ -384,7 +396,7 @@ services:
       POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
       POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
     dns:
-      - 10.0.0.20
+      - "consul:8600"
     networks:
       - public
     volumes:
@@ -430,6 +442,8 @@ services:
 
   postgres-init:
     image: postgres
+    # depends_on:
+    #   - postgres
     secrets:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
@@ -440,7 +454,7 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
     entrypoint: usr/local/bin/entrypoint.sh
     dns:
-      - 10.0.0.20
+      - "consul:8600"
     networks:
       - public
     volumes:
@@ -458,6 +472,8 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
+    # depends_on:
+    #   - consul
     secrets:
       - PGADMIN_PASSWORD
     environment:
@@ -468,7 +484,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/PGADMIN_PASSWORD
       SCRIPT_NAME: /pgadmin
     dns:
-      - 10.0.0.20
+      - "consul:8600"
     networks:
       - public
     volumes:
@@ -521,6 +537,8 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
+    # depends_on:
+    #   - consul
     secrets:
       - KEYCLOAK_USER
       - KEYCLOAK_PASSWORD
@@ -549,7 +567,7 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/KEYCLOAK_PASSWORD
     entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true #--features=opentelemetry --import-realm
     dns:
-      - 10.0.0.20
+      - "consul:8600"
     networks:
       - public
     volumes:
@@ -605,9 +623,6 @@ services:
 networks:
   public:
     external: true
-    ipam:
-      config:
-        - subnet: "10.0.0.0/24"
 
 volumes:
   postgres-backups:

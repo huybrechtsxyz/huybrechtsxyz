@@ -77,7 +77,7 @@ function Set-Docker {
     $publicNetwork = "public"
     if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$publicNetwork$")) {
         Write-Host "Creating external network '$publicNetwork'..."
-        docker network create --driver overlay $publicNetwork
+        docker network create --subnet=10.0.0.0/24 --driver overlay $publicNetwork
     } else {
         Write-Host "Network '$publicNetwork' already exists."
     }
