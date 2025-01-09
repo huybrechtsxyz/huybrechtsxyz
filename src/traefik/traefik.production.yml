@@ -1,10 +1,5 @@
 ## CONFIG DISCOVERY
 providers:
-  file:
-    ## Path to the dynamic configuration file
-    filename: "/etc/traefik/dynamic.yml"
-    ## Optional: Watch for changes in the file to reload dynamically
-    watch: true
   swarm:
     exposedByDefault: false
     constraints: Label(`traefik.tags`, `production`)

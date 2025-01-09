@@ -105,7 +105,6 @@ function Set-Docker {
 }
 
 # FUNCTION: Read jsons and create docker secrets
-
 function Update-Secrets {
     $SecretFilePath = "C:\Users\vhuybrec\AppData\Roaming\Microsoft\UserSecrets\acbede3b-f8f8-41b2-ad78-d1f3e176949f\secrets.json"
     if (-not (Test-Path -Path $SecretFilePath)){
@@ -147,18 +146,6 @@ function Invoke-Consul {
     $consulDir = Resolve-Path -Path $consulDir
     Copy-Item -Path "./src/consul/*" -Destination $consulConf -Recurse
     Write-Host 'Configuring CONSUL ... Done'
-}
-
-# FUNCTION: Configure and run DNSMasq
-function Invoke-Dnsmasq {
-    Write-Host 'Configuring DNSMasq ... for DOCKER'
-    $dnsmasqDir = "$baseDir/dnsmasq"
-    $dnsmasqConf = "$dnsmasqDir/conf"
-    $dnsmasqLogs = "$dnsmasqDir/logs"
-    New-Item -ItemType Directory -Path $dnsmasqdir, $dnsmasqConf, $dnsmasqLogs -Force
-    $dnsmasqConf = Resolve-Path -Path $dnsmasqConf
-    Copy-Item -Path "./src/dnsmasq/*" -Destination $dnsmasqConf -Recurse
-    Write-Host 'Configuring DNSMasq ... Done'
 }
 
 # FUNCTION: Configure and run Keycloak
@@ -208,6 +195,7 @@ function Invoke-Traefik {
     New-Item -ItemType Directory -Path $traefikDir, $traefikConf, $traefikData, $traefikLogs -Force
     $traefikConf = Resolve-Path -Path $traefikConf
     Copy-Item -Path "./src/traefik/*" -Destination $traefikConf -Recurse
+    Remove-Item -Path "$traefikLogs/*" -Recurse -Force
     Write-Host 'Configuring TRAEFIK ... Done'
 }
 
@@ -230,15 +218,11 @@ Update-Secrets
 # Basic paths
 Write-Host 'Creating APP directories...'
 $baseDir = './.app'
-#$scriptDir = "$baseDir/scripts"
-#$logDir = "$baseDir/logs"
-New-Item -ItemType Directory -Path $baseDir -Force #, $scriptDir, $logDir -Force
-#Copy-Item -Path "./src/scripts/*" -Destination $scriptDir -Recurse
+New-Item -ItemType Directory -Path $baseDir -Force
 
 # Configure and run services
 Invoke-Consul
 Invoke-Traefik
-Invoke-Dnsmasq
 Invoke-Minio
 Invoke-Postgres
 Invoke-Keycloak
@@ -274,11 +258,11 @@ docker stack deploy -c $composeFile app --detach=true
 
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" `
-    "http://proxy.localhost/dashboard/",
-    "http://config.localhost",
-    "http://s3.localhost",
-    "http://db.localhost/pgadmin",
-    "http://iam.localhost/",
+    "http://proxy.$env:DOMAIN_DEV/dashboard/",
+    "http://config.$env:DOMAIN_DEV",
+    "http://s3.$env:DOMAIN_DEV",
+    "http://db.$env:DOMAIN_DEV/pgadmin",
+    "http://iam.$env:DOMAIN_DEV/",
     "--inprivate",                          # Open in InPrivate mode
     "--ignore-certificate-errors",
     "--ignore-urlfetcher-cert-requests",

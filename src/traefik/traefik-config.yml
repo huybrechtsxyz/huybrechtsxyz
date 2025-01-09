@@ -1,8 +1,0 @@
-http:
-  serversTransports:
-    # Skip TLS certificate verification (use with caution)
-    insecureTransport:
-      insecureSkipVerify: true
-    # Require TLS certificate verification
-    secureTransport:
-      insecureSkipVerify: false
