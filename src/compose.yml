@@ -9,11 +9,13 @@
 #
 # APP_PATH              -> /app
 # DATACENTER            -> dc1
-# DOMAIN_DEV            -> localhost
-# DOMAIN_XYZ            -> localhost
-# DOMAIN_MEEUS          -> localhost
-# DOMAIN_LIZARD         -> localhost
+# DOMAIN_DEV            -> dev.localhost
+# DOMAIN_XYZ            -> xzy.localhost
+# DOMAIN_MEEUS          -> meeus.localhost
+# DOMAIN_LIZARD         -> lizard.localhost
 # DOCKER_MANAGERS       -> 1
+# DOCKER_MANAGER        -> manager
+# DOCKER_WORKER         -> worker
 # ENVIRONMENT           -> develop
 # MINIO_PATH            -> /data
 # MINIO_REGIO           -> europe
@@ -187,14 +189,14 @@ services:
         # Basic Auth Middleware
         - traefik.http.middlewares.basic-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU.
         # Keycloak OpenId Plugin Middleware
-        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakURL=http://iam.${DOMAIN_DEV}:8080/
-        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientIDFile=${TRAEFIK_CLIENTID_FILE}
-        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientSecretFile=${TRAEFIK_CLIENTSECRET_FILE}
-        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
-        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.Scope=openid profile email
-        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
-        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.UseAuthHeader=false
-        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.IgnorePathPrefixes=/favicon.ico
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakURL=http://iam.${DOMAIN_DEV}:8080/
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientIDFile=${TRAEFIK_CLIENTID_FILE}
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientSecretFile=${TRAEFIK_CLIENTSECRET_FILE}
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.Scope=openid profile email
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.UseAuthHeader=false
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.IgnorePathPrefixes=/favicon.ico
         # Traefik dashboard
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
@@ -485,8 +487,7 @@ services:
       - ${APP_PATH}/keycloak/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
       #- ${APP_PATH}/keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
     healthcheck:
-      # TODO: Replace with real health check !
-      test: ["CMD-SHELL", "exit 0"]
+      test: ["CMD", "bash", "-c", "[ $$(/opt/keycloak/bin/kcadm.sh get serverinfo --realm Keycloak --fields '*' --server http://localhost:8080/admin/serverinfo 2>&1 | grep Unauthorized | wc -l ) -eq 1 ]"]
       interval: 15s
       retries: 3
       timeout: 5s
