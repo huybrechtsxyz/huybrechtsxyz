@@ -171,6 +171,22 @@ function Invoke-Minio {
     Write-Host 'Configuring MINIO ... Done'
 }
 
+# FUNCTION: Configure and run Prometheus
+function Invoke-Prometheus {
+    Write-Host 'Configuring PROMETHEUS ...'
+    $prometheusDir = "$baseDir/prometheus"
+    $prometheusConf = "$prometheusDir/conf"
+    $prometheusData = "$prometheusDir/data"
+    New-Item -ItemType Directory -Path $prometheusDir, $prometheusConf, $prometheusData -Force
+    Copy-Item -Path "./src/prometheus/*" -Destination $prometheusConf -Recurse
+    if ($docker -eq 'true') {
+        Write-Host 'Configuring PROMETHEUS ... for DOCKER'
+    } else {
+        Write-Host 'Configuring PROMETHEUS ... skipping'
+    }
+    Write-Host 'Configuring PROMETHEUS ... done'
+}
+
 # FUNCTION: Configure and run Postgres
 function Invoke-Postgres {
     Write-Host 'Configuring POSTGRESQL ... for DOCKER'
@@ -226,6 +242,7 @@ Invoke-Traefik
 Invoke-Minio
 Invoke-Postgres
 Invoke-Keycloak
+Invoke-Prometheus
 
 # Debug and test
 $composeFile = "./src/compose.yml"
