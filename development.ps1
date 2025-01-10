@@ -158,6 +158,17 @@ function Invoke-Keycloak {
     Write-Host 'Configuring KEYCLOAK ... Done'
 }
 
+# FUNCTION: Configure and run Loki
+function Invoke-Loki {
+    Write-Host 'Configuring LOKI ...'
+    $lokiDir = "$baseDir/loki"
+    $lokiConf = "$lokiDir/conf"
+    $lokiData = "$lokiDir/data"
+    New-Item -ItemType Directory -Path $lokiDir, $lokiConf, $lokiData -Force
+    Copy-Item -Path "./src/loki/*" -Destination $lokiConf -Recurse
+    Write-Host 'Configuring LOKI ... done'
+}
+
 # FUNCTION: Configure and run MinIO
 function Invoke-Minio {
     Write-Host 'Configuring MINIO ... for DOCKER'
@@ -179,11 +190,6 @@ function Invoke-Prometheus {
     $prometheusData = "$prometheusDir/data"
     New-Item -ItemType Directory -Path $prometheusDir, $prometheusConf, $prometheusData -Force
     Copy-Item -Path "./src/prometheus/*" -Destination $prometheusConf -Recurse
-    if ($docker -eq 'true') {
-        Write-Host 'Configuring PROMETHEUS ... for DOCKER'
-    } else {
-        Write-Host 'Configuring PROMETHEUS ... skipping'
-    }
     Write-Host 'Configuring PROMETHEUS ... done'
 }
 
@@ -199,6 +205,17 @@ function Invoke-Postgres {
     $postgresConf = Resolve-Path -Path $postgresConf
     Copy-Item -Path "./src/postgres/*" -Destination $postgresConf -Recurse
     Write-Host 'Configuring POSTGRESQL ... Done'
+}
+
+# FUNCTION: Configure and run Tempo
+function Invoke-Tempo {
+    Write-Host 'Configuring TEMPO ...'
+    $tempoDir = "$baseDir/tempo"
+    $tempoConf = "$tempoDir/conf"
+    $tempoData = "$tempoDir/data"
+    New-Item -ItemType Directory -Path $tempoDir, $tempoConf, $tempoData -Force
+    Copy-Item -Path "./src/tempo/*" -Destination $tempoConf -Recurse
+    Write-Host 'Configuring TEMPO ... done'
 }
 
 # FUNCTION: Configure and run Traefik
@@ -243,6 +260,7 @@ Invoke-Minio
 Invoke-Postgres
 Invoke-Keycloak
 Invoke-Prometheus
+Invoke-Loki
 
 # Debug and test
 $composeFile = "./src/compose.yml"

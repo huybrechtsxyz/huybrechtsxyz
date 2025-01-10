@@ -52,7 +52,7 @@ mc alias set myminio http://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
 
 # Create and configure buckets
 create_bucket_if_not_exists backups
+create_bucket_if_not_exists loki
 
 # Uncomment the following lines if you want to create other buckets
 # create_bucket_if_not_exists thanos
-# create_bucket_if_not_exists loki

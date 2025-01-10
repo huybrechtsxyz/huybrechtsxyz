@@ -533,60 +533,223 @@ services:
         - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.keycloak.middlewares=${TRAEFIK_AUTH}
 
-  prometheus:
-    image: prom/prometheus
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --storage.tsdb.path=/prometheus
-      - --storage.tsdb.min-block-duration=2h
-      - --storage.tsdb.max-block-duration=2h
-      - --web.external-url=http://localhost:9090
-    networks:
-      - public
-    volumes:
-      - ${APP_PATH}/prometheus/conf:/etc/prometheus
-      - ${APP_PATH}/prometheus/data:/prometheus:rw
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "1.0"     # Max 2 CPUs
-          memory: "1G"    # Max 2GB of memory
-        # reservations:
-        #   cpus: "0.5"     # Reserve 0.5 CPUs
-        #   memory: "512M"  # Reserve 512MB of memory
-      labels:
-        - "traefik.enable=false"
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=admin
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #     - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana
+  #   volumes:
+  #     - ${APP_PATH}/grafana/data:/var/lib/grafana
+  #   networks:
+  #     - public
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role==${DOCKER_MANAGER}
+  #     restart_policy:
+  #       condition: on-failure
+  #     resources:
+  #       limits:
+  #         cpus: "1.0"
+  #         memory: "1G"
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.tags=${ENVIRONMENT}
+  #       - traefik.http.services.grafana.loadbalancer.server.scheme=http
+  #       - traefik.http.services.grafana.loadbalancer.server.port=3000
+  #       - traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_DEV}`)
+  #       - traefik.http.routers.grafana.entrypoints=websecure
+  #       - traefik.http.routers.grafana.tls.certresolver=${TRAEFIK_RESOLVER}
+  #       - traefik.http.routers.grafana.middlewares=${TRAEFIK_AUTH}
+
+  # prometheus:
+  #   image: prom/prometheus
+  #   command:
+  #     - --config.file=/etc/prometheus/prometheus.yml
+  #     - --storage.tsdb.path=/prometheus
+  #     - --storage.tsdb.min-block-duration=2h
+  #     - --storage.tsdb.max-block-duration=2h
+  #     - --web.external-url=http://localhost:9090
+  #   networks:
+  #     - public
+  #   volumes:
+  #     - ${APP_PATH}/prometheus/conf:/etc/prometheus
+  #     - ${APP_PATH}/prometheus/data:/prometheus:rw
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+  #     interval: 15s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 10s
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role==${DOCKER_WORKER}
+  #       preferences:
+  #         - spread: node.id
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 10s
+  #       max_attempts: 5
+  #       window: 60s
+  #     update_config:
+  #       parallelism: 1
+  #       delay: 15s
+  #       failure_action: rollback
+  #       monitor: 30s
+  #       order: start-first
+  #     rollback_config:
+  #       parallelism: 1
+  #       delay: 10s
+  #       failure_action: continue
+  #       monitor: 30s
+  #     resources:
+  #       limits:
+  #         cpus: "1.0"     # Max 2 CPUs
+  #         memory: "1G"    # Max 2GB of memory
+  #       # reservations:
+  #       #   cpus: "0.5"     # Reserve 0.5 CPUs
+  #       #   memory: "512M"  # Reserve 512MB of memory
+  #     labels:
+  #       - "traefik.enable=false"
   
-  
+  # loki:
+  #   image: grafana/loki:latest
+  #   command: -config.file=/etc/loki/loki.yml
+  #   networks:
+  #     - public
+  #   volumes:
+  #     - ${APP_PATH}/loki/conf:/etc/loki # Loki configuration directory
+  #     - ${APP_PATH}/loki/data:/loki-data # Data storage
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--spider", "http://localhost:3100/ready"]
+  #     interval: 15s
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 10s
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role==${DOCKER_WORKER}
+  #       preferences:
+  #         - spread: node.id
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 10s
+  #       max_attempts: 5
+  #       window: 60s
+  #     update_config:
+  #       parallelism: 1
+  #       delay: 15s
+  #       failure_action: rollback
+  #       monitor: 30s
+  #       order: start-first
+  #     rollback_config:
+  #       parallelism: 1
+  #       delay: 10s
+  #       failure_action: continue
+  #       monitor: 30s
+  #     resources:
+  #       limits:
+  #         cpus: "1.0"     # Max 2 CPUs
+  #         memory: "1G"    # Max 2GB of memory
+  #       # reservations:
+  #       #   cpus: "0.5"     # Reserve 0.5 CPUs
+  #       #   memory: "512M"  # Reserve 512MB of memory
+  #     labels:
+  #       - "traefik.enable=false"
+
+  # promtail:
+  #   image: grafana/promtail:latest
+  #   command: -config.file=/etc/promtail/promtail-config.yml
+  #   volumes:
+  #     - ${APP_PATH}/loki/logs:/var/log
+  #     - ${APP_PATH}/loki/conf/promtail.yml:/etc/promtail/promtail-config.yml:ro
+  #   networks:
+  #     - public
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role==${DOCKER_WORKER}
+  #       preferences:
+  #         - spread: node.id
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 10s
+  #       max_attempts: 5
+  #       window: 60s
+  #     update_config:
+  #       parallelism: 1
+  #       delay: 15s
+  #       failure_action: rollback
+  #       monitor: 30s
+  #       order: start-first
+  #     rollback_config:
+  #       parallelism: 1
+  #       delay: 10s
+  #       failure_action: continue
+  #       monitor: 30s
+  #     resources:
+  #       limits:
+  #         cpus: "1.0"     # Max 2 CPUs
+  #         memory: "1G"    # Max 2GB of memory
+  #       # reservations:
+  #       #   cpus: "0.5"     # Reserve 0.5 CPUs
+  #       #   memory: "512M"  # Reserve 512MB of memory
+  #     labels:
+  #       - "traefik.enable=false"
+
+  # tempo:
+  #   image: grafana/tempo:latest
+  #   command: -config.file=/etc/tempo/tempo-config.yml
+  #   volumes:
+  #     - ${APP_PATH}/tempo/conf/tempo.yml:/etc/tempo/tempo-config.yml:ro
+  #     - ${APP_PATH}/tempo/data:/tempo
+  #   networks:
+  #     - public
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role==${DOCKER_WORKER}
+  #       preferences:
+  #         - spread: node.id
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 10s
+  #       max_attempts: 5
+  #       window: 60s
+  #     update_config:
+  #       parallelism: 1
+  #       delay: 15s
+  #       failure_action: rollback
+  #       monitor: 30s
+  #       order: start-first
+  #     rollback_config:
+  #       parallelism: 1
+  #       delay: 10s
+  #       failure_action: continue
+  #       monitor: 30s
+  #     resources:
+  #       limits:
+  #         cpus: "1.0"     # Max 2 CPUs
+  #         memory: "1G"    # Max 2GB of memory
+  #       # reservations:
+  #       #   cpus: "0.5"     # Reserve 0.5 CPUs
+  #       #   memory: "512M"  # Reserve 512MB of memory
+  #     labels:
+  #       - "traefik.enable=false"
+
 networks:
   public:
     external: true
