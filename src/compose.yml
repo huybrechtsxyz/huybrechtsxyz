@@ -45,76 +45,75 @@
 
 services:
 
-  # consul:
-  #   image: hashicorp/consul:1.20
-  #   environment:
-  #     DATACENTER: ${DATACENTER}
-  #     DOCKER_MANAGERS: ${DOCKER_MANAGERS}
-  #     DOMAIN_DEV: ${DOMAIN_DEV}
-  #     ENVIRONMENT: ${ENVIRONMENT}
-  #     HOSTNAME: ${HOSTNAME}
-  #     DOCKER_PUBLIC_IP: ${DOCKER_PUBLIC_IP}
-  #     CONSUL_BIND_INTERFACE: eth0
-  #   command:
-  #     - consul
-  #     - agent
-  #     - -data-dir=/consul/data
-  #     - -config-dir=/consul/config
-  #     - -config-file=/consul/config/consul.json
-  #     - -bootstrap-expect=${DOCKER_MANAGERS}
-  #     - -datacenter=${DATACENTER}
-  #     - -node=${HOSTNAME}
-  #     - -bind=0.0.0.0
-  #     - -advertise={{ GetPrivateIP }}
-  #   networks: 
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/consul/conf:/consul/config
-  #     - ${APP_PATH}/consul/data:/consul/data
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
-  #     interval: 15s
-  #     timeout: 5s
-  #     retries: 5
-  #     start_period: 5s
-  #   deploy:
-  #     mode: global
-  #     # placement:
-  #     #   constraints:
-  #     #     - node.role == manager
-  #     #     - node.platform.os == linux
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "1.0"
-  #         memory: "1G"
-  #       # reservations:
-  #       #   cpus: "0.5"
-  #       #   memory: "512M"
-  #     labels:
-  #       - traefik.enable=true
-  #       - traefik.tags=${ENVIRONMENT}
-  #       - traefik.http.services.consul.loadbalancer.server.scheme=http
-  #       - traefik.http.services.consul.loadbalancer.server.port=8500
-  #       - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
-  #       - traefik.http.routers.consul.entrypoints=websecure
-  #       - traefik.http.routers.consul.tls.certresolver=versioresolver
-  #       - traefik.http.routers.consul.middlewares=${TRAEFIK_AUTH}
+  consul:
+    image: hashicorp/consul:1.20
+    environment:
+      DATACENTER: ${DATACENTER}
+      DOCKER_MANAGERS: ${DOCKER_MANAGERS}
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      HOSTNAME: ${HOSTNAME}
+      DOCKER_PUBLIC_IP: ${DOCKER_PUBLIC_IP}
+      CONSUL_BIND_INTERFACE: eth0
+    command:
+      - consul
+      - agent
+      - -data-dir=/consul/data
+      - -config-dir=/consul/config
+      - -config-file=/consul/config/consul.json
+      - -bootstrap-expect=${DOCKER_MANAGERS}
+      - -datacenter=${DATACENTER}
+      - -node=${HOSTNAME}
+      - -bind=0.0.0.0
+      - -advertise={{ GetPrivateIP }}
+    networks: 
+      - public
+    volumes:
+      - ${APP_PATH}/consul/conf:/consul/config
+      - ${APP_PATH}/consul/data:/consul/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role==${DOCKER_MANAGER}
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "1G"
+        # reservations:
+        #   cpus: "0.5"
+        #   memory: "512M"
+      labels:
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.consul.loadbalancer.server.scheme=http
+        - traefik.http.services.consul.loadbalancer.server.port=8500
+        - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
+        - traefik.http.routers.consul.entrypoints=websecure
+        - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.consul.middlewares=${TRAEFIK_AUTH}
 
   traefik:
     image: "traefik:v3.2"
@@ -154,10 +153,9 @@ services:
       start_period: 30s
     deploy:
       mode: global
-      # placement:
-      #   constraints:
-      #     - node.role == manager
-      #     - node.platform.os == linux
+      placement:
+        constraints:
+          - node.role==${DOCKER_MANAGER}
       restart_policy:
         condition: on-failure
         delay: 10s
@@ -206,323 +204,333 @@ services:
         - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.traefik.middlewares=${TRAEFIK_AUTH}
 
-  # minio:
-  #   image: minio/minio
-  #   secrets:
-  #     - MINIO_ROOT_USER
-  #     - MINIO_ROOT_PASSWORD
-  #   environment:
-  #     DOMAIN_DEV: ${DOMAIN_DEV}
-  #     ENVIRONMENT: ${ENVIRONMENT}
-  #     MINIO_DATA: ${MINIO_DATA}
-  #     MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
-  #     MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
-  #   command: server /data --console-address ":9001"
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${MINIO_DATA}:/data
-  #     - ${APP_PATH}/minio/logs:/root/.minio/logs
-  #   healthcheck:
-  #     test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 5
-  #     start_period: 30s
-  #   deploy:
-  #     replicas: 1
-  #     # placement:
-  #     #   constraints: 
-  #     #     - node.role == worker
-  #     #   preferences:
-  #     #     - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 5s
-  #       max_attempts: 3
-  #       window: 120s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "1.0"
-  #         memory: "2G"
-  #     #   reservations:
-  #     #     cpus: "1.0"
-  #     #     memory: "2G"
-  #     labels:
-  #       - traefik.enable=true
-  #       - traefik.tags=${ENVIRONMENT}
-  #       # MinIO UI Service
-  #       - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
-  #       - traefik.http.services.minio-ui.loadbalancer.server.port=9001
-  #       - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
-  #       - traefik.http.routers.minio-ui.entrypoints=websecure
-  #       - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_RESOLVER}
-  #       - traefik.http.routers.minio-ui.service=minio-ui
-  #       #- traefik.http.routers.minio-ui.middlewares=${TRAEFIK_AUTH}
-  #       # MinIO Data Service
-  #       - traefik.http.services.minio-data.loadbalancer.server.scheme=http
-  #       - traefik.http.services.minio-data.loadbalancer.server.port=9000
-  #       - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
-  #       - traefik.http.routers.minio-data.entrypoints=websecure
-  #       - traefik.http.routers.minio-data.tls.certresolver=${TRAEFIK_RESOLVER}
-  #       - traefik.http.routers.minio-data.service=minio-data
+  minio:
+    image: minio/minio  #quay.io/minio/minio:RELEASE.2024-12-18T13-15-44Z
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      MINIO_DATA: ${MINIO_DATA}
+      MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
+    command: server /data --console-address ":9001"
+    networks:
+      - public
+    volumes:
+      - ${MINIO_DATA}:/data
+      - ${APP_PATH}/minio/logs:/root/.minio/logs
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "2G"
+      #   reservations:
+      #     cpus: "1.0"
+      #     memory: "2G"
+      labels:
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        # MinIO UI Service
+        - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
+        - traefik.http.services.minio-ui.loadbalancer.server.port=9001
+        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-ui.entrypoints=websecure
+        - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.minio-ui.service=minio-ui
+        - traefik.http.routers.minio-ui.middlewares=${TRAEFIK_AUTH}
+        # MinIO Data Service
+        - traefik.http.services.minio-data.loadbalancer.server.scheme=http
+        - traefik.http.services.minio-data.loadbalancer.server.port=9000
+        - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-data.entrypoints=websecure
+        - traefik.http.routers.minio-data.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.minio-data.service=minio-data
 
-  # minio-init:
-  #   image: minio/mc
-  #   secrets:
-  #     - MINIO_ROOT_USER
-  #     - MINIO_ROOT_PASSWORD
-  #   environment:
-  #     MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
-  #     MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
-  #   entrypoint: usr/local/bin/entrypoint.sh
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/minio/conf/minio-init.sh:/usr/local/bin/entrypoint.sh:ro
-  #   deploy:
-  #     replicas: 1
-  #     restart_policy:
-  #       condition: none # Ensure this runs only once
-  #     placement:
-  #       constraints:
-  #         - node.role == manager # Run only on the manager node
-  #     labels:
-  #       - traefik.enable=false
+  minio-init:
+    image: minio/mc
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
+    entrypoint: usr/local/bin/entrypoint.sh
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/minio/conf/minio-init.sh:/usr/local/bin/entrypoint.sh:ro
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: none # Ensure this runs only once
+      labels:
+        - traefik.enable=false
 
-  # postgres:
-  #   image: postgres
-  #   secrets:
-  #     - POSTGRES_USER
-  #     - POSTGRES_PASSWORD
-  #   environment:
-  #     DOMAIN_DEV: ${DOMAIN_DEV}
-  #     ENVIRONMENT: ${ENVIRONMENT}
-  #     PGDATA: /var/lib/postgresql/data/pgdata
-  #     POSTGRES_DB: xyzdb
-  #     POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
-  #     POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -d xyzdb -U $$(cat /run/secrets/POSTGRES_USER)"]
-  #     interval: 1s
-  #     timeout: 5s
-  #     retries: 10
-  #     start_period: 5s
-  #   deploy:
-  #     replicas: 1
-  #     # placement:
-  #     #   constraints: 
-  #     #     - node.role == worker
-  #     #   preferences:
-  #     #     - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "2.0"     # Max 2 CPUs
-  #         memory: "2G"    # Max 2GB of memory
-  #       # reservations:
-  #       #   cpus: "0.5"     # Reserve 0.5 CPUs
-  #       #   memory: "512M"  # Reserve 512MB of memory
-  #     labels:
-  #       - traefik.enable=false
+  postgres:
+    image: postgres
+    secrets:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: xyzdb
+      POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d xyzdb -U $$(cat /run/secrets/POSTGRES_USER)"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "2.0"     # Max 2 CPUs
+          memory: "2G"    # Max 2GB of memory
+        # reservations:
+        #   cpus: "0.5"     # Reserve 0.5 CPUs
+        #   memory: "512M"  # Reserve 512MB of memory
+      labels:
+        - traefik.enable=false
 
-  # postgres-init:
-  #   image: postgres
-  #   secrets:
-  #     - POSTGRES_USER
-  #     - POSTGRES_PASSWORD
-  #   environment:
-  #     POSTGRES_DB: xyzdb
-  #     POSTGRES_URL: postgres
-  #     POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
-  #     POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
-  #   entrypoint: usr/local/bin/entrypoint.sh
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
-  #     - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
-  #   deploy:
-  #     replicas: 1
-  #     restart_policy:
-  #       condition: none # Ensure this runs only once
-  #     placement:
-  #       constraints:
-  #         - node.role == manager # Run only on the manager node
-  #     labels:
-  #       - traefik.enable=false
+  postgres-init:
+    image: postgres
+    secrets:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    environment:
+      POSTGRES_DB: xyzdb
+      POSTGRES_URL: postgres
+      POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
+    entrypoint: usr/local/bin/entrypoint.sh
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
+      - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: none # Ensure this runs only once
+      labels:
+        - traefik.enable=false
 
-  # pgadmin:
-  #   image: dpage/pgadmin4
-  #   secrets:
-  #     - PGADMIN_PASSWORD
-  #   environment:
-  #     DOMAIN_DEV: ${DOMAIN_DEV}
-  #     ENVIRONMENT: ${ENVIRONMENT}
-  #     PGADMIN_LISTEN_PORT: 9080
-  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
-  #     PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/PGADMIN_PASSWORD
-  #     SCRIPT_NAME: /pgadmin
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
-  #   healthcheck:
-  #     test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
-  #     interval: 15s
-  #     retries: 3
-  #     timeout: 5s
-  #     start_period: 10s
-  #   deploy:
-  #     replicas: 1
-  #     # placement:
-  #     #   constraints: 
-  #     #     - node.role == worker
-  #     #   preferences:
-  #     #     - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "2.0"     # Max 2 CPUs
-  #         memory: "2G"    # Max 2GB of memory
-  #       # reservations:
-  #       #   cpus: "0.5"     # Reserve 0.5 CPUs
-  #       #   memory: "512M"  # Reserve 512MB of memory
-  #     labels:
-  #       - traefik.enable=true
-  #       - traefik.tags=${ENVIRONMENT}
-  #       - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
-  #       - traefik.http.services.pgadmin.loadbalancer.server.port=9080
-  #       - traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
-  #       - traefik.http.routers.pgadmin.entrypoints=websecure
-  #       - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_RESOLVER}
-  #       #- traefik.http.routers.pgadmin.middlewares=${TRAEFIK_AUTH}
+  pgadmin:
+    image: dpage/pgadmin4
+    secrets:
+      - PGADMIN_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      PGADMIN_LISTEN_PORT: 9080
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/PGADMIN_PASSWORD
+      SCRIPT_NAME: /pgadmin
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
+      interval: 15s
+      retries: 3
+      timeout: 5s
+      start_period: 10s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "2.0"     # Max 2 CPUs
+          memory: "2G"    # Max 2GB of memory
+        # reservations:
+        #   cpus: "0.5"     # Reserve 0.5 CPUs
+        #   memory: "512M"  # Reserve 512MB of memory
+      labels:
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
+        - traefik.http.services.pgadmin.loadbalancer.server.port=9080
+        - traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
+        - traefik.http.routers.pgadmin.entrypoints=websecure
+        - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.pgadmin.middlewares=${TRAEFIK_AUTH}
 
-  # keycloak:
-  #   image: quay.io/keycloak/keycloak:26.0
-  #   secrets:
-  #     - KEYCLOAK_USER
-  #     - KEYCLOAK_PASSWORD
-  #     - POSTGRES_USER
-  #     - POSTGRES_PASSWORD
-  #   environment:
-  #     DOMAIN_DEV: ${DOMAIN_DEV}
-  #     ENVIRONMENT: ${ENVIRONMENT}
-  #     KC_LOG: console #,file
-  #     KC_LOG_LEVEL: INFO
-  #     #KC_LOG_FILE: /home/keycloak.log
-  #     KC_HTTP_ENABLED: "true"
-  #     KC_HTTPS_ENABLED: "false"
-  #     KC_HOSTNAME: https://iam.${DOMAIN_DEV}
-  #     KC_HOSTNAME_STRICT: "false"
-  #     KC_HEALTH_ENABLED: "true"
-  #     #KC_METRICS_ENABLED: "true"
-  #     #KC_TRACING_ENABLED: "true"
-  #     KC_DB: postgres
-  #     KC_DB_URL_HOST: postgres
-  #     KC_DB_URL_DATABASE: xyzdb
-  #     KC_DB_SCHEMA: keycloak
-  #     KC_DB_USERNAME_FILE: /run/secrets/POSTGRES_USER
-  #     KC_DB_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
-  #     KC_BOOTSTRAP_ADMIN_USERNAME_FILE: /run/secrets/KEYCLOAK_USER
-  #     KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/KEYCLOAK_PASSWORD
-  #   entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true #--features=opentelemetry --import-realm
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/keycloak/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
-  #     #- ${APP_PATH}/keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
-  #   healthcheck:
-  #     # TODO: Replace with real health check !
-  #     test: ["CMD-SHELL", "exit 0"]
-  #     interval: 15s
-  #     retries: 3
-  #     timeout: 5s
-  #     start_period: 30s
-  #   deploy:
-  #     replicas: 1
-  #     # placement:
-  #     #   constraints: 
-  #     #     - node.role == worker
-  #     #   preferences:
-  #     #     - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "2.0"     # Max 2 CPUs
-  #         memory: "2G"    # Max 2GB of memory
-  #       # reservations:
-  #       #   cpus: "0.5"     # Reserve 0.5 CPUs
-  #       #   memory: "512M"  # Reserve 512MB of memory
-  #     labels:
-  #       - traefik.enable=true
-  #       - traefik.tags=develop
-  #       - traefik.http.services.keycloak.loadbalancer.server.scheme=http
-  #       - traefik.http.services.keycloak.loadbalancer.server.port=8080
-  #       - traefik.http.routers.keycloak.rule=Host(`iam.${DOMAIN_DEV}`)
-  #       - traefik.http.routers.keycloak.entrypoints=websecure
-  #       - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
-  #       #- traefik.http.routers.keycloak.middlewares=${TRAEFIK_AUTH}
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    secrets:
+      - KEYCLOAK_USER
+      - KEYCLOAK_PASSWORD
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      KC_LOG: console #,file
+      KC_LOG_LEVEL: INFO
+      #KC_LOG_FILE: /home/keycloak.log
+      KC_HTTP_ENABLED: "true"
+      KC_HTTPS_ENABLED: "false"
+      KC_HOSTNAME: https://iam.${DOMAIN_DEV}
+      KC_HOSTNAME_STRICT: "false"
+      KC_HEALTH_ENABLED: "true"
+      #KC_METRICS_ENABLED: "true"
+      #KC_TRACING_ENABLED: "true"
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: xyzdb
+      KC_DB_SCHEMA: keycloak
+      KC_DB_USERNAME_FILE: /run/secrets/POSTGRES_USER
+      KC_DB_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
+      KC_BOOTSTRAP_ADMIN_USERNAME_FILE: /run/secrets/KEYCLOAK_USER
+      KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/KEYCLOAK_PASSWORD
+    entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true #--features=opentelemetry --import-realm
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/keycloak/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
+      #- ${APP_PATH}/keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
+    healthcheck:
+      # TODO: Replace with real health check !
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 15s
+      retries: 3
+      timeout: 5s
+      start_period: 30s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "2.0"     # Max 2 CPUs
+          memory: "2G"    # Max 2GB of memory
+        # reservations:
+        #   cpus: "0.5"     # Reserve 0.5 CPUs
+        #   memory: "512M"  # Reserve 512MB of memory
+      labels:
+        - traefik.enable=true
+        - traefik.tags=develop
+        - traefik.http.services.keycloak.loadbalancer.server.scheme=http
+        - traefik.http.services.keycloak.loadbalancer.server.port=8080
+        - traefik.http.routers.keycloak.rule=Host(`iam.${DOMAIN_DEV}`)
+        - traefik.http.routers.keycloak.entrypoints=websecure
+        - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.keycloak.middlewares=${TRAEFIK_AUTH}
 
 networks:
   public:
