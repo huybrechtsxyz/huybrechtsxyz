@@ -617,7 +617,20 @@ services:
   #       #   memory: "512M"  # Reserve 512MB of memory
   #     labels:
   #       - "traefik.enable=false"
-  
+
+  # mimir:
+  #   image: grafana/mimir:latest
+  #   container_name: mimir
+  #   environment:
+  #     - MINIO_ACCESS_KEY=minio-access-key
+  #     - MINIO_SECRET_KEY=minio-secret-key
+  #   ports:
+  #     - "9009:9009"
+  #   volumes:
+  #     - ./mimir-config.yaml:/etc/mimir/config.yaml
+  #   command:
+  #     - "-config.file=/etc/mimir/config.yaml"
+
   # loki:
   #   image: grafana/loki:latest
   #   command: -config.file=/etc/loki/loki.yml
