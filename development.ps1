@@ -148,6 +148,18 @@ function Invoke-Consul {
     Write-Host 'Configuring CONSUL ... Done'
 }
 
+# FUNCTION: Configure and run GRAFANA
+function Invoke-Grafana {
+    Write-Host 'Configuring GRAFANA ...'
+    $grafanaDir = "$baseDir/grafana"
+    $grafanaConf = "$grafanaDir/conf"
+    $grafanaData = "$grafanaDir/data"
+    $grafanaLogs = "$grafanaDir/logs"
+    New-Item -ItemType Directory -Path $grafanaDir, $grafanaConf, $grafanaData, $grafanaLogs -Force
+    Copy-Item -Path "./src/grafana/*" -Destination $grafanaConf -Recurse
+    Write-Host 'Configuring GRAFANA ... done'
+}
+
 # FUNCTION: Configure and run Keycloak
 function Invoke-Keycloak {
     Write-Host 'Configuring KEYCLOAK ... for DOCKER'
@@ -156,17 +168,6 @@ function Invoke-Keycloak {
     $keycloakDir = Resolve-Path -Path $keycloakDir
     Copy-Item -Path "./src/keycloak/*" -Destination $keycloakDir -Recurse
     Write-Host 'Configuring KEYCLOAK ... Done'
-}
-
-# FUNCTION: Configure and run Loki
-function Invoke-Loki {
-    Write-Host 'Configuring LOKI ...'
-    $lokiDir = "$baseDir/loki"
-    $lokiConf = "$lokiDir/conf"
-    $lokiData = "$lokiDir/data"
-    New-Item -ItemType Directory -Path $lokiDir, $lokiConf, $lokiData -Force
-    Copy-Item -Path "./src/loki/*" -Destination $lokiConf -Recurse
-    Write-Host 'Configuring LOKI ... done'
 }
 
 # FUNCTION: Configure and run MinIO
@@ -182,17 +183,6 @@ function Invoke-Minio {
     Write-Host 'Configuring MINIO ... Done'
 }
 
-# FUNCTION: Configure and run Prometheus
-function Invoke-Prometheus {
-    Write-Host 'Configuring PROMETHEUS ...'
-    $prometheusDir = "$baseDir/prometheus"
-    $prometheusConf = "$prometheusDir/conf"
-    $prometheusData = "$prometheusDir/data"
-    New-Item -ItemType Directory -Path $prometheusDir, $prometheusConf, $prometheusData -Force
-    Copy-Item -Path "./src/prometheus/*" -Destination $prometheusConf -Recurse
-    Write-Host 'Configuring PROMETHEUS ... done'
-}
-
 # FUNCTION: Configure and run Postgres
 function Invoke-Postgres {
     Write-Host 'Configuring POSTGRESQL ... for DOCKER'
@@ -205,17 +195,6 @@ function Invoke-Postgres {
     $postgresConf = Resolve-Path -Path $postgresConf
     Copy-Item -Path "./src/postgres/*" -Destination $postgresConf -Recurse
     Write-Host 'Configuring POSTGRESQL ... Done'
-}
-
-# FUNCTION: Configure and run Tempo
-function Invoke-Tempo {
-    Write-Host 'Configuring TEMPO ...'
-    $tempoDir = "$baseDir/tempo"
-    $tempoConf = "$tempoDir/conf"
-    $tempoData = "$tempoDir/data"
-    New-Item -ItemType Directory -Path $tempoDir, $tempoConf, $tempoData -Force
-    Copy-Item -Path "./src/tempo/*" -Destination $tempoConf -Recurse
-    Write-Host 'Configuring TEMPO ... done'
 }
 
 # FUNCTION: Configure and run Traefik
@@ -259,8 +238,7 @@ Invoke-Traefik
 Invoke-Minio
 Invoke-Postgres
 Invoke-Keycloak
-Invoke-Prometheus
-Invoke-Loki
+Invoke-Grafana
 
 # Debug and test
 $composeFile = "./src/compose.yml"
@@ -298,6 +276,7 @@ Start-Process -FilePath "msedge.exe" `
     "http://s3.$env:DOMAIN_DEV",
     "http://db.$env:DOMAIN_DEV/pgadmin",
     "http://iam.$env:DOMAIN_DEV/",
+    "http://logs.$env:DOMAIN_DEV/",
     "--inprivate",                          # Open in InPrivate mode
     "--ignore-certificate-errors",
     "--ignore-urlfetcher-cert-requests",
