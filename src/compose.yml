@@ -181,8 +181,8 @@ services:
           cpus: "1.0"
           memory: "512M"
       #   reservations:
-      #     cpus: "0.25"    # Reserve 0.25 CPUs
-      #     memory: "512M"  # Reserve 512MB of memory
+      #     cpus: "0.25"
+      #     memory: "512M"
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
@@ -355,11 +355,11 @@ services:
         monitor: 30s
       resources:
         limits:
-          cpus: "2.0"     # Max 2 CPUs
-          memory: "2G"    # Max 2GB of memory
+          cpus: "2.0"
+          memory: "2G"
         # reservations:
-        #   cpus: "0.5"     # Reserve 0.5 CPUs
-        #   memory: "512M"  # Reserve 512MB of memory
+        #   cpus: "0.5"
+        #   memory: "512M"
       labels:
         - traefik.enable=false
 
@@ -439,11 +439,11 @@ services:
         monitor: 30s
       resources:
         limits:
-          cpus: "2.0"     # Max 2 CPUs
-          memory: "2G"    # Max 2GB of memory
+          cpus: "2.0"
+          memory: "2G"
         # reservations:
-        #   cpus: "0.5"     # Reserve 0.5 CPUs
-        #   memory: "512M"  # Reserve 512MB of memory
+        #   cpus: "0.5"
+        #   memory: "512M"
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
@@ -520,11 +520,11 @@ services:
         monitor: 30s
       resources:
         limits:
-          cpus: "2.0"     # Max 2 CPUs
-          memory: "2G"    # Max 2GB of memory
+          cpus: "2.0"
+          memory: "2G"
         # reservations:
-        #   cpus: "0.5"     # Reserve 0.5 CPUs
-        #   memory: "512M"  # Reserve 512MB of memory
+        #   cpus: "0.5"
+        #   memory: "512M"
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
@@ -583,11 +583,11 @@ services:
         monitor: 30s
       resources:
         limits:
-          cpus: "0.5"     # Max 2 CPUs
-          memory: "512M"    # Max 2GB of memory
+          cpus: "0.5"
+          memory: "512M"
         # reservations:
-        #   cpus: "0.5"     # Reserve 0.5 CPUs
-        #   memory: "512M"  # Reserve 512MB of memory
+        #   cpus: "0.5"
+        #   memory: "512M"
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
@@ -598,58 +598,112 @@ services:
         - traefik.http.routers.grafana.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.grafana.middlewares=${TRAEFIK_AUTH}
 
-  # prometheus:
-  #   image: prom/prometheus
-  #   command:
-  #     - --config.file=/etc/prometheus/prometheus.yml
-  #     - --storage.tsdb.path=/prometheus
-  #     - --storage.tsdb.min-block-duration=2h
-  #     - --storage.tsdb.max-block-duration=2h
-  #     - --web.external-url=http://localhost:9090
+  prometheus:
+    image: prom/prometheus
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.min-block-duration=2h
+      - --storage.tsdb.max-block-duration=2h
+      - --web.external-url=http://localhost:9090
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/grafana/conf:/etc/prometheus
+      - ${APP_PATH}/grafana/metrics:/prometheus:rw
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "1G"
+        # reservations:
+        #   cpus: "0.5"
+        #   memory: "512M"
+      labels:
+        - "traefik.enable=false"
+
+  # grafana_loki:
+  #   image: grafana/loki:latest
+  #   configs:
+  #     - source: loki_config
+  #       target: /etc/loki/loki.yml
+  #   command: -config.file=/etc/loki/loki.yml
   #   networks:
   #     - public
   #   volumes:
-  #     - ${APP_PATH}/prometheus/conf:/etc/prometheus
-  #     - ${APP_PATH}/prometheus/data:/prometheus:rw
+  #     - ${APP_PATH}/grafana/conf:/etc/loki # Loki configuration directory
+  #     - ${APP_PATH}/grafana/logs:/loki-data # Data storage
   #   healthcheck:
-  #     test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+  #     test: ["CMD", "wget", "--spider", "http://localhost:3100/ready"]
   #     interval: 15s
   #     timeout: 5s
-  #     retries: 5
+  #     retries: 3
   #     start_period: 10s
   #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "1.0"     # Max 2 CPUs
-  #         memory: "1G"    # Max 2GB of memory
-  #       # reservations:
-  #       #   cpus: "0.5"     # Reserve 0.5 CPUs
-  #       #   memory: "512M"  # Reserve 512MB of memory
-  #     labels:
-  #       - "traefik.enable=false"
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"
+        # reservations:
+        #   cpus: "0.5"
+        #   memory: "512M"
+      labels:
+        - traefik.enable=false
 
   # mimir:
   #   image: grafana/mimir:latest
@@ -663,54 +717,6 @@ services:
   #     - ./mimir-config.yaml:/etc/mimir/config.yaml
   #   command:
   #     - "-config.file=/etc/mimir/config.yaml"
-
-  # loki:
-  #   image: grafana/loki:latest
-  #   command: -config.file=/etc/loki/loki.yml
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/loki/conf:/etc/loki # Loki configuration directory
-  #     - ${APP_PATH}/loki/data:/loki-data # Data storage
-  #   healthcheck:
-  #     test: ["CMD", "wget", "--spider", "http://localhost:3100/ready"]
-  #     interval: 15s
-  #     timeout: 5s
-  #     retries: 3
-  #     start_period: 10s
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "1.0"     # Max 2 CPUs
-  #         memory: "1G"    # Max 2GB of memory
-  #       # reservations:
-  #       #   cpus: "0.5"     # Reserve 0.5 CPUs
-  #       #   memory: "512M"  # Reserve 512MB of memory
-  #     labels:
-  #       - "traefik.enable=false"
 
   # promtail:
   #   image: grafana/promtail:latest
@@ -841,4 +847,6 @@ secrets:
 configs:
   traefik_static:
     file: ${APP_PATH}/traefik/conf/traefik.${ENVIRONMENT}.yml
+  prometheus_config:
+    file: ${APP_PATH}/grafana/conf/prometheus.yml
   

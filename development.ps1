@@ -155,7 +155,9 @@ function Invoke-Grafana {
     $grafanaConf = "$grafanaDir/conf"
     $grafanaData = "$grafanaDir/data"
     $grafanaLogs = "$grafanaDir/logs"
-    New-Item -ItemType Directory -Path $grafanaDir, $grafanaConf, $grafanaData, $grafanaLogs -Force
+    $grafanaMetrics = "$grafanaDir/metrics"
+    $grafanaTracing = "$grafanaDir/tracing"
+    New-Item -ItemType Directory -Path $grafanaDir, $grafanaConf, $grafanaData, $grafanaLogs, $grafanaMetrics, $grafanaTracing -Force
     Copy-Item -Path "./src/grafana/*" -Destination $grafanaConf -Recurse
     Write-Host 'Configuring GRAFANA ... done'
 }
