@@ -289,11 +289,11 @@ services:
     environment:
       MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
-    entrypoint: usr/local/bin/entrypoint.sh
+    entrypoint: /bin/sh "/etc/entrypoint.sh"
     networks:
       - public
     volumes:
-      - ${APP_PATH}/minio/conf/minio-init.sh:/usr/local/bin/entrypoint.sh:ro
+      - ${APP_PATH}/minio/conf/minio-init.sh:/etc/entrypoint.sh:ro
     deploy:
       mode: replicated
       replicas: 1
@@ -541,7 +541,7 @@ services:
       - GRAFANA_ROOT_USER
       - GRAFANA_ROOT_PASSWORD
     environment:
-      GF_PATHS_CONFIG: /etc/grafana/grafana.ini
+      #GF_PATHS_CONFIG: /etc/grafana/grafana.ini
       GF_PATHS_DATA: /var/lib/grafana
       GF_PATHS_LOGS: /var/log/grafana
       GF_SECURITY_ADMIN_USER__FILE: /run/secrets/GRAFANA_ROOT_USER
@@ -549,7 +549,7 @@ services:
     networks:
       - public
     volumes:
-      - ${APP_PATH}/grafana/conf/grafana.ini:/etc/grafana/grafana.ini
+      #- ${APP_PATH}/grafana/conf/grafana.ini:/etc/grafana/grafana.ini
       - ${APP_PATH}/grafana/logs:/var/log/grafana
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
@@ -652,155 +652,63 @@ services:
         #   cpus: "0.5"
         #   memory: "512M"
       labels:
-        - "traefik.enable=false"
+        - traefik.enable=false
 
-  # grafana_loki:
-  #   image: grafana/loki:latest
-  #   configs:
-  #     - source: loki_config
-  #       target: /etc/loki/loki.yml
-  #   command: -config.file=/etc/loki/loki.yml
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/grafana/conf:/etc/loki # Loki configuration directory
-  #     - ${APP_PATH}/grafana/logs:/loki-data # Data storage
-  #   healthcheck:
-  #     test: ["CMD", "wget", "--spider", "http://localhost:3100/ready"]
-  #     interval: 15s
-  #     timeout: 5s
-  #     retries: 3
-  #     start_period: 10s
-  # #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "0.5"
-  #         memory: "256M"
-  #       # reservations:
-  #       #   cpus: "0.5"
-  #       #   memory: "512M"
-  #     labels:
-  #       - traefik.enable=false
-
-  # mimir:
-  #   image: grafana/mimir:latest
-  #   container_name: mimir
-  #   environment:
-  #     - MINIO_ACCESS_KEY=minio-access-key
-  #     - MINIO_SECRET_KEY=minio-secret-key
-  #   ports:
-  #     - "9009:9009"
-  #   volumes:
-  #     - ./mimir-config.yaml:/etc/mimir/config.yaml
-  #   command:
-  #     - "-config.file=/etc/mimir/config.yaml"
-
-  # promtail:
-  #   image: grafana/promtail:latest
-  #   command: -config.file=/etc/promtail/promtail-config.yml
-  #   volumes:
-  #     - ${APP_PATH}/loki/logs:/var/log
-  #     - ${APP_PATH}/loki/conf/promtail.yml:/etc/promtail/promtail-config.yml:ro
-  #   networks:
-  #     - public
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "1.0"     # Max 2 CPUs
-  #         memory: "1G"    # Max 2GB of memory
-  #       # reservations:
-  #       #   cpus: "0.5"     # Reserve 0.5 CPUs
-  #       #   memory: "512M"  # Reserve 512MB of memory
-  #     labels:
-  #       - "traefik.enable=false"
-
-  # tempo:
-  #   image: grafana/tempo:latest
-  #   command: -config.file=/etc/tempo/tempo-config.yml
-  #   volumes:
-  #     - ${APP_PATH}/tempo/conf/tempo.yml:/etc/tempo/tempo-config.yml:ro
-  #     - ${APP_PATH}/tempo/data:/tempo
-  #   networks:
-  #     - public
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "1.0"     # Max 2 CPUs
-  #         memory: "1G"    # Max 2GB of memory
-  #       # reservations:
-  #       #   cpus: "0.5"     # Reserve 0.5 CPUs
-  #       #   memory: "512M"  # Reserve 512MB of memory
-  #     labels:
-  #       - "traefik.enable=false"
+  grafana-mimir:
+    image: grafana/mimir:latest
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
+    configs:
+      - source: mimir_config
+        target: /etc/mimir/mimir.yml
+    command: ["/etc/mimir/mimir-entry.sh"]
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/grafana/conf:/etc/mimir
+    # healthcheck:
+    #   test: ["CMD", "exit 0"]
+    #   interval: 15s
+    #   retries: 3
+    #   timeout: 5s
+    #   start_period: 30s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+        # reservations:
+        #   cpus: "0.5"
+        #   memory: "512M"
+      labels:
+        - traefik.enable=false
 
 networks:
   public:
@@ -849,4 +757,5 @@ configs:
     file: ${APP_PATH}/traefik/conf/traefik.${ENVIRONMENT}.yml
   prometheus_config:
     file: ${APP_PATH}/grafana/conf/prometheus.yml
-  
+  mimir_config:
+    file: ${APP_PATH}/grafana/conf/mimir-config.yml

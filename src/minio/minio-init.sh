@@ -44,17 +44,10 @@ echo "Setting MinIO alias..."
 export MINIO_ROOT_USER=$(cat $MINIO_ROOT_USER_FILE)
 export MINIO_ROOT_PASSWORD=$(cat $MINIO_ROOT_PASSWORD_FILE)
 
-echo "MinIO Root User: $MINIO_ROOT_USER"
-echo "MinIO Root Password: $MINIO_ROOT_PASSWORD"
-
 # Wait for MinIO to be ready, with a timeout of 60 seconds (adjustable)
 mc alias set myminio http://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
 
-# Create and configure buckets
-create_bucket_if_not_exists backups
-create_bucket_if_not_exists logging
+# Create and configure buckets for grafana
 create_bucket_if_not_exists metrics
-create_bucket_if_not_exists tracing
-
-# Uncomment the following lines if you want to create other buckets
-# create_bucket_if_not_exists thanos
+create_bucket_if_not_exists mimir-alerts
+create_bucket_if_not_exists mimir-rules

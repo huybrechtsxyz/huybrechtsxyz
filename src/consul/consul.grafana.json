@@ -1,19 +1,38 @@
 {
-  "service": {
-    "id": "grafana",
-    "name": "grafana",
-    "address": "grafana",
-    "port": 3000,
-    "meta": {},
-    "checks": [
-      {
-        "id": "grafana-http-check",
-        "name": "Grafana Health Check",
-        "http": "http://grafana:3000/health/healthz",
-        "interval": "30s",
-        "timeout": "5s"
-      }
-    ],
-    "tags": [ "grafana","logging","metrics","tracing","docker-swarm","system" ]
-  }
+  "services": [
+    {
+      "id": "grafana",
+      "name": "grafana",
+      "address": "grafana",
+      "port": 3000,
+      "meta": {},
+      "checks": [
+        {
+          "id": "grafana-http-check",
+          "name": "Grafana Health Check",
+          "http": "http://grafana:3000/health/healthz",
+          "interval": "30s",
+          "timeout": "5s"
+        }
+      ],
+      "tags": [ "grafana","logging","metrics","tracing","docker-swarm","system" ]
+    },
+    {
+      "id": "grafana-mimir",
+      "name": "grafana-mimir",
+      "address": "grafana-mimir",
+      "port": 9000,
+      "meta": {},
+      "checks": [
+        {
+          "id": "grafana-mimir-http-check",
+          "name": "Grafana Mimir Health Check",
+          "http": "http://grafana-mimir:8080/ready",
+          "interval": "30s",
+          "timeout": "5s"
+        }
+      ],
+      "tags": [ "grafana","logging","metrics","tracing","docker-swarm","system" ]
+    }
+  ]
 }

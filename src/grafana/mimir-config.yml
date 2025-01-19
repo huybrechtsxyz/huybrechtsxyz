@@ -1,0 +1,26 @@
+server:
+  http_listen_port: 9000
+  http_listen_address: 0.0.0.0:9000
+  log_level: debug
+
+common:
+  storage:
+    backend: s3
+    s3:
+      endpoint: minio:9000
+      access_key_id: admin
+      secret_access_key: password
+      insecure: true
+
+blocks_storage:
+  backend: s3
+  s3:
+    bucket_name: metrics
+
+alertmanager_storage:
+  s3:
+    bucket_name: mimir-alerts
+
+ruler_storage:
+  s3:
+    bucket_name: mimir-rules

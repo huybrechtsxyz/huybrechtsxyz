@@ -1,8 +1,10 @@
 global:
   scrape_interval: 15s  # How often to scrape targets by default.
   external_labels:
-    monitor: 'prometheus-monitor'
-    region: 'develop'
+    region: develop
+    cluster: develop
+    namespace: develop
+    monitor: prometheus-monitor
 
 scrape_configs:
   # Scrape metrics from services registered with consul
