@@ -33,6 +33,23 @@
         }
       ],
       "tags": [ "grafana","logging","metrics","tracing","docker-swarm","system" ]
+    },
+    {
+      "id": "grafana-loki",
+      "name": "grafana-loki",
+      "address": "grafana-loki",
+      "port": 3100,
+      "meta": {},
+      "checks": [
+        {
+          "id": "grafana-loki-http-check",
+          "name": "Grafana Loki Health Check",
+          "http": "http://grafana-loki:3100/ready",
+          "interval": "30s",
+          "timeout": "5s"
+        }
+      ],
+      "tags": [ "grafana","logging","metrics","tracing","docker-swarm","system" ]
     }
   ]
 }

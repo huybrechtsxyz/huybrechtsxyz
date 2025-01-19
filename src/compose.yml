@@ -671,11 +671,6 @@ services:
     volumes:
       - ${APP_PATH}/grafana/conf:/etc/mimir
     # healthcheck:
-    #   test: ["CMD", "exit 0"]
-    #   interval: 15s
-    #   retries: 3
-    #   timeout: 5s
-    #   start_period: 30s
     deploy:
       mode: replicated
       replicas: 1
@@ -685,7 +680,7 @@ services:
         preferences:
           - spread: node.id
       restart_policy:
-        condition: any
+        condition: on-failure
         delay: 10s
         max_attempts: 5
         window: 60s
@@ -704,6 +699,52 @@ services:
         limits:
           cpus: "1.0"
           memory: "512M"
+        # reservations:
+        #   cpus: "0.5"
+        #   memory: "512M"
+      labels:
+        - traefik.enable=false
+
+  grafana-loki:
+    image: grafana/loki
+    configs:
+      - source: loki_config
+        target: /etc/loki/loki.yml
+    command: -config.file=/etc/loki/loki.yml
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/grafana/conf:/etc/loki
+      - ${APP_PATH}/grafana/logs:/loki
+    #healthcheck:
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "2G"
         # reservations:
         #   cpus: "0.5"
         #   memory: "512M"
@@ -759,3 +800,5 @@ configs:
     file: ${APP_PATH}/grafana/conf/prometheus.yml
   mimir_config:
     file: ${APP_PATH}/grafana/conf/mimir-config.yml
+  loki_config:
+    file: ${APP_PATH}/grafana/conf/loki-config.yml
