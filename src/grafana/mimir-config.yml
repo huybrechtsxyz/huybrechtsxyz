@@ -1,6 +1,6 @@
 server:
-  http_listen_port: 9000
-  http_listen_address: 0.0.0.0:9000
+  http_listen_port: 9009
+  http_listen_address: 0.0.0.0:9009
   log_level: debug
 
 common:
@@ -8,9 +8,9 @@ common:
     backend: s3
     s3:
       endpoint: minio:9000
-      access_key_id: admin
-      secret_access_key: password
       insecure: true
+      #access_key_id: admin
+      #secret_access_key: password
 
 blocks_storage:
   backend: s3
