@@ -18,15 +18,15 @@
       "tags": [ "grafana","logging","metrics","tracing","docker-swarm","system" ]
     },
     {
-      "id": "grafana-mimir",
-      "name": "grafana-mimir",
-      "address": "grafana-mimir",
+      "id": "grafana-mimir-1",
+      "name": "grafana-mimir-1",
+      "address": "grafana-mimir-1",
       "port": 9000,
       "meta": {},
       "checks": [
         {
-          "id": "grafana-mimir-http-check",
-          "name": "Grafana Mimir Health Check",
+          "id": "grafana-mimir-1-http-check",
+          "name": "Grafana Mimir 1 Health Check",
           "http": "http://grafana-mimir:8080/ready",
           "interval": "30s",
           "timeout": "5s"

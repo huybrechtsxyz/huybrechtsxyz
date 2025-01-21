@@ -654,102 +654,105 @@ services:
       labels:
         - traefik.enable=false
 
-  grafana-mimir:
-    image: grafana/mimir:latest
-    secrets:
-      - MINIO_ROOT_USER
-      - MINIO_ROOT_PASSWORD
-    environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: password
-    configs:
-      - source: mimir_config
-        target: /etc/mimir/mimir.yml
-    command: ["/etc/mimir/mimir-entry.sh"]
-    networks:
-      - public
-    volumes:
-      - ${APP_PATH}/grafana/conf:/etc/mimir
-    # healthcheck:
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: "512M"
-        # reservations:
-        #   cpus: "0.5"
-        #   memory: "512M"
-      labels:
-        - traefik.enable=false
+  # grafana-mimir:
+  #   image: grafana/mimir:latest
+  #   secrets:
+  #     - MINIO_ROOT_USER
+  #     - MINIO_ROOT_PASSWORD
+  #   environment:
+  #     MINIO_ROOT_USER: admin
+  #     MINIO_ROOT_PASSWORD: password
+  #     CONSUL_HTTP_ADDR: consul:8500  # Consul address to register and discover services
+  #     MEMBERLIST_JOIN: consul:8500   # Use Consul for dynamic discovery
+  #   configs:
+  #     - source: mimir_config
+  #       target: /etc/mimir/mimir.yml
+  #   command: ["/etc/mimir/mimir-entry.sh"]
+  #   networks:
+  #     - public
+  #   volumes:
+  #     - ${APP_PATH}/grafana/conf:/etc/mimir
+  #     - ${APP_PATH}/grafana/metrics:/data
+  #   # healthcheck:
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role==${DOCKER_WORKER}
+  #       preferences:
+  #         - spread: node.id
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 10s
+  #       max_attempts: 5
+  #       window: 60s
+  #     update_config:
+  #       parallelism: 1
+  #       delay: 15s
+  #       failure_action: rollback
+  #       monitor: 30s
+  #       order: start-first
+  #     rollback_config:
+  #       parallelism: 1
+  #       delay: 10s
+  #       failure_action: continue
+  #       monitor: 30s
+  #     resources:
+  #       limits:
+  #         cpus: "1.0"
+  #         memory: "512M"
+  #       # reservations:
+  #       #   cpus: "0.5"
+  #       #   memory: "512M"
+  #     labels:
+  #       - traefik.enable=false
 
-  grafana-loki:
-    image: grafana/loki
-    configs:
-      - source: loki_config
-        target: /etc/loki/loki.yml
-    command: -config.file=/etc/loki/loki.yml
-    networks:
-      - public
-    volumes:
-      - ${APP_PATH}/grafana/conf:/etc/loki
-      - ${APP_PATH}/grafana/logs:/loki
-    #healthcheck:
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: "2G"
-        # reservations:
-        #   cpus: "0.5"
-        #   memory: "512M"
-      labels:
-        - traefik.enable=false
+  # grafana-loki:
+  #   image: grafana/loki
+  #   configs:
+  #     - source: loki_config
+  #       target: /etc/loki/loki.yml
+  #   command: -config.file=/etc/loki/loki.yml
+  #   networks:
+  #     - public
+  #   volumes:
+  #     - ${APP_PATH}/grafana/conf:/etc/loki
+  #     - ${APP_PATH}/grafana/logs:/loki
+  #   #healthcheck:
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role==${DOCKER_WORKER}
+  #       preferences:
+  #         - spread: node.id
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 10s
+  #       max_attempts: 5
+  #       window: 60s
+  #     update_config:
+  #       parallelism: 1
+  #       delay: 15s
+  #       failure_action: rollback
+  #       monitor: 30s
+  #       order: start-first
+  #     rollback_config:
+  #       parallelism: 1
+  #       delay: 10s
+  #       failure_action: continue
+  #       monitor: 30s
+  #     resources:
+  #       limits:
+  #         cpus: "1.0"
+  #         memory: "2G"
+  #       # reservations:
+  #       #   cpus: "0.5"
+  #       #   memory: "512M"
+  #     labels:
+  #       - traefik.enable=false
 
 networks:
   public:
