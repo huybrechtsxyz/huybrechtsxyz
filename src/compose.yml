@@ -106,9 +106,6 @@ services:
         limits:
           cpus: "1.0"
           memory: "1G"
-        # reservations:
-        #   cpus: "0.5"
-        #   memory: "512M"
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
@@ -180,10 +177,8 @@ services:
         limits:
           cpus: "1.0"
           memory: "512M"
-      #   reservations:
-      #     cpus: "0.25"
-      #     memory: "512M"
       labels:
+        # Enable Traefik
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
         # Redirection Middleware
@@ -259,10 +254,8 @@ services:
         limits:
           cpus: "1.0"
           memory: "2G"
-      #   reservations:
-      #     cpus: "1.0"
-      #     memory: "2G"
       labels:
+        # Enable Traefik
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
         # MinIO UI Service
@@ -357,9 +350,6 @@ services:
         limits:
           cpus: "2.0"
           memory: "2G"
-        # reservations:
-        #   cpus: "0.5"
-        #   memory: "512M"
       labels:
         - traefik.enable=false
 
@@ -441,10 +431,8 @@ services:
         limits:
           cpus: "2.0"
           memory: "2G"
-        # reservations:
-        #   cpus: "0.5"
-        #   memory: "512M"
       labels:
+        # Enable Traefik
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
         - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
@@ -522,10 +510,8 @@ services:
         limits:
           cpus: "2.0"
           memory: "2G"
-        # reservations:
-        #   cpus: "0.5"
-        #   memory: "512M"
       labels:
+        # Enable Traefik
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
         - traefik.http.services.keycloak.loadbalancer.server.scheme=http
@@ -534,69 +520,6 @@ services:
         - traefik.http.routers.keycloak.entrypoints=websecure
         - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.keycloak.middlewares=${TRAEFIK_AUTH}
-
-  grafana:
-    image: grafana/grafana:latest
-    secrets:
-      - GRAFANA_ROOT_USER
-      - GRAFANA_ROOT_PASSWORD
-    environment:
-      #GF_PATHS_CONFIG: /etc/grafana/grafana.ini
-      GF_PATHS_DATA: /var/lib/grafana
-      GF_PATHS_LOGS: /var/log/grafana
-      GF_SECURITY_ADMIN_USER__FILE: /run/secrets/GRAFANA_ROOT_USER
-      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/GRAFANA_ROOT_PASSWORD
-    networks:
-      - public
-    volumes:
-      #- ${APP_PATH}/grafana/conf/grafana.ini:/etc/grafana/grafana.ini
-      - ${APP_PATH}/grafana/logs:/var/log/grafana
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
-      interval: 15s
-      retries: 3
-      timeout: 5s
-      start_period: 30s
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: "512M"
-        # reservations:
-        #   cpus: "0.5"
-        #   memory: "512M"
-      labels:
-        - traefik.enable=true
-        - traefik.tags=${ENVIRONMENT}
-        - traefik.http.services.grafana.loadbalancer.server.scheme=http
-        - traefik.http.services.grafana.loadbalancer.server.port=3000
-        - traefik.http.routers.grafana.rule=Host(`logs.${DOMAIN_DEV}`)
-        - traefik.http.routers.grafana.entrypoints=websecure
-        - traefik.http.routers.grafana.tls.certresolver=${TRAEFIK_RESOLVER}
-        - traefik.http.routers.grafana.middlewares=${TRAEFIK_AUTH}
 
   prometheus:
     image: prom/prometheus
@@ -648,11 +571,71 @@ services:
         limits:
           cpus: "1.0"
           memory: "1G"
-        # reservations:
-        #   cpus: "0.5"
-        #   memory: "512M"
       labels:
         - traefik.enable=false
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   secrets:
+  #     - GRAFANA_ROOT_USER
+  #     - GRAFANA_ROOT_PASSWORD
+  #   environment:
+  #     #GF_PATHS_CONFIG: /etc/grafana/grafana.ini
+  #     GF_PATHS_DATA: /var/lib/grafana
+  #     GF_PATHS_LOGS: /var/log/grafana
+  #     GF_SECURITY_ADMIN_USER__FILE: /run/secrets/GRAFANA_ROOT_USER
+  #     GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/GRAFANA_ROOT_PASSWORD
+  #   networks:
+  #     - public
+  #   volumes:
+  #     #- ${APP_PATH}/grafana/conf/grafana.ini:/etc/grafana/grafana.ini
+  #     - ${APP_PATH}/grafana/logs:/var/log/grafana
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
+  #     interval: 15s
+  #     retries: 3
+  #     timeout: 5s
+  #     start_period: 30s
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role==${DOCKER_WORKER}
+  #       preferences:
+  #         - spread: node.id
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 10s
+  #       max_attempts: 5
+  #       window: 60s
+  #     update_config:
+  #       parallelism: 1
+  #       delay: 15s
+  #       failure_action: rollback
+  #       monitor: 30s
+  #       order: start-first
+  #     rollback_config:
+  #       parallelism: 1
+  #       delay: 10s
+  #       failure_action: continue
+  #       monitor: 30s
+  #     resources:
+  #       limits:
+  #         cpus: "0.5"
+  #         memory: "512M"
+  #       # reservations:
+  #       #   cpus: "0.5"
+  #       #   memory: "512M"
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.tags=${ENVIRONMENT}
+  #       - traefik.http.services.grafana.loadbalancer.server.scheme=http
+  #       - traefik.http.services.grafana.loadbalancer.server.port=3000
+  #       - traefik.http.routers.grafana.rule=Host(`logs.${DOMAIN_DEV}`)
+  #       - traefik.http.routers.grafana.entrypoints=websecure
+  #       - traefik.http.routers.grafana.tls.certresolver=${TRAEFIK_RESOLVER}
+  #       - traefik.http.routers.grafana.middlewares=${TRAEFIK_AUTH}
 
   # grafana-mimir:
   #   image: grafana/mimir:latest
