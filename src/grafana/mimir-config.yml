@@ -1,17 +1,18 @@
-# Run Mimir in single process mode, with all components running in 1 process.
-# Do not use this configuration in production.
-target: all,alertmanager,overrides-exporter
-
 server:
   http_listen_port: 9000
   grpc_listen_port: 9095
   log_level: debug
 
 limits_config:
-  # Retention settings for how long to keep metrics data
   max_chunks_per_query: 5000
   max_query_length: 60
   max_returned_streams: 100
+
+cortex:
+  frontend:
+    frontend_url: "http://localhost:9000"
+  alertmanager:
+    alertmanager_url: "http://alertmanager:9093"
 
 common:
   storage:
@@ -20,8 +21,16 @@ common:
       endpoint: minio:9000
       insecure: true
 
+distributor:
+  ring:
+    kvstore:
+      store: consul
+      consul:
+        http_addr: "http://consul:8500"
+        consistency: "strong"
+        prefix: "mimir/ring"
+
 ingester:
-  # Configures how much data to keep in memory for ingestion
   chunk_idle_period: 5m
   max_chunk_age: 1h
   max_chunks_per_query: 5000
@@ -32,50 +41,71 @@ ingester:
       consul:
         http_addr: "http://consul:8500"
         consistency: "strong"
-        prefix: "mimir"
-    replication_factor: 1
+        prefix: "mimir/ring"
+
+query_frontend:
+  max_concurrent: 1000
+
+querier:
+  query_ingesters_within: 12h
+
+store-gateway:
+  sharding-ring:
+    kvstore:
+      store: consul
+      consul:
+        http_addr: "http://consul:8500"
+        consistency: "strong"
+        prefix: "mimir/ring"
 
 blocks_storage:
   backend: s3
   s3:
     bucket_name: metrics
 
-alertmanager_storage:
-  s3:
-    bucket_name: mimir-alerts
-
-ruler_storage:
-  s3:
-    bucket_name: mimir-rules
-
 compactor:
   compaction_interval: 10m
   retention_enabled: true
   retention:
-    # Define retention policy for data (e.g., 30 days retention for each metric)
     daily: 30d
     weekly: 30d
-
-query_frontend:
-  frontend_worker:
-    frontend_address: "localhost:9095"
-  max_concurrent: 1000
-
-cortex:
-  frontend:
-    frontend_url: "http://localhost:9000"
-  alertmanager:
-    alertmanager_url: "http://alertmanager:9093"
+  ring:
+    kvstore:
+      store: consul
+      consul:
+        http_addr: "http://consul:8500"
+        consistency: "strong"
+        prefix: "mimir/ring"
 
 ruler:
   rule_path: /data/ruler
   alertmanager_url: http://127.0.0.1:8080/alertmanager
   ring:
-    # Quickly detect unhealthy rulers to speed up the tutorial.
     heartbeat_period: 2s
     heartbeat_timeout: 10s
+    kvstore:
+      store: consul
+      consul:
+        http_addr: "http://consul:8500"
+        consistency: "strong"
+        prefix: "mimir/ring"
+
+ruler_storage:
+  s3:
+    bucket_name: mimir-rules
 
 alertmanager:
   data_dir: /data/alertmanager
-  fallback_config_file: /etc/mimir/alertmanager-config.yaml
+  fallback_config_file: /etc/mimir/alertmanager-config.yml
   external_url: http://localhost:9009/alertmanager
+  sharding-ring:
+    kvstore:
+      store: consul
+      consul:
+        http_addr: "http://consul:8500"
+        consistency: "strong"
+        prefix: "mimir/ring"
+
+alertmanager_storage:
+  s3:
+    bucket_name: mimir-alerts

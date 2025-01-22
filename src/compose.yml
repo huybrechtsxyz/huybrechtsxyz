@@ -574,122 +574,402 @@ services:
       labels:
         - traefik.enable=false
 
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   secrets:
-  #     - GRAFANA_ROOT_USER
-  #     - GRAFANA_ROOT_PASSWORD
-  #   environment:
-  #     #GF_PATHS_CONFIG: /etc/grafana/grafana.ini
-  #     GF_PATHS_DATA: /var/lib/grafana
-  #     GF_PATHS_LOGS: /var/log/grafana
-  #     GF_SECURITY_ADMIN_USER__FILE: /run/secrets/GRAFANA_ROOT_USER
-  #     GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/GRAFANA_ROOT_PASSWORD
-  #   networks:
-  #     - public
-  #   volumes:
-  #     #- ${APP_PATH}/grafana/conf/grafana.ini:/etc/grafana/grafana.ini
-  #     - ${APP_PATH}/grafana/logs:/var/log/grafana
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
-  #     interval: 15s
-  #     retries: 3
-  #     timeout: 5s
-  #     start_period: 30s
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "0.5"
-  #         memory: "512M"
-  #       # reservations:
-  #       #   cpus: "0.5"
-  #       #   memory: "512M"
-  #     labels:
-  #       - traefik.enable=true
-  #       - traefik.tags=${ENVIRONMENT}
-  #       - traefik.http.services.grafana.loadbalancer.server.scheme=http
-  #       - traefik.http.services.grafana.loadbalancer.server.port=3000
-  #       - traefik.http.routers.grafana.rule=Host(`logs.${DOMAIN_DEV}`)
-  #       - traefik.http.routers.grafana.entrypoints=websecure
-  #       - traefik.http.routers.grafana.tls.certresolver=${TRAEFIK_RESOLVER}
-  #       - traefik.http.routers.grafana.middlewares=${TRAEFIK_AUTH}
+  grafana:
+    image: grafana/grafana:latest
+    secrets:
+      - GRAFANA_ROOT_USER
+      - GRAFANA_ROOT_PASSWORD
+    environment:
+      #GF_PATHS_CONFIG: /etc/grafana/grafana.ini
+      GF_PATHS_DATA: /var/lib/grafana
+      GF_PATHS_LOGS: /var/log/grafana
+      GF_SECURITY_ADMIN_USER__FILE: /run/secrets/GRAFANA_ROOT_USER
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/GRAFANA_ROOT_PASSWORD
+    networks:
+      - public
+    volumes:
+      #- ${APP_PATH}/grafana/conf/grafana.ini:/etc/grafana/grafana.ini
+      - ${APP_PATH}/grafana/logs:/var/log/grafana
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
+      interval: 15s
+      retries: 3
+      timeout: 5s
+      start_period: 30s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+      labels:
+        # Enable Traefik
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.grafana.loadbalancer.server.scheme=http
+        - traefik.http.services.grafana.loadbalancer.server.port=3000
+        - traefik.http.routers.grafana.rule=Host(`logs.${DOMAIN_DEV}`)
+        - traefik.http.routers.grafana.entrypoints=websecure
+        - traefik.http.routers.grafana.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.grafana.middlewares=${TRAEFIK_AUTH}
 
-  # grafana-mimir:
-  #   image: grafana/mimir:latest
-  #   secrets:
-  #     - MINIO_ROOT_USER
-  #     - MINIO_ROOT_PASSWORD
-  #   environment:
-  #     MINIO_ROOT_USER: admin
-  #     MINIO_ROOT_PASSWORD: password
-  #     CONSUL_HTTP_ADDR: consul:8500  # Consul address to register and discover services
-  #     MEMBERLIST_JOIN: consul:8500   # Use Consul for dynamic discovery
-  #   configs:
-  #     - source: mimir_config
-  #       target: /etc/mimir/mimir.yml
-  #   command: ["/etc/mimir/mimir-entry.sh"]
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/grafana/conf:/etc/mimir
-  #     - ${APP_PATH}/grafana/metrics:/data
-  #   # healthcheck:
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "1.0"
-  #         memory: "512M"
-  #       # reservations:
-  #       #   cpus: "0.5"
-  #       #   memory: "512M"
-  #     labels:
-  #       - traefik.enable=false
+  # Distributors - Handling writes from Prometheus
+  grafana-mimir-dist:
+    image: grafana/mimir:latest
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      MIMIR_TARGET: distributor
+      MIMIR_ADDR: tasks.grafana-mimir-dist:8080
+    configs:
+      - source: mimir_config
+        target: /etc/mimir/mimir.yml
+      - source: mimir_alerts
+        target: /etc/mimir/alertmanager-config.yml
+    command: ["/etc/mimir/mimir-entry.sh"]
+    networks:
+      - public
+    deploy:
+      mode: replicated
+      replicas: 2
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+      labels:
+        - traefik.enable=false
+
+  # Ingester - Stores data temporarily before flushing to long-term storage
+  grafana-mimir-ingest:
+    image: grafana/mimir:latest
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      MIMIR_TARGET: ingester
+      MIMIR_ADDR: tasks.grafana-mimir-ingest:8080
+    configs:
+      - source: mimir_config
+        target: /etc/mimir/mimir.yml
+      - source: mimir_alerts
+        target: /etc/mimir/alertmanager-config.yml
+    command: ["/etc/mimir/mimir-entry.sh"]
+    networks:
+      - public
+    deploy:
+      mode: replicated
+      replicas: 2
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+      labels:
+        - traefik.enable=false
+
+  # Query Frontend - Load balancing for query handling
+  grafana-mimir-query:
+    image: grafana/mimir:latest
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      MIMIR_TARGET: query-frontend
+      MIMIR_ADDR: tasks.grafana-mimir-query:8080
+    configs:
+      - source: mimir_config
+        target: /etc/mimir/mimir.yml
+      - source: mimir_alerts
+        target: /etc/mimir/alertmanager-config.yml
+    command: ["/etc/mimir/mimir-entry.sh"]
+    networks:
+      - public
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+      labels:
+        - traefik.enable=false
+
+  # Query Backends (Querier) - Handles read requests
+  grafana-mimir-querier:
+    image: grafana/mimir:latest
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      MIMIR_TARGET: querier
+      MIMIR_ADDR: tasks.grafana-mimir-querier:8080
+    configs:
+      - source: mimir_config
+        target: /etc/mimir/mimir.yml
+      - source: mimir_alerts
+        target: /etc/mimir/alertmanager-config.yml
+    command: ["/etc/mimir/mimir-entry.sh"]
+    networks:
+      - public
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+      labels:
+        - traefik.enable=false
+
+  # Store Gateway - Access long-term storage (e.g., S3)
+  grafana-mimir-gateway:
+    image: grafana/mimir:latest
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      MIMIR_TARGET: store-gateway
+      MIMIR_ADDR: tasks.grafana-mimir-gateway:8080
+    configs:
+      - source: mimir_config
+        target: /etc/mimir/mimir.yml
+      - source: mimir_alerts
+        target: /etc/mimir/alertmanager-config.yml
+    command: ["/etc/mimir/mimir-entry.sh"]
+    networks:
+      - public
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+      labels:
+        - traefik.enable=false
+
+  # Compactor - Optimizes storage and reduces index size
+  grafana-mimir-compactor:
+    image: grafana/mimir:latest
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      MIMIR_TARGET: compactor
+      MIMIR_ADDR: tasks.grafana-mimir-compactor:8080
+    configs:
+      - source: mimir_config
+        target: /etc/mimir/mimir.yml
+      - source: mimir_alerts
+        target: /etc/mimir/alertmanager-config.yml
+    command: ["/etc/mimir/mimir-entry.sh"]
+    networks:
+      - public
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+      labels:
+        - traefik.enable=false
+
+  # Ruler - For recording and alerting rules
+  grafana-mimir-ruler:
+    image: grafana/mimir:latest
+    secrets:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    environment:
+      MIMIR_TARGET: ruler
+      MIMIR_ADDR: tasks.grafana-mimir-ruler:8080
+    configs:
+      - source: mimir_config
+        target: /etc/mimir/mimir.yml
+      - source: mimir_alerts
+        target: /etc/mimir/alertmanager-config.yml
+    command: ["/etc/mimir/mimir-entry.sh"]
+    networks:
+      - public
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+      labels:
+        - traefik.enable=false
 
   # grafana-loki:
   #   image: grafana/loki
@@ -786,5 +1066,5 @@ configs:
     file: ${APP_PATH}/grafana/conf/prometheus.yml
   mimir_config:
     file: ${APP_PATH}/grafana/conf/mimir-config.yml
-  loki_config:
-    file: ${APP_PATH}/grafana/conf/loki-config.yml
+  mimir_alerts:
+    file: ${APP_PATH}/grafana/conf/alertmanager-config.yml
