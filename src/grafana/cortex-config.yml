@@ -57,8 +57,6 @@ blocks_storage:
     endpoint: minio:9000
     region: local
     bucket_name: metrics
-    access_key_id: admin
-    secret_access_key: password
     insecure: true
   tsdb:
     dir: /data/tsdb
