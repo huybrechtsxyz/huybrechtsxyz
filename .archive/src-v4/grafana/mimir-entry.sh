@@ -9,4 +9,6 @@ exec /usr/bin/mimir \
   -config.file=/etc/mimir/config.yml \
   -storage.s3.access_key_id=${MINIO_ROOT_USER} \
   -storage.s3.secret_access_key=${MINIO_ROOT_PASSWORD} \
-  -auth.multitenancy-enabled=false
+  -auth.multitenancy-enabled=false \
+  -distributor.ring.instance-addr=$(hostname -i) \
+  -ingester.ring.instance-addr=$(hostname -i)

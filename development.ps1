@@ -156,9 +156,10 @@ function Invoke-Grafana {
     $grafanaConf = "$grafanaDir/conf"
     $grafanaData = "$grafanaDir/data"
     $grafanaLogs = "$grafanaDir/logs"
-    $grafanaMetrics = "$grafanaDir/metrics"
-    $grafanaTracing = "$grafanaDir/tracing"
-    New-Item -ItemType Directory -Path $grafanaDir, $grafanaConf, $grafanaData, $grafanaLogs, $grafanaMetrics, $grafanaTracing -Force
+    $grafanaMetrics = "$grafanaData/metrics" # prometheus local dir
+    $grafanaTracing = "$grafanaData/tracing"
+    New-Item -ItemType Directory -Path $grafanaDir, $grafanaConf, $grafanaData, $grafanaLogs -Force
+    New-Item -ItemType Directory -Path $grafanaMetrics, $grafanaTracing -Force
     Copy-Item -Path "./src/grafana/*" -Destination $grafanaConf -Recurse
     Write-Host 'Configuring GRAFANA ... done'
 }

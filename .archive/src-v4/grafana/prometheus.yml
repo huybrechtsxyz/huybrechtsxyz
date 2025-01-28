@@ -28,11 +28,11 @@ scrape_configs:
     static_configs:
       - targets: ["localhost:9090"]
 
-# remote_write:
-#   - url: "http://mimir-lb:8080/api/v1/push"
-#     remote_timeout: 30s
-#     headers:
-#       X-Scope-OrgID: anonymous
+remote_write:
+  - url: "http://grafana-mimir:8080/api/v1/push"
+    remote_timeout: 30s
+    headers:
+      X-Scope-OrgID: anonymous
 
-# remote_read:
-#   - url: "http://mimir-lb:8080/api/v1/read"
+remote_read:
+  - url: "http://grafana-mimir:8080/api/v1/read"
