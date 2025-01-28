@@ -50,5 +50,5 @@ mc alias set myminio http://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
 # Create and configure buckets for grafana
 create_bucket_if_not_exists logging
 create_bucket_if_not_exists metrics
-create_bucket_if_not_exists mimir-alerts
-create_bucket_if_not_exists mimir-rules
+create_bucket_if_not_exists cortex-alerts
+create_bucket_if_not_exists cortex-ruler

@@ -632,6 +632,20 @@ services:
         - traefik.http.routers.grafana.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.grafana.middlewares=${TRAEFIK_AUTH}
 
+  cortex:
+    image: quay.io/cortexproject/cortex:v1.18.1
+    command: [ -config.file=/config/cortex-config.yml ]
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/grafana/conf/cortex-config.yml:/config/cortex-config.yml:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:9009/ready"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s      
+
 networks:
   public:
     external: true

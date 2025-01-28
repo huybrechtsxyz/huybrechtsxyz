@@ -10,29 +10,19 @@ scrape_configs:
   # Scrape metrics from services registered with consul
   - job_name: 'consul'
     consul_sd_configs:
-      - server: 'http://consul:8500'      # Address of the Consul server
-        services: []                      # Discover all services (optional: specify specific services)
-    relabel_configs:
-      - source_labels: [__meta_consul_service]
-        action: keep
-        regex: prometheus         # Only keep the "prometheus" service
-      - source_labels: [__meta_consul_service_metadata_prometheus_path]
-        target_label: __metrics_path__
-        action: replace
-      - source_labels: [__address__, __meta_consul_service_metadata_prometheus_port]
-        target_label: __address__
-        action: replace
+      - server: 'consul:8500'
+        datacenter: 'develop'
   
   # Scrape metrics from Prometheus itself
   - job_name: "prometheus"
     static_configs:
-      - targets: ["localhost:9090"]
+      - targets: ["localhost:9009"]
 
-# remote_write:
-#   - url: "http://mimir-lb:8080/api/v1/push"
-#     remote_timeout: 30s
-#     headers:
-#       X-Scope-OrgID: anonymous
+remote_write:
+  - url: "http://cortex:9009/api/v1/push"
+    remote_timeout: 30s
 
-# remote_read:
-#   - url: "http://mimir-lb:8080/api/v1/read"
+remote_read:
+  - url: "http://cortex:9090/api/v1/query"
+    remote_timeout: 30s
+    read_recent: true 
