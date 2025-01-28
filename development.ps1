@@ -142,7 +142,8 @@ function Invoke-Consul {
     $consulDir = "$baseDir/consul"
     $consulConf = "$consulDir/conf"
     $consulData = "$consulDir/data"
-    New-Item -ItemType Directory -Path $consulDir, $consulConf, $consulData -Force
+    $consulLogs = "$consulDir/logs"
+    New-Item -ItemType Directory -Path $consulDir, $consulConf, $consulData, $consulLogs -Force
     $consulDir = Resolve-Path -Path $consulDir
     Copy-Item -Path "./src/consul/*" -Destination $consulConf -Recurse
     Write-Host 'Configuring CONSUL ... Done'
