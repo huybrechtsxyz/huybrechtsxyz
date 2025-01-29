@@ -33,8 +33,7 @@
         }
       ],
       "tags": [ "grafana","logging","metrics","tracing","docker-swarm","system" ]
-    }
-    ,
+    },
     {
       "id": "cortex",
       "name": "cortex",
@@ -51,6 +50,57 @@
         }
       ],
       "tags": [ "cortex","logging","metrics","tracing","docker-swarm","system" ]
+    },
+    {
+      "id": "otelcollector",
+      "name": "otelcollector",
+      "address": "otelcollector",
+      "port": 4317,
+      "meta": {},
+      "checks": [
+        {
+          "id": "otel-http-check",
+          "name": "OTel Health Check",
+          "http": "http://otelcollector:4317/healthz",
+          "interval": "30s",
+          "timeout": "5s"
+        }
+      ],
+      "tags": [ "otel","logging","metrics","tracing","docker-swarm","system" ]
+    },
+    {
+      "id": "tempo",
+      "name": "tempo",
+      "address": "tempo",
+      "port": 3200,
+      "meta": {},
+      "checks": [
+        {
+          "id": "tempo-http-check",
+          "name": "Tempo Health Check",
+          "http": "http://tempo:3200/health",
+          "interval": "30s",
+          "timeout": "5s"
+        }
+      ],
+      "tags": [ "tempo","logging","metrics","tracing","docker-swarm","system" ]
+    },
+    {
+      "id": "loki",
+      "name": "loki",
+      "address": "loki",
+      "port": 3100,
+      "meta": {},
+      "checks": [
+        {
+          "id": "loki-http-check",
+          "name": "Loki Health Check",
+          "http": "http://loki:3100/health",
+          "interval": "30s",
+          "timeout": "5s"
+        }
+      ],
+      "tags": [ "loki","logging","metrics","tracing","docker-swarm","system" ]
     }
   ]
 }

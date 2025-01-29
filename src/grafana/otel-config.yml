@@ -1,0 +1,33 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+  filelog:
+    include: [ "/var/log/*.log" ]  # Adjust log file path as needed
+    start_at: beginning
+    include_file_path: true
+    include_file_name: true
+    
+exporters:
+  logging:
+  otlp:
+    endpoint: "http://tempo:4317"  # Sending traces to Tempo
+  loki:
+    endpoint: "http://loki:3100/loki/api/v1/push"
+    labels:
+      job: "otel-collector"  # Metadata label for logs
+
+processors:
+  batch:
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp, logging]
+    logs:
+      receivers: [filelog]  # Read logs from files
+      processors: [batch]
+      exporters: [loki, logging]  # Send logs to Loki and console
