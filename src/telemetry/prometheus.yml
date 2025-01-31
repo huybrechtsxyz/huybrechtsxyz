@@ -11,18 +11,18 @@ scrape_configs:
   - job_name: 'consul'
     consul_sd_configs:
       - server: 'consul:8500'
-        datacenter: 'develop'
+        #datacenter: 'develop'
   
   # Scrape metrics from Prometheus itself
   - job_name: "prometheus"
     static_configs:
       - targets: ["localhost:9009"]
 
-remote_write:
-  - url: "http://cortex:9009/api/v1/push"
-    remote_timeout: 30s
+# remote_write:
+#   - url: "http://cortex:9009/api/v1/push"
+#     remote_timeout: 30s
 
-remote_read:
-  - url: "http://cortex:9090/api/v1/query"
-    remote_timeout: 30s
-    read_recent: true 
+# remote_read:
+#   - url: "http://cortex:9090/api/v1/query"
+#     remote_timeout: 30s
+#     read_recent: true 

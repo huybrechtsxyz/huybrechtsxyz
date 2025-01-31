@@ -561,58 +561,57 @@ services:
         - traefik.http.routers.grafana.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.grafana.middlewares=${TRAEFIK_AUTH}
 
-  # prometheus:
-  #   image: prom/prometheus
-  #   configs:
-  #     - source: prometheus_config
-  #       target: /etc/prometheus/prometheus.yml
-  #   command:
-  #     - --config.file=/etc/prometheus/prometheus.yml
-  #     - --storage.tsdb.path=/prometheus
-  #     - --storage.tsdb.min-block-duration=2h
-  #     - --storage.tsdb.max-block-duration=2h
-  #     - --web.external-url=http://localhost:9090
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/grafana/conf:/etc/prometheus
-  #     - ${APP_PATH}/grafana/data/metrics:/prometheus:rw
-  #   healthcheck:
-  #     test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
-  #     interval: 15s
-  #     timeout: 5s
-  #     retries: 5
-  #     start_period: 10s
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "1.0"
-  #         memory: "1G"
-  #     labels:
-  #       - traefik.enable=false
+  prometheus:
+    image: prom/prometheus
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.min-block-duration=2h
+      - --storage.tsdb.max-block-duration=2h
+      - --web.external-url=http://localhost:9090
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/telemetry/prometheus:/prometheus:rw
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "1G"
+      labels:
+        - traefik.enable=false
 
   # cortex:
   #   image: quay.io/cortexproject/cortex:v1.18.1
@@ -900,8 +899,8 @@ configs:
     file: ${APP_PATH}/keycloak/keycloak-entry.sh
   keycloak_realm:
     file: ${APP_PATH}/keycloak/keycloak-realm.json
-  # prometheus_config:
-  #   file: ${APP_PATH}/grafana/conf/prometheus.yml
+  prometheus_config:
+    file: ${APP_PATH}/telemetry/conf/prometheus.yml
   # cortex_config:
   #   file: ${APP_PATH}/grafana/conf/cortex-config.yml
   # otel_config:

@@ -197,8 +197,9 @@ function Invoke-Telemetry {
     $telemetryDir = "$baseDir/telemetry"
     $telemetryConf = "$telemetryDir/conf"
     $telemetryGrafana = "$telemetryDir/grafana"
+    $telemetryPrometheus = "$telemetryDir/prometheus"
     New-Item -ItemType Directory -Path $telemetryDir, $telemetryConf -Force
-    New-Item -ItemType Directory -Path $telemetryGrafana -Force
+    New-Item -ItemType Directory -Path $telemetryGrafana, $telemetryPrometheus -Force
     Copy-Item -Path "./src/telemetry/*" -Destination $telemetryConf -Recurse
     Write-Host 'Configuring TELEMETRY ... done'
 }
