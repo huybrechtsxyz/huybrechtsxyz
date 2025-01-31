@@ -88,6 +88,11 @@ function Set-Docker {
     Write-Host "Public Network IP: $publicGatewayIP"
     [System.Environment]::SetEnvironmentVariable("DOCKER_PUBLIC_IP", $publicGatewayIP, [System.EnvironmentVariableTarget]::Process)
 
+    $managerNodes = docker node ls --filter "role=manager" --quiet
+    $managerCount = ($managerNodes | Measure-Object -Line).Lines
+    Write-Host "Number of manager nodes in the Docker Swarm: $managerCount"
+    [System.Environment]::SetEnvironmentVariable("DOCKER_MANAGER_COUNT", $managerCount)
+
     # Check and create the "intranet" network if it doesn't exist
     # $intranetNetwork = "private"
     # if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$intranetNetwork$")) {
@@ -253,7 +258,7 @@ Write-Host "Environment variables are:"
 $env:HOSTNAME=$env:COMPUTERNAME
 Write-Host " -- HOSTNAME: $env:HOSTNAME" 
 Write-Host " -- DOCKER_PUBLIC_IP: $env:DOCKER_PUBLIC_IP" 
-Write-Host " -- DOCKER_PRIVATE_IP: $env:DOCKER_PRIVATE_IP" 
+Write-Host " -- DOCKER_MANGER_COUNT: $env:DOCKER_MANAGER_COUNT" 
 if (Test-Path $environmentFile) {
     Get-Content $environmentFile | ForEach-Object {
         $key, $value = $_ -split '='

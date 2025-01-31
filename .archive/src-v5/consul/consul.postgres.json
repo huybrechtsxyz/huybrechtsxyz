@@ -1,0 +1,38 @@
+{
+  "services": [
+    {
+      "id": "postgres",
+      "name": "postgres",
+      "address": "postgres",
+      "port": 5432,
+      "meta": {},
+      "checks": [
+        {
+          "id": "postgres-tcp-check",
+          "name": "PostgreSql TCP Health Check",
+          "tcp": "postgres:5432",
+          "interval": "10s",
+          "timeout": "1s"
+        }
+      ],
+      "tags": [ "postgres","storage","data-store","data","docker-swarm","system" ]
+    },
+    {
+      "id": "pgadmin",
+      "name": "pgadmin",
+      "address": "pgadmin",
+      "port": 9080,
+      "meta": {},
+      "checks": [
+        {
+          "id": "pgadmin-http-check",
+          "name": "PGAdmin HTTP Health Check",
+          "http": "http://pgadmin:9080/pgadmin",
+          "interval": "10s",
+          "timeout": "1s"
+        }
+      ],
+      "tags": [ "pgadmin","admin","data","docker-swarm","system" ]
+    }
+  ]
+}
