@@ -16,7 +16,7 @@ scrape_configs:
   # Scrape metrics from Prometheus itself
   - job_name: "prometheus"
     static_configs:
-      - targets: ["localhost:9009"]
+      - targets: ["localhost:9090"]
 
 # remote_write:
 #   - url: "http://cortex:9009/api/v1/push"
