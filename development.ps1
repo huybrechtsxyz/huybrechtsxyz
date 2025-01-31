@@ -154,21 +154,6 @@ function Invoke-Consul {
     Write-Host 'Configuring CONSUL ... Done'
 }
 
-# FUNCTION: Configure and run GRAFANA
-function Invoke-Grafana {
-    Write-Host 'Configuring GRAFANA ...'
-    $grafanaDir = "$baseDir/grafana"
-    $grafanaConf = "$grafanaDir/conf"
-    $grafanaData = "$grafanaDir/data"
-    $grafanaLogs = "$grafanaDir/logs"
-    $grafanaMetrics = "$grafanaData/metrics"
-    $grafanaTracing = "$grafanaData/tracing"
-    New-Item -ItemType Directory -Path $grafanaDir, $grafanaConf, $grafanaData, $grafanaLogs -Force
-    New-Item -ItemType Directory -Path $grafanaMetrics, $grafanaTracing -Force
-    Copy-Item -Path "./src/grafana/*" -Destination $grafanaConf -Recurse
-    Write-Host 'Configuring GRAFANA ... done'
-}
-
 # FUNCTION: Configure and run Keycloak
 function Invoke-Keycloak {
     Write-Host 'Configuring KEYCLOAK ... for DOCKER'
@@ -204,6 +189,18 @@ function Invoke-Postgres {
     $postgresConf = Resolve-Path -Path $postgresConf
     Copy-Item -Path "./src/postgres/*" -Destination $postgresConf -Recurse
     Write-Host 'Configuring POSTGRESQL ... Done'
+}
+
+# FUNCTION: Configure and run TELEMETRY
+function Invoke-Telemetry {
+    Write-Host 'Configuring TELEMETRY ...'
+    $telemetryDir = "$baseDir/telemetry"
+    $telemetryConf = "$telemetryDir/conf"
+    $telemetryGrafana = "$telemetryDir/grafana"
+    New-Item -ItemType Directory -Path $telemetryDir, $telemetryConf -Force
+    New-Item -ItemType Directory -Path $telemetryGrafana -Force
+    Copy-Item -Path "./src/telemetry/*" -Destination $telemetryConf -Recurse
+    Write-Host 'Configuring TELEMETRY ... done'
 }
 
 # FUNCTION: Configure and run Traefik
@@ -247,7 +244,7 @@ Invoke-Traefik
 Invoke-Minio
 Invoke-Postgres
 Invoke-Keycloak
-Invoke-Grafana
+Invoke-Telemetry
 
 # Debug and test
 $composeFile = "./src/compose.yml"

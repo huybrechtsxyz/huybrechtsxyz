@@ -450,6 +450,7 @@ services:
     configs:
       - source: keycloak_entry
         target: /usr/local/bin/entrypoint.sh
+        mode: 0755
       # - source: keycloak_realm
       #   target: /opt/keycloak/data/import/keycloak-realm.json
     entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true #--features=opentelemetry --import-realm
@@ -499,6 +500,66 @@ services:
         - traefik.http.routers.keycloak.entrypoints=websecure
         - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.keycloak.middlewares=${TRAEFIK_AUTH}
+
+  grafana:
+    image: grafana/grafana:latest
+    secrets:
+      - APP_ROOT_USERNAME
+      - APP_ROOT_PASSWORD
+    environment:
+      #GF_PATHS_CONFIG: /etc/grafana/grafana.ini
+      GF_PATHS_DATA: /var/lib/grafana
+      GF_PATHS_LOGS: /var/log/grafana
+      GF_SECURITY_ADMIN_USER__FILE: /run/secrets/APP_ROOT_USERNAME
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/APP_ROOT_PASSWORD
+    networks:
+      - public
+    volumes:
+      - ${APP_PATH}/telemetry/grafana:/var/lib/grafana
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
+      interval: 15s
+      retries: 3
+      timeout: 5s
+      start_period: 30s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+      labels:
+        # Enable Traefik
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.grafana.loadbalancer.server.scheme=http
+        - traefik.http.services.grafana.loadbalancer.server.port=3000
+        - traefik.http.routers.grafana.rule=Host(`logs.${DOMAIN_DEV}`)
+        - traefik.http.routers.grafana.entrypoints=websecure
+        - traefik.http.routers.grafana.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.grafana.middlewares=${TRAEFIK_AUTH}
 
   # prometheus:
   #   image: prom/prometheus
@@ -552,66 +613,6 @@ services:
   #         memory: "1G"
   #     labels:
   #       - traefik.enable=false
-
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   secrets:
-  #     - GRAFANA_ROOT_USER
-  #     - GRAFANA_ROOT_PASSWORD
-  #   environment:
-  #     #GF_PATHS_CONFIG: /etc/grafana/grafana.ini
-  #     GF_PATHS_DATA: /var/lib/grafana
-  #     GF_PATHS_LOGS: /var/log/grafana
-  #     GF_SECURITY_ADMIN_USER__FILE: /run/secrets/GRAFANA_ROOT_USER
-  #     GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/GRAFANA_ROOT_PASSWORD
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/grafana/logs:/var/log/grafana
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
-  #     interval: 15s
-  #     retries: 3
-  #     timeout: 5s
-  #     start_period: 30s
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "0.5"
-  #         memory: "512M"
-  #     labels:
-  #       # Enable Traefik
-  #       - traefik.enable=true
-  #       - traefik.tags=${ENVIRONMENT}
-  #       - traefik.http.services.grafana.loadbalancer.server.scheme=http
-  #       - traefik.http.services.grafana.loadbalancer.server.port=3000
-  #       - traefik.http.routers.grafana.rule=Host(`logs.${DOMAIN_DEV}`)
-  #       - traefik.http.routers.grafana.entrypoints=websecure
-  #       - traefik.http.routers.grafana.tls.certresolver=${TRAEFIK_RESOLVER}
-  #       - traefik.http.routers.grafana.middlewares=${TRAEFIK_AUTH}
 
   # cortex:
   #   image: quay.io/cortexproject/cortex:v1.18.1
