@@ -18,11 +18,15 @@ scrape_configs:
     static_configs:
       - targets: ["localhost:9090"]
 
-# remote_write:
-#   - url: "http://cortex:9009/api/v1/push"
-#     remote_timeout: 30s
+remote_write:
+  - url: "http://cortex:9009/api/v1/push"
+    headers:
+      X-Scope-OrgID: anonymous
+    remote_timeout: 30s
 
-# remote_read:
-#   - url: "http://cortex:9090/api/v1/query"
-#     remote_timeout: 30s
-#     read_recent: true 
+remote_read:
+  - url: "http://cortex:9009/api/v1/query"
+    headers:
+      X-Scope-OrgID: anonymous
+    remote_timeout: 30s
+    read_recent: true 

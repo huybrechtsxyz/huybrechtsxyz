@@ -47,11 +47,12 @@ export MINIO_ROOT_PASSWORD=$(cat $MINIO_ROOT_PASSWORD_FILE)
 # Wait for MinIO to be ready, with a timeout of 60 seconds (adjustable)
 mc alias set myminio http://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
 
-# Create and configure buckets for grafana
+# Create and configure buckets for telemetry
+create_bucket_if_not_exists otel-metrics
+create_bucket_if_not_exists otel-alerts
+create_bucket_if_not_exists otel-ruler
+
 # create_bucket_if_not_exists logging
-# create_bucket_if_not_exists metrics
 # create_bucket_if_not_exists tracing
-# create_bucket_if_not_exists cortex-alerts
-# create_bucket_if_not_exists cortex-ruler
 # create_bucket_if_not_exists loki-chunks
 # create_bucket_if_not_exists loki-index

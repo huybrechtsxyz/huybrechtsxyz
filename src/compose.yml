@@ -613,58 +613,56 @@ services:
       labels:
         - traefik.enable=false
 
-  # cortex:
-  #   image: quay.io/cortexproject/cortex:v1.18.1
-  #   configs:
-  #     - source: cortex_config
-  #       target: /config/cortex-config.yml
-  #   secrets:
-  #     - MINIO_ROOT_USER
-  #     - MINIO_ROOT_PASSWORD
-  #   environment:
-  #     MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
-  #     MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
-  #   entrypoint: /bin/sh "/config/entrypoint.sh"
-  #   networks:
-  #     - public
-  #   volumes:
-  #     - ${APP_PATH}/grafana/conf/cortex-entry.sh:/config/entrypoint.sh:ro
-  #   healthcheck:
-  #     test: ["CMD", "wget", "-qO-", "http://127.0.0.1:9009/ready"]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 30s      
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "0.5"
-  #         memory: "512M"
-  #     labels:
-  #       - traefik.enable=false
+  cortex:
+    image: quay.io/cortexproject/cortex:v1.18.1
+    configs:
+      - source: cortex_config
+        target: /config/cortex-config.yml
+      - source: cortex_entry
+        target: /config/entrypoint.sh
+        mode: 0755
+    secrets:
+      - APP_ROOT_USERNAME
+      - APP_ROOT_PASSWORD
+    entrypoint: /bin/sh "/config/entrypoint.sh"
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:9009/ready"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s      
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+      labels:
+        - traefik.enable=false
 
   # loki:
   #   image: grafana/loki:latest
@@ -901,8 +899,11 @@ configs:
     file: ${APP_PATH}/keycloak/keycloak-realm.json
   prometheus_config:
     file: ${APP_PATH}/telemetry/conf/prometheus.yml
-  # cortex_config:
-  #   file: ${APP_PATH}/grafana/conf/cortex-config.yml
+  cortex_config:
+    file: ${APP_PATH}/telemetry/conf/cortex-config.yml
+  cortex_entry:
+    file: ${APP_PATH}/telemetry/conf/cortex-entry.sh
+
   # otel_config:
   #   file: ${APP_PATH}/grafana/conf/otel-config.yml
   # tempo_config:
