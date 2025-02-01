@@ -49,11 +49,11 @@ services:
       - -node=${HOSTNAME}
       - -bind=0.0.0.0
       - -advertise={{ GetPrivateIP }}
-    networks: 
-      - public
     volumes:
       - ${APP_PATH}/consul/conf:/consul/config
       - ${APP_PATH}/consul/data:/consul/data
+    networks: 
+      - public
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
       interval: 15s
@@ -112,19 +112,17 @@ services:
       TRAEFIK_RESOLVER: ${TRAEFIK_RESOLVER}
       TRAEFIK_CLIENTID_FILE: ${TRAEFIK_CLIENTID}
       TRAEFIK_CLIENTSECRET_FILE: ${TRAEFIK_CLIENTSECRET}
-    configs:
-      - source: traefik_static
-        target: /etc/traefik/traefik.yml
     command: traefik --configFile=/etc/traefik/treafik.yml
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APP_PATH}/traefik/conf/traefik.${ENVIRONMENT}.yml:/etc/traefik/traefik.yml
+      - ${APP_PATH}/traefik/data:/app/data
+      - ${APP_PATH}/traefik/logs:/app/logs
     ports:
       - 80:80
       - 443:443
     networks:
       - public
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${APP_PATH}/traefik/data:/app/data
-      - ${APP_PATH}/traefik/logs:/app/logs
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
       interval: 15s
@@ -193,11 +191,11 @@ services:
       MINIO_ROOT_USER_FILE: /run/secrets/APP_ROOT_USERNAME
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
     command: server /data --console-address ":9001"
-    networks:
-      - public
     volumes:
       - ${APP_PATH_DATA}:/data
       - ${APP_PATH}/minio/logs:/root/.minio/logs
+    networks:
+      - public
     healthcheck:
       test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
       interval: 15s
@@ -260,10 +258,9 @@ services:
     environment:
       MINIO_ROOT_USER_FILE: /run/secrets/APP_ROOT_USERNAME
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-    configs:
-      - source: minio_init
-        target: /etc/entrypoint.sh
     entrypoint: /bin/sh "/etc/entrypoint.sh"
+    volumes:
+      - ${APP_PATH}/minio/conf/minio-init.sh:/etc/entrypoint.sh
     networks:
       - public
     deploy:
@@ -291,10 +288,10 @@ services:
       POSTGRES_DB: xyzdb
       POSTGRES_USER_FILE: /run/secrets/APP_ROOT_USERNAME
       POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-    networks:
-      - public
     volumes:
       - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
+    networks:
+      - public
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d xyzdb -U $$(cat /run/secrets/APP_ROOT_USERNAME)"]
       interval: 1s
@@ -343,11 +340,11 @@ services:
       POSTGRES_USER_FILE: /run/secrets/APP_ROOT_USERNAME
       POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
     entrypoint: usr/local/bin/entrypoint.sh
-    networks:
-      - public
     volumes:
       - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
       - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
+    networks:
+      - public
     deploy:
       mode: replicated
       replicas: 1
@@ -372,10 +369,10 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
       PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
       SCRIPT_NAME: /pgadmin
-    networks:
-      - public
     volumes:
       - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
+    networks:
+      - public
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
       interval: 15s
@@ -447,13 +444,10 @@ services:
       KC_DB_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
       KC_BOOTSTRAP_ADMIN_USERNAME_FILE: /run/secrets/APP_ROOT_USERNAME
       KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-    configs:
-      - source: keycloak_entry
-        target: /usr/local/bin/entrypoint.sh
-        mode: 0755
-      # - source: keycloak_realm
-      #   target: /opt/keycloak/data/import/keycloak-realm.json
     entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true #--features=opentelemetry --import-realm
+    volumes:
+      - ${APP_PATH}/keycloak/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
+      #- ${APP_PATH}/keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
     networks:
       - public
     healthcheck:
@@ -512,10 +506,10 @@ services:
       GF_PATHS_LOGS: /var/log/grafana
       GF_SECURITY_ADMIN_USER__FILE: /run/secrets/APP_ROOT_USERNAME
       GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/APP_ROOT_PASSWORD
-    networks:
-      - public
     volumes:
       - ${APP_PATH}/telemetry/grafana:/var/lib/grafana
+    networks:
+      - public
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
       interval: 15s
@@ -563,19 +557,17 @@ services:
 
   prometheus:
     image: prom/prometheus
-    configs:
-      - source: prometheus_config
-        target: /etc/prometheus/prometheus.yml
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.min-block-duration=2h
       - --storage.tsdb.max-block-duration=2h
       - --web.external-url=http://localhost:9090
+    volumes:
+      - ${APP_PATH}/telemetry/conf/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ${APP_PATH}/telemetry/prometheus:/prometheus:rw      
     networks:
       - public
-    volumes:
-      - ${APP_PATH}/telemetry/prometheus:/prometheus:rw
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
       interval: 15s
@@ -615,16 +607,14 @@ services:
 
   cortex:
     image: quay.io/cortexproject/cortex:v1.18.1
-    configs:
-      - source: cortex_config
-        target: /config/cortex-config.yml
-      - source: cortex_entry
-        target: /config/entrypoint.sh
-        mode: 0755
     secrets:
       - APP_ROOT_USERNAME
       - APP_ROOT_PASSWORD
     entrypoint: /bin/sh "/config/entrypoint.sh"
+    volumes:
+      - ${APP_PATH}/telemetry/conf/cortex-config.yml:/config/cortex-config.yml
+      - ${APP_PATH}/telemetry/conf/cortex-entry.sh:/config/entrypoint.sh
+      - ${APP_PATH}/telemetry/tempo/metrics:/var/tempo-metrics:rw
     networks:
       - public
     healthcheck:
@@ -666,16 +656,21 @@ services:
 
   tempo:
     image: grafana/tempo:latest
-    configs:
-      - source: tempo_config
-        target: /etc/tempo-config.yml
-      - source: tempo_entry
-        target: /etc/entrypoint.sh
-        mode: 0755
     secrets:
       - APP_ROOT_USERNAME
       - APP_ROOT_PASSWORD
-    entrypoint: /bin/sh "/etc/entrypoint.sh"
+    command:
+      [
+        "/tempo",
+        "-config.file=/etc/tempo-config.yml",
+        "-config.expand-env=true",
+        "-storage.trace.backend=s3",
+        "-storage.trace.s3.access_key=$$(cat /run/secrets/APP_ROOT_USERNAME)",
+        "-storage.trace.s3.secret_key=$$(cat /run/secrets/APP_ROOT_PASSWORD)"
+      ]
+    volumes:
+      - ${APP_PATH}/telemetry/conf/tempo-config.yml:/etc/tempo-config.yml
+      - ${APP_PATH}/telemetry/conf/tempo-entry.sh:/etc/entrypoint.sh
     networks:
       - public
     healthcheck:
@@ -886,29 +881,6 @@ secrets:
   VERSIO_PASSWORD:
     external: true
 
-configs:
-  traefik_static:
-    file: ${APP_PATH}/traefik/conf/traefik.${ENVIRONMENT}.yml
-  minio_init:
-    file:  ${APP_PATH}/minio/conf/minio-init.sh
-  keycloak_entry:
-    file: ${APP_PATH}/keycloak/keycloak-entry.sh
-  keycloak_realm:
-    file: ${APP_PATH}/keycloak/keycloak-realm.json
-  prometheus_config:
-    file: ${APP_PATH}/telemetry/conf/prometheus.yml
-  cortex_config:
-    file: ${APP_PATH}/telemetry/conf/cortex-config.yml
-  cortex_entry:
-    file: ${APP_PATH}/telemetry/conf/cortex-entry.sh
-  tempo_config:
-    file:  ${APP_PATH}/telemetry/conf/tempo-config.yml
-  tempo_entry:
-    file:  ${APP_PATH}/telemetry/conf/tempo-entry.sh
-
-  # otel_config:
-  #   file: ${APP_PATH}/grafana/conf/otel-config.yml
-  # loki_config:
-  #   file:  ${APP_PATH}/grafana/conf/loki-config.yml
-  # loki_entry:
-  #   file:  ${APP_PATH}/grafana/conf/loki-entry.sh
+# configs:
+#   traefik_static:
+#     file: ${APP_PATH}/traefik/conf/traefik.${ENVIRONMENT}.yml

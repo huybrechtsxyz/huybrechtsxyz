@@ -1,5 +1,6 @@
 server:
   http_listen_port: 3200
+  log_level: info
 
 distributor:
   receivers:
@@ -8,12 +9,27 @@ distributor:
         http:
         grpc:
 
+ingester:
+  trace_idle_period: 10s
+  max_block_bytes: 1_000_000_000
+  max_block_duration: 5m
+
 storage:
   trace:
     backend: s3
     s3:
-      endpoint: http://minio:9000
+      endpoint: minio:9000
       bucket: otel-tracing
-      access_key: ${MINIO_ROOT_USER}
-      secret_key: ${MINIO_ROOT_PASSWORD}
       insecure: true
+
+# metrics_generator:
+#   storage:
+#     path: "/var/tempo-metrics"
+#     disabled: true
+
+compactor:
+  ring:
+    kvstore:
+      store: inmemory
+  compaction:
+    block_retention: 48h

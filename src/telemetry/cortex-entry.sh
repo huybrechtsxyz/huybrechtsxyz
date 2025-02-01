@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 # Export secrets as environment variables
 export MINIO_ROOT_USER=$(cat /run/secrets/APP_ROOT_USERNAME)
