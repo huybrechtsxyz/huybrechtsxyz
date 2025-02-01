@@ -664,58 +664,56 @@ services:
       labels:
         - traefik.enable=false
 
-  # loki:
-  #   image: grafana/loki:latest
-  #   configs:
-  #     - source: loki_config
-  #       target: /etc/loki/loki-config.yml
-  #     - source: loki_entry
-  #       target: /etc/loki/entrypoint.sh
-  #   secrets:
-  #     - MINIO_ROOT_USER
-  #     - MINIO_ROOT_PASSWORD
-  #   environment:
-  #     MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
-  #     MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
-  #   entrypoint: /bin/sh "/etc/loki/entrypoint.sh"
-  #   networks:
-  #     - public
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:3100/health"]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 30s      
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "0.5"
-  #         memory: "512M"
-  #     labels:
-  #       - traefik.enable=false
+  tempo:
+    image: grafana/tempo:latest
+    configs:
+      - source: tempo_config
+        target: /etc/tempo-config.yml
+      - source: tempo_entry
+        target: /etc/entrypoint.sh
+        mode: 0755
+    secrets:
+      - APP_ROOT_USERNAME
+      - APP_ROOT_PASSWORD
+    entrypoint: /bin/sh "/etc/entrypoint.sh"
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3200/metrics"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s      
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+      labels:
+        - traefik.enable=false
 
   # otelcollector:
   #   image: otel/opentelemetry-collector-contrib:latest
@@ -762,24 +760,24 @@ services:
   #     labels:
   #       - traefik.enable=false
 
-  # tempo:
-  #   image: grafana/tempo:latest
+  # loki:
+  #   image: grafana/loki:latest
   #   configs:
-  #     - source: tempo_config
-  #       target: /etc/tempo-config.yml
-  #     - source: tempo_entry
-  #       target: /etc/entrypoint.sh
+  #     - source: loki_config
+  #       target: /etc/loki/loki-config.yml
+  #     - source: loki_entry
+  #       target: /etc/loki/entrypoint.sh
   #   secrets:
   #     - MINIO_ROOT_USER
   #     - MINIO_ROOT_PASSWORD
   #   environment:
   #     MINIO_ROOT_USER_FILE: /run/secrets/MINIO_ROOT_USER
   #     MINIO_ROOT_PASSWORD_FILE: /run/secrets/MINIO_ROOT_PASSWORD
-  #   entrypoint: /bin/sh "/etc/entrypoint.sh"
+  #   entrypoint: /bin/sh "/etc/loki/entrypoint.sh"
   #   networks:
   #     - public
   #   healthcheck:
-  #     test: ["CMD", "wget", "-qO-", "http://localhost:3200/metrics"]
+  #     test: ["CMD", "curl", "-f", "http://localhost:3100/health"]
   #     interval: 15s
   #     timeout: 10s
   #     retries: 3
@@ -903,13 +901,13 @@ configs:
     file: ${APP_PATH}/telemetry/conf/cortex-config.yml
   cortex_entry:
     file: ${APP_PATH}/telemetry/conf/cortex-entry.sh
+  tempo_config:
+    file:  ${APP_PATH}/telemetry/conf/tempo-config.yml
+  tempo_entry:
+    file:  ${APP_PATH}/telemetry/conf/tempo-entry.sh
 
   # otel_config:
   #   file: ${APP_PATH}/grafana/conf/otel-config.yml
-  # tempo_config:
-  #   file:  ${APP_PATH}/grafana/conf/tempo-config.yml
-  # tempo_entry:
-  #   file:  ${APP_PATH}/grafana/conf/tempo-entry.sh
   # loki_config:
   #   file:  ${APP_PATH}/grafana/conf/loki-config.yml
   # loki_entry:

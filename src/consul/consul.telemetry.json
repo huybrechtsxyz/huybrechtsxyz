@@ -50,6 +50,23 @@
         }
       ],
       "tags": [ "cortex","logging","metrics","tracing","docker-swarm","system" ]
+    },
+    {
+      "id": "tempo",
+      "name": "tempo",
+      "address": "tempo",
+      "port": 3200,
+      "meta": {},
+      "checks": [
+        {
+          "id": "tempo-http-check",
+          "name": "tempo Health Check",
+          "http": "http://tempo:3200/metrics",
+          "interval": "30s",
+          "timeout": "5s"
+        }
+      ],
+      "tags": [ "tempo","logging","metrics","tracing","docker-swarm","system" ]
     }
   ]
 }
