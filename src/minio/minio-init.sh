@@ -52,8 +52,3 @@ create_bucket_if_not_exists otel-metrics
 create_bucket_if_not_exists otel-tracing
 create_bucket_if_not_exists otel-alerts
 create_bucket_if_not_exists otel-ruler
-
-# create_bucket_if_not_exists logging
-# create_bucket_if_not_exists tracing
-# create_bucket_if_not_exists loki-chunks
-# create_bucket_if_not_exists loki-index
