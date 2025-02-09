@@ -617,7 +617,7 @@ services:
     networks:
       - public
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/ready"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080"]
       interval: 15s
       timeout: 10s
       retries: 3
@@ -625,6 +625,61 @@ services:
     deploy:
       mode: replicated
       replicas: 3
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+      labels:
+        - traefik.enable=false
+
+  tempo:
+    image: grafana/tempo:latest
+    secrets:
+      - APP_ROOT_USERNAME
+      - APP_ROOT_PASSWORD
+    command:
+      [
+        "/tempo",
+        "-config.file=/etc/tempo/config.yml",
+        "-config.expand-env=true",
+        "-storage.trace.backend=s3",
+        "-storage.trace.s3.access_key=$$(cat /run/secrets/APP_ROOT_USERNAME)",
+        "-storage.trace.s3.secret_key=$$(cat /run/secrets/APP_ROOT_PASSWORD)"
+      ]
+    volumes:
+      - ${APP_PATH}/telemetry/conf/tempo-config.yml:/etc/tempo/config.yml
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3200/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      mode: replicated
+      replicas: 1
       placement:
         constraints:
           - node.role==${DOCKER_WORKER}

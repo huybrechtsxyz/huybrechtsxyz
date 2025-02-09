@@ -1,6 +1,23 @@
 {
   "services": [
     {
+      "id": "grafana",
+      "name": "grafana",
+      "address": "grafana",
+      "port": 3000,
+      "meta": {},
+      "checks": [
+        {
+          "id": "grafana-http-check",
+          "name": "Grafana Health Check",
+          "http": "http://grafana:3000/health/healthz",
+          "interval": "30s",
+          "timeout": "5s"
+        }
+      ],
+      "tags": [ "grafana","logging","metrics","tracing","docker-swarm","system" ]
+    },
+    {
       "id": "prometheus",
       "name": "prometheus",
       "address": "prometheus",
@@ -18,21 +35,34 @@
       "tags": [ "prometheus","logging","metrics","tracing","docker-swarm","system" ]
     },
     {
-      "id": "grafana",
-      "name": "grafana",
-      "address": "grafana",
-      "port": 3000,
-      "meta": {},
-      "checks": [
-        {
-          "id": "grafana-http-check",
-          "name": "Grafana Health Check",
-          "http": "http://grafana:3000/health/healthz",
-          "interval": "30s",
-          "timeout": "5s"
-        }
-      ],
-      "tags": [ "grafana","logging","metrics","tracing","docker-swarm","system" ]
-    }
+      "id": "cortex",
+      "name": "cortex",
+      "address": "cortex",
+      "port": 8080,
+      "meta": { },
+      "check": {
+        "id": "cortex-http-check",
+        "name": "Cortex HTTP Health Check",
+        "http": "http://cortex:8080/ready",
+        "interval": "15s",
+        "timeout": "5s"
+      },
+      "tags": [ "cortex","logging","metrics","tracing","docker-swarm","system" ]
+    },
+    {
+      "id": "tempo",
+      "name": "tempo",
+      "address": "tempo",
+      "port": 3200,
+      "meta": { },
+      "check": {
+        "id": "tempo-http-check",
+        "name": "Tempo HTTP Health Check",
+        "http": "http://tempo:3200/health",
+        "interval": "15s",
+        "timeout": "5s"
+      },
+      "tags": [ "tempo","logging","metrics","tracing","docker-swarm","system" ]
+    }    
   ]
 }
