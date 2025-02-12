@@ -559,6 +559,7 @@ services:
     image: prom/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
+      - --log.level=debug
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.min-block-duration=2h
       - --storage.tsdb.max-block-duration=2h
@@ -607,21 +608,28 @@ services:
 
   cortex:
     image: quay.io/cortexproject/cortex:v1.18.1
-    secrets:
-      - APP_ROOT_USERNAME
-      - APP_ROOT_PASSWORD
-    entrypoint: /bin/sh "/config/entrypoint.sh"
-    volumes:
-      - ${APP_PATH}/telemetry/conf/cortex-config.yml:/config/cortex-config.yml:ro
-      - ${APP_PATH}/telemetry/conf/cortex-entry.sh:/config/entrypoint.sh:ro
+    command:
+      - -log.level=debug
+      - -auth.enabled=false
+      - -blocks-storage.backend=s3
+      - -blocks-storage.s3.endpoint=minio:9000
+      - -blocks-storage.s3.region=develop
+      - -blocks-storage.s3.access-key-id=admin
+      - -blocks-storage.s3.secret-access-key=password
+      - -blocks-storage.s3.insecure=true
+      - -blocks-storage.s3.bucket-name=otel-metrics
+      - -ring.store=consul
+      - -ring.prefix=cortex/
+      - -consul.hostname=consul:8500
+      - -distributor.replication-factor=1
     networks:
       - public
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080"]
+      test: ["CMD", "wget", "--spider", "http://localhost:80"]
       interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     deploy:
       mode: replicated
       replicas: 3
@@ -653,60 +661,61 @@ services:
       labels:
         - traefik.enable=false
 
-  tempo:
-    image: grafana/tempo:latest
-    secrets:
-      - APP_ROOT_USERNAME
-      - APP_ROOT_PASSWORD
-    command:
-      [
-        "/tempo",
-        "-config.file=/etc/tempo/config.yml",
-        "-config.expand-env=true",
-        "-storage.trace.backend=s3",
-        "-storage.trace.s3.access_key=$$(cat /run/secrets/APP_ROOT_USERNAME)",
-        "-storage.trace.s3.secret_key=$$(cat /run/secrets/APP_ROOT_PASSWORD)"
-      ]
-    volumes:
-      - ${APP_PATH}/telemetry/conf/tempo-config.yml:/etc/tempo/config.yml
-    networks:
-      - public
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3200/health"]
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: "512M"
-      labels:
-        - traefik.enable=false
+  #check here to test tempo !
+  # tempo:
+  #   image: grafana/tempo:latest
+  #   secrets:
+  #     - APP_ROOT_USERNAME
+  #     - APP_ROOT_PASSWORD
+  #   command:
+  #     [
+  #       "/tempo",
+  #       "-config.file=/etc/tempo/config.yml",
+  #       "-config.expand-env=true",
+  #       "-storage.trace.backend=s3",
+  #       "-storage.trace.s3.access_key=$$(cat /run/secrets/APP_ROOT_USERNAME)",
+  #       "-storage.trace.s3.secret_key=$$(cat /run/secrets/APP_ROOT_PASSWORD)"
+  #     ]
+  #   volumes:
+  #     - ${APP_PATH}/telemetry/conf/tempo-config.yml:/etc/tempo/config.yml
+  #   networks:
+  #     - public
+  #   healthcheck:
+  #     test: ["CMD", "wget", "-q", "--spider", "http://localhost:3200/health"]
+  #     interval: 15s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 30s
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role==${DOCKER_WORKER}
+  #       preferences:
+  #         - spread: node.id
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 10s
+  #       max_attempts: 5
+  #       window: 60s
+  #     update_config:
+  #       parallelism: 1
+  #       delay: 15s
+  #       failure_action: rollback
+  #       monitor: 30s
+  #       order: start-first
+  #     rollback_config:
+  #       parallelism: 1
+  #       delay: 10s
+  #       failure_action: continue
+  #       monitor: 30s
+  #     resources:
+  #       limits:
+  #         cpus: "0.5"
+  #         memory: "512M"
+  #     labels:
+  #       - traefik.enable=false
 
 networks:
   public:

@@ -19,10 +19,10 @@ scrape_configs:
       - targets: ["localhost:9090"]
 
 remote_write:
-  - url: "http://cortex:8080/api/v1/push"
+  - url: "http://cortex:80/api/v1/push"
     remote_timeout: 30s
 
 remote_read:
-  - url: "http://cortex:8080/api/v1/query"
+  - url: "http://cortex:80/api/v1/query"
     remote_timeout: 30s
     read_recent: true 
