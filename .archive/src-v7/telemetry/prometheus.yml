@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 15s  # How often to scrape targets by default.
+  external_labels:
+    region: develop
+    cluster: develop
+    namespace: develop
+    monitor: prometheus-monitor
+
+scrape_configs:
+  # Scrape metrics from services registered with consul
+  - job_name: 'consul'
+    consul_sd_configs:
+      - server: 'consul:8500'
+        #datacenter: 'develop'
+  
+  # Scrape metrics from Prometheus itself
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+remote_write:
+  - url: "http://cortex:80/api/v1/push"
+    remote_timeout: 30s
+
+remote_read:
+  - url: "http://cortex:80/api/v1/query"
+    remote_timeout: 30s
+    read_recent: true 

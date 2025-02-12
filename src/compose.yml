@@ -276,304 +276,108 @@ services:
       labels:
         - traefik.enable=false
 
-  # postgres:
-  #   image: postgres
-  #   secrets:
-  #     - APP_ROOT_USERNAME
-  #     - APP_ROOT_PASSWORD
-  #   environment:
-  #     DOMAIN_DEV: ${DOMAIN_DEV}
-  #     ENVIRONMENT: ${ENVIRONMENT}
-  #     PGDATA: /var/lib/postgresql/data/pgdata
-  #     POSTGRES_DB: xyzdb
-  #     POSTGRES_USER_FILE: /run/secrets/APP_ROOT_USERNAME
-  #     POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-  #   volumes:
-  #     - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
-  #   networks:
-  #     - public
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -d xyzdb -U $$(cat /run/secrets/APP_ROOT_USERNAME)"]
-  #     interval: 1s
-  #     timeout: 5s
-  #     retries: 10
-  #     start_period: 5s
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "2.0"
-  #         memory: "2G"
-  #     labels:
-  #       - traefik.enable=false
-
-  # postgres-init:
-  #   image: postgres
-  #   secrets:
-  #     - APP_ROOT_USERNAME
-  #     - APP_ROOT_PASSWORD
-  #   environment:
-  #     POSTGRES_DB: xyzdb
-  #     POSTGRES_URL: postgres
-  #     POSTGRES_USER_FILE: /run/secrets/APP_ROOT_USERNAME
-  #     POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-  #   entrypoint: usr/local/bin/entrypoint.sh
-  #   volumes:
-  #     - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
-  #     - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
-  #   networks:
-  #     - public
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: none # Ensure this runs only once
-  #     labels:
-  #       - traefik.enable=false
-
-  # pgadmin:
-  #   image: dpage/pgadmin4
-  #   secrets:
-  #     - APP_ROOT_PASSWORD
-  #   environment:
-  #     DOMAIN_DEV: ${DOMAIN_DEV}
-  #     ENVIRONMENT: ${ENVIRONMENT}
-  #     PGADMIN_LISTEN_PORT: 9080
-  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
-  #     PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-  #     SCRIPT_NAME: /pgadmin
-  #   volumes:
-  #     - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
-  #   networks:
-  #     - public
-  #   healthcheck:
-  #     test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
-  #     interval: 15s
-  #     retries: 3
-  #     timeout: 5s
-  #     start_period: 10s
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "2.0"
-  #         memory: "2G"
-  #     labels:
-  #       # Enable Traefik
-  #       - traefik.enable=true
-  #       - traefik.tags=${ENVIRONMENT}
-  #       - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
-  #       - traefik.http.services.pgadmin.loadbalancer.server.port=9080
-  #       - traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
-  #       - traefik.http.routers.pgadmin.entrypoints=websecure
-  #       - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_RESOLVER}
-  #       - traefik.http.routers.pgadmin.middlewares=${TRAEFIK_AUTH}
-
-  # keycloak:
-  #   image: quay.io/keycloak/keycloak:26.0
-  #   secrets:
-  #     - APP_ROOT_USERNAME
-  #     - APP_ROOT_PASSWORD
-  #   environment:
-  #     DOMAIN_DEV: ${DOMAIN_DEV}
-  #     ENVIRONMENT: ${ENVIRONMENT}
-  #     KC_LOG: console #,file
-  #     KC_LOG_LEVEL: INFO
-  #     #KC_LOG_FILE: /home/keycloak.log
-  #     KC_HTTP_ENABLED: "true"
-  #     KC_HTTPS_ENABLED: "false"
-  #     KC_HOSTNAME: https://iam.${DOMAIN_DEV}
-  #     KC_HOSTNAME_STRICT: "false"
-  #     KC_HEALTH_ENABLED: "true"
-  #     #KC_METRICS_ENABLED: "true"
-  #     #KC_TRACING_ENABLED: "true"
-  #     KC_DB: postgres
-  #     KC_DB_URL_HOST: postgres
-  #     KC_DB_URL_DATABASE: xyzdb
-  #     KC_DB_SCHEMA: keycloak
-  #     KC_DB_USERNAME_FILE: /run/secrets/APP_ROOT_USERNAME
-  #     KC_DB_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-  #     KC_BOOTSTRAP_ADMIN_USERNAME_FILE: /run/secrets/APP_ROOT_USERNAME
-  #     KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-  #   entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true #--features=opentelemetry --import-realm
-  #   volumes:
-  #     - ${APP_PATH}/keycloak/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
-  #     #- ${APP_PATH}/keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
-  #   networks:
-  #     - public
-  #   healthcheck:
-  #     test: ["CMD", "bash", "-c", "[ $$(/opt/keycloak/bin/kcadm.sh get serverinfo --realm Keycloak --fields '*' --server http://localhost:8080/admin/serverinfo 2>&1 | grep Unauthorized | wc -l ) -eq 1 ]"]
-  #     interval: 15s
-  #     retries: 3
-  #     timeout: 5s
-  #     start_period: 30s
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "2.0"
-  #         memory: "2G"
-  #     labels:
-  #       # Enable Traefik
-  #       - traefik.enable=true
-  #       - traefik.tags=${ENVIRONMENT}
-  #       - traefik.http.services.keycloak.loadbalancer.server.scheme=http
-  #       - traefik.http.services.keycloak.loadbalancer.server.port=8080
-  #       - traefik.http.routers.keycloak.rule=Host(`iam.${DOMAIN_DEV}`)
-  #       - traefik.http.routers.keycloak.entrypoints=websecure
-  #       - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
-  #       - traefik.http.routers.keycloak.middlewares=${TRAEFIK_AUTH}
-
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   secrets:
-  #     - APP_ROOT_USERNAME
-  #     - APP_ROOT_PASSWORD
-  #   environment:
-  #     #GF_PATHS_CONFIG: /etc/grafana/grafana.ini
-  #     GF_PATHS_DATA: /var/lib/grafana
-  #     GF_PATHS_LOGS: /var/log/grafana
-  #     GF_SECURITY_ADMIN_USER__FILE: /run/secrets/APP_ROOT_USERNAME
-  #     GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/APP_ROOT_PASSWORD
-  #   volumes:
-  #     - ${APP_PATH}/telemetry/grafana:/var/lib/grafana
-  #   networks:
-  #     - public
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
-  #     interval: 15s
-  #     retries: 3
-  #     timeout: 5s
-  #     start_period: 30s
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "0.5"
-  #         memory: "512M"
-  #     labels:
-  #       # Enable Traefik
-  #       - traefik.enable=true
-  #       - traefik.tags=${ENVIRONMENT}
-  #       - traefik.http.services.grafana.loadbalancer.server.scheme=http
-  #       - traefik.http.services.grafana.loadbalancer.server.port=3000
-  #       - traefik.http.routers.grafana.rule=Host(`logs.${DOMAIN_DEV}`)
-  #       - traefik.http.routers.grafana.entrypoints=websecure
-  #       - traefik.http.routers.grafana.tls.certresolver=${TRAEFIK_RESOLVER}
-  #       - traefik.http.routers.grafana.middlewares=${TRAEFIK_AUTH}
-
-  prometheus:
-    image: prom/prometheus
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --log.level=debug
-      - --storage.tsdb.path=/prometheus
-      - --storage.tsdb.min-block-duration=2h
-      - --storage.tsdb.max-block-duration=2h
-      - --web.external-url=http://localhost:9090
+  postgres:
+    image: postgres
+    secrets:
+      - APP_ROOT_USERNAME
+      - APP_ROOT_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: xyzdb
+      POSTGRES_USER_FILE: /run/secrets/APP_ROOT_USERNAME
+      POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
     volumes:
-      - ${APP_PATH}/telemetry/conf/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ${APP_PATH}/telemetry/prometheus:/prometheus:rw      
+      - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
     networks:
       - public
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
-      interval: 15s
+      test: ["CMD-SHELL", "pg_isready -d xyzdb -U $$(cat /run/secrets/APP_ROOT_USERNAME)"]
+      interval: 1s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 5s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "2G"
+      labels:
+        - traefik.enable=false
+
+  postgres-init:
+    image: postgres
+    secrets:
+      - APP_ROOT_USERNAME
+      - APP_ROOT_PASSWORD
+    environment:
+      POSTGRES_DB: xyzdb
+      POSTGRES_URL: postgres
+      POSTGRES_USER_FILE: /run/secrets/APP_ROOT_USERNAME
+      POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+    entrypoint: usr/local/bin/entrypoint.sh
+    volumes:
+      - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
+      - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
+    networks:
+      - public
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: none # Ensure this runs only once
+      labels:
+        - traefik.enable=false
+
+  pgadmin:
+    image: dpage/pgadmin4
+    secrets:
+      - APP_ROOT_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      PGADMIN_LISTEN_PORT: 9080
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+      SCRIPT_NAME: /pgadmin
+    volumes:
+      - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
+      interval: 15s
+      retries: 3
+      timeout: 5s
       start_period: 10s
     deploy:
       mode: replicated
@@ -601,38 +405,60 @@ services:
         monitor: 30s
       resources:
         limits:
-          cpus: "1.0"
-          memory: "1G"
+          cpus: "2.0"
+          memory: "2G"
       labels:
-        - traefik.enable=false
+        # Enable Traefik
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
+        - traefik.http.services.pgadmin.loadbalancer.server.port=9080
+        - traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
+        - traefik.http.routers.pgadmin.entrypoints=websecure
+        - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.pgadmin.middlewares=${TRAEFIK_AUTH}
 
-  cortex:
-    image: quay.io/cortexproject/cortex:v1.18.1
-    command:
-      - -log.level=debug
-      - -auth.enabled=false
-      - -blocks-storage.backend=s3
-      - -blocks-storage.s3.endpoint=minio:9000
-      - -blocks-storage.s3.region=develop
-      - -blocks-storage.s3.access-key-id=admin
-      - -blocks-storage.s3.secret-access-key=password
-      - -blocks-storage.s3.insecure=true
-      - -blocks-storage.s3.bucket-name=otel-metrics
-      - -ring.store=consul
-      - -ring.prefix=cortex/
-      - -consul.hostname=consul:8500
-      - -distributor.replication-factor=1
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    secrets:
+      - APP_ROOT_USERNAME
+      - APP_ROOT_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      KC_LOG: console #,file
+      KC_LOG_LEVEL: INFO
+      #KC_LOG_FILE: /home/keycloak.log
+      KC_HTTP_ENABLED: "true"
+      KC_HTTPS_ENABLED: "false"
+      KC_HOSTNAME: https://iam.${DOMAIN_DEV}
+      KC_HOSTNAME_STRICT: "false"
+      KC_HEALTH_ENABLED: "true"
+      #KC_METRICS_ENABLED: "true"
+      #KC_TRACING_ENABLED: "true"
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: xyzdb
+      KC_DB_SCHEMA: keycloak
+      KC_DB_USERNAME_FILE: /run/secrets/APP_ROOT_USERNAME
+      KC_DB_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+      KC_BOOTSTRAP_ADMIN_USERNAME_FILE: /run/secrets/APP_ROOT_USERNAME
+      KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+    entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true #--features=opentelemetry --import-realm
+    volumes:
+      - ${APP_PATH}/keycloak/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
+      #- ${APP_PATH}/keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
     networks:
       - public
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:80"]
+      test: ["CMD", "bash", "-c", "[ $$(/opt/keycloak/bin/kcadm.sh get serverinfo --realm Keycloak --fields '*' --server http://localhost:8080/admin/serverinfo 2>&1 | grep Unauthorized | wc -l ) -eq 1 ]"]
       interval: 15s
+      retries: 3
       timeout: 5s
-      retries: 5
-      start_period: 10s
+      start_period: 30s
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 1
       placement:
         constraints:
           - node.role==${DOCKER_WORKER}
@@ -656,66 +482,72 @@ services:
         monitor: 30s
       resources:
         limits:
-          cpus: "0.5"
-          memory: "512M"
+          cpus: "2.0"
+          memory: "2G"
       labels:
-        - traefik.enable=false
+        # Enable Traefik
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.keycloak.loadbalancer.server.scheme=http
+        - traefik.http.services.keycloak.loadbalancer.server.port=8080
+        - traefik.http.routers.keycloak.rule=Host(`iam.${DOMAIN_DEV}`)
+        - traefik.http.routers.keycloak.entrypoints=websecure
+        - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.keycloak.middlewares=${TRAEFIK_AUTH}
 
-  #check here to test tempo !
-  # tempo:
-  #   image: grafana/tempo:latest
-  #   secrets:
-  #     - APP_ROOT_USERNAME
-  #     - APP_ROOT_PASSWORD
-  #   command:
-  #     [
-  #       "/tempo",
-  #       "-config.file=/etc/tempo/config.yml",
-  #       "-config.expand-env=true",
-  #       "-storage.trace.backend=s3",
-  #       "-storage.trace.s3.access_key=$$(cat /run/secrets/APP_ROOT_USERNAME)",
-  #       "-storage.trace.s3.secret_key=$$(cat /run/secrets/APP_ROOT_PASSWORD)"
-  #     ]
-  #   volumes:
-  #     - ${APP_PATH}/telemetry/conf/tempo-config.yml:/etc/tempo/config.yml
-  #   networks:
-  #     - public
-  #   healthcheck:
-  #     test: ["CMD", "wget", "-q", "--spider", "http://localhost:3200/health"]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 30s
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role==${DOCKER_WORKER}
-  #       preferences:
-  #         - spread: node.id
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 10s
-  #       max_attempts: 5
-  #       window: 60s
-  #     update_config:
-  #       parallelism: 1
-  #       delay: 15s
-  #       failure_action: rollback
-  #       monitor: 30s
-  #       order: start-first
-  #     rollback_config:
-  #       parallelism: 1
-  #       delay: 10s
-  #       failure_action: continue
-  #       monitor: 30s
-  #     resources:
-  #       limits:
-  #         cpus: "0.5"
-  #         memory: "512M"
-  #     labels:
-  #       - traefik.enable=false
+  telemetry:
+    image: grafana/otel-lgtm
+    environment:
+      GF_PATHS_DATA: /data/grafana
+    volumes:
+      - ${APP_PATH}/telemetry/conf/otelcol-config.yml:/otel-lgtm/otelcol-config.yaml:ro
+      - ${APP_PATH}/telemetry/conf/prometheus.yml:/otel-lgtm/prometheus.yaml:ro
+      - ${APP_PATH}/telemetry/conf/tempo-config.yml:/otel-lgtm/tempo-config.yaml:ro
+      - ${APP_PATH}/telemetry/conf/loki-config.yml:/otel-lgtm/loki-config.yaml:ro
+      - ${APP_PATH}/telemetry/grafana:/data/grafana
+      - ${APP_PATH}/telemetry/prometheus:/data/prometheus
+      - ${APP_PATH}/telemetry/loki:/data/loki
+      - ${APP_PATH}/telemetry/tempo:/data/tempo
+    networks:
+      - public
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "2G"
+      labels:
+        # Enable Traefik
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.keycloak.loadbalancer.server.scheme=http
+        - traefik.http.services.keycloak.loadbalancer.server.port=3000
+        - traefik.http.routers.keycloak.rule=Host(`logs.${DOMAIN_DEV}`)
+        - traefik.http.routers.keycloak.entrypoints=websecure
+        - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.keycloak.middlewares=${TRAEFIK_AUTH}
 
 networks:
   public:
