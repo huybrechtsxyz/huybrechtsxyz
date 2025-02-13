@@ -10,7 +10,7 @@
         {
           "id": "grafana-http-check",
           "name": "Grafana Health Check",
-          "http": "http://telemetry:3000/health/healthz",
+          "http": "http://telemetry:3000/api/health",
           "interval": "30s",
           "timeout": "5s"
         }
@@ -43,7 +43,7 @@
       "check": {
         "id": "tempo-http-check",
         "name": "Tempo HTTP Health Check",
-        "http": "http://telemetry:3200/health",
+        "http": "http://telemetry:3200/status",
         "interval": "15s",
         "timeout": "5s"
       },
@@ -58,7 +58,7 @@
       "check": {
         "id": "loki-http-check",
         "name": "Loki HTTP Health Check",
-        "http": "http://telemetry:3100/health",
+        "http": "http://telemetry:3100/ready",
         "interval": "15s",
         "timeout": "5s"
       },

@@ -542,12 +542,12 @@ services:
         # Enable Traefik
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
-        - traefik.http.services.keycloak.loadbalancer.server.scheme=http
-        - traefik.http.services.keycloak.loadbalancer.server.port=3000
-        - traefik.http.routers.keycloak.rule=Host(`logs.${DOMAIN_DEV}`)
-        - traefik.http.routers.keycloak.entrypoints=websecure
-        - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
-        - traefik.http.routers.keycloak.middlewares=${TRAEFIK_AUTH}
+        - traefik.http.services.telemetry.loadbalancer.server.scheme=http
+        - traefik.http.services.telemetry.loadbalancer.server.port=3000
+        - traefik.http.routers.telemetry.rule=Host(`logs.${DOMAIN_DEV}`)
+        - traefik.http.routers.telemetry.entrypoints=websecure
+        - traefik.http.routers.telemetry.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.telemetry.middlewares=${TRAEFIK_AUTH}
 
 networks:
   public:
