@@ -2,7 +2,7 @@
 providers:
   swarm:
     exposedByDefault: false
-    constraints: Label(`traefik.tags`, `develop`)
+    constraints: Label(`traefik.tags`, `test`)
   # consulcatalog:
   #   cache: true
   #   refreshInterval: 30s
@@ -34,7 +34,7 @@ certificatesResolvers:
     acme:
       caServer: https://acme-staging-v02.api.letsencrypt.org/directory
       email: webmaster@huybrechts.xyz
-      storage: "app/data/acme-http.json"
+      storage: "/app/data/acme-http.json"
       httpChallenge:
         entryPoint: "web"
   letlsresolver:
@@ -54,6 +54,7 @@ certificatesResolvers:
 
 ## Traefik Plugins
 experimental:
+  #otlpLogs: true
   plugins:
     keycloakopenid:
       moduleName: "github.com/Gwojda/keycloakopenid"
@@ -75,6 +76,10 @@ log:
   maxBackups: 5
   maxAge: 5
   compress: true
+  # otlp:
+  #   grpc:
+  #     endpoint: telemetry:4317
+  #     insecure: true
 
 accessLog:
   addInternals: true
@@ -93,12 +98,11 @@ metrics:
     addRoutersLabels: true
     addServicesLabels: true
 
-# tracing:
-#   addInternals: true
-#   serviceName: traefik
-#   sampleRate: 1.0
-#   otlp:
-#     http:
-#       ##endpoint: http://localhost:4318/v1/traces
-#       tls: {}
-#         #insecureSkipVerify: true
+tracing:
+  addInternals: true
+  serviceName: traefik
+  sampleRate: 0.2
+  otlp:
+    grpc:
+      endpoint: telemetry:4317
+      insecure: true
