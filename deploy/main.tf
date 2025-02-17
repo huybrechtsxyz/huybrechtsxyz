@@ -174,10 +174,12 @@ resource "kamatera_block_storage" "block_storage" {
   size           = var.block_storage_size
 
   # Attach block storage based on worker count
-  attached_to = var.worker_count > 0 
+  attached_to = (
+    var.worker_count > 0 
     ? kamatera_server.worker[count.index % var.worker_count].id 
     : kamatera_server.manager[count.index % var.manager_count].id
-
+  )
+  
   tags = {
     environment = var.environment
     role        = "block_storage"
