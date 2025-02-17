@@ -190,6 +190,7 @@ services:
       ENVIRONMENT: ${ENVIRONMENT}
       MINIO_ROOT_USER_FILE: /run/secrets/APP_ROOT_USERNAME
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+      MINIO_PROMETHEUS_AUTH_TYPE: public
     command: server /data --console-address ":9001"
     volumes:
       - ${APP_PATH_DATA}:/data
@@ -434,8 +435,13 @@ services:
       KC_HOSTNAME: https://iam.${DOMAIN_DEV}
       KC_HOSTNAME_STRICT: "false"
       KC_HEALTH_ENABLED: "true"
-      #KC_METRICS_ENABLED: "true"
-      #KC_TRACING_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      KC_HTTP_METRICS_HISTOGRAMS_ENABLED: "true"
+      KC_EVENT_METRICS_USER_ENABLED: "true"
+      KC_TRACING_ENABLED: "true"
+      KC_TRACING_PROPAGATORS: tracecontext,baggage
+      KC_TRACING_SAMPLER: always_on
+      KC_TRACING_ENDPOINT: http://telemetry:4317
       KC_DB: postgres
       KC_DB_URL_HOST: postgres
       KC_DB_URL_DATABASE: xyzdb
@@ -444,7 +450,7 @@ services:
       KC_DB_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
       KC_BOOTSTRAP_ADMIN_USERNAME_FILE: /run/secrets/APP_ROOT_USERNAME
       KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-    entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true #--features=opentelemetry --import-realm
+    entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true --features=opentelemetry #--import-realm
     volumes:
       - ${APP_PATH}/keycloak/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
       #- ${APP_PATH}/keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
@@ -548,6 +554,46 @@ services:
         - traefik.http.routers.telemetry.entrypoints=websecure
         - traefik.http.routers.telemetry.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.telemetry.middlewares=${TRAEFIK_AUTH}
+
+  promtail:
+    image: grafana/promtail:latest
+    command: -config.file=/etc/promtail/promtail-config.yml
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ${APP_PATH}/telemetry/conf/promtail-config.yml:/etc/promtail/promtail-config.yml
+      - ${APP_PATH}/telemetry/promtail:/tmp
+    networks:
+      - public
+    deploy:
+      mode: replicated
+      replicas: ${DOCKER_MANAGER_COUNT}
+      placement:
+        constraints:
+          - node.role==${DOCKER_MANAGER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "2G"
+      labels:
+        - traefik.enable=false
 
 networks:
   public:
