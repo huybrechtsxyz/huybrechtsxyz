@@ -75,7 +75,7 @@ resource "kamatera_firewall" "lb_firewall" {
 # Provision manager 
 resource "kamatera_server" "manager" {
   count             = var.manager_count
-  name              = "${var.environment}-manager-${count.index + 1}"
+  name              = "srv-${var.environment}-manager-${count.index + 1}"
   image             = data.kamatera_image.ubuntu
   datacenter_id     = data.kamatera_datacenter.frankfurt.id
   cpu               = var.manager_cpu
@@ -111,7 +111,7 @@ resource "kamatera_server" "manager" {
 # Provision workernode 
 resource "kamatera_server" "worker" {
   count             = var.worker_count
-  name              = "${var.environment}-worker-${count.index + 1}"
+  name              = "srv-${var.environment}-worker-${count.index + 1}"
   image             = data.kamatera_image.ubuntu
   datacenter_id     = data.kamatera_datacenter.frankfurt.id
   cpu               = var.worker_cpu
