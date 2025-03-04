@@ -1,4 +1,4 @@
-# Run terraform
+# Run terraform 
 name: Terraform Swarm
 
 on:

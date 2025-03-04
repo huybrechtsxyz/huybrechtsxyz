@@ -1,4 +1,4 @@
-# Update Server Task
+# Update Server Task 
 name: Update Server Task
 
 on:
@@ -106,7 +106,6 @@ jobs:
           createpath "/app/consul/conf"
           createpath "/app/consul/data"
           createpath "/app/consul/logs"
-          createpath "/app/postgres"
           # Traefik
           createpath "/app/traefik"
           createpath "/app/traefik/conf"
@@ -137,10 +136,6 @@ jobs:
           echo Public Network
           docker network inspect public --format {{.Id}} 2>/dev/null \
           || docker network create --driver overlay public
-          #Create the PRIVATE network on docker
-          echo Private Network
-          docker network inspect private --format {{.Id}} 2>/dev/null \
-          || docker network create --driver overlay private
           #Create the docker secrets
           createsecret "Root Username" "APP_ROOT_USERNAME" '${{ secrets.APP_ROOT_USERNAME }}'
           createsecret "Root Password" "APP_ROOT_PASSWORD" '${{ secrets.APP_ROOT_PASSWORD }}'

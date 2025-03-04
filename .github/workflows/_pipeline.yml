@@ -71,19 +71,6 @@ jobs:
       VERSIO_PASSWORD: ${{ secrets.VERSIO_PASSWORD }}
       VERSIO_ENDPOINT: ${{ secrets.VERSIO_ENDPOINT }}
 
-  build-backup:
-    name: Build Backup Job
-    if: inputs.rebuild == 'true'
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-docker.yml@dev-reset
-    with:
-      environment: ${{ inputs.environment }}
-      imagename: 'huybrechts/backup'
-      sourcepath: 'backup'
-      projectname: 'backup'
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-
   deploy-config:
     name: Deploy Configuration Job
     needs: [update-server]
@@ -96,10 +83,22 @@ jobs:
       SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
       SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
 
+  deploy-services:
+    name: Deploy Service Job
+    needs: [update-server]
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-service.yml@dev-reset
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+
   deploy-stack-rebuild:
     name: Deploy Docker Swarm Stack (Rebuild)
     if: inputs.rebuild == 'true'
-    needs: [deploy-config, build-backup]
+    needs: [deploy-config, deploy-services]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
@@ -113,7 +112,7 @@ jobs:
   deploy-stack-nobuild:
     name: Deploy Docker Swarm Stack (Build)
     if: inputs.rebuild != 'true'
-    needs: [deploy-config]
+    needs: [deploy-config, deploy-services]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}

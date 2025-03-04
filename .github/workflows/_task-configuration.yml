@@ -35,48 +35,4 @@ jobs:
         strip_components: 1
         overwrite: true
         source: "src/*"
-        target: /app
-    - name: Deploy Script Files
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.SERVER_ENDPOINT }}
-        username: ${{ secrets.SERVER_USERNAME }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        port: ${{ secrets.SERVER_PORT }}
-        strip_components: 2
-        overwrite: true
-        source: "src/scripts/*"
-        target: /app/scripts
-    - name: Deploy Consul Files
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.SERVER_ENDPOINT }}
-        username: ${{ secrets.SERVER_USERNAME }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        port: ${{ secrets.SERVER_PORT }}
-        strip_components: 1
-        overwrite: true
-        source: "src/consul/**"
-        target: /app/consul/conf
-    - name: Deploy Traefik Files
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.SERVER_ENDPOINT }}
-        username: ${{ secrets.SERVER_USERNAME }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        port: ${{ secrets.SERVER_PORT }}
-        strip_components: 1
-        overwrite: true
-        source: "src/traefik/**"
-        target: /app/traefik/conf
-    # - name: Deploy Backup Files
-    #   uses: appleboy/scp-action@v0.1.7
-    #   with:
-    #     host: ${{ secrets.SERVER_SERVER }}
-    #     username: ${{ secrets.SERVER_USERNAME }}
-    #     password: ${{ secrets.SERVER_PASSWORD }}
-    #     port: ${{ secrets.SERVER_PORT }}
-    #     strip_components: 2
-    #     overwrite: true
-    #     source: "src/backup/*.${{ inputs.environment }}.*"
-    #     target: /app
+        target: "/app"
