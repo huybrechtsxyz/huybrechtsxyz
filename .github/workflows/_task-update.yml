@@ -132,6 +132,11 @@ jobs:
           createpath "/app/telemetry/prometheus"
           createpath "/app/telemetry/promtail"
           createpath "/app/telemetry/tempo"
+          # Website
+          createpath "/app/website"
+          createpath "/app/website/cert"
+          createpath "/app/website/data"
+          createpath "/app/website/logs"
           #Create the PUBLIC network on docker
           echo Public Network
           docker network inspect public --format {{.Id}} 2>/dev/null \

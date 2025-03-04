@@ -595,6 +595,75 @@ services:
       labels:
         - traefik.enable=false
 
+  website:
+    image: huybrechts/website:${environment}
+    secrets:
+      - APP_ROOT_USERNAME
+      - APP_ROOT_PASSWORD
+      # - APP_HOST_EMAIL
+      # - APP_DATA_URL
+      # - APP_DATA_NAME
+      # - APP_DATA_USERNAME
+      # - APP_DATA_PASSWORD
+      # - APP_AUTH_GOOGLE
+      # - APP_SMTP_OPTIONS
+    environment:
+      # - ASPNETCORE_ENVIRONMENT=Production
+      # - DOTNET_RUNNING_IN_CONTAINER=1
+      # - APP_AUTH_GOOGLE=/run/secrets/APP_AUTH_GOOGLE
+      # - APP_DATA_NAME=/run/secrets/APP_DATA_NAME
+      # - APP_DATA_USERNAME=/run/secrets/APP_DATA_USERNAME
+      # - APP_DATA_PASSWORD=/run/secrets/APP_DATA_PASSWORD
+      # - APP_DATA_URL=/run/secrets/APP_DATA_URL
+      # - APP_HOST_EMAIL=/run/secrets/APP_HOST_EMAIL
+      # - APP_HOST_USERNAME=/run/secrets/APP_HOST_USERNAME
+      # - APP_HOST_PASSWORD=/run/secrets/APP_HOST_PASSWORD
+      # - APP_SMTP_OPTIONS=/run/secrets/APP_SMTP_OPTIONS
+    volumes:
+      - ${APP_PATH}/website/cert:/app/cert
+      - ${APP_PATH}/website/data:/app/data
+      - ${APP_PATH}/website/logs:/app/logs
+    networks:
+      - public
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "2G"
+      labels:
+        # Enable Traefik
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.website.loadbalancer.server.scheme=http
+        - traefik.http.serviceswebsite.loadbalancer.server.port=8080
+        - traefik.http.routers.website.rule=Host(`${DOMAIN_DEV}`)
+        - traefik.http.routers.website.entrypoints=websecure
+        - traefik.http.routers.website.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.website.middlewares=${TRAEFIK_AUTH}
+
 networks:
   public:
     external: true

@@ -220,6 +220,20 @@ function Invoke-Traefik {
     Write-Host 'Configuring TRAEFIK ... Done'
 }
 
+# FUNCTION: Configure and run WebApps
+function Invoke-WebApps {
+    Write-Host 'Configuring WEBAPPS ... for DOCKER'
+    $websiteDir = "$baseDir/website"
+    $websiteConf = "$websiteDir/cert"
+    $websiteData = "$websiteDir/data"
+    $websiteLogs = "$websiteDir/logs"
+    New-Item -ItemType Directory -Path $websiteDir, $websiteConf, $websiteData, $websiteLogs -Force
+    $websiteConf = Resolve-Path -Path $websiteConf
+    Copy-Item -Path "./src/website/*" -Destination $websiteConf -Recurse
+    Remove-Item -Path "$websiteLogs/*" -Recurse -Force
+    Write-Host 'Configuring WEBAPPS ... Done'
+}
+
 #
 # START DEVELOPMENT SERVICES
 #
@@ -248,6 +262,7 @@ Invoke-Minio
 Invoke-Postgres
 Invoke-Keycloak
 Invoke-Telemetry
+Invoke-Webapps
 
 # Debug and test
 $composeFile = "./src/compose.yml"
