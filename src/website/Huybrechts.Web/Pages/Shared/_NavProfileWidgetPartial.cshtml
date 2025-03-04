@@ -1,0 +1,58 @@
+﻿@using Huybrechts.Core.Application
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Shared> Local
+@inject ApplicationSignInManager SignInManager
+@inject ApplicationUserManager UserManager
+
+@{
+    if (!SignInManager.IsSignedIn(User))
+        throw new InvalidOperationException("Not logged in");
+    var applicationUser = await UserManager.GetUserAsync(User);
+
+    var applicationRole = string.Empty;
+    if (await UserManager.IsAdministratorAsync(applicationUser!))
+        applicationRole = ApplicationSystemRole.Administrator.ToString();
+    
+    var imageSource = "/img/community.png";
+    if (applicationUser is not null && applicationUser.ProfilePicture is not null)
+        imageSource = $"data:image/*;base64,{Convert.ToBase64String(applicationUser.ProfilePicture)}";
+    else
+        imageSource = "/lib/bootstrap-icons/person-badge.svg";
+}
+
+<div class="mainnav__widget my-3 hv-outline-parent">
+
+    <div class="mininav-toggle text-center py-2">
+        <img class="mainnav__avatar img-md rounded-circle hv-oc" src="@imageSource" role="img" alt="Profile Picture">
+    </div>
+
+    <div class="mininav-content collapse d-mn-max">
+        <div data-popper-arrow class="arrow"></div>
+        <div class="d-grid">
+
+            <!-- User name and position -->
+            <button class="mainnav-widget-toggle d-block btn border-0 p-2" data-bs-toggle="collapse" data-bs-target="#usernav" aria-expanded="false" aria-controls="usernav">
+                <span class="dropdown-toggle d-flex justify-content-center align-items-center">
+                    <h6 class="mb-0 me-3">@applicationUser?.Fullname</h6>
+                </span>
+                <small class="text-body-secondary">@applicationRole</small>
+            </button>
+
+            <!-- Collapsed user menu -->
+            <div id="usernav" class="nav flex-column collapse">
+                <a asp-page="/Account/Manage/Index" class="nav-link">
+                    <i class="bi bi-person-badge fs-5 me-2"></i><span class="ms-1">@Local["Profile"]</span>
+                </a>
+                <a asp-page="/Account/Tenant/Index" class="nav-link">
+                    <i class="bi bi-collection-fill fs-5 me-2"></i><span class="ms-1">@Local["Teams"]</span>
+                </a>
+                <a asp-page="/Account/Logout" asp-route-returnUrl="/Index" class="nav-link">
+                    <i class="bi bi-lock fs-5 me-2"></i><span class="ms-1">@Local["Logout"]</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="COOKIE" xml:space="preserve">
+    <value>Over cookies</value>
+  </data>
+  <data name="COOKIE_1" xml:space="preserve">
+    <value>Om je account aan jouw inhoud te koppelen wanneer je op het web surft, gebruiken we cookies. Een cookie is een klein tekstbestand dat een website naar je harde schijf schrijft. Cookies werken als jouw identificatielabel en kunnen worden gebruikt om je tussen bezoeken/klikken te identificeren; cookies laten de webpagina-server weten dat je bent teruggekeerd naar deze site. Cookies kunnen ook andere informatie bepalen, zoals het dagelijkse aantal bezoekers van onze website en de pagina's van de site die het meest worden bezocht. Ze kunnen niet worden uitgevoerd als code of virussen verspreiden. Cookies zijn uniek en kunnen alleen worden gelezen door de server die ze toewijst.</value>
+  </data>
+  <data name="COOKIE_2" xml:space="preserve">
+    <value>Je kunt de instellingen in je browser wijzigen om cookies te voorkomen als je niet wilt dat er een cookie wordt ingesteld wanneer je onze website bezoekt. Echter, door dit te doen, kun je onze diensten niet gebruiken.</value>
+  </data>
+  <data name="DISCLAIMER" xml:space="preserve">
+    <value>Aansprakelijkheid en Disclaimer Inhoud</value>
+  </data>
+  <data name="DISCLAIMER_1" xml:space="preserve">
+    <value>We zijn niet verantwoordelijk of aansprakelijk voor enige inhoud die op jouw website verschijnt. Je stemt ermee in ons te vrijwaren en te verdedigen tegen alle claims die voortkomen uit of gebaseerd zijn op jouw website. Geen enkele link(s) mag verschijnen op enige pagina van jouw website of binnen enige context die inhoud of materialen bevat die kunnen worden geïnterpreteerd als lasterlijk, obsceen of crimineel, of die inbreuk maken op, anderszins de rechten van een derde partij schenden, of de inbreuk of andere schending van dergelijke rechten bepleiten.</value>
+  </data>
+  <data name="DISCLAIMER_2" xml:space="preserve">
+    <value>DE SOFTWARE WORDT GELEVERD "ZOALS HET IS", ZONDER ENIGE GARANTIE, UITDRUKKELIJK OF IMPLICIET, INCLUSIEF MAAR NIET BEPERKT TOT DE GARANTIES VAN VERKOOPBAARHEID, GESCHIKTHEID VOOR EEN BEPAALD DOEL EN NIET-INBREUK. IN GEEN GEVAL ZULLEN DE AUTEURS AANSPRAKELIJK ZIJN VOOR ENIGE CLAIM, SCHADE OF ANDERE AANSPRAKELIJKHEID, HETZIJ IN EEN ACTIE VAN CONTRACT, ONRECHTMATIGE DAAD OF ANDERSZINS, VOORTKOMEND UIT, UIT OF IN VERBAND MET DE SOFTWARE</value>
+  </data>
+  <data name="FUTURE" xml:space="preserve">
+    <value>Toekomstige Wijzigingen</value>
+  </data>
+  <data name="FUTURE_1" xml:space="preserve">
+    <value>We behouden ons het recht voor om dit privacybeleid te wijzigen naarmate de dienst evolueert, vooral als/wanneer toegevoegde diensten de verzameling van aanvullende gebruikersinformatie vereisen.</value>
+  </data>
+  <data name="FUTURE_2" xml:space="preserve">
+    <value>Als je verdere vragen of zorgen hebt over dit privacybeleid, stuur ons dan een bericht via webmaster.</value>
+  </data>
+  <data name="GDPR" xml:space="preserve">
+    <value>Over de AVG</value>
+  </data>
+  <data name="GDPR_1" xml:space="preserve">
+    <value>Als je een burger of bedrijf in de EU bent (zoals wij zijn), dan is de AVG van toepassing op jou.</value>
+  </data>
+  <data name="GDPR_2" xml:space="preserve">
+    <value>We voldoen volledig aan de AVG (zoals met alle wetten in alle rechtsgebieden waarin we actief zijn) en je kunt alle verzoeken hierover sturen naar de webmaster van huybrechts.xyz</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="INFO" xml:space="preserve">
+    <value>Verzamelde informatie</value>
+  </data>
+  <data name="INFO_1" xml:space="preserve">
+    <value>We houden de informatie die we verzamelen tot een absoluut minimum, omdat we jouw privacy waarderen.</value>
+  </data>
+  <data name="INFO_2" xml:space="preserve">
+    <value>Als je onze site gewoon bezoekt en geen account bij ons hebt, verzamelen we geen persoonlijke informatie. Het enige dat we mogelijk in onze logs zien, is jouw IP-adres, de pagina's van onze dienst die je bezoekt, de tijd en datum van jouw bezoek. Die logs worden regelmatig gewist. Als je je aanmeldt voor een account, vragen we om een naam en e-mailadres. Het is aan jou wat je invult natuurlijk, maar we zullen je de accountinformatie en bevestiging naar dat e-mailadres sturen. Je kunt je gegevens op elk moment wijzigen in ons ledengedeelte en je kunt je uitschrijven door je account te verwijderen. Geen van de bovenstaande informatie wordt gedeeld met derden.</value>
+  </data>
+  <data name="INFO_3" xml:space="preserve">
+    <value>Als je in het verleden onze dienst hebt gebruikt en wilt dat we gegevens van je verwijderen, zorg er dan voor dat je de gegevens verwijdert voordat je je account verwijdert!</value>
+  </data>
+  <data name="INFO_4" xml:space="preserve">
+    <value>De veiligheid van jouw gegevens is belangrijk voor ons, maar onthoud dat geen enkele methode van transmissie via het internet of methode van elektronische opslag 100% veilig is. Hoewel we ernaar streven commercieel acceptabele middelen te gebruiken om jouw persoonlijke gegevens te beschermen, kunnen we de absolute veiligheid ervan niet garanderen.</value>
+  </data>
+  <data name="PI" xml:space="preserve">
+    <value>Persoonlijke informatie</value>
+  </data>
+  <data name="PI_1" xml:space="preserve">
+    <value>Huybrechts XYZ respecteert de privacy van gebruikers van onze dienst ('DIENST'). Huybrechts XYZ zal zonder jouw voorafgaande toestemming geen persoonlijke informatie over jou of de gegevens die je indient monitoren, bewerken of openbaar maken, tenzij wij van mening zijn dat dergelijke actie nodig is om:</value>
+  </data>
+  <data name="PI_2" xml:space="preserve">
+    <value>&lt;li&gt;te voldoen aan een wettelijk proces;&lt;/li&gt;
+                                            &lt;li&gt;anderszins de wettelijke rechten van Huybrechts XYZ te beschermen;&lt;/li&gt;
+                                            &lt;li&gt;de voorwaarden van onze dienst af te dwingen;&lt;/li&gt;
+                                            &lt;li&gt;de belangen van gebruikers van de DIENST of anderen te beschermen.&lt;/li&gt;</value>
+  </data>
+  <data name="PI_3" xml:space="preserve">
+    <value>Vincent Huybrechts is de enige eigenaar van informatie verzameld op Huybrechts XYZ.com en verkoopt, deelt of verhuurt deze informatie niet aan anderen op een manier die verschilt van wat in deze verklaring wordt onthuld.</value>
+  </data>
+  <data name="Subtitle" xml:space="preserve">
+    <value>Een woordje over onze privacy voorwaarden</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+</root>

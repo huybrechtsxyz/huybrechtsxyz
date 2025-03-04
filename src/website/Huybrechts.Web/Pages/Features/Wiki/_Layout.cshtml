@@ -1,0 +1,29 @@
+﻿
+@inject IStringLocalizer<Localization> SL
+@{
+    Layout = "/Pages/Shared/_Layout.cshtml";
+
+    ViewData["MetaTitle"] = "Wiki";
+    ViewData["MetaInfo"] = "The wiki pages allow users to view, create, and manage documentation for teams and projects.";
+    ViewData["PageTitle"] = SL["PageTitle"];
+    ViewData["PageInfo"] = SL["PageInfo"];
+}
+
+<div class="content__boxed">
+    <div class="content__wrap">
+        @RenderBody()
+    </div>
+</div>
+
+@section Links {
+    @RenderSection("Links", required: false)
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-page="/Features/Wiki/wiki/home">@SL["Wiki"]</a></li>
+    @RenderSection("Breadcrumb", required: false)
+}
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

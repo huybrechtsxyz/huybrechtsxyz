@@ -1,0 +1,145 @@
+﻿@page
+@inject IViewLocalizer Localizer
+@model Huybrechts.Web.Pages.Account.Tenant.EditModel
+@{
+    ViewData["CardTitle"] = Localizer["Edit Team"];
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        <p>
+            <a class="w-30 btn btn-lg btn-secondary" asp-page="./Index"><i class="bi bi-arrow-left-circle-fill"></i></a>
+        </p>
+        <form id="edit-form" asp-page-handler="Update" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Id" class="form-control" placeholder="@Localizer["Please choose your team id."]" disabled />
+                <label asp-for="Input.Id" class="form-label"></label>
+                <input type="hidden" asp-for="Input.Id" />
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Name" class="form-control" placeholder="@Localizer["Please enter the team name."]" />
+                <label asp-for="Input.Name" class="form-label"></label>
+                <span asp-validation-for="Input.Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Description" class="form-control" placeholder="@Localizer["Please enter enter the team description."]" />
+                <label asp-for="Input.Description" class="form-label"></label>
+                <span asp-validation-for="Input.Description" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Remark" class="form-control" placeholder="@Localizer["Remarks about the team."]" />
+                <label asp-for="Input.Remark" class="form-label"></label>
+                <span asp-validation-for="Input.Remark" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <p>
+                    @if (Model.Input.Picture is not null)
+                    {
+                        <img id="Picture" style="width:350px;height:350px; object-fit:cover" src="data:image/*;base64,@(Convert.ToBase64String(Model.Input.Picture))">
+                    }
+                </p>
+                <input asp-for="PictureFile" class="form-control" accept=".png,.jpg,.jpeg,.gif" />
+            </div>
+            <p></p>
+            <a class="w-30 btn btn-lg btn-secondary" asp-page="./Index"><i class="bi bi-arrow-left-circle-fill"></i></a>
+            <button id="update-tenant-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+        </form>
+    </div>
+    <p></p>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h5>@Localizer["Team Actions"]</h5>
+        @if (Model.AllowEnablingTenant())
+        {
+            <form asp-page-handler="Enable" method="post">
+                <input type="hidden" asp-for="Input.Id" />
+                <button id="enable-tenant-button" type="submit" class="w-70 btn btn-lg btn-secondary">@Localizer["Activate"]</button>
+            </form>
+        }
+        @if (Model.AllowDisablingTenant())
+        {
+            <form asp-page-handler="Disable" method="post">
+                <input type="hidden" asp-for="Input.Id" />
+                <button id="disable-tenant-button" type="submit" class="w-70 btn btn-lg btn-secondary">@Localizer["Disable"]</button>
+            </form>
+        }
+        @if (Model.AllowDefaultsTenant())
+        {
+            <form asp-page-handler="Defaults" method="post">
+                <input type="hidden" asp-for="Input.Id" />
+                <button id="defaults-tenant-button" type="submit" class="w-70 btn btn-lg btn-secondary">@Localizer["Add Defaults"]</button>
+            </form>
+        }
+        <p></p>
+    </div>
+</div>
+<div class="row">
+    <h5>@Localizer["Team Roles"]</h5>
+    @if (Model.Roles.Count > 0)
+    {
+        <table class="table table-responsive">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Roles.First().Label)</th>
+                <th>@Html.DisplayNameFor(model => model.Roles.First().Description)</th>
+                <th></th>
+            </tr>
+            @foreach (var item in Model.Roles)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item!.Label)</td>
+                    <td>@Html.DisplayFor(modelItem => item!.Description)</td>
+                    <td></td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <p>@Localizer["The team does not have any linked roles"]</p>
+    }
+    <p></p>
+</div>
+<div class="row">
+    <h5>@Localizer["Team Users"]</h5>
+    <p>
+        <a class="btn btn-primary" asp-page="./AddUsers" asp-route-id="@Model.Input.Id"><i class="bi bi-plus-circle"></i></a>
+    </p>
+    @if (Model.UserRoles.Count > 0)
+    {
+        <table class="table table-responsive">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.UserRoles.First().User.Fullname)</th>
+                <th>@Html.DisplayNameFor(model => model.UserRoles.First().User.Email)</th>
+                <th>@Html.DisplayNameFor(model => model.UserRoles.First().Role.Label)</th>
+                <th></th>
+            </tr>
+            @foreach (var item in Model.UserRoles)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item!.User.Fullname)</td>
+                    <td>@Html.DisplayFor(modelItem => item!.User.Email)</td>
+                    <td>@Html.DisplayFor(modelItem => item!.Role.Label)</td>
+                    <td>
+                        <form method="post" asp-page-handler="DeleteUser">
+                            <input type="hidden" name="userId" value="@item.UserId" />
+                            <input type="hidden" name="roleId" value="@item.RoleId" />
+                            <input type="hidden" name="tenantId" value="@item.TenantId" />
+                            <button class="btn btn-link link-primary"><i class="bi bi-trash2-fill"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <p>@Localizer["The team does not have any linked users"]</p>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "TypeOf": "ProjectCategory",
+    "Category": "Development",
+    "Subcategory": "Software",
+    "Description": "Projects related to the development of software solutions.",
+    "SearchIndex": "development software project"
+  },
+  {
+    "TypeOf": "ProjectCategory",
+    "Category": "Development",
+    "Subcategory": "Hardware",
+    "Description": "Projects related to the development of hardware systems and components.",
+    "SearchIndex": "development hardware project"
+  },
+  {
+    "TypeOf": "ProjectCategory",
+    "Category": "Research",
+    "Subcategory": "Market Research",
+    "Description": "Projects focused on market research to gather data on consumer needs and trends.",
+    "SearchIndex": "research market project"
+  },
+  {
+    "TypeOf": "ProjectCategory",
+    "Category": "Research",
+    "Subcategory": "Scientific Research",
+    "Description": "Projects aimed at conducting scientific research to discover new findings.",
+    "SearchIndex": "research scientific project"
+  },
+  {
+    "TypeOf": "ProjectCategory",
+    "Category": "Consulting",
+    "Subcategory": "Business Strategy",
+    "Description": "Consulting projects focused on developing business strategies for clients.",
+    "SearchIndex": "consulting business strategy project"
+  },
+  {
+    "TypeOf": "ProjectCategory",
+    "Category": "Consulting",
+    "Subcategory": "Technology Advisory",
+    "Description": "Consulting projects focused on providing technology advisory services.",
+    "SearchIndex": "consulting technology advisory project"
+  }
+]

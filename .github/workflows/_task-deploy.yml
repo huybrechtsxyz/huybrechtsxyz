@@ -39,4 +39,4 @@ jobs:
             # Execute the previously uploaded script
             export ENVIRONMENT=${{ inputs.environment }}
             export MINIO_DATA=${{ inputs.minio_data }}
-            /app/src/scripts/deploy-stack.sh
+            /app/startenv.sh

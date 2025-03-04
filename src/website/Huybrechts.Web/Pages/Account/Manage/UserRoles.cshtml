@@ -1,0 +1,48 @@
+﻿@page
+@inject IViewLocalizer Localizer
+@model UserRolesModel
+@{
+    ViewData["CardTitle"] = Localizer["Your assigned user roles"];
+    ViewData["ActivePage"] = ManageNavPages.UserRoles;
+}
+
+<div class="row">
+    <div class="col-md-6">
+        @if(Model.TenantRoles.Length > 0)
+        {
+            <div class="table-responsive">
+                <table class="table table-striped" title="@Localizer["Team Roles"]">
+                    <tr>
+                        <th>@Localizer["Team"]</th>
+                        <th>@Localizer["Role"]</th>
+                    </tr>
+                    @foreach (var item in Model.TenantRoles)
+                    {
+                        <tr>
+                            <td>@item.TenantId</td>
+                            <td>@item.Label</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        }
+        <p>
+        </p>
+        @if (Model.SystemRoles.Length > 0)
+        {
+            <div class="table-responsive">
+                <table class="table table-striped" title="@Localizer["Application Roles"]">
+                    <tr>
+                        <th>@Localizer["Role"]</th>
+                    </tr>
+                    @foreach (var item in Model.SystemRoles)
+                    {
+                        <tr>
+                            <td>@item.Label</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        }
+    </div>
+</div>

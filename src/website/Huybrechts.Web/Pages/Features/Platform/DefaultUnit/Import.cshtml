@@ -1,0 +1,188 @@
+﻿@page
+@inject IStringLocalizer<Localization> SL
+@model Huybrechts.Web.Pages.Features.Platform.DefaultUnit.ImportModel
+@{
+    ViewData["CardTitle"] = Model.Data.PlatformInfo.Name + " | " + SL["DefaultUnitImportTitle"];
+    var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
+    var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
+}
+<partial name="_StatusResult" for="StatusMessage" />
+<p class="text-info">
+    @SL["DefaultUnitImportInfo"]
+</p>
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <form class="row row-cols-md-auto g-3 align-items-center">
+                <div class="col-md-3 d-flex gap-1 align-items-center mb-3">
+                    <button id="import-button" type="button" class="btn btn-primary" data-form-id="import-form">
+                        <i class="bi bi-patch-plus-fill"></i>
+                        <span class="vr"></span>
+                        @SL["Add Selection"]
+                    </button>
+                    <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="Index" asp-route-platformInfoId="@Model.Data.PlatformInfo.Id">
+                        <i class="bi-arrow-left-circle-fill"></i>
+                        <span class="vr"></span>
+                        @SL["Cancel"]
+                    </a>
+                </div>
+                <div class="col-md-9 d-flex gap-1 align-items-center justify-content-md-end mb-3">
+                    <input type="hidden" name="platformInfoId" value="@Model.Data.PlatformInfo.Id" />
+                    <input type="text" name="platformInfoName" value="@Model.Data.PlatformInfo.Name" class="form-control" disabled />
+                    <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="@SL["Search..."]" class="form-control" autocomplete="off" />
+                    <input type="submit" value="@SL["Search"]" class="btn btn-primary" /> |
+                    <a asp-page="Import" asp-route-platformInfoId="@Model.Data.PlatformInfo.Id" class="btn btn-secondary text-nowrap" type="button" role="button">@SL["Clear Filter"]</a>
+                </div>
+            </form>
+            
+            @if (Model.Data.Results.Count > 0)
+            {
+                <form id="import-form" method="post">
+                    <input type="hidden" asp-for="@Model.Data.PlatformInfo.Id" />
+                    <div class="table-responsive overflow-visible">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>@SL["Select"]</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].Description)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].ServiceName)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].ProductName)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].SkuName)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].MeterName)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].Sequence)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].UnitOfMeasure)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].SetupUnitName)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].UnitFactor)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].DefaultValue)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].IsDefaultPlatformRateUnit)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].IsDefaultProjectComponentUnit)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].Variable)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].Expression)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for(int idex = 0; idex<Model.Data.Results.Count; idex++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].Id" />
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].PlatformInfoId" />
+                                            <input type="checkbox" asp-for="@Model.Data.Results[idex].IsSelected" />
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].Description" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].Description)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].ServiceName" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].ServiceName)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].ProductName" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].ProductName)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].SkuName" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].SkuName)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].MeterName" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].MeterName)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].Sequence" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].Sequence)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].UnitOfMeasure" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].UnitOfMeasure)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].SetupUnitName" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].SetupUnitName)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].UnitFactor" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].UnitFactor)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].DefaultValue" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].DefaultValue)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].IsDefaultPlatformRateUnit" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].IsDefaultPlatformRateUnit)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].IsDefaultProjectComponentUnit" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].IsDefaultProjectComponentUnit)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].Variable" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].Variable)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].Expression" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].Expression)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <nav class="text-align-center mt-5" aria-label="Table navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item @prev">
+                                <a asp-page="Import"
+                                   asp-route-platformInfoId="@Model.Data.PlatformInfo.Id"
+                                   asp-route-currentFilter="@Model.Data.CurrentFilter"
+                                   asp-route-searchText="@Model.Data.CurrentFilter"
+                                   asp-route-sortOrder="@Model.Data.SortOrder"
+                                   asp-route-pageindex="@(Model.Data.Results.PageIndex - 1)"
+                                   class="page-link" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">@SL["Previous"]</span>
+                                </a>
+                            </li>
+                            @for (int i = 1; i <= Model.Data.Results.TotalPages; i++)
+                            {
+                                <li class="page-item @(Model.Data.Results.PageIndex == i ? "active" : string.Empty)" aria-current="page">
+                                    <a asp-page="Import"
+                                       asp-route-platformInfoId="@Model.Data.PlatformInfo.Id"
+                                       asp-route-currentFilter="@Model.Data.CurrentFilter"
+                                       asp-route-searchText="@Model.Data.CurrentFilter"
+                                       asp-route-sortOrder="@Model.Data.SortOrder"
+                                       asp-route-pageindex="@i"
+                                       class="page-link">
+                                        @(i)
+                                    </a>
+                                </li>
+                            }
+                            <li class="page-item @next">
+                                <a asp-page="Import"
+                                   asp-route-platformInfoId="@Model.Data.PlatformInfo.Id"
+                                   asp-route-currentFilter="@Model.Data.CurrentFilter"
+                                   asp-route-searchText="@Model.Data.CurrentFilter"
+                                   asp-route-sortOrder="@Model.Data.SortOrder"
+                                   asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
+                                   class="page-link" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">@SL["Next"]</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+
+@section Breadcrumb {
+    <li class="breadcrumb-item">@Model.Data.PlatformInfo.Name</li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/DefaultUnit/Index">@SL["DefaultUnits"]</a></li>
+}
+
+@section Scripts {
+    <script src="~/js/external-card-menu.js"></script>
+}

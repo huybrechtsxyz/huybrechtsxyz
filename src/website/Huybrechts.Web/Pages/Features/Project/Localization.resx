@@ -1,0 +1,429 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Add Defaults" xml:space="preserve">
+    <value>Add Defaults</value>
+  </data>
+  <data name="Add New" xml:space="preserve">
+    <value>Add New</value>
+  </data>
+  <data name="Add Selection" xml:space="preserve">
+    <value>Add Selection</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Clear Filter" xml:space="preserve">
+    <value>Clear Filter</value>
+  </data>
+  <data name="Component" xml:space="preserve">
+    <value>Component</value>
+  </data>
+  <data name="ComponentCreateInfo" xml:space="preserve">
+    <value>Use this form to create a new project component. Components can be a part of larger designs, configurations, or modules and may also contain subcomponents. Define the component type, variant, and the specific role it plays in the project design. You can also link platform resources to the component.</value>
+  </data>
+  <data name="ComponentCreateTitle" xml:space="preserve">
+    <value>Add New Component</value>
+  </data>
+  <data name="ComponentDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this project component? Deleting a component will also remove all its associated subcomponents and configurations from the project design. This action cannot be undone.</value>
+  </data>
+  <data name="ComponentDeleteTitle" xml:space="preserve">
+    <value>Delete Component</value>
+  </data>
+  <data name="ComponentEditInfo" xml:space="preserve">
+    <value>Modify the details of an existing project component. You can update the component's name, description, and variant type. Additionally, manage the component’s subcomponents and adjust its sequence in the overall project design. Ensure that all platform resource links, if applicable, are accurate.</value>
+  </data>
+  <data name="ComponentEditTitle" xml:space="preserve">
+    <value>Edit Component</value>
+  </data>
+  <data name="ComponentIndexInfo" xml:space="preserve">
+    <value>This page provides a complete list of all components within the project design. Components can represent high-level elements, configurations, modules, or specific variants. Each component can have subcomponents, which allows you to build complex designs by nesting elements. Use this page to explore and manage components for different project designs.</value>
+  </data>
+  <data name="ComponentIndexTitle" xml:space="preserve">
+    <value>Project Components Overview</value>
+  </data>
+  <data name="ComponentNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Components" xml:space="preserve">
+    <value>Components</value>
+  </data>
+  <data name="ComponentUnitCreateInfo" xml:space="preserve">
+    <value>Use this form to add a new measurement unit to a project component. Assign the unit of measure, provide a variable name, and define a formula for calculating the value.</value>
+  </data>
+  <data name="ComponentUnitCreateTitle" xml:space="preserve">
+    <value>Add New Component Unit</value>
+  </data>
+  <data name="ComponentUnitDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this component unit? This action cannot be undone and will remove the associated measurement unit and calculation formula from the component.</value>
+  </data>
+  <data name="ComponentUnitDeleteTitle" xml:space="preserve">
+    <value>Delete Component Unit</value>
+  </data>
+  <data name="ComponentUnitEditInfo" xml:space="preserve">
+    <value>Use this form to modify the details of an existing component unit. You can update the unit of measure, variable name, and calculation formula as needed.</value>
+  </data>
+  <data name="ComponentUnitEditTitle" xml:space="preserve">
+    <value>Edit Component Unit</value>
+  </data>
+  <data name="ComponentUnitIndexInfo" xml:space="preserve">
+    <value>This page lists all the measurement units associated with each project component. You can view details such as the project, design, unit of measure, and the calculation formula for each component.</value>
+  </data>
+  <data name="ComponentUnitIndexTitle" xml:space="preserve">
+    <value>Component Units</value>
+  </data>
+  <data name="ComponentUnitNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="ComponentUnits" xml:space="preserve">
+    <value>Units</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Design" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="DesignCreateInfo" xml:space="preserve">
+    <value>Use this form to add a new design for your project. Provide details about the proposed solution, including its name and description.</value>
+  </data>
+  <data name="DesignCreateTitle" xml:space="preserve">
+    <value>Create New Project Design</value>
+  </data>
+  <data name="DesignDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this project design? This action cannot be undone and will remove the design from the project permanently.</value>
+  </data>
+  <data name="DesignDeleteTitle" xml:space="preserve">
+    <value>Delete Project Design</value>
+  </data>
+  <data name="DesignEditInfo" xml:space="preserve">
+    <value>Use this form to update the details of an existing project design. Make changes to the design's name or description and save your updates.</value>
+  </data>
+  <data name="DesignEditTitle" xml:space="preserve">
+    <value>Edit Project Design</value>
+  </data>
+  <data name="DesignIndexInfo" xml:space="preserve">
+    <value>This page lists all the designs for the selected project. Here, you can view, edit, or delete existing designs or create a new design to propose different solutions.</value>
+  </data>
+  <data name="DesignIndexTitle" xml:space="preserve">
+    <value>Project Designs</value>
+  </data>
+  <data name="DesignNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Designs" xml:space="preserve">
+    <value>Designs</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="InfoCreateInfo" xml:space="preserve">
+    <value>Use this form to create a new project. Fill in all required fields, such as project name, description, and start date, to add a new project to the platform.</value>
+  </data>
+  <data name="InfoCreateTitle" xml:space="preserve">
+    <value>Create New Project</value>
+  </data>
+  <data name="InfoDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this project? This action cannot be undone and will permanently remove the project from the platform.</value>
+  </data>
+  <data name="InfoDeleteTitle" xml:space="preserve">
+    <value>Delete Project</value>
+  </data>
+  <data name="InfoEditInfo" xml:space="preserve">
+    <value>Use this form to edit the details of an existing project. Update the necessary fields and save your changes to keep the project information up to date.</value>
+  </data>
+  <data name="InfoEditTitle" xml:space="preserve">
+    <value>Edit Project</value>
+  </data>
+  <data name="InfoIndexInfo" xml:space="preserve">
+    <value>This page provides an overview of all projects.</value>
+  </data>
+  <data name="InfoIndexTitle" xml:space="preserve">
+    <value>Project Overview</value>
+  </data>
+  <data name="InfoNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="PageInfo" xml:space="preserve">
+    <value>Manage your projects</value>
+  </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Project Management</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Quantities" xml:space="preserve">
+    <value>Bill of Quantities</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Bill of Quantity</value>
+  </data>
+  <data name="QuantityCreateInfo" xml:space="preserve">
+    <value>Add a new bill of quantities to outline the materials and labor required for the project.</value>
+  </data>
+  <data name="QuantityCreateTitle" xml:space="preserve">
+    <value>Create Bill of Quantities</value>
+  </data>
+  <data name="QuantityDeleteInfo" xml:space="preserve">
+    <value>Confirm deletion of the selected bill of quantities. This action cannot be undone.</value>
+  </data>
+  <data name="QuantityDeleteTitle" xml:space="preserve">
+    <value>Delete Bill of Quantities</value>
+  </data>
+  <data name="QuantityEditInfo" xml:space="preserve">
+    <value>Modify the details of the selected bill of quantities, including materials and labor requirements.</value>
+  </data>
+  <data name="QuantityEditTitle" xml:space="preserve">
+    <value>Edit Bill of Quantities</value>
+  </data>
+  <data name="QuantityIndexInfo" xml:space="preserve">
+    <value>View and manage the bills of quantities for your project. Each bill of quantities contains detailed material and labor requirements.</value>
+  </data>
+  <data name="QuantityIndexTitle" xml:space="preserve">
+    <value>Bill of Quantities</value>
+  </data>
+  <data name="QuantityNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Scenario" xml:space="preserve">
+    <value>Scenario</value>
+  </data>
+  <data name="ScenarioCopyInfo" xml:space="preserve">
+    <value>Use this form to copy an existing scenario for your project.</value>
+  </data>
+  <data name="ScenarioCopyTitle" xml:space="preserve">
+    <value>Copy Existing Scenario</value>
+  </data>
+  <data name="ScenarioCreateInfo" xml:space="preserve">
+    <value>Use this form to create a new scenario for your project. A scenario allows you to define a set of metrics that can be applied to the design components. This is useful for performing comparisons and estimates under different assumptions. Provide a name, description, and any remarks that will help you understand the context of this scenario.</value>
+  </data>
+  <data name="ScenarioCreateTitle" xml:space="preserve">
+    <value>Create New Scenario</value>
+  </data>
+  <data name="ScenarioDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this scenario? Once deleted, all related metric settings for this scenario will also be removed, and it cannot be recovered. This action will affect any designs that rely on the metrics defined in this scenario.</value>
+  </data>
+  <data name="ScenarioDeleteTitle" xml:space="preserve">
+    <value>Delete Scenario</value>
+  </data>
+  <data name="ScenarioEditInfo" xml:space="preserve">
+    <value>Use this form to edit an existing scenario. You can update the scenario's name, description, and remarks. Scenarios are essential for applying different metrics to design components, enabling you to explore various design possibilities and calculate their impacts.</value>
+  </data>
+  <data name="ScenarioEditTitle" xml:space="preserve">
+    <value>Edit Scenario</value>
+  </data>
+  <data name="ScenarioIndexInfo" xml:space="preserve">
+    <value>This page lists all the project scenarios defined for the platform. Scenarios are used to apply different metrics to design components, allowing for "what-if" analysis. By using multiple scenarios, you can compare various assumptions, such as different metric values for specific design components like kitchen size or API requests. Select a scenario to view or modify its details.</value>
+  </data>
+  <data name="ScenarioIndexTitle" xml:space="preserve">
+    <value>Project Scenarios</value>
+  </data>
+  <data name="ScenarioNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Scenarios" xml:space="preserve">
+    <value>Scenarios</value>
+  </data>
+  <data name="ScenarioUnitCreateInfo" xml:space="preserve">
+    <value>Use this form to add a new scenario unit. Define the metric variable name and, if applicable, provide either a fixed value or a formula to calculate its value dynamically. This unit will be used in the selected project scenario.</value>
+  </data>
+  <data name="ScenarioUnitCreateTitle" xml:space="preserve">
+    <value>Add New Scenario Unit</value>
+  </data>
+  <data name="ScenarioUnitDeleteInfo" xml:space="preserve">
+    <value>Are you sure you want to delete this scenario unit? Deleting it will remove the metric calculations associated with this unit from the project scenario.</value>
+  </data>
+  <data name="ScenarioUnitDeleteTitle" xml:space="preserve">
+    <value>Delete Scenario Unit</value>
+  </data>
+  <data name="ScenarioUnitEditInfo" xml:space="preserve">
+    <value>Use this form to edit an existing scenario unit. Update the variable name, fixed value, or formula, ensuring that the unit accurately represents the metrics needed for your project scenario.</value>
+  </data>
+  <data name="ScenarioUnitEditTitle" xml:space="preserve">
+    <value>Edit Scenario Unit</value>
+  </data>
+  <data name="ScenarioUnitIndexInfo" xml:space="preserve">
+    <value>This page lists all the scenario units used for calculating metrics within the project scenarios. Each unit defines a specific variable, which may either have a fixed value or be calculated through a formula, contributing to the overall design component evaluations.</value>
+  </data>
+  <data name="ScenarioUnitIndexTitle" xml:space="preserve">
+    <value>Scenario Metrics</value>
+  </data>
+  <data name="ScenarioUnitNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="ScenarioUnits" xml:space="preserve">
+    <value>Metrics</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Search..." xml:space="preserve">
+    <value>Search...</value>
+  </data>
+  <data name="Select a platform" xml:space="preserve">
+    <value>Select a platform</value>
+  </data>
+  <data name="Select a product" xml:space="preserve">
+    <value>Select a product</value>
+  </data>
+  <data name="SimulationCreateInfo" xml:space="preserve">
+    <value>Set up a new project simulation by entering the required details and configurations.</value>
+  </data>
+  <data name="SimulationCreateTitle" xml:space="preserve">
+    <value>Create New Project Simulation</value>
+  </data>
+  <data name="SimulationDeleteInfo" xml:space="preserve">
+    <value>Remove a project simulation from the system. This action will permanently delete the simulation and its associated data.</value>
+  </data>
+  <data name="SimulationDeleteTitle" xml:space="preserve">
+    <value>Delete Project Simulation</value>
+  </data>
+  <data name="SimulationDetailsInfo" xml:space="preserve">
+    <value>The project simulation entries.</value>
+  </data>
+  <data name="SimulationDetailsTitle" xml:space="preserve">
+    <value>Project simulation details</value>
+  </data>
+  <data name="SimulationEditInfo" xml:space="preserve">
+    <value>Modify the details of an existing project simulation. Make adjustments to parameters and scenarios as needed.</value>
+  </data>
+  <data name="SimulationEditTitle" xml:space="preserve">
+    <value>Edit Project Simulation</value>
+  </data>
+  <data name="SimulationIndexInfo" xml:space="preserve">
+    <value>View a list of all project simulations, including their details and results.</value>
+  </data>
+  <data name="SimulationIndexTitle" xml:space="preserve">
+    <value>Project Simulations</value>
+  </data>
+  <data name="SimulationNoResults" xml:space="preserve">
+    <value>No results found</value>
+  </data>
+  <data name="Simulations" xml:space="preserve">
+    <value>Simulations</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Unit</value>
+  </data>
+</root>

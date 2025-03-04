@@ -1,0 +1,68 @@
+﻿@page
+@inject IStringLocalizer<Localization> SL
+@model Huybrechts.Web.Pages.Features.Project.ScenarioUnit.IndexModel
+@{
+    ViewData["CardTitle"] = Model.Data.ProjectScenario.Name + " | " + SL["ScenarioUnitIndexTitle"];
+}
+<partial name="_StatusResult" for="StatusMessage" />
+<p class="text-Scenario">
+    @SL["ScenarioUnitIndexInfo"]
+</p>
+<div class="row">
+    <div class="col-md-12">
+        
+        <div class="row">
+            <div class="col-md-3 d-flex gap-1 align-items-center mb-3">
+                <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="/Features/Project/Scenario/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfo.Id">
+                    <i class="bi bi-arrow-up-circle-fill fs-5"></i>
+                </a>
+                <a class="btn btn-primary hstack gap-2 align-self-center" asp-page="Create" asp-route-ProjectScenarioId="@Model.Data.ProjectScenario.Id">
+                    <i class="bi bi-plus-circle fs-5"></i>
+                    <span class="vr"></span>
+                    @SL["Add New"]
+                </a>
+            </div>
+            @if (Model.Data.Results.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].Sequence)</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].Variable)</th>
+                                <th>@Html.DisplayNameFor(model => model.Data.Results[0].Expression)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var record in Model.Data.Results)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => record!.Sequence)</td>
+                                    <td>@Html.DisplayFor(modelItem => record!.Variable)</td>
+                                    <td>@Html.DisplayFor(modelItem => record!.Expression)</td>
+                                    <td>
+                                        <a asp-page="Edit" asp-route-id="@record!.Id" class="btn btn-icon btn-primary"><i class="bi bi-pencil-square"></i></a>
+                                        <a asp-page="Delete" asp-route-id="@record!.Id" class="btn btn-icon btn-secondary"><i class="bi bi-trash2-fill"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="card border-2 border-secondary">
+                    <h5 class="card-body">@SL["ScenarioUnitNoResults"]</h5>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Breadcrumb {
+    <li class="breadcrumb-item">@Model.Data.ProjectInfo.Name</li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Project/Scenario/Index" asp-route-ProjectInfoId="@Model.Data.ProjectInfo.Id">@Model.Data.ProjectScenario.Name</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Project/ScenarioUnit/Index" asp-route-ProjectScenarioId="@Model.Data.ProjectScenarioId">@SL["ScenarioUnits"]</a></li>
+}

@@ -1,0 +1,189 @@
+﻿@page
+@inject IViewLocalizer Localizer
+@model Huybrechts.Web.Pages.PrivacyModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark" data-scheme="navy" style="font-size: 18px;">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8; ie=edge">
+    <meta name="description" content="Privacy policy for Huybrechts.XYZ">
+    <meta name="keywords" content="privacy policy">
+    <meta name="author" content="Vincent Huybrechts">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <title>Privacy Policy for Huybrechts XYZ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Ubuntu:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="~/lib/nifty/bootstrap.css">
+    <link rel="stylesheet" href="~/lib/nifty/nifty.css">
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css">
+</head>
+<body class="out-quart">
+    <div id="root" class="root mn--max tm--expanded-hd">
+        <section id="content" class="content">
+            <div class="content__header content__boxed rounded-0 overlapping">
+                <div class="content__wrap">
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a asp-page="Index">@Localizer["Home"]</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">@Localizer["Privacy Policy"]</li>
+                        </ol>
+                    </nav>
+                    <!-- Page title and information -->
+                    <h1 class="page-title text-center mb-2 mt-4">@Localizer["Title"]</h1>
+                    <p class="lead text-center">@Localizer["Subtitle"]</p>
+                    <div class="d-flex flex-wrap gap-2 justify-content-center mt-4 mb-4">
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+            <div class="content__boxed">
+                <div class="content__wrap">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-md-flex gap-5 p-xl-3">
+                                <div class="flex-fill">
+
+                                    <h4 class="hstack gap-2">
+                                        <i class="bi bi-person-heart fs-1 text-warning text-opacity-50"></i>
+                                        @Localizer["PI"]
+                                    </h4>
+                                    <div class="bg-body-tertiary bg-opacity-50 p-3 rounded">
+                                        @Localizer["PI_1"]
+                                        <ul>
+                                            @Localizer["PI_2"]
+                                        </ul>
+                                        @Localizer["PI_3"]
+                                    </div>
+
+                                    <h4 class="hstack gap-2 mt-5">
+                                        <i class="bi bi-info-square fs-1 text-info text-opacity-50"></i>
+                                        @Localizer["INFO"]
+                                    </h4>
+                                    <div class="bg-body-tertiary bg-opacity-50 p-3 rounded">
+                                        <p>
+                                            @Localizer["INFO_1"]
+                                        </p>
+                                        <p>
+                                            @Localizer["INFO_2"]
+                                        </p>
+                                        <p>
+                                            @Localizer["INFO_3"]
+                                        </p>
+                                        <p>
+                                            @Localizer["INFO_4"]
+                                        </p>
+                                    </div>
+
+                                    <h4 class="hstack gap-2 mt-5">
+                                        <i class="bi bi-cookie fs-1 text-success text-opacity-50"></i>
+                                        @Localizer["COOKIE"]
+                                    </h4>
+                                    <div class="bg-body-tertiary bg-opacity-50 p-3 rounded">
+                                        <p>
+                                            @Localizer["COOKIE_1"]
+                                        </p>
+                                        <p>
+                                            @Localizer["COOKIE_2"]
+                                        </p>
+                                    </div>
+
+                                    <h4 class="hstack gap-2 mt-5">
+                                        <i class="bi bi-person-badge fs-1 text-danger text-opacity-50"></i>
+                                        @Localizer["GDPR"]
+                                    </h4>
+                                    <div class="bg-body-tertiary bg-opacity-50 p-3 rounded">
+                                        <p>
+                                            @Localizer["GDPR_1"]
+                                        </p>
+                                        <p>
+                                            @Localizer["GDPR_2"]
+                                        </p>
+                                    </div>
+
+                                    <h4 class="hstack gap-2 mt-5">
+                                        <i class="bi bi-paragraph fs-1 text-danger text-opacity-50"></i>
+                                        @Localizer["DISCLAIMER"]
+                                    </h4>
+                                    <div class="bg-body-tertiary bg-opacity-50 p-3 rounded">
+                                        <p>
+                                            @Localizer["DISCLAIMER_1"]
+                                        </p>
+                                        <p>
+                                            @Localizer["DISCLAIMER_2"]
+                                        </p>
+                                    </div>
+
+                                    <h4 class="hstack gap-2 mt-5">
+                                        <i class="bi bi-pencil-square fs-1 text-secondary text-opacity-50"></i>
+                                        @Localizer["FUTURE"]
+                                    </h4>
+                                    <div class="bg-body-tertiary bg-opacity-50 p-3 rounded">
+                                        <p>
+                                            @Localizer["FUTURE_1"]
+                                        </p>
+                                        <p>
+                                            @Localizer["FUTURE_2"]
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <header class="header">
+            <div class="header__inner">
+                <div class="header__brand">
+                    <div class="brand-wrap">
+                        <a asp-page="Index" class="brand-img stretched-link">
+                            <img src="./img/logo.png" alt="XYZ Logo" class="Nifty logo" width="32" height="32">
+                        </a>
+                        <div class="brand-title"><span class="logo">Huybrechts <span> XYZ</span></span></div>
+
+                    </div>
+                </div>
+
+                <div class="header__content">
+                    <div class="header__content-start">
+                        <div class="vr mx-1 d-none d-md-block"></div>
+                    </div>
+
+                    <div class="header__content-end">
+
+                        <div class="vr mx-1 d-none d-md-block"></div>
+
+                        <div class="form-check form-check-alt form-switch mx-md-2">
+                            <input id="headerThemeToggler" class="form-check-input mode-switcher" type="checkbox" role="switch">
+                            <label class="form-check-label ps-1 fw-bold d-none d-md-flex align-items-center " for="headerThemeToggler">
+                                <i class="mode-switcher-icon icon-light fs-5">
+                                    <i class="bi bi-brightness-low-fill"></i>
+                                </i>
+                                <i class="mode-switcher-icon icon-dark d-none">
+                                    <i class="bi bi-moon-fill"></i>
+                                </i>
+                            </label>
+                        </div>
+
+                        <div class="vr mx-1 d-none d-md-block"></div>
+
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+    <div class="scroll-container">
+        <a href="#root" class="scroll-page ratio ratio-1x1" aria-label="Scroll button"></a>
+    </div>
+    <script src="./lib/popperjs/popper.min.js"></script>
+    <script src="./lib/nifty/bootstrap.min.js"></script>
+    <script src="./lib/nifty/nifty.min.js"></script>
+</body>
+</html>

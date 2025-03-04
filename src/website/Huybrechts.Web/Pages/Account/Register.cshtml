@@ -1,0 +1,95 @@
+﻿@page
+@inject IViewLocalizer Localizer
+@model RegisterModel
+@{
+    ViewData["MetaTitle"] = Localizer["Register"];
+}
+<div class="card shadow-lg">
+    <div class="card-body">
+
+        <div class="text-center">
+            <h1 class="h3">@Localizer["Create a New Account"]</h1>
+            <p>@Localizer["Come join the XYZ community! Let's set up your account."]</p>
+        </div>
+
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" class="mt-5" method="post">
+            <div class="w-md-400px d-inline-flex row g-3 mb-4">
+                <div class="col-sm-6">
+                    <input asp-for="Input.GivenName" class="form-control" autocomplete="givenname" aria-required="true" aria-label="First name" autofocus>
+                    <span asp-validation-for="Input.GivenName" class="text-danger"></span>
+                </div>
+                <div class="col-sm-6">
+                    <input asp-for="Input.Surname" class="form-control" autocomplete="surname" aria-label="Last name" aria-required="true" />
+                    <span asp-validation-for="Input.Surname" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="email" aria-label="Email" aria-required="true" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="col-sm-6">
+                    <input asp-for="Input.Password" type="password" class="form-control" autocomplete="new-password" aria-label="Password" aria-required="true" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="col-sm-6">
+                    <input asp-for="Input.ConfirmPassword" type="password" class="form-control" autocomplete="new-password" aria-label="Confirm Password" aria-required="true" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+            </div>
+            
+            <div class="form-check">
+                <input id="registerCheck" asp-for="Input.AgreeToTerms" type="checkbox" class="form-check-input">
+                <label for="registerCheck" class="form-check-label">
+                    <a asp-page="/Privacy" class="btn-link text-decoration-underline">@Localizer["I agree with the Terms and Conditions"]</a>
+                    <span asp-validation-for="Input.AgreeToTerms" class="text-danger"></span>
+                </label>
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="d-grid mt-5">
+                <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg">@Localizer["Register"]</button>
+            </div>
+        </form>
+
+        <div class="d-flex justify-content-between mt-4">
+            @Localizer["Already have an account ?"]
+            <a asp-page="Login" class="btn-link text-decoration-none">@Localizer["Sign In"]</a>
+        </div>
+
+        @{
+            if ((Model.ExternalLogins?.Count ?? 0) > 0)
+            {
+                <div class="d-flex align-items-center justify-content-between border-top pt-3 mt-3">
+                    <h5 class="m-0">@Localizer["Sign Up with"]</h5>
+                    <div class="ms-3">
+                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                            @foreach (var provider in Model.ExternalLogins!)
+                            {
+                                switch (@provider.Name.ToUpper())
+                                {
+                                    case "GOOGLE":
+                                        {
+                                            <button type="submit" class="btn btn-sm btn-icon btn-hover btn-primary text-inherit"
+                                                    name="provider" value="@provider.Name"
+                                                    title="Log in using your @provider.DisplayName account">
+                                                <i class="bi bi-google" style="font-size: 2em;"></i>
+                                            </button>
+                                            break;
+                                        }
+                                }
+                            }
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<div class="d-flex align-items-center justify-content-center gap-3 mt-4">
+    <button class="btn btn-light" onclick="window.history.back()">@Localizer["Back"]</button>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

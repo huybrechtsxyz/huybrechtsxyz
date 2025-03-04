@@ -1,0 +1,28 @@
+﻿@using Huybrechts.App.Config
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+@using System.Globalization
+
+@inject IViewLocalizer Localizer
+@inject IOptions<RequestLocalizationOptions> LocOptions
+
+@{
+    var supportedCultures = ApplicationSettings.GetSupportedCultures();
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var cultureItems = supportedCultures.Select(c => new SelectListItem { Value = c.Name, Text = c.DisplayName }).ToList();
+    var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}";
+}
+
+<div>
+    <form id="selectLanguage" asp-controller="Application"
+          asp-action="SetLanguage" asp-route-returnUrl="@returnUrl"
+          method="post" class="form-horizontal" role="form">
+        <select name="culture" onchange="this.form.submit();" 
+            asp-for="@requestCulture!.RequestCulture.UICulture.Name"
+            asp-items="cultureItems">
+        </select>
+    </form>
+</div>

@@ -1,0 +1,126 @@
+﻿@page
+@inject IStringLocalizer<Localization> SL
+@model Huybrechts.Web.Pages.Features.Setup.Unit.ImportModel
+@{
+    ViewData["CardTitle"] = SL["Setup"] + " | " + SL["UnitImportTitle"];
+    ViewData["ActivePage"] = ManageNavPages.Unit;
+    var prev = !Model.Data.Results.HasPreviousPage ? "disabled" : "";
+    var next = !Model.Data.Results.HasNextPage ? "disabled" : "";
+}
+<partial name="_StatusResult" for="StatusMessage" />
+<p class="text-info">
+    @SL["UnitImportInfo"]
+</p>
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <form class="row row-cols-md-auto g-3 align-items-center">
+                <div class="col-md-3 d-flex gap-1 align-items-center mb-3">
+                    <button id="import-button" type="button" class="btn btn-primary" data-form-id="import-form">
+                        <i class="bi bi-patch-plus-fill"></i>
+                        <span class="vr"></span>
+                        @SL["Add Selection"]
+                    </button>
+                    <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="Index">
+                        <i class="bi-arrow-left-circle-fill"></i>
+                        <span class="vr"></span>
+                        @SL["Cancel"]
+                    </a>
+                </div>
+                <div class="col-md-9 d-flex gap-1 align-items-center justify-content-md-end mb-3">
+                    <input type="text" name="SearchText" value="@Model.Data.CurrentFilter" placeholder="@SL["Search..."]" class="form-control" autocomplete="off" />
+                    <input type="submit" value="@SL["Search"]" class="btn btn-primary" /> |
+                    <a asp-page="Import" class="btn btn-secondary text-nowrap" type="button" role="button">@SL["Clear Filter"]</a>
+                </div>
+            </form>
+            
+            @if (Model.Data.Results.Count > 0)
+            {
+                <form id="import-form" method="post">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>@SL["Select"]</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].Code)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].UnitType)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].Name)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Results[0].Description)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for(int idex = 0; idex<Model.Data.Results.Count; idex++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" asp-for="@Model.Data.Results[idex].IsSelected" />
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].Code" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].Code)
+                                        </td>
+                                        <td>
+                                        <input type="hidden" asp-for="@Model.Data.Results[idex].UnitType" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].UnitType)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].Name" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].Name)
+                                        </td>
+                                        <td>
+                                            <input type="hidden" asp-for="@Model.Data.Results[idex].Description" />
+                                            @Html.DisplayFor(model => @Model.Data.Results[idex].Description)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <nav class="text-align-center mt-5" aria-label="Table navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item @prev">
+                                <a asp-page="Import"
+                                   asp-route-currentFilter="@Model.Data.CurrentFilter"
+                                   asp-route-searchText="@Model.Data.CurrentFilter"
+                                   asp-route-sortOrder="@Model.Data.SortOrder"
+                                   asp-route-pageindex="@(Model.Data.Results.PageIndex - 1)"
+                                   class="page-link" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">@SL["Previous"]</span>
+                                </a>
+                            </li>
+                            @for (int i = 1; i <= Model.Data.Results.TotalPages; i++)
+                            {
+                                <li class="page-item @(Model.Data.Results.PageIndex == i ? "active" : string.Empty)" aria-current="page">
+                                    <a asp-page="Import"
+                                       asp-route-currentFilter="@Model.Data.CurrentFilter"
+                                       asp-route-searchText="@Model.Data.CurrentFilter"
+                                       asp-route-sortOrder="@Model.Data.SortOrder"
+                                       asp-route-pageindex="@i"
+                                       class="page-link">
+                                        @(i)
+                                    </a>
+                                </li>
+                            }
+                            <li class="page-item @next">
+                                <a asp-page="Import"
+                                   asp-route-currentFilter="@Model.Data.CurrentFilter"
+                                   asp-route-searchText="@Model.Data.CurrentFilter"
+                                   asp-route-sortOrder="@Model.Data.SortOrder"
+                                   asp-route-pageindex="@(Model.Data.Results.PageIndex + 1)"
+                                   class="page-link" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">@SL["Next"]</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/external-card-menu.js"></script>
+}

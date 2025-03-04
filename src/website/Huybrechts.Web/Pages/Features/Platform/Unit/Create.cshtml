@@ -1,0 +1,69 @@
+﻿@page
+@inject IStringLocalizer<Localization> SL
+@model Huybrechts.Web.Pages.Features.Platform.Unit.CreateModel
+@{
+    ViewData["CardTitle"] = Model.Data.Rate.UnitOfMeasure + " | " + SL["UnitCreateTitle"];
+}
+<partial name="_StatusResult" for="StatusMessage" />
+<p class="text-info">
+    @SL["UnitCreateInfo"]
+</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <form id="create-form" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input type="hidden" asp-for="Data.Id" />
+            <input type="hidden" asp-for="Data.PlatformInfoId" />
+            <input type="hidden" asp-for="Data.PlatformProductId" />
+            <input type="hidden" asp-for="Data.PlatformRateId" />
+            <div class="form-floating mb-3">
+                <input asp-for="Data.PlatformRate.UnitOfMeasure" class="form-control" disabled />
+                <label asp-for="Data.PlatformRate.UnitOfMeasure" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Data.SetupUnitId"
+                        asp-items="Model.Data.SetupUnits?.Select(p => new SelectListItem
+                                {
+                                    Value = p.Id.ToString(),
+                                    Text = p.Name
+                                }).ToList()"
+                        class="form-select border-info" required>
+                    <option id="@Ulid.Empty">@SL["Select"]</option>
+                </select>
+                <label asp-for="Data.SetupUnitId" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.UnitFactor" class="form-control border-info" required />
+                <label asp-for="Data.UnitFactor" class="form-label"></label>
+                <span asp-validation-for="Data.UnitFactor" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.DefaultValue" class="form-control border-info" required />
+                <label asp-for="Data.DefaultValue" class="form-label"></label>
+                <span asp-validation-for="Data.DefaultValue" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Description" class="form-control border-info" required />
+                <label asp-for="Data.Description" class="form-label"></label>
+                <span asp-validation-for="Data.Description" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <a class="w-30 btn btn-lg btn-secondary" asp-page="Index" asp-route-platformRateId="@Model.Data.PlatformRateId"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                <button id="create-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Breadcrumb {
+    <li class="breadcrumb-item">@Model.Data.Platform.Name</li>
+    <li class="breadcrumb-item"><a asp-page="/Features/Platform/Product/Index" asp-route-platformInfoId="@Model.Data.Platform.Id">@SL["Products"]</a></li>
+    <li class="breadcrumb-item">@Model.Data.Product.Label</li>
+    <li class="breadcrumb-item">@SL["Rates"]</li>
+    <li class="breadcrumb-item">@SL["Units"]</li>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

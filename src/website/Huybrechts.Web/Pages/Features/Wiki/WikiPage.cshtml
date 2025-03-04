@@ -1,0 +1,193 @@
+﻿@page "/Features/Wiki/{wikispace}/{*wikipage}"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Localization> SL
+@model Huybrechts.Web.Pages.Features.Wiki.WikiPageModel
+@{
+    ViewData["CardTags"] = (!string.IsNullOrEmpty(Model.Data.Tags) ? " [" + Model.Data.Tags + "]" : "");
+}
+
+@if (!Model.IsEditable && !Model.IsDeletable)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <partial name="_StatusResult" for="StatusMessage" />
+            <div class="card">
+                <div class="card-header toolbar">
+                    <div class="toolbar-start">
+                        <div class="col-md-9 d-flex gap-1 align-items-center mb-3">
+                            <h3>@Model.Data.Title</h3><h5>@ViewData["CardTags"]</h5>
+                        </div>
+                    </div>
+                    <div class="toolbar-end">
+                        <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="Index">
+                            <i class="bi bi-list"></i>
+                            <span class="vr"></span>
+                            @SL["TOC"]
+                        </a>
+                        <a class="btn btn-secondary hstack gap-2 align-self-center" asp-page="Search">
+                            <i class="bi bi-search"></i>
+                            <span class="vr"></span>
+                            @SL["Search"]
+                        </a>
+                        
+                        <a class="btn btn-primary hstack gap-2 align-self-center" asp-route-wikispace="@Model.WikiSpace" asp-route-wikipage="@Model.WikiPage" asp-route-edit="true">
+                            <i class="bi bi-pencil-square"></i>
+                            <span class="vr"></span>
+                            @SL["Edit"]
+                        </a>
+                        <a class="btn btn-danger hstack gap-2 align-self-center" asp-route-wikispace="@Model.WikiSpace" asp-route-wikipage="@Model.WikiPage" asp-route-delete="true">
+                            <i class="bi bi-trash2-fill"></i>
+                            <span class="vr"></span>
+                            @SL["Delete"]
+                        </a>
+                        <button type="button" class="btn btn-icon btn-secondary hstack gap-2" data-bs-toggle="button" data-nf-toggler="fullpage" data-nf-target=".card" aria-pressed="false" autocomplete="off">
+                            <i class="icon-active bi bi-arrows-angle-contract"></i>
+                            <i class="icon-inactive bi bi-arrows-angle-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="form-floating mb-3">
+                        <div class="wiki-content">
+                            @Html.Raw(Model.HtmlContent)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.IsEditable)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <partial name="_StatusResult" for="StatusMessage" />
+            <div class="card">
+                <form id="edit-form" method="post" asp-page-handler="Edit" asp-route-wikispace="@Model.WikiSpace" asp-route-wikipage="@Model.WikiPage">
+                    <div class="card-header toolbar">
+                        <div class="toolbar-start">
+                            <div class="form-floating mb-3">
+                                <a class="w-30 btn btn-lg btn-secondary" asp-route-wikispace="@Model.WikiSpace" asp-route-wikipage="@Model.WikiPage"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                                <button id="edit-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+                            </div>
+                        </div>
+                        <div class="toolbar-end">
+                            <h3>@Model.Data.Title</h3><h5>@ViewData["CardTags"]</h5>
+                            <button type="button" class="btn btn-icon btn-secondary btn-xs" data-bs-toggle="button" data-nf-toggler="fullpage" data-nf-target=".card" aria-pressed="false" autocomplete="off">
+                                <i class="icon-active bi bi-arrows-angle-contract"></i>
+                                <i class="icon-inactive bi bi-arrows-angle-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-floating mb-3">
+                            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+                            <input type="hidden" asp-for="Data.Id" />
+                            <input type="hidden" asp-for="Data.Namespace" />
+                            <input type="hidden" asp-for="Data.Page" />
+                            <input type="hidden" asp-for="Data.Content" />
+                            <div class="form-floating mb-3">
+                                <input asp-for="Data.Title" class="form-control border-info" />
+                                <label asp-for="Data.Title" class="form-label"></label>
+                                <span asp-validation-for="Data.Title" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" id="tagsInput" name="tags" class="form-control" placeholder="Enter tags" />
+                                <label asp-for="Data.Tags" class="form-label"></label>
+                                <input type="hidden" asp-for="Data.Tags" id="tagsHiddenInput" />
+                                <span asp-validation-for="Data.Tags" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <div id="editor" style="height: 300px;">
+                                    <pre>@Model.Data.Content</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @section Links {
+        <link rel="stylesheet" href="/lib/tagify/tagify.min.css">
+        <link rel="stylesheet" href="/lib/quill/quill.min.css" />
+    }
+
+    @section Scripts {
+        <script src="/lib/tagify/tagify.min.js"></script>
+        <partial name="_ValidationScriptsPartial" />
+        <script src="/lib/quill/quill.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const quill = new Quill('#editor', {
+                    theme: 'snow'
+                });
+
+                // Handle form submission
+                document.getElementById('edit-button').addEventListener('click', function () {
+                    // Get the content of the editor
+                    var content = quill.getText();
+                    // Set the content to the hidden input field
+                    document.getElementById('Data_Content').value = content;
+                    // Optionally submit the form or do further processing
+                    console.log(content);
+                });
+            });
+        </script>
+    }
+}
+
+@if (Model.IsDeletable)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <partial name="_StatusResult" for="StatusMessage" />
+            <div class="card">
+                <form id="edit-form" method="post" asp-page-handler="Delete" asp-route-wikispace="@Model.WikiSpace" asp-route-wikipage="@Model.WikiPage">
+                    <div class="card-header toolbar">
+                        <div class="toolbar-start">
+                            <div class="form-floating mb-3">
+                                <a class="w-30 btn btn-lg btn-secondary" asp-route-wikispace="@Model.WikiSpace" asp-route-wikipage="@Model.WikiPage"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                                <button id="delete-button" type="submit" class="w-70 btn btn-lg btn-danger"><i class="bi bi-trash2-fill"></i></button>
+                            </div>
+                        </div>
+                        <div class="toolbar-end">
+                            <h3>@Model.Data.Title</h3><h5>@ViewData["CardTags"]</h5>
+                            <button type="button" class="btn btn-icon btn-secondary btn-xs" data-bs-toggle="button" data-nf-toggler="fullpage" data-nf-target=".card" aria-pressed="false" autocomplete="off">
+                                <i class="icon-active bi bi-arrows-angle-contract"></i>
+                                <i class="icon-inactive bi bi-arrows-angle-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-floating mb-3">
+                            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+                            <input type="hidden" asp-for="Data.Id" />
+                            <input type="hidden" asp-for="Data.Namespace" />
+                            <input type="hidden" asp-for="Data.Page" />
+                            <input type="hidden" asp-for="Data.Content" />
+                            <div class="form-floating mb-3">
+                                <input asp-for="Data.Title" class="form-control border-info" disabled />
+                                <label asp-for="Data.Title" class="form-label"></label>
+                                <span asp-validation-for="Data.Title" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" id="tagsInput" name="tags" class="form-control" placeholder="Enter tags" />
+                                <label asp-for="Data.Tags" class="form-label"></label>
+                                <input type="hidden" asp-for="Data.Tags" id="tagsHiddenInput" disabled />
+                                <span asp-validation-for="Data.Tags" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <div class="wiki-content">
+                                    @Html.Raw(Model.HtmlContent)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}

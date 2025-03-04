@@ -1,0 +1,44 @@
+﻿@page
+@inject IViewLocalizer Localizer
+@model Huybrechts.Web.Pages.Account.Tenant.AddUsersModel
+@{
+    var message = Localizer["Add Users To Team {0}"];
+    ViewData["CardTitle"] = message.Value.Replace("{0}", Model.Input.TenantId);
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        <form id="add-users-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.TenantId" class="form-control" placeholder="@Localizer["Please choose your team id."]" disabled />
+                <label asp-for="Input.TenantId" class="form-label"></label>
+                <span asp-validation-for="Input.TenantId" class="text-danger"></span>
+                <input hidden asp-for="Input.TenantId" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Input.RoleId" class="form-label"></label>
+                <select asp-for="Input.RoleId"
+                        asp-items="@(new SelectList(Model.Roles,"Id","Label"))">
+                    <option>@Localizer["Please select one"]</option>
+                </select>
+                <span asp-validation-for="Input.RoleId" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <textarea asp-for="Input.Users" class="form-control"></textarea>
+                <label asp-for="Input.Users" class="form-label"></label>
+                <span asp-validation-for="Input.RoleId" class="text-danger"></span>
+                <p class="text-info">@Localizer["Add one line for each user. Use the e-mail address of existing users!"]</p>
+            </div>
+            <p></p>
+            <a class="w-30 btn btn-lg btn-secondary" asp-page="./Index"><i class="bi bi-arrow-left-circle-fill"></i></a>
+            <button id="add-users-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

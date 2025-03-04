@@ -1,0 +1,70 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Localization
+
+@inject IStringLocalizer<Shared> Local
+@inject ApplicationSignInManager SignInManager
+@inject ApplicationUserManager UserManager
+
+@{
+    if (!SignInManager.IsSignedIn(User))
+        throw new InvalidOperationException("Not logged in");
+
+    var applicationUser = await UserManager.GetUserAsync(User);
+    var imageSource = "/img/community.png";
+    if (applicationUser is not null && applicationUser.ProfilePicture is not null)
+        imageSource = $"data:image/*;base64,{Convert.ToBase64String(applicationUser.ProfilePicture)}";
+    else
+        imageSource = "/lib/bootstrap-icons/person-badge.svg";
+}
+
+<!-- User dropdown -->
+<div class="dropdown">
+
+    <!-- Toggler -->
+    <button class="header__btn btn btn-icon btn-sm" type="button" data-bs-toggle="dropdown" aria-label="User dropdown" aria-expanded="false">
+        <i class="bi bi-person-circle"></i>
+    </button>
+
+    <!-- User dropdown menu -->
+    <div class="dropdown-menu dropdown-menu-end w-md-450px">
+
+        <!-- User dropdown header -->
+        <div class="d-flex align-items-center border-bottom px-3 py-2">
+            <div class="flex-shrink-0">
+                <img class="img-sm rounded-circle" src="@imageSource" alt="Profile Picture" role="img" loading="lazy">
+            </div>
+            <div class="flex-grow-1 ms-3">
+                <h5 class="mb-0">@applicationUser?.Fullname</h5>
+                <span class="text-body-secondary fst-italic">@applicationUser?.Email</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-7">
+
+                <!-- Simple widget and reports TODO -->
+
+            </div>
+            <div class="col-md-5">
+
+                <!-- User menu link -->
+                <div class="list-group list-group-borderless h-100 py-3">
+                    <a asp-page="/Account/Manage/Index" class="list-group-item list-group-item-action">
+                        <i class="bi bi-person-badge fs-5 me-2"></i> @Local["Profile"]
+                    </a>
+                    <a asp-page="/Account/Tenant/Index" class="list-group-item list-group-item-action">
+                        <i class="bi bi-collection-fill fs-5 me-2"></i> @Local["Teams"]
+                    </a>
+                    <a asp-page="/Account/Logout" asp-route-returnUrl="/Index" class="list-group-item list-group-item-action">
+                        <i class="bi bi-lock fs-5 me-2"></i> @Local["Logout"]
+                    </a>
+                    <div class="list-group-item list-group-item-action">
+                        <partial name="_SelectLanguagePartial" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

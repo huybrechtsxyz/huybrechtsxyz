@@ -71,6 +71,19 @@ jobs:
       VERSIO_PASSWORD: ${{ secrets.VERSIO_PASSWORD }}
       VERSIO_ENDPOINT: ${{ secrets.VERSIO_ENDPOINT }}
 
+  build-website:
+    name: Build Website Job
+    if: inputs.rebuild == 'true'
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-dotnet.yml@dev-reset
+    with:
+      environment: ${{ inputs.environment }}
+      imagename: 'huybrechts/website'
+      sourcepath: 'website'
+      projectname: 'Huybrechts.Web'
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
   deploy-config:
     name: Deploy Configuration Job
     needs: [update-server]
@@ -98,7 +111,7 @@ jobs:
   deploy-stack-rebuild:
     name: Deploy Docker Swarm Stack (Rebuild)
     if: inputs.rebuild == 'true'
-    needs: [deploy-config, deploy-services]
+    needs: [deploy-config, deploy-services, build-website]
     uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}

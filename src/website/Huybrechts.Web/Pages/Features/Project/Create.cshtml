@@ -1,0 +1,217 @@
+﻿@page
+@using Huybrechts.Core.Project
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Localization> SL
+@model Huybrechts.Web.Pages.Features.Project.CreateModel
+@{
+    ViewData["CardTitle"] = SL["InfoCreateTitle"];
+    ViewData["ProjectInfoId"] = Model.Data.Id;
+}
+
+<partial name="_StatusResult" for="StatusMessage" />
+<p class="text-info">
+    @SL["InfoCreateInfo"]
+</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <form id="create-form" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input type="hidden" asp-for="Data.Id" />
+            <div class="form-floating mb-3">
+                <input id="projectCode1" asp-for="Data.Code" class="form-control border-info" required disabled />
+                <input type="hidden" asp-for="Data.Code"/>
+                <label asp-for="Data.Code" class="form-label"></label>
+                <span asp-validation-for="Data.Code" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Data.ProjectType"
+                        asp-items="Model.Data.SetupProjectTypes?.Select(p => new SelectListItem
+                                {
+                                    Value = p.Name,
+                                    Text = p.Name
+                                }).ToList()"
+                        class="form-select border-info" required>
+                    <option id="">@SL["Select"]</option>
+                </select>
+                <label asp-for="Data.ProjectType" class="form-label"></label>
+                <span asp-validation-for="Data.ProjectType" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Name" class="form-control border-info" required />
+                <label asp-for="Data.Name" class="form-label"></label>
+                <span asp-validation-for="Data.Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Data.State"
+                        asp-items="Model.Data.SetupStates?.Select(p => new SelectListItem
+                                {
+                                    Value = p.Name,
+                                    Text = p.Name
+                                }).ToList()"
+                        class="form-select">
+                    <option id="">@SL["Select"]</option>
+                </select>
+                <label asp-for="Data.State" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Reason" class="form-control" />
+                <label asp-for="Data.Reason" class="form-label"></label>
+                <span asp-validation-for="Data.Reason" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Data.ProjectKind"
+                        asp-items="Model.Data.SetupProjectKinds?.Select(p => new SelectListItem
+                                {
+                                    Value = p.Name,
+                                    Text = p.Name
+                                }).ToList()"
+                        class="form-select" >
+                    <option id="">@SL["Select"]</option>
+                </select>
+                <label asp-for="Data.ProjectKind" class="form-label"></label>
+                <span asp-validation-for="Data.ProjectKind" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Data.ProjectOrigin"
+                        asp-items="Model.Data.SetupProjectOrigins?.Select(p => new SelectListItem
+                                {
+                                    Value = p.Name,
+                                    Text = p.Name
+                                }).ToList()"
+                        class="form-select">
+                    <option id="">@SL["Select"]</option>
+                </select>
+                <label asp-for="Data.ProjectOrigin" class="form-label"></label>
+                <span asp-validation-for="Data.ProjectOrigin" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Data.Category"
+                        asp-items="Model.Data.LoadCategories()?.Select(p => new SelectListItem
+                                {
+                                    Value = p,
+                                    Text = p
+                                }).ToList()"
+                        class="form-select">
+                    <option id="">@SL["Select"]</option>
+                </select>
+                <label asp-for="Data.Category" class="form-label"></label>
+                <span asp-validation-for="Data.Category" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Data.Subcategory"
+                        class="form-select">
+                    <option id="">@SL["Select"]</option>
+                    @* Subcategories will be dynamically loaded *@
+                </select>
+                <label asp-for="Data.Subcategory" class="form-label"></label>
+                <span asp-validation-for="Data.Subcategory" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Description" class="form-control" />
+                <label asp-for="Data.Description" class="form-label"></label>
+                <span asp-validation-for="Data.Description" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.StartDate" class="form-control" />
+                <label asp-for="Data.StartDate" class="form-label"></label>
+                <span asp-validation-for="Data.StartDate" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.TargetDate" class="form-control" />
+                <label asp-for="Data.TargetDate" class="form-label"></label>
+                <span asp-validation-for="Data.TargetDate" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Priority" class="form-control" />
+                <label asp-for="Data.Priority" class="form-label"></label>
+                <span asp-validation-for="Data.Priority" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Risk" class="form-control" />
+                <label asp-for="Data.Risk" class="form-label"></label>
+                <span asp-validation-for="Data.Risk" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Effort" class="form-control" />
+                <label asp-for="Data.Effort" class="form-label"></label>
+                <span asp-validation-for="Data.Effort" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.BusinessValue" class="form-control" />
+                <label asp-for="Data.BusinessValue" class="form-label"></label>
+                <span asp-validation-for="Data.BusinessValue" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Rating" class="form-control" />
+                <label asp-for="Data.Rating" class="form-label"></label>
+                <span asp-validation-for="Data.Rating" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" id="tagsInput" name="tags" class="form-control" placeholder="Enter tags" />
+                <label asp-for="Data.Tags" class="form-label"></label>
+                <input type="hidden" asp-for="Data.Tags" id="tagsHiddenInput" />
+                <span asp-validation-for="Data.Tags" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Data.Remark" class="form-control" />
+                <label asp-for="Data.Remark" class="form-label"></label>
+                <span asp-validation-for="Data.Remark" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <a class="w-30 btn btn-lg btn-secondary" asp-page="./Index"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                <button id="create-button" type="submit" class="w-70 btn btn-lg btn-primary"><i class="bi bi-floppy-fill"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Links {
+    <link rel="stylesheet" href="/lib/tagify/tagify.min.css">
+}
+
+@section Scripts {
+    <script src="/lib/tagify/tagify.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('Data_ProjectType').addEventListener('change', function () {
+            var projectType = this.value;
+            var projectCode1 = document.getElementById('projectCode1');
+            var projectCode2 = document.getElementById('Data_Code');
+            fetch(`?handler=projectno&projecttype=` + projectType)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isSuccess === true) {
+                        projectCode1.value = data.value + ` **`;
+                        projectCode2.value = data.value;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching project number:', error);
+                });
+        });
+
+        // When the category dropdown changes, load the subcategories
+        document.getElementById('Data_Category').addEventListener('change', function () {
+            var category = this.value;
+            var subcategoryDropdown = document.getElementById('Data_Subcategory');
+
+            // Clear existing subcategories
+            subcategoryDropdown.innerHTML = '<option value="">@SL["Select"]</option>';
+
+            if (category) {
+                fetch(`?handler=subcategories&category=` + category)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate subcategories dropdown
+                        data.forEach(function (subcategory) {
+                            var option = document.createElement('option');
+                            option.value = subcategory;
+                            option.textContent = subcategory;
+                            subcategoryDropdown.appendChild(option);
+                        });
+                    });
+            }
+        });
+    </script>
+}

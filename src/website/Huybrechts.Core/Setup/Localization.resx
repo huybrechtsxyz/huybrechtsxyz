@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="TypeOf_Project" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="TypeOf_Project_d" xml:space="preserve">
+    <value>For projects</value>
+  </data>
+  <data name="SetupUnitType_AmountOfSubstance" xml:space="preserve">
+    <value>Substance</value>
+  </data>
+  <data name="SetupUnitType_AmountOfSubstance_d" xml:space="preserve">
+    <value>Units of measurement for substance</value>
+  </data>
+  <data name="SetupUnitType_Area" xml:space="preserve">
+    <value>Area</value>
+  </data>
+  <data name="SetupUnitType_Area_d" xml:space="preserve">
+    <value>Units of measurement for area</value>
+  </data>
+  <data name="SetupUnitType_DataSize" xml:space="preserve">
+    <value>Data size</value>
+  </data>
+  <data name="SetupUnitType_DataSize_d" xml:space="preserve">
+    <value>Units of measurement for data size</value>
+  </data>
+  <data name="SetupUnitType_ElectricCurrent" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="SetupUnitType_ElectricCurrent_d" xml:space="preserve">
+    <value>Units of measurement for current</value>
+  </data>
+  <data name="SetupUnitType_Energy" xml:space="preserve">
+    <value>Energy</value>
+  </data>
+  <data name="SetupUnitType_Energy_d" xml:space="preserve">
+    <value>Units of measurement for energy</value>
+  </data>
+  <data name="SetupUnitType_Frequency" xml:space="preserve">
+    <value>Frequency</value>
+  </data>
+  <data name="SetupUnitType_Frequency_d" xml:space="preserve">
+    <value>Units of measurement for frequency</value>
+  </data>
+  <data name="SetupUnitType_Length" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="SetupUnitType_Length_d" xml:space="preserve">
+    <value>Units of measurement for length</value>
+  </data>
+  <data name="SetupUnitType_LuminousIntensity" xml:space="preserve">
+    <value>Luminousity</value>
+  </data>
+  <data name="SetupUnitType_LuminousIntensity_d" xml:space="preserve">
+    <value>Units of measurement for luninousity</value>
+  </data>
+  <data name="SetupUnitType_Mass" xml:space="preserve">
+    <value>Mass</value>
+  </data>
+  <data name="SetupUnitType_Mass_d" xml:space="preserve">
+    <value>Units of measurement for mass</value>
+  </data>
+  <data name="SetupUnitType_Power" xml:space="preserve">
+    <value>Power</value>
+  </data>
+  <data name="SetupUnitType_Power_d" xml:space="preserve">
+    <value>Units of measurement for power</value>
+  </data>
+  <data name="SetupUnitType_Pressure" xml:space="preserve">
+    <value>Pressure</value>
+  </data>
+  <data name="SetupUnitType_Pressure_d" xml:space="preserve">
+    <value>Units of measurement for pressure</value>
+  </data>
+  <data name="SetupUnitType_Speed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="SetupUnitType_Speed_d" xml:space="preserve">
+    <value>Units of measurement for speed</value>
+  </data>
+  <data name="SetupUnitType_System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="SetupUnitType_System_d" xml:space="preserve">
+    <value>Generic units of measurement</value>
+  </data>
+  <data name="SetupUnitType_Temperature" xml:space="preserve">
+    <value>Temperature</value>
+  </data>
+  <data name="SetupUnitType_Temperature_d" xml:space="preserve">
+    <value>Units of measurement for temperature</value>
+  </data>
+  <data name="SetupUnitType_Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="SetupUnitType_Time_d" xml:space="preserve">
+    <value>Units of measurement for time</value>
+  </data>
+  <data name="SetupUnitType_Volume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="SetupUnitType_Volume_d" xml:space="preserve">
+    <value>Units of measurement for volume</value>
+  </data>
+  <data name="StateType_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="StateType_Completed_d" xml:space="preserve">
+    <value>Marks that the object has been fully completed.</value>
+  </data>
+  <data name="StateType_InProgress" xml:space="preserve">
+    <value>In Progress</value>
+  </data>
+  <data name="StateType_InProgress_d" xml:space="preserve">
+    <value>The object is in progress.</value>
+  </data>
+  <data name="StateType_New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="StateType_New_d" xml:space="preserve">
+    <value>Represents a new object within the platform.</value>
+  </data>
+  <data name="StateType_Proposed" xml:space="preserve">
+    <value>Proposed</value>
+  </data>
+  <data name="StateType_Proposed_d" xml:space="preserve">
+    <value>The object has been suggested.</value>
+  </data>
+  <data name="StateType_Removed" xml:space="preserve">
+    <value>Removed</value>
+  </data>
+  <data name="StateType_Removed_d" xml:space="preserve">
+    <value>Indicates that the object has been removed or cancelled.</value>
+  </data>
+  <data name="StateType_Resolved" xml:space="preserve">
+    <value>Resolved</value>
+  </data>
+  <data name="StateType_Resolved_d" xml:space="preserve">
+    <value>A solution has been found.</value>
+  </data>
+</root>

@@ -1,0 +1,65 @@
+﻿@page
+@inject IViewLocalizer Localizer
+@model Huybrechts.Web.Pages.HomeModel
+@{
+    ViewData["MetaTitle"] = Localizer["Home"];
+    ViewData["PageTitle"] = Localizer["Home"];
+}
+<div class="content__boxed">
+    <div class="content__wrap">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5 class="card-header">@Localizer["Start here"]</h5>
+                        <p></p>
+                        @if (Model.Data.HasTenantList)
+                        {
+                            <table class="table table-responsive">
+                                <tr>
+                                    <th></th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Tenants!.First().Name)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Data.Tenants!.First().Description)</th>
+                                    <th></th>
+                                </tr>
+                                @foreach (var item in Model.Data.Tenants!)
+                                {
+                                    <tr>
+                                        <td>
+                                            @{
+                                                string source = string.Empty;
+                                                if (item is not null && item.Picture is not null)
+                                                    source = $"data:image/*;base64,{Convert.ToBase64String(item.Picture)}";
+                                                else
+                                                    source = "/lib/bootstrap-icons/collection-fill.svg";
+                                            }
+                                            <img src="@source" class="rounded-circle" style="width:32px;height:32px; object-fit:cover; border-radius:30px" alt="" />
+                                        </td>
+                                        <td>@Html.DisplayFor(modelItem => item!.Name)</td>
+                                        <td>@Html.DisplayFor(modelItem => item!.Description)</td>
+                                        <td><a href="/@item!.Id/Home" )><i class="bi bi-check2-circle"></i></a></td>
+                                    </tr>
+                                }
+                            </table>
+                        }
+                        @if (@Model.Data.HasTenantInfo)
+                        {
+                            <div class="card" style="width: 18rem;">
+                                <img class="card-img-top" width="60" height="120" role="img" src="/lib/bootstrap-icons/collection-fill.svg" alt="Card image cap">
+                                <div class="card-body">
+                                    <h5 class="card-title">Teams</h5>
+                                    <p class="card-text">Select another team.</p>
+                                    <a class="btn btn-lg btn-secondary" href="/Home"><i class="bi bi-arrow-left-circle-fill"></i></a>
+                                </div>
+                            </div>
+                        }
+                        @if (!Model.Data.HasTenantList && !Model.Data.HasTenantInfo)
+                        {
+                            <a asp-page="/Account/Tenant/Index">@Localizer["Please create a team before continuing."]</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
