@@ -599,14 +599,6 @@ networks:
   public:
     external: true
 
-volumes:
-  postgres-backups:
-    driver: local
-    driver_opts:
-      type: none
-      device: ${APP_PATH}/postgres/backups
-      o: bind
-
 secrets:
   APP_ROOT_USERNAME:
     external: true

@@ -17,21 +17,13 @@ on:
         required: true
         type: string
     secrets:
-      KEYCLOAK_USER:
+      APP_ROOT_USERNAME:
         required: true
-      KEYCLOAK_PASSWORD:
+      APP_ROOT_PASSWORD:
         required: true
-      MINIO_ROOT_USER:
+      KAMATERA_API_KEY:
         required: true
-      MINIO_ROOT_PASSWORD:
-        required: true
-      POSTGRES_USER:
-        required: true
-      POSTGRES_PASSWORD:
-        required: true
-      PGADMIN_USER:
-        required: true
-      PGADMIN_PASSWORD:
+      KAMATERA_API_SECRET:
         required: true
       REGISTRY_USERNAME:
         required: true
@@ -69,14 +61,8 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
     secrets:
-      KEYCLOAK_USER: ${{ secrets.KEYCLOAK_USER }}
-      KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
-      MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
-      MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      PGADMIN_USER: ${{ secrets.PGADMIN_USER }}
-      PGADMIN_PASSWORD: ${{ secrets.PGADMIN_PASSWORD }}
+      APP_ROOT_USERNAME: ${{ secrets.APP_ROOT_USERNAME }}
+      APP_ROOT_PASSWORD: ${{ secrets.APP_ROOT_PASSWORD }}
       SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
       SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}

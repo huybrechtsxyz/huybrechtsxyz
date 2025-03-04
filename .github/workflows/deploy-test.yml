@@ -12,21 +12,17 @@ on:
 
 jobs:
   deploy_components:
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_pipeline.yml@dev-reset
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_pipeline.yml@main
     with:
       environment: test
       initialize: 'true'
       rebuild: 'true'
       minio_data: ${{ inputs.MINIO_DATA }}
     secrets:
-      KEYCLOAK_USER: ${{ secrets.KEYCLOAK_USER }}
-      KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
-      MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
-      MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      PGADMIN_USER: ${{ secrets.PGADMIN_USER }}
-      PGADMIN_PASSWORD: ${{ secrets.PGADMIN_PASSWORD }}
+      APP_ROOT_USERNAME: ${{ secrets.APP_ROOT_USERNAME }}
+      APP_ROOT_PASSWORD: ${{ secrets.APP_ROOT_PASSWORD }}
+      KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
+      KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
       SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}

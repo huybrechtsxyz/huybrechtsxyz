@@ -1,16 +1,4 @@
 # Update Server Task
-# 
-#   app
-#   ├── consul +                 # Consul
-#   │ ├── conf +                 #   Consul conf
-#   │ ├── data +                 #   Consul data
-#   ├── postgres +               # Postgres and PGAdmin
-#   │ ├── admin +                #   PGAdmin data
-#   │ ├── data +                 #   Postgres databases
-#   ├── traefik +                # Traefik
-#   │ ├── data +                 #   Traefik data
-#   │ ├── logs +                 #   Traefik data
-#
 name: Update Server Task
 
 on:
@@ -20,21 +8,9 @@ on:
         required: true
         type: string
     secrets:
-      KEYCLOAK_USER:
+      APP_ROOT_USERNAME:
         required: true
-      KEYCLOAK_PASSWORD:
-        required: true
-      MINIO_ROOT_USER: 
-        required: true
-      MINIO_ROOT_PASSWORD:
-        required: true
-      POSTGRES_USER:
-        required: true
-      POSTGRES_PASSWORD:
-        required: true
-      PGADMIN_USER:
-        required: true
-      PGADMIN_PASSWORD:
+      APP_ROOT_PASSWORD:
         required: true
       SERVER_ENDPOINT:
         required: true
@@ -125,20 +101,38 @@ jobs:
           echo Creating application directories
           cd /
           createpath "/app"
-          createpath "/app/scripts"
+          # Consul
           createpath "/app/consul"
           createpath "/app/consul/conf"
           createpath "/app/consul/data"
+          createpath "/app/consul/logs"
           createpath "/app/postgres"
-          createpath "/app/postgres/admin"
-          createpath "/app/postgres/data"
-          createpath "/app/postgres/backups"
+          # Traefik
           createpath "/app/traefik"
+          createpath "/app/traefik/conf"
           createpath "/app/traefik/data"
           createpath "/app/traefik/logs"
-          # createpath "/app/prometheus"
-          # createpath "/app/prometheus/conf"
-          # createpath "/app/prometheus/data"
+          # Minio
+          createpath "/app/minio"
+          createpath "/app/minio/conf"
+          createpath "/app/minio/data"
+          createpath "/app/minio/logs"
+          # PostgreSql
+          createpath "/app/postgres"
+          createpath "/app/postgres/conf"
+          createpath "/app/postgres/data"
+          createpath "/app/postgres/backups"
+          createpath "/app/postgres/admin"
+          # Keycloak
+          createpath "/app/keycloak"
+          # Telemetry
+          createpath "/app/telemetry"
+          createpath "/app/telemetry/conf"
+          createpath "/app/telemetry/grafana"
+          createpath "/app/telemetry/loki"
+          createpath "/app/telemetry/prometheus"
+          createpath "/app/telemetry/promtail"
+          createpath "/app/telemetry/tempo"
           #Create the PUBLIC network on docker
           echo Public Network
           docker network inspect public --format {{.Id}} 2>/dev/null \
@@ -148,14 +142,8 @@ jobs:
           docker network inspect private --format {{.Id}} 2>/dev/null \
           || docker network create --driver overlay private
           #Create the docker secrets
-          createsecret "Keycloak Username" "KEYCLOAK_USER" '${{ secrets.KEYCLOAK_USER }}'
-          createsecret "Keycloak Password" "KEYCLOAK_PASSWORD" '${{ secrets.KEYCLOAK_PASSWORD }}'
-          createsecret "Minio Username" "MINIO_ROOT_USER" '${{ secrets.MINIO_ROOT_USER }}'
-          createsecret "Minio Password" "MINIO_ROOT_PASSWORD" '${{ secrets.MINIO_ROOT_PASSWORD }}'
-          createsecret "Postgres User" "POSTGRES_USER" '${{ secrets.POSTGRES_USER }}'
-          createsecret "Postgres Password" "POSTGRES_PASSWORD" '${{ secrets.POSTGRES_PASSWORD }}'
-          createsecret "PG Admin User" "PGADMIN_USER" '${{ secrets.PGADMIN_USER }}'
-          createsecret "PG Admin Password" "PGADMIN_PASSWORD" '${{ secrets.PGADMIN_PASSWORD }}'
+          createsecret "Root Username" "APP_ROOT_USERNAME" '${{ secrets.APP_ROOT_USERNAME }}'
+          createsecret "Root Password" "APP_ROOT_PASSWORD" '${{ secrets.APP_ROOT_PASSWORD }}'
           createsecret "Server Endpoint" "SERVER_ENDPOINT" '${{ secrets.SERVER_ENDPOINT }}'
           createsecret "Server Port" "SERVER_PORT" '${{ secrets.SERVER_PORT }}'
           createsecret "Server Username" "SERVER_USERNAME" '${{ secrets.SERVER_USERNAME }}'
