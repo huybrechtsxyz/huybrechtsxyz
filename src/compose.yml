@@ -3,6 +3,7 @@
 # ---------------------
   # APP_PATH                -> App root dir
   # APP_PATH_DATA           -> Data path for S3 storage
+  # APP_ROOT_USERNAME       -> email
   # DATACENTER              -> develop/test/staging/production [Or region]
   # DOCKER_MANAGER_COUNT    -> [Automated]
   # DOCKER_MANAGER          -> manager
@@ -14,7 +15,6 @@
   # DOMAIN_LIZARD           -> lizard.localhost
   # ENVIRONMENT             -> develop
   # HOSTNAME                -> [Automated]
-  # PGADMIN_USER            -> email
   # TRAEFIK_AUTH            -> blank | openid-auth | basic-auth
   # TRAEFIK_RESOLVER        -> httpresolver | letlsresolver | versioresolver
   # VERSIO_ENDPOINT         -> https://www.versio.nl/testapi/v1/
@@ -367,7 +367,7 @@ services:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
       PGADMIN_LISTEN_PORT: 9080
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
+      PGADMIN_DEFAULT_EMAIL: ${APP_ROOT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
       SCRIPT_NAME: /pgadmin
     volumes:
@@ -600,6 +600,8 @@ services:
     secrets:
       - APP_ROOT_USERNAME
       - APP_ROOT_PASSWORD
+      - APP_GOOGLE_AUTH
+      - APP_SMTP_OPTIONS
       # - APP_HOST_EMAIL
       # - APP_DATA_URL
       # - APP_DATA_NAME
@@ -608,17 +610,18 @@ services:
       # - APP_AUTH_GOOGLE
       # - APP_SMTP_OPTIONS
     environment:
-      # - ASPNETCORE_ENVIRONMENT=Production
-      # - DOTNET_RUNNING_IN_CONTAINER=1
-      # - APP_AUTH_GOOGLE=/run/secrets/APP_AUTH_GOOGLE
-      # - APP_DATA_NAME=/run/secrets/APP_DATA_NAME
-      # - APP_DATA_USERNAME=/run/secrets/APP_DATA_USERNAME
-      # - APP_DATA_PASSWORD=/run/secrets/APP_DATA_PASSWORD
+      ASPNETCORE_ENVIRONMENT: Production
+      DOTNET_RUNNING_IN_CONTAINER: 1
+      APP_ROOT_EMAIL: ${APP_ROOT_EMAIL}
+      APP_AUTH_GOOGLE: /run/secrets/APP_GOOGLE_AUTH
+      APP_SMTP_OPTIONS: /run/secrets/APP_SMTP_OPTIONS
+      APP_DATA_NAME: "xyzdb"
+      APP_DATA_USERNAME: /run/secrets/APP_ROOT_USERNAME
+      APP_DATA_PASSWORD: /run/secrets/APP_ROOT_PASSWORD
+      APP_HOST_EMAIL: APP_ROOT_EMAIL
+      APP_HOST_USERNAME: /run/secrets/APP_ROOT_USERNAME
+      APP_HOST_PASSWORD: /run/secrets/APP_ROOT_PASSWORD
       # - APP_DATA_URL=/run/secrets/APP_DATA_URL
-      # - APP_HOST_EMAIL=/run/secrets/APP_HOST_EMAIL
-      # - APP_HOST_USERNAME=/run/secrets/APP_HOST_USERNAME
-      # - APP_HOST_PASSWORD=/run/secrets/APP_HOST_PASSWORD
-      # - APP_SMTP_OPTIONS=/run/secrets/APP_SMTP_OPTIONS
     volumes:
       - ${APP_PATH}/website/cert:/app/cert
       - ${APP_PATH}/website/data:/app/data

@@ -11,6 +11,10 @@ on:
         required: true
         type: string
     secrets:
+      APP_GOOGLE_AUTH:
+        required: true
+      APP_SMTP_OPTIONS:
+        required: true
       SERVER_ENDPOINT:
         required: true
       SERVER_PORT:

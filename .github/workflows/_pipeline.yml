@@ -21,6 +21,10 @@ on:
         required: true
       APP_ROOT_PASSWORD:
         required: true
+      APP_GOOGLE_AUTH:
+        required: true
+      APP_SMTP_OPTIONS:
+        required: true
       KAMATERA_API_KEY:
         required: true
       KAMATERA_API_SECRET:
@@ -117,6 +121,8 @@ jobs:
       environment: ${{ inputs.environment }}
       minio_data: ${{ inputs.minio_data }}
     secrets:
+      APP_GOOGLE_AUTH: ${{ secrets.APP_GOOGLE_AUTH }}
+      APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
       SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
       SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
@@ -131,6 +137,8 @@ jobs:
       environment: ${{ inputs.environment }}
       minio_data: ${{ inputs.minio_data }}
     secrets:
+      APP_GOOGLE_AUTH: ${{ secrets.APP_GOOGLE_AUTH }}
+      APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
       SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
       SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
