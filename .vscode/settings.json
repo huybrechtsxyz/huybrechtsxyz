@@ -1,14 +1,14 @@
 {
-  "cSpell.words": [
-    "huybrechts"
-  ],
-  "editor.tabSize": 2,
-  "editor.insertSpaces": true,
-  "editor.detectIndentation": false,
-  "[csharp]": {
-    "editor.tabSize": 4
+  "cSpell.enabledFileTypes": {
+    "tf": false,
+    "github-actions-workflow": false,
+    "dockercompose": false
   },
-  "asciidoc.antora.enableAntoraSupport": false,
-  "plantuml.render": "PlantUMLServer",
-  "plantuml.server": "https://www.plantuml.com/plantuml"
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json": [
+    "docker-compose.yml",
+    "docker-compose.yaml",
+    "compose.*.yaml",
+    ]
+  }
 }

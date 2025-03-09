@@ -1,0 +1,68 @@
+{
+  "services": [
+    {
+      "id": "grafana",
+      "name": "grafana",
+      "address": "telemetry",
+      "port": 3000,
+      "meta": {},
+      "checks": [
+        {
+          "id": "grafana-http-check",
+          "name": "Grafana Health Check",
+          "http": "http://telemetry:3000/api/health",
+          "interval": "30s",
+          "timeout": "5s"
+        }
+      ],
+      "tags": [ "grafana","logging","metrics","tracing","docker-swarm","system" ]
+    },
+    {
+      "id": "prometheus",
+      "name": "prometheus",
+      "address": "telemetry",
+      "port": 9090,
+      "meta": {
+        "prometheus_path": "/metrics"
+      },
+      "check": {
+        "id": "prometheus-http-check",
+        "name": "Prometheus HTTP Health Check",
+        "http": "http://telemetry:9090/-/ready",
+        "interval": "15s",
+        "timeout": "5s"
+      },
+      "tags": [ "prometheus","logging","metrics","tracing","docker-swarm","system" ]
+    },
+    {
+      "id": "tempo",
+      "name": "tempo",
+      "address": "telemetry",
+      "port": 3200,
+      "meta": { },
+      "check": {
+        "id": "tempo-http-check",
+        "name": "Tempo HTTP Health Check",
+        "http": "http://telemetry:3200/status",
+        "interval": "15s",
+        "timeout": "5s"
+      },
+      "tags": [ "tempo","logging","metrics","tracing","docker-swarm","system" ]
+    },
+    {
+      "id": "loki",
+      "name": "loki",
+      "address": "telemetry",
+      "port": 3200,
+      "meta": { },
+      "check": {
+        "id": "loki-http-check",
+        "name": "Loki HTTP Health Check",
+        "http": "http://telemetry:3100/ready",
+        "interval": "15s",
+        "timeout": "5s"
+      },
+      "tags": [ "loki","logging","metrics","tracing","docker-swarm","system" ]
+    }    
+  ]
+}

@@ -1,0 +1,41 @@
+# Run terraform 
+name: Terraform Swarm
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      KAMATERA_API_KEY:
+        required: true
+      KAMATERA_API_SECRET:
+        required: true
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
+      - name: Configure Kamatera API
+        env:
+          KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
+          KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
+          KAMATERA_ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          echo "Setting up Kamatera credentials..."
+          export TF_VAR_api_key=$KAMATERA_API_KEY
+          export TF_VAR_api_secret=$KAMATERA_API_SECRET
+          export TF_VAR_environment=$KAMATERA_ENVIRONMENT
+      - name: Terraform Init
+        run: terraform init
+      - name: Terraform Plan
+        run: terraform plan -out=plan.tfplan
+      # - name: Terraform Apply
+      #   run: terraform apply -auto-approve plan.tfplan

@@ -1,7 +1,7 @@
-# Huybrechts.xyz
+# Huybrechts.[dev|xyz]
 
 ## Hi there 👋
 
-The Huybrechts.xyz website is the website for Vincent Huybrechts.
+The Huybrechts.xyz website is a website made by Vincent Huybrechts.
 
 See [Documentation](https://docs.huybrechts.xyz)

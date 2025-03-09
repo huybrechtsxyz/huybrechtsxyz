@@ -13,69 +13,72 @@ on:
       rebuild:
         required: true
         type: string
+      minio_data:
+        required: true
+        type: string
     secrets:
-      APP_DATA_USERNAME: 
+      APP_ROOT_USERNAME:
         required: true
-      APP_DATA_PASSWORD:
+      APP_ROOT_PASSWORD:
         required: true
-      APP_HOST_SERVER:
+      APP_AUTH_GOOGLE:
         required: true
-      APP_HOST_PORT:
+      APP_SMTP_OPTIONS:
         required: true
-      APP_HOST_USERNAME:
+      KAMATERA_API_KEY:
         required: true
-      APP_HOST_PASSWORD:
+      KAMATERA_API_SECRET:
         required: true
       REGISTRY_USERNAME:
         required: true
       REGISTRY_PASSWORD:
         required: true
-      APP_AUTH_GOOGLE:
+      SERVER_ENDPOINT:
         required: true
-      APP_DATA_NAME:
+      SERVER_PORT:
         required: true
-      APP_DATA_URL:
+      SERVER_USERNAME:
         required: true
-      APP_HOST_EMAIL:
+      SERVER_PASSWORD:
         required: true
-      APP_SMTP_OPTIONS:
+      VERSIO_USERNAME:
+        required: true
+      VERSIO_PASSWORD:
+        required: true
+      VERSIO_ENDPOINT:
         required: true
 
 jobs:
   initialize-server:
     name: Initialize Server Job
     if: inputs.initialize == 'true'
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_initialize.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-initialize.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
     secrets:
-      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
-      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
-      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
+      KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
 
   update-server:
     name: Update Server Job
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_update.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-update.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
     secrets:
-      APP_DATA_USERNAME: ${{ secrets.APP_DATA_USERNAME }}
-      APP_DATA_PASSWORD: ${{ secrets.APP_DATA_PASSWORD }}
-      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
-      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
-      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
-      APP_AUTH_GOOGLE: ${{ secrets.APP_AUTH_GOOGLE }}
-      APP_DATA_NAME: ${{ secrets.APP_DATA_NAME }}
-      APP_DATA_URL: ${{ secrets.APP_DATA_URL }}
-      APP_HOST_EMAIL: ${{ secrets.APP_HOST_EMAIL }}
-      APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
+      APP_ROOT_USERNAME: ${{ secrets.APP_ROOT_USERNAME }}
+      APP_ROOT_PASSWORD: ${{ secrets.APP_ROOT_PASSWORD }}
+      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+      VERSIO_USERNAME: ${{ secrets.VERSIO_USERNAME }}
+      VERSIO_PASSWORD: ${{ secrets.VERSIO_PASSWORD }}
+      VERSIO_ENDPOINT: ${{ secrets.VERSIO_ENDPOINT }}
 
   build-website:
     name: Build Website Job
     if: inputs.rebuild == 'true'
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_docker.yml@main
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-dotnet.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
       imagename: 'huybrechts/website'
@@ -87,41 +90,56 @@ jobs:
 
   deploy-config:
     name: Deploy Configuration Job
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_configuration.yml@main
+    needs: [update-server]
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-configuration.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
     secrets:
-      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
-      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
-      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+
+  deploy-services:
+    name: Deploy Service Job
+    needs: [update-server]
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-service.yml@dev-reset
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
 
   deploy-stack-rebuild:
     name: Deploy Docker Swarm Stack (Rebuild)
     if: inputs.rebuild == 'true'
-    needs: [deploy-config, build-website]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_deploy.yml@main
+    needs: [deploy-config, deploy-services, build-website]
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
+      minio_data: ${{ inputs.minio_data }}
     secrets:
-      APP_DATA_USERNAME: ${{ secrets.APP_DATA_USERNAME }}
-      APP_DATA_PASSWORD: ${{ secrets.APP_DATA_PASSWORD }}
-      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
-      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
-      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      APP_AUTH_GOOGLE: ${{ secrets.APP_AUTH_GOOGLE }}
+      APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
+      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
 
   deploy-stack-nobuild:
     name: Deploy Docker Swarm Stack (Build)
     if: inputs.rebuild != 'true'
-    needs: [deploy-config]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task_deploy.yml@main
+    needs: [deploy-config, deploy-services]
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@dev-reset
     with:
       environment: ${{ inputs.environment }}
+      minio_data: ${{ inputs.minio_data }}
     secrets:
-      APP_DATA_USERNAME: ${{ secrets.APP_DATA_USERNAME }}
-      APP_DATA_PASSWORD: ${{ secrets.APP_DATA_PASSWORD }}
-      APP_HOST_SERVER: ${{ secrets.APP_HOST_SERVER }}
-      APP_HOST_PORT: ${{ secrets.APP_HOST_PORT }}
-      APP_HOST_USERNAME: ${{ secrets.APP_HOST_USERNAME }}
-      APP_HOST_PASSWORD: ${{ secrets.APP_HOST_PASSWORD }}
+      APP_AUTH_GOOGLE: ${{ secrets.APP_AUTH_GOOGLE }}
+      APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
+      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}

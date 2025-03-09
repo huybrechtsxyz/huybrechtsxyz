@@ -1,0 +1,108 @@
+## CONFIG DISCOVERY
+providers:
+  swarm:
+    exposedByDefault: false
+    constraints: Label(`traefik.tags`, `test`)
+  # consulcatalog:
+  #   cache: true
+  #   refreshInterval: 30s
+  #   endpoint:
+  #     address: http://consul:8500
+  #     scheme: http
+  #   exposedByDefault: false
+  #   defaultRule: "Host(`config.localhost`)"
+
+# ENTRYPOINT
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+    http2:
+      maxConcurrentStreams: 250
+  websecure:
+    address: ":443"
+    http3:
+      advertisedPort: 443
+
+## HTTPS & TLS
+certificatesResolvers:
+  httpresolver:
+    acme:
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      email: webmaster@huybrechts.xyz
+      storage: "/app/data/acme-http.json"
+      httpChallenge:
+        entryPoint: "web"
+  letlsresolver:
+    acme:
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      email: webmaster@huybrechts.xyz
+      storage: "/app/data/acme-letls.json"
+      tlsChallenge: true
+  versioresolver:
+    acme:
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      email: webmaster@huybrechts.xyz
+      storage: "/app/data/acme-versio.json"
+      dnsChallenge:
+        provider: versio
+        delayBeforeCheck: 0
+
+## Traefik Plugins
+experimental:
+  #otlpLogs: true
+  plugins:
+    keycloakopenid:
+      moduleName: "github.com/Gwojda/keycloakopenid"
+      version: "v0.1.35"
+
+## OPERATIONAL
+api:
+  dashboard: true
+
+ping: {}
+
+## OBSERVABILITY
+## Logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+log:
+  level: DEBUG
+  format: json
+  filePath: /app/logs/traefik.log
+  maxSize: 5
+  maxBackups: 5
+  maxAge: 5
+  compress: true
+  # otlp:
+  #   grpc:
+  #     endpoint: telemetry:4317
+  #     insecure: true
+
+accessLog:
+  addInternals: true
+  filePath: /app/logs/traefik-access.log
+  format: json
+  bufferingSize: 100
+
+metrics:
+  prometheus:
+    buckets:
+      - 0.1
+      - 0.3
+      - 1.2
+      - 5.0
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
+
+tracing:
+  addInternals: true
+  serviceName: traefik
+  sampleRate: 0.2
+  otlp:
+    grpc:
+      endpoint: telemetry:4317
+      insecure: true

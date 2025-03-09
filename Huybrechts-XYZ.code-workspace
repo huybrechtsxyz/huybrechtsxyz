@@ -1,0 +1,20 @@
+{
+  "folders": [
+    { "path": "." },
+    { "path": "C:/Users/vhuybrec/AppData/Roaming/Microsoft/UserSecrets/acbede3b-f8f8-41b2-ad78-d1f3e176949f", "name": "UserSecrets" },
+    { "path": "C:/Users/vince/AppData/Roaming/Microsoft/UserSecrets/acbede3b-f8f8-41b2-ad78-d1f3e176949f", "name": "UserSecrets" }
+  ],
+  "settings": {
+    "files.exclude":{
+      ".vs/**": true,
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/bin": true,
+      "**/obj": true
+    },
+    "powershell.cwd": "huybrechtsxyz"
+  }
+}
