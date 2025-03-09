@@ -1,11 +1,11 @@
 # This workflow deploys all components to the test environment
-name: Deploy To Test
+name: Deploy To Test (Dev-Reset)
 
 on:
   workflow_dispatch:
 
   push:
-    branches: [ "main" ]
+    branches: [ "dev-reset" ]
     paths:
       - 'src/website/**'
       - '!src/website/*.yml'
