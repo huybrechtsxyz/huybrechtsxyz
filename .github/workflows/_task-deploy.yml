@@ -11,7 +11,7 @@ on:
         required: true
         type: string
     secrets:
-      APP_GOOGLE_AUTH:
+      APP_AUTH_GOOGLE:
         required: true
       APP_SMTP_OPTIONS:
         required: true

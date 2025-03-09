@@ -24,6 +24,8 @@
 # -------
   # APP_ROOT_USERNAME       -> admin
   # APP_ROOT_PASSWORD       -> password
+  # APP_AUTH_GOOGLE         -> { "client_id": "admin", "client_secret": "password" }
+  # APP_SMTP_OPTIONS        -> { "host": "smtp.gmail.com", "port": 587, "username": "admin", "password": "password" }
   # TRAEFIK_CLIENTID        -> admin
   # TRAEFIK_CLIENTSECRET    -> password
   # VERSIO_USERNAME         -> email
@@ -600,7 +602,7 @@ services:
     secrets:
       - APP_ROOT_USERNAME
       - APP_ROOT_PASSWORD
-      - APP_GOOGLE_AUTH
+      - APP_AUTH_GOOGLE
       - APP_SMTP_OPTIONS
       # - APP_HOST_EMAIL
       # - APP_DATA_URL
@@ -613,7 +615,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       DOTNET_RUNNING_IN_CONTAINER: 1
       APP_ROOT_EMAIL: ${APP_ROOT_EMAIL}
-      APP_AUTH_GOOGLE: /run/secrets/APP_GOOGLE_AUTH
+      APP_AUTH_GOOGLE: /run/secrets/APP_AUTH_GOOGLE
       APP_SMTP_OPTIONS: /run/secrets/APP_SMTP_OPTIONS
       APP_DATA_NAME: "xyzdb"
       APP_DATA_USERNAME: /run/secrets/APP_ROOT_USERNAME

@@ -21,7 +21,7 @@ on:
         required: true
       APP_ROOT_PASSWORD:
         required: true
-      APP_GOOGLE_AUTH:
+      APP_AUTH_GOOGLE:
         required: true
       APP_SMTP_OPTIONS:
         required: true
@@ -121,7 +121,7 @@ jobs:
       environment: ${{ inputs.environment }}
       minio_data: ${{ inputs.minio_data }}
     secrets:
-      APP_GOOGLE_AUTH: ${{ secrets.APP_GOOGLE_AUTH }}
+      APP_AUTH_GOOGLE: ${{ secrets.APP_AUTH_GOOGLE }}
       APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
       SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
@@ -137,7 +137,7 @@ jobs:
       environment: ${{ inputs.environment }}
       minio_data: ${{ inputs.minio_data }}
     secrets:
-      APP_GOOGLE_AUTH: ${{ secrets.APP_GOOGLE_AUTH }}
+      APP_AUTH_GOOGLE: ${{ secrets.APP_AUTH_GOOGLE }}
       APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
       SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
