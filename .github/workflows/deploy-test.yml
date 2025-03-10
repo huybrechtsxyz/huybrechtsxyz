@@ -12,7 +12,7 @@ on:
 
 jobs:
   deploy_components:
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_pipeline.yml@dev-reset
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_pipeline.yml@main
     with:
       environment: test
       initialize: 'true'

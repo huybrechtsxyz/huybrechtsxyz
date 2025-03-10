@@ -52,7 +52,7 @@ jobs:
   initialize-server:
     name: Initialize Server Job
     if: inputs.initialize == 'true'
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-initialize.yml@dev-reset
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-initialize.yml@main
     with:
       environment: ${{ inputs.environment }}
     secrets:
@@ -61,7 +61,7 @@ jobs:
 
   update-server:
     name: Update Server Job
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-update.yml@dev-reset
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-update.yml@main
     with:
       environment: ${{ inputs.environment }}
     secrets:
@@ -78,7 +78,7 @@ jobs:
   build-website:
     name: Build Website Job
     if: inputs.rebuild == 'true'
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-dotnet.yml@dev-reset
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-dotnet.yml@main
     with:
       environment: ${{ inputs.environment }}
       imagename: 'huybrechts/website'
@@ -91,7 +91,7 @@ jobs:
   deploy-config:
     name: Deploy Configuration Job
     needs: [update-server]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-configuration.yml@dev-reset
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-configuration.yml@main
     with:
       environment: ${{ inputs.environment }}
     secrets:
@@ -103,7 +103,7 @@ jobs:
   deploy-services:
     name: Deploy Service Job
     needs: [update-server]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-service.yml@dev-reset
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-service.yml@main
     with:
       environment: ${{ inputs.environment }}
     secrets:
@@ -116,7 +116,7 @@ jobs:
     name: Deploy Docker Swarm Stack (Rebuild)
     if: inputs.rebuild == 'true'
     needs: [deploy-config, deploy-services, build-website]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@dev-reset
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@main
     with:
       environment: ${{ inputs.environment }}
       minio_data: ${{ inputs.minio_data }}
@@ -132,7 +132,7 @@ jobs:
     name: Deploy Docker Swarm Stack (Build)
     if: inputs.rebuild != 'true'
     needs: [deploy-config, deploy-services]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@dev-reset
+    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@main
     with:
       environment: ${{ inputs.environment }}
       minio_data: ${{ inputs.minio_data }}
