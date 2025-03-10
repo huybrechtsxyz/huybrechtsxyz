@@ -1,5 +1,5 @@
 # Update Server Task 
-name: Update Server Task
+name: _UpdateServerTask
 
 on:
   workflow_call:

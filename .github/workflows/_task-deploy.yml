@@ -1,5 +1,5 @@
 # Deploy Docker Swarm Stack Task
-name: Deploy Swarm Stack Task
+name: _DeploySwarmTask
 
 on:
   workflow_call:

@@ -1,5 +1,5 @@
 # Deploy Configuration Task
-name: Deploy Service Task
+name: _DeployServiceTask
 
 on:
   workflow_call:

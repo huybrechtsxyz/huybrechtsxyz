@@ -1,5 +1,5 @@
 # This workflow deploys all components to the test environment
-name: Deploy To Test (Dev-Reset)
+name: Deploy To Test
 
 on:
   workflow_dispatch:

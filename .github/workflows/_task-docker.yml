@@ -1,5 +1,5 @@
 # Docker Build Task
-name: Docker Build Task
+name: _DockerBuildTask
 
 on:
   workflow_call:

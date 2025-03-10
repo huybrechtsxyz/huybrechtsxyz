@@ -1,5 +1,5 @@
 # Run terraform 
-name: Terraform Swarm
+name: _TerraformSwarmTask
 
 on:
   workflow_call:

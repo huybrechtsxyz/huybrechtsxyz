@@ -1,5 +1,5 @@
 # Build and Deploy Jobs
-name: Build and Deploy Jobs
+name: _BuildAndDeployJobs
 
 on:
   workflow_call:
