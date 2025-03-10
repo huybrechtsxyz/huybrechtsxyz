@@ -59,87 +59,88 @@ jobs:
       KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
       KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
 
-  update-server:
-    name: Update Server Job
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-update.yml@main
-    with:
-      environment: ${{ inputs.environment }}
-    secrets:
-      APP_ROOT_USERNAME: ${{ secrets.APP_ROOT_USERNAME }}
-      APP_ROOT_PASSWORD: ${{ secrets.APP_ROOT_PASSWORD }}
-      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
-      SERVER_PORT: ${{ secrets.SERVER_PORT }}
-      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
-      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
-      VERSIO_USERNAME: ${{ secrets.VERSIO_USERNAME }}
-      VERSIO_PASSWORD: ${{ secrets.VERSIO_PASSWORD }}
-      VERSIO_ENDPOINT: ${{ secrets.VERSIO_ENDPOINT }}
+  # update-server:
+  #   name: Update Server Job
+  #   needs: [initialize-server]
+  #   uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-update.yml@main
+  #   with:
+  #     environment: ${{ inputs.environment }}
+  #   secrets:
+  #     APP_ROOT_USERNAME: ${{ secrets.APP_ROOT_USERNAME }}
+  #     APP_ROOT_PASSWORD: ${{ secrets.APP_ROOT_PASSWORD }}
+  #     SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+  #     SERVER_PORT: ${{ secrets.SERVER_PORT }}
+  #     SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+  #     SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+  #     VERSIO_USERNAME: ${{ secrets.VERSIO_USERNAME }}
+  #     VERSIO_PASSWORD: ${{ secrets.VERSIO_PASSWORD }}
+  #     VERSIO_ENDPOINT: ${{ secrets.VERSIO_ENDPOINT }}
 
-  build-website:
-    name: Build Website Job
-    if: inputs.rebuild == 'true'
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-dotnet.yml@main
-    with:
-      environment: ${{ inputs.environment }}
-      imagename: 'huybrechts/website'
-      sourcepath: 'website'
-      projectname: 'Huybrechts.Web'
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+  # build-website:
+  #   name: Build Website Job
+  #   if: inputs.rebuild == 'true'
+  #   uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-dotnet.yml@main
+  #   with:
+  #     environment: ${{ inputs.environment }}
+  #     imagename: 'huybrechts/website'
+  #     sourcepath: 'website'
+  #     projectname: 'Huybrechts.Web'
+  #   secrets:
+  #     REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+  #     REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
-  deploy-config:
-    name: Deploy Configuration Job
-    needs: [update-server]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-configuration.yml@main
-    with:
-      environment: ${{ inputs.environment }}
-    secrets:
-      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
-      SERVER_PORT: ${{ secrets.SERVER_PORT }}
-      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
-      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+  # deploy-config:
+  #   name: Deploy Configuration Job
+  #   needs: [update-server]
+  #   uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-configuration.yml@main
+  #   with:
+  #     environment: ${{ inputs.environment }}
+  #   secrets:
+  #     SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+  #     SERVER_PORT: ${{ secrets.SERVER_PORT }}
+  #     SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+  #     SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
 
-  deploy-services:
-    name: Deploy Service Job
-    needs: [update-server]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-service.yml@main
-    with:
-      environment: ${{ inputs.environment }}
-    secrets:
-      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
-      SERVER_PORT: ${{ secrets.SERVER_PORT }}
-      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
-      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+  # deploy-services:
+  #   name: Deploy Service Job
+  #   needs: [update-server]
+  #   uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-service.yml@main
+  #   with:
+  #     environment: ${{ inputs.environment }}
+  #   secrets:
+  #     SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+  #     SERVER_PORT: ${{ secrets.SERVER_PORT }}
+  #     SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+  #     SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
 
-  deploy-stack-rebuild:
-    name: Deploy Docker Swarm Stack (Rebuild)
-    if: inputs.rebuild == 'true'
-    needs: [deploy-config, deploy-services, build-website]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@main
-    with:
-      environment: ${{ inputs.environment }}
-      minio_data: ${{ inputs.minio_data }}
-    secrets:
-      APP_AUTH_GOOGLE: ${{ secrets.APP_AUTH_GOOGLE }}
-      APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
-      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
-      SERVER_PORT: ${{ secrets.SERVER_PORT }}
-      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
-      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+  # deploy-stack-rebuild:
+  #   name: Deploy Docker Swarm Stack (Rebuild)
+  #   if: inputs.rebuild == 'true'
+  #   needs: [deploy-config, deploy-services, build-website]
+  #   uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@main
+  #   with:
+  #     environment: ${{ inputs.environment }}
+  #     minio_data: ${{ inputs.minio_data }}
+  #   secrets:
+  #     APP_AUTH_GOOGLE: ${{ secrets.APP_AUTH_GOOGLE }}
+  #     APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
+  #     SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+  #     SERVER_PORT: ${{ secrets.SERVER_PORT }}
+  #     SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+  #     SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
 
-  deploy-stack-nobuild:
-    name: Deploy Docker Swarm Stack (Build)
-    if: inputs.rebuild != 'true'
-    needs: [deploy-config, deploy-services]
-    uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@main
-    with:
-      environment: ${{ inputs.environment }}
-      minio_data: ${{ inputs.minio_data }}
-    secrets:
-      APP_AUTH_GOOGLE: ${{ secrets.APP_AUTH_GOOGLE }}
-      APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
-      SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
-      SERVER_PORT: ${{ secrets.SERVER_PORT }}
-      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
-      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+  # deploy-stack-nobuild:
+  #   name: Deploy Docker Swarm Stack (Build)
+  #   if: inputs.rebuild != 'true'
+  #   needs: [deploy-config, deploy-services]
+  #   uses: huybrechtsxyz/huybrechtsxyz/.github/workflows/_task-deploy.yml@main
+  #   with:
+  #     environment: ${{ inputs.environment }}
+  #     minio_data: ${{ inputs.minio_data }}
+  #   secrets:
+  #     APP_AUTH_GOOGLE: ${{ secrets.APP_AUTH_GOOGLE }}
+  #     APP_SMTP_OPTIONS: ${{ secrets.APP_SMTP_OPTIONS }}
+  #     SERVER_ENDPOINT: ${{ secrets.SERVER_ENDPOINT }}
+  #     SERVER_PORT: ${{ secrets.SERVER_PORT }}
+  #     SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+  #     SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
