@@ -15,7 +15,9 @@ on:
 
 jobs:
   terraform:
+    name: Terraform Task
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
