@@ -103,9 +103,9 @@ resource "kamatera_server" "manager" {
     timeout  = "5m"
   }
 
-  provisioner "scripts" {
-    inline = var.install_docker_script
-  }
+  # provisioner "scripts" {
+  #   inline = var.install_docker_script
+  # }
 }
 
 # Provision workernode 
@@ -139,9 +139,9 @@ resource "kamatera_server" "worker" {
     timeout  = "5m"
   }
 
-  provisioner "scripts" {
-    inline = var.install_docker_script
-  }
+  # provisioner "scripts" {
+  #   inline = var.install_docker_script
+  # }
 }
 
 # Provision load_balancer 
