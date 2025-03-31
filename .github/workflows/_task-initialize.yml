@@ -37,10 +37,8 @@ jobs:
           export TF_VAR_environment=$KAMATERA_ENVIRONMENT
       - name: Terraform Init
         run: terraform init
-        working-directory: ./deploy
       - name: Terraform Plan
-        run: terraform plan -out=plan.tfplan
-        working-directory: ./deploy
+        run: terraform plan -input=false -out=plan.tfplan
       # - name: Terraform Apply
       #   run: terraform apply -auto-approve plan.tfplan
       #   working-directory: ./deploy
