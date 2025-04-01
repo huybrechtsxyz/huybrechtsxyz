@@ -1,5 +1,5 @@
-api_key = "74094cd5c060909c538c446636f0eb42"
-api_secret = "04ce1deba6f17029b8b6b2a386178597"
+api_key = ""
+api_secret = ""
 password = "@Abcd1234"
 
 # Environment configuration
