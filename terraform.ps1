@@ -1,8 +1,8 @@
 # FUNCTION: Read jsons and create docker secrets
 
 # Define Kamatera credentials
-$env:KAMATERA_API_CLIENT_ID = "74094cd5c060909c538c446636f0eb42"
-$env:KAMATERA_API_SECRET = "04ce1deba6f17029b8b6b2a386178597"
+$env:KAMATERA_API_CLIENT_ID = ""
+$env:KAMATERA_API_SECRET = ""
 
 # Set Terraform working directory (update this path as needed)
 $terraformDir = "C:\Users\vince\Sources\huybrechtsxyz\.app"
