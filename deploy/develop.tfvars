@@ -1,7 +1,3 @@
-api_key = ""
-api_secret = ""
-password = "@Abcd1234"
-
 # Environment configuration
 environment = "develop"
 
