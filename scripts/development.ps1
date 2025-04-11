@@ -92,21 +92,6 @@ function Set-Docker {
     $managerCount = ($managerNodes | Measure-Object -Line).Lines
     Write-Host "Number of manager nodes in the Docker Swarm: $managerCount"
     [System.Environment]::SetEnvironmentVariable("DOCKER_MANAGER_COUNT", $managerCount)
-
-    # Check and create the "intranet" network if it doesn't exist
-    # $intranetNetwork = "private"
-    # if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$intranetNetwork$")) {
-    #     Write-Host "Creating bridge network '$intranetNetwork'..."
-    #     docker network create --driver overlay $intranetNetwork
-    # } else {
-    #     Write-Host "Network '$intranetNetwork' already exists."
-    # }
-
-    # $privateDetails = docker network inspect $intranetNetwork | ConvertFrom-Json
-    # #$privateSubnetIP = $privateDetails.IPAM.Config[0].Subnet # For Subnet
-    # $privateGatewayIP = $privateDetails.IPAM.Config[0].Gateway # For Gateway
-    # Write-Host "Private Network IP: $privateGatewayIP"
-    # [System.Environment]::SetEnvironmentVariable("DOCKER_PRIVATE_IP", $privateGatewayIP, [System.EnvironmentVariableTarget]::Process)
 }
 
 # FUNCTION: Read jsons and create docker secrets

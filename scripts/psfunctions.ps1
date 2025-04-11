@@ -24,6 +24,23 @@ function Get-SecretsAsVars {
         }
 
         [System.Environment]::SetEnvironmentVariable($key, $value, "Process")
-        Write-Host "Set environment variable: $key"
+        Write-Host "Set environment variable $key : ***"
+    }
+}
+
+# FUNCTION: Get environment variables from a file
+function Get-EnvVarsFromFile {
+    param (
+        [string]$environmentFile
+    )
+
+    if (Test-Path $environmentFile) {
+        Get-Content $environmentFile | ForEach-Object {
+            $key, $value = $_ -split '='
+            [System.Environment]::SetEnvironmentVariable($key.Trim(), $value.Trim(), [System.EnvironmentVariableTarget]::Process)
+            Write-Host "Set environment variable $key : $value"
+        }
+    } else {
+        Write-Host "Environment file not found at $environmentFile"
     }
 }

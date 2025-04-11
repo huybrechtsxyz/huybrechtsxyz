@@ -62,13 +62,6 @@ variable "worker_disk_size" {
   type        = number
 }
 
-# Block storage configuration
-# This is equal to the number of workers
-variable "block_storage_count" {
-  description = "Number of block storage volumes to create"
-  type        = number
-}
-
 variable "block_storage_size" {
   description = "Size of each block storage volume (GB)"
   type        = number

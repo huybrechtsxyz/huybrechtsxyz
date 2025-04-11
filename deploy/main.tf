@@ -28,15 +28,9 @@ data "kamatera_image" "ubuntu" {
 }
 
 # Set up private network
-resource "kamatera_network" "private-network" {
-  name = "${var.environment}-private-network"
+resource "kamatera_network" "private-lan" {
   datacenter_id = data.kamatera_datacenter.frankfurt.id
-}
-
-# Set up public network
-resource "kamatera_network" "public-network" {
-  name = "${var.environment}-public-network"
-  datacenter_id = data.kamatera_datacenter.frankfurt.id
+  name = "lan-${var.environment}"
 }
 
 # Provision manager 
@@ -52,25 +46,37 @@ resource "kamatera_server" "manager" {
   billing_cycle     = "hourly"
   power_on          = true
 
-  connection {
-    type     = "ssh"
-    user     = "root"
-    password = var.password
-    host     = self.network_interfaces_elastic_ips[0]
-    timeout  = "5m"
+  network {
+    name = "wan"
   }
 
   network {
-    name = kamatera_network.public-network.name
+    name = kamatera_network.private-lan.full_name
   }
 
-  network {
-    name = kamatera_network.private-network.name
-  }
+  # Use remote-exec to run a script on the remote instance
+  provisioner "remote-exec" {
+    inline = [
+      "apt update -y",
+      "apt install -y docker.io",
+      "systemctl enable docker",
+      "systemctl start docker",
 
-  # provisioner "scripts" {
-  #   inline = var.install_docker_script
-  # }
+      # Get private IP and initialize Swarm
+      "PRIVATE_IP=$(hostname -I | awk '{print $2}')",
+      "docker swarm init --advertise-addr $PRIVATE_IP",
+      
+      # Generate the worker join token
+      "docker swarm join-token worker -q > /root/swarm-token"
+    ]
+
+    connection {
+      type     = "ssh"
+      user     = "root"
+      password = var.password
+      host     = self.public_ips[0] # Make sure you're using the correct IP
+    }
+  }
 }
 
 # Provision workernode 
@@ -82,19 +88,37 @@ resource "kamatera_server" "worker" {
   cpu_cores         = var.worker_cpu
   cpu_type          = "A"
   ram_mb            = var.worker_ram
-  disk_sizes_gb     = [ var.worker_disk_size ]
+  disk_sizes_gb     = [ var.worker_disk_size, var.block_storage_size ]
   billing_cycle     = "hourly"
   power_on          = true
 
-  connection {
-    type     = "ssh"
-    user     = "root"
-    password = var.password
-    host     = self.network_interfaces_elastic_ips[0]
-    timeout  = "5m"
+  network {
+    name = "wan"
   }
 
-  # provisioner "scripts" {
-  #   inline = var.install_docker_script
-  # }
+  network {
+    name = kamatera_network.private-lan.full_name
+  }
+
+  # Use remote-exec to run the join command on the worker node
+  provisioner "remote-exec" {
+    inline = [
+      "apt update -y",
+      "apt install -y docker.io",
+      "systemctl enable docker",
+      "systemctl start docker",
+
+      # Join the swarm
+      "MANAGER_PRIVATE_IP=<manager_private_ip>",
+      "JOIN_TOKEN=$(cat /root/swarm-token)",
+      "docker swarm join --token $JOIN_TOKEN $MANAGER_PRIVATE_IP:2377"
+    ]
+
+    connection {
+      type     = "ssh"
+      user     = "root"
+      password = var.password
+      host     = self.public_ips[0] # Use worker node's IP
+    }
+  }
 }

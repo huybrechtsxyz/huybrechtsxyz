@@ -36,9 +36,9 @@ jobs:
           export TF_VAR_api_secret=$KAMATERA_API_SECRET
           export TF_VAR_environment=$KAMATERA_ENVIRONMENT
       - name: Terraform Init
-        run: terraform init
+        run: terraform -chdir="/deploy" init
       - name: Terraform Plan
-        run: terraform plan -input=false -out=plan.tfplan
+        run: terraform -chdir="/deploy" plan -var-file="/deploy/vars-${{ inputs.environment }}.tfvars" -input=false -out=plan.tfplan
       # - name: Terraform Apply
       #   run: terraform apply -auto-approve plan.tfplan
       #   working-directory: ./deploy
