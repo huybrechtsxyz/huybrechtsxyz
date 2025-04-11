@@ -56,6 +56,7 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
     secrets:
+      APP_ROOT_PASSWORD: ${{ secrets.APP_ROOT_PASSWORD }}
       KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
       KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
 

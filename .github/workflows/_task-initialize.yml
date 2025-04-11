@@ -8,6 +8,8 @@ on:
         required: true
         type: string
     secrets:
+      APP_ROOT_PASSWORD:
+        required: true
       KAMATERA_API_KEY:
         required: true
       KAMATERA_API_SECRET:
@@ -30,6 +32,7 @@ jobs:
         working-directory: ./deploy
       - name: Terraform Plan
         env:
+          APP_ROOT_PASSWORD: ${{ secrets.APP_ROOT_PASSWORD }}
           KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
           KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
           KAMATERA_ENVIRONMENT: ${{ inputs.environment }}
@@ -38,6 +41,7 @@ jobs:
           export TF_VAR_api_key=$KAMATERA_API_KEY
           export TF_VAR_api_secret=$KAMATERA_API_SECRET
           export TF_VAR_environment=$KAMATERA_ENVIRONMENT
+          export TF_VAR_password=$APP_ROOT_PASSWORD
           echo "Running terraform..."
           terraform plan -var-file="vars-${{ inputs.environment }}.tfvars" -input=false -out="plan.tfplan"
         working-directory: ./deploy
