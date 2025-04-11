@@ -35,10 +35,12 @@ jobs:
           export TF_VAR_api_key=$KAMATERA_API_KEY
           export TF_VAR_api_secret=$KAMATERA_API_SECRET
           export TF_VAR_environment=$KAMATERA_ENVIRONMENT
+          echo "List files in the repository..."
+          ls -R
       - name: Terraform Init
-        run: terraform -chdir="deploy" init
+        run: terraform -chdir="./deploy" init
       - name: Terraform Plan
-        run: terraform -chdir="deploy" plan -var-file="deploy/vars-${{ inputs.environment }}.tfvars" -input=false -out="deploy/plan.tfplan"
+        run: terraform -chdir="./deploy" plan -var-file="./deploy/vars-${{ inputs.environment }}.tfvars" -input=false -out="./deploy/plan.tfplan"
       # - name: Terraform Apply
       #   run: terraform apply -auto-approve plan.tfplan
       #   working-directory: ./deploy
