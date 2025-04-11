@@ -25,7 +25,10 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.7
-      - name: Configure Kamatera API
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./deploy
+      - name: Terraform Plan
         env:
           KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
           KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
@@ -35,13 +38,8 @@ jobs:
           export TF_VAR_api_key=$KAMATERA_API_KEY
           export TF_VAR_api_secret=$KAMATERA_API_SECRET
           export TF_VAR_environment=$KAMATERA_ENVIRONMENT
-          echo "List files in the repository..."
-          ls -R
-      - name: Terraform Init
-        run: terraform init
-        working-directory: ./deploy
-      - name: Terraform Plan
-        run: terraform plan -var-file="vars-${{ inputs.environment }}.tfvars" -input=false -out="plan.tfplan"
+          echo "Running terraform..."
+          terraform plan -var-file="vars-${{ inputs.environment }}.tfvars" -input=false -out="plan.tfplan"
         working-directory: ./deploy
 
       # - name: Terraform Apply
