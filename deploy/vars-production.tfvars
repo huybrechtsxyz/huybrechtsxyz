@@ -14,5 +14,4 @@ worker_ram      = 4
 worker_disk_size = 50
 
 # MinIO block storage
-block_storage_count = 1
 block_storage_size  = 50
