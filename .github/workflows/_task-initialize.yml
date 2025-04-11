@@ -38,9 +38,12 @@ jobs:
           echo "List files in the repository..."
           ls -R
       - name: Terraform Init
-        run: terraform -chdir="./deploy" init
+        run: terraform init
+        working-directory: ./deploy
       - name: Terraform Plan
-        run: terraform -chdir="./deploy" plan -var-file="./deploy/vars-${{ inputs.environment }}.tfvars" -input=false -out="./deploy/plan.tfplan"
+        run: terraform plan -var-file="vars-${{ inputs.environment }}.tfvars" -input=false -out="plan.tfplan"
+        working-directory: ./deploy
+
       # - name: Terraform Apply
       #   run: terraform apply -auto-approve plan.tfplan
       #   working-directory: ./deploy
