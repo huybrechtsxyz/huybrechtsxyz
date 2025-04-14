@@ -60,28 +60,28 @@ resource "kamatera_server" "manager" {
   }
 
   # Use remote-exec to run a script on the remote instance
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "apt update -y",
-  #     "apt install -y docker.io",
-  #     "systemctl enable docker",
-  #     "systemctl start docker",
+  provisioner "remote-exec" {
+    inline = [
+      "apt update -y",
+      "apt install -y docker.io",
+      "systemctl enable docker",
+      "systemctl start docker",
 
-  #     # Get private IP and initialize Swarm
-  #     "PRIVATE_IP=$(hostname -I | awk '{print $2}')",
-  #     "docker swarm init --advertise-addr $PRIVATE_IP",
+      # Get private IP and initialize Swarm
+      "PRIVATE_IP=$(hostname -I | awk '{print $2}')",
+      "docker swarm init --advertise-addr $PRIVATE_IP",
       
-  #     # Generate the worker join token
-  #     "docker swarm join-token worker -q > /root/swarm-token"
-  #   ]
+      # Generate the worker join token
+      "docker swarm join-token worker -q > /root/swarm-token"
+    ]
 
-  #   connection {
-  #     type     = "ssh"
-  #     user     = "root"
-  #     password = var.password
-  #     host     = self.public_ips[0] # Make sure you're using the correct IP
-  #   }
-  # }
+    connection {
+      type     = "ssh"
+      user     = "root"
+      password = var.password
+      host     = self.public_ips[0] # Make sure you're using the correct IP
+    }
+  }
 }
 
 # Provision workernode 
@@ -106,24 +106,24 @@ resource "kamatera_server" "worker" {
   }
 
   # Use remote-exec to run the join command on the worker node
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "apt update -y",
-  #     "apt install -y docker.io",
-  #     "systemctl enable docker",
-  #     "systemctl start docker",
+  provisioner "remote-exec" {
+    inline = [
+      "apt update -y",
+      "apt install -y docker.io",
+      "systemctl enable docker",
+      "systemctl start docker",
 
-  #     # Join the swarm
-  #     "MANAGER_PRIVATE_IP=<manager_private_ip>",
-  #     "JOIN_TOKEN=$(cat /root/swarm-token)",
-  #     "docker swarm join --token $JOIN_TOKEN $MANAGER_PRIVATE_IP:2377"
-  #   ]
+      # Join the swarm
+      "MANAGER_PRIVATE_IP=<manager_private_ip>",
+      "JOIN_TOKEN=$(cat /root/swarm-token)",
+      "docker swarm join --token $JOIN_TOKEN $MANAGER_PRIVATE_IP:2377"
+    ]
 
-  #   connection {
-  #     type     = "ssh"
-  #     user     = "root"
-  #     password = var.password
-  #     host     = self.public_ips[0] # Use worker node's IP
-  #   }
-  # }
+    connection {
+      type     = "ssh"
+      user     = "root"
+      password = var.password
+      host     = self.public_ips[0] # Use worker node's IP
+    }
+  }
 }

@@ -14,4 +14,4 @@ worker_ram       = 4048
 worker_disk_size = 20
 
 # MinIO block storage
-block_storage_size  = 10
+block_storage_size = 10
