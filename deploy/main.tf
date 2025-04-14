@@ -31,7 +31,7 @@ data "kamatera_image" "ubuntu" {
 resource "kamatera_network" "private-lan" {
   datacenter_id = data.kamatera_datacenter.frankfurt.id
   name = "lan-${var.environment}"
-  
+
   subnet {
     ip = "10.0.0.0"
     bit = 23
@@ -40,13 +40,17 @@ resource "kamatera_network" "private-lan" {
 
 # Provision manager 
 resource "kamatera_server" "manager" {
+  locals {
+    manager_index = count.index + 1
+  }
+
   count             = var.manager_count
-  name              = "srv-${var.environment}-manager-${count.index + 1}"
+  name              = "srv-${var.environment}-manager-${local.manager_index}"
   image_id          = data.kamatera_image.ubuntu.id
   datacenter_id     = data.kamatera_datacenter.frankfurt.id
   cpu_cores         = var.manager_cpu
   cpu_type          = "A"
-  ram_mb            = var.manager_ram
+  ram_mb            = var.manager_ram 
   disk_sizes_gb     = [ var.manager_disk_size ]
   billing_cycle     = "hourly"
   power_on          = true
@@ -60,34 +64,38 @@ resource "kamatera_server" "manager" {
   }
 
   # Use remote-exec to run a script on the remote instance
-  provisioner "remote-exec" {
-    inline = [
-      "apt update -y",
-      "apt install -y docker.io",
-      "systemctl enable docker",
-      "systemctl start docker",
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "apt update -y",
+  #     "apt install -y docker.io",
+  #     "systemctl enable docker",
+  #     "systemctl start docker",
 
-      # Get private IP and initialize Swarm
-      "PRIVATE_IP=$(hostname -I | awk '{print $2}')",
-      "docker swarm init --advertise-addr $PRIVATE_IP",
+  #     # Get private IP and initialize Swarm
+  #     "PRIVATE_IP=$(hostname -I | awk '{print $2}')",
+  #     "docker swarm init --advertise-addr $PRIVATE_IP",
       
-      # Generate the worker join token
-      "docker swarm join-token worker -q > /root/swarm-token"
-    ]
+  #     # Generate the worker join token
+  #     "docker swarm join-token worker -q > /root/swarm-token"
+  #   ]
 
-    connection {
-      type     = "ssh"
-      user     = "root"
-      password = var.password
-      host     = self.public_ips[0] # Make sure you're using the correct IP
-    }
-  }
+  #   connection {
+  #     type     = "ssh"
+  #     user     = "root"
+  #     password = var.password
+  #     host     = self.public_ips[0] # Make sure you're using the correct IP
+  #   }
+  # }
 }
 
 # Provision workernode 
 resource "kamatera_server" "worker" {
+  locals {
+    worker_index = count.index + 1
+  }
+
   count             = var.worker_count
-  name              = "srv-${var.environment}-worker-${count.index + 1}"
+  name              = "srv-${var.environment}-worker-${local.worker_index}"
   image_id          = data.kamatera_image.ubuntu.id
   datacenter_id     = data.kamatera_datacenter.frankfurt.id
   cpu_cores         = var.worker_cpu
@@ -106,24 +114,24 @@ resource "kamatera_server" "worker" {
   }
 
   # Use remote-exec to run the join command on the worker node
-  provisioner "remote-exec" {
-    inline = [
-      "apt update -y",
-      "apt install -y docker.io",
-      "systemctl enable docker",
-      "systemctl start docker",
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "apt update -y",
+  #     "apt install -y docker.io",
+  #     "systemctl enable docker",
+  #     "systemctl start docker",
 
-      # Join the swarm
-      "MANAGER_PRIVATE_IP=<manager_private_ip>",
-      "JOIN_TOKEN=$(cat /root/swarm-token)",
-      "docker swarm join --token $JOIN_TOKEN $MANAGER_PRIVATE_IP:2377"
-    ]
+  #     # Join the swarm
+  #     "MANAGER_PRIVATE_IP=<manager_private_ip>",
+  #     "JOIN_TOKEN=$(cat /root/swarm-token)",
+  #     "docker swarm join --token $JOIN_TOKEN $MANAGER_PRIVATE_IP:2377"
+  #   ]
 
-    connection {
-      type     = "ssh"
-      user     = "root"
-      password = var.password
-      host     = self.public_ips[0] # Use worker node's IP
-    }
-  }
+  #   connection {
+  #     type     = "ssh"
+  #     user     = "root"
+  #     password = var.password
+  #     host     = self.public_ips[0] # Use worker node's IP
+  #   }
+  # }
 }
