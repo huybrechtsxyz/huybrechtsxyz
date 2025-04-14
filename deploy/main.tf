@@ -40,17 +40,13 @@ resource "kamatera_network" "private-lan" {
 
 # Provision manager 
 resource "kamatera_server" "manager" {
-  locals {
-    manager_index = count.index + 1
-  }
-
   count             = var.manager_count
-  name              = "srv-${var.environment}-manager-${local.manager_index}"
+  name              = "srv-${var.environment}-manager-${count.index + 1}"
   image_id          = data.kamatera_image.ubuntu.id
   datacenter_id     = data.kamatera_datacenter.frankfurt.id
   cpu_cores         = var.manager_cpu
   cpu_type          = "A"
-  ram_mb            = var.manager_ram 
+  ram_mb            = var.manager_ram
   disk_sizes_gb     = [ var.manager_disk_size ]
   billing_cycle     = "hourly"
   power_on          = true
@@ -90,12 +86,8 @@ resource "kamatera_server" "manager" {
 
 # Provision workernode 
 resource "kamatera_server" "worker" {
-  locals {
-    worker_index = count.index + 1
-  }
-
   count             = var.worker_count
-  name              = "srv-${var.environment}-worker-${local.worker_index}"
+  name              = "srv-${var.environment}-worker-${count.index + 1}"
   image_id          = data.kamatera_image.ubuntu.id
   datacenter_id     = data.kamatera_datacenter.frankfurt.id
   cpu_cores         = var.worker_cpu
