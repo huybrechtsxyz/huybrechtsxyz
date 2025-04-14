@@ -31,6 +31,11 @@ data "kamatera_image" "ubuntu" {
 resource "kamatera_network" "private-lan" {
   datacenter_id = data.kamatera_datacenter.frankfurt.id
   name = "lan-${var.environment}"
+  
+  subnet {
+    ip = "10.0.0.0"
+    bit = 23
+  }
 }
 
 # Provision manager 
