@@ -45,7 +45,7 @@ jobs:
           export TF_VAR_api_secret=$KAMATERA_API_SECRET
           export TF_VAR_environment=$KAMATERA_ENVIRONMENT
           export TF_VAR_password=$APP_ROOT_PASSWORD
-          export TF_VAR_terraform_api_secret=$TERRAFORM_API_SECRET
+          export TF_TOKEN_app_terraform_io=$TERRAFORM_API_SECRET
           echo "Running terraform...PLAN"
           terraform plan -var-file="vars-${{ inputs.environment }}.tfvars" -input=false -out="plan.tfplan"
         working-directory: ./deploy
@@ -61,7 +61,7 @@ jobs:
           export TF_VAR_api_secret=$KAMATERA_API_SECRET
           export TF_VAR_environment=$KAMATERA_ENVIRONMENT
           export TF_VAR_password=$APP_ROOT_PASSWORD
-          export TF_VAR_terraform_api_secret=$TERRAFORM_API_SECRET
+          export TF_TOKEN_app_terraform_io=$TERRAFORM_API_SECRET
           echo "Running terraform...APPLY"
           terraform apply -auto-approve -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
         working-directory: ./deploy
