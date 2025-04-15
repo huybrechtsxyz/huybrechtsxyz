@@ -32,7 +32,9 @@ jobs:
       - name: Terraform Workspace
         run: terraform workspace select huybrechts-xyz-${{ inputs.environment }} || terraform workspace new huybrechts-xyz-${{ inputs.environment }}
       - name: Terraform Init
-        run: terraform init
+        run: |
+          terraform login
+          terraform init
         working-directory: ./deploy
       - name: Terraform Plan
         env:
