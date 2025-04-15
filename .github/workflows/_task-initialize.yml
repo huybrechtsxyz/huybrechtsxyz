@@ -19,7 +19,7 @@ on:
 
 jobs:
   terraform:
-    name: Terraform Task
+    name: Terraform Tasks
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
@@ -32,11 +32,11 @@ jobs:
       - name: Terraform Init
         run: |
           # Set the Terraform Cloud API token environment variable
-          echo "TF_TOKEN_app_terraform_io=${{ secrets.TF_API_TOKEN }}" >> $GITHUB_ENV
-      
+          echo "TF_TOKEN_app_terraform_io=${{ secrets.TF_API_SECRET }}" >> $GITHUB_ENV
+
           # Select or create the workspace based on the environment input
           terraform workspace select huybrechts-xyz-${{ inputs.environment }} || terraform workspace new huybrechts-xyz-${{ inputs.environment }}
-      
+
           # Initialize Terraform
           terraform init
         working-directory: ./deploy
