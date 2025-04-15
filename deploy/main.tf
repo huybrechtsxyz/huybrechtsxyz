@@ -3,6 +3,10 @@ terraform {
     kamatera = {
       source = "Kamatera/kamatera"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.5"
+    }
   }
   
   cloud {
@@ -34,10 +38,17 @@ data "kamatera_image" "ubuntu" {
   code = "24.04 64bit"
 }
 
+# Create a random suffix resource
+resource "random_string" "suffix" {
+  length  = 4
+  upper   = false
+  special = false
+}
+
 # Set up private network
 resource "kamatera_network" "private-lan" {
   datacenter_id = data.kamatera_datacenter.frankfurt.id
-  name = "vlan-${var.environment}"
+  name = "vlan-${var.environment}-${random_string.suffix.result}"
 
   subnet {
     ip = "10.0.0.0"
@@ -48,7 +59,7 @@ resource "kamatera_network" "private-lan" {
 # Provision manager 
 resource "kamatera_server" "manager" {
   count             = var.manager_count
-  name              = "srv-${var.environment}-manager-${count.index + 1}"
+  name              = "srv-${var.environment}-manager-${count.index + 1}-${random_string.suffix.result}"
   image_id          = data.kamatera_image.ubuntu.id
   datacenter_id     = data.kamatera_datacenter.frankfurt.id
   cpu_cores         = var.manager_cpu
@@ -94,7 +105,7 @@ resource "kamatera_server" "manager" {
 # Provision workernode 
 resource "kamatera_server" "worker" {
   count             = var.worker_count
-  name              = "srv-${var.environment}-worker-${count.index + 1}"
+  name              = "srv-${var.environment}-worker-${count.index + 1}-${random_string.suffix.result}"
   image_id          = data.kamatera_image.ubuntu.id
   datacenter_id     = data.kamatera_datacenter.frankfurt.id
   cpu_cores         = var.worker_cpu
