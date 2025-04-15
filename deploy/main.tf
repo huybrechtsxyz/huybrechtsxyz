@@ -4,6 +4,13 @@ terraform {
       source = "Kamatera/kamatera"
     }
   }
+  
+  cloud {
+    organization = "huybrechts-xyz"
+    workspaces {
+      name = "huybrechts-xyz-${var.environment}"
+    } 
+  } 
 }
 
 provider "kamatera" {

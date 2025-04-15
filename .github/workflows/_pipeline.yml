@@ -41,6 +41,8 @@ on:
         required: true
       SERVER_PASSWORD:
         required: true
+      TERRAFORM_API_SECRET:
+        required: true
       VERSIO_USERNAME:
         required: true
       VERSIO_PASSWORD:
@@ -59,6 +61,7 @@ jobs:
       APP_ROOT_PASSWORD: ${{ secrets.APP_ROOT_PASSWORD }}
       KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
       KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
+      TERRAFORM_API_SECRET: ${{ secrets.TERRAFORM_API_SECRET }}
 
   # update-server:
   #   name: Update Server Job
