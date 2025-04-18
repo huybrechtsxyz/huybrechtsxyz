@@ -48,9 +48,8 @@ jobs:
 
           # Generate main.tf from template
           echo "Generating main.tf from template"
-          envsubst < main.tf.template > main.tf
-          rm -f main.tf.template
-          ls -la
+          envsubst < main.template.tf > main.tf
+          rm -f main.template.tf
           cat main.tf
 
           # Initialize Terraform
