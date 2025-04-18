@@ -30,12 +30,11 @@ jobs:
         with:
           terraform_version: 1.5.7          
       - name: Terraform Init
+        env:
+          TF_API_SECRET: ${{ secrets.TF_API_SECRET }}
         run: |
           # Set the Terraform Cloud API token environment variable
-          echo "TF_TOKEN_app_terraform_io=${{ secrets.TF_API_SECRET }}" >> $GITHUB_ENV
-
-          # Initialize Terraform
-          terraform login -auto-approve
+          export TF_TOKEN_app_terraform_io=$TF_API_SECRET
 
           # Select or create the workspace based on the environment input
           terraform workspace select huybrechts-xyz-${{ inputs.environment }} || terraform workspace new huybrechts-xyz-${{ inputs.environment }}
