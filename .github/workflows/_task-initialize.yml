@@ -70,4 +70,4 @@ jobs:
 
           # Apply the plan file
           echo "Running terraform...APPLY"
-          #terraform apply -auto-approve -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
+          terraform apply -auto-approve -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
