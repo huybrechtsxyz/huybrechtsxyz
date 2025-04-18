@@ -12,7 +12,7 @@ terraform {
   cloud {
     organization = "huybrechts-xyz"
     workspaces {
-      name = "huybrechts-xyz-__ENVIRONMENT__"
+      name = "huybrechts-xyz-$ENVIRONMENT"
     }
   } 
 }
