@@ -12,7 +12,7 @@ terraform {
   cloud {
     organization = "huybrechts-xyz"
     workspaces {
-      name = "huybrechts-xyz-"
+      prefix = "huybrechts-xyz-"
     } 
   } 
 }
