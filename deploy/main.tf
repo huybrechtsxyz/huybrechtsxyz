@@ -11,9 +11,6 @@ terraform {
   
   cloud {
     organization = "huybrechts-xyz"
-    workspaces {
-      prefix = "huybrechts-xyz-"
-    } 
   } 
 }
 
