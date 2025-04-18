@@ -7,7 +7,7 @@ $APPPATH = "C:/Users/vince/Sources/huybrechtsxyz/"
 . "$APPPATH/scripts/psfunctions.ps1"
 
 # Load the secrets from the secrets file
-Get-EnvVarsFromFile "$APPPATH/.app/test.env"
+Get-EnvVarsFromFile "$APPPATH/.app/develop.env"
 Get-SecretsAsVars
 
 $env:TF_VAR_api_key = $env:KAMATERA_API_KEY
@@ -25,7 +25,10 @@ Copy-Item -Path "$APPPATH/deploy/*" -Destination "$APPPATH/.app/deploy" -Recurse
 Copy-Item -Path "$APPPATH/src/develop.env" -Destination "$APPPATH/.app" -Recurse -Force
 
 # Copy the terraform template file to the app folder
-(Get-Content -Raw -Path "main.tf.template") -Replace '__ENVIRONMENT__', $env:ENVIRONMENT | Set-Content -Path "main.tf"
+(Get-Content -Raw -Path "$APPPATH/.app/deploy/main.template.tf") -Replace `
+    '\$ENVIRONMENT', $env:ENVIRONMENT | `
+    Set-Content -Path "$APPPATH/.app/deploy/main.tf"
+Remove-Item -Path "$APPPATH/.app/deploy/main.template.tf" -Force
 
 # Initialize Terraform (if not already initialized)
 ./.app/terraform.exe `
@@ -33,9 +36,9 @@ Copy-Item -Path "$APPPATH/src/develop.env" -Destination "$APPPATH/.app" -Recurse
     init
     
 # Initialize Terraform (if not already initialized)
-./.app/terraform.exe `
-    -chdir="$APPPATH/.app/deploy" `
-    workspace select huybrechts-xyz-$Env:ENVIRONMENT
+# ./.app/terraform.exe `
+#     -chdir="$APPPATH/.app/deploy" `
+#     workspace select huybrechts-xyz-$Env:ENVIRONMENT
 
 # Initialize Terraform (if not already initialized)
 ./.app/terraform.exe `
@@ -48,4 +51,3 @@ Copy-Item -Path "$APPPATH/src/develop.env" -Destination "$APPPATH/.app" -Recurse
     plan `
     -input=false `
     -var-file "$APPPATH/.app/deploy/vars-develop.tfvars" `
-    -out develop-plan.out
