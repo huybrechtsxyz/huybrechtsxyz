@@ -35,7 +35,7 @@ jobs:
           echo "TF_TOKEN_app_terraform_io=${{ secrets.TF_API_SECRET }}" >> $GITHUB_ENV
 
           # Initialize Terraform
-          terraform login
+          terraform login -auto-approve
 
           # Select or create the workspace based on the environment input
           terraform workspace select huybrechts-xyz-${{ inputs.environment }} || terraform workspace new huybrechts-xyz-${{ inputs.environment }}
