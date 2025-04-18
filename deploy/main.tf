@@ -11,6 +11,9 @@ terraform {
   
   cloud {
     organization = "huybrechts-xyz"
+    workspaces {
+      name = "huybrechts-xyz-${var.environment}"
+    }
   } 
 }
 

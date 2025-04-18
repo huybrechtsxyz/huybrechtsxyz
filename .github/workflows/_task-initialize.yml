@@ -28,54 +28,38 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.5.7          
-      - name: Terraform Init
-        env:
+          terraform_version: 1.5.7   
+      - name: Run Terraform
+        env:     
+          APP_ROOT_PASSWORD: ${{ secrets.APP_ROOT_PASSWORD }}
+          KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
+          KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
+          KAMATERA_ENVIRONMENT: ${{ inputs.environment }}
           TF_API_SECRET: ${{ secrets.TF_API_SECRET }}
+        working-directory: ./deploy
         run: |
-          # Set the Terraform Cloud API token environment variable
+          # Set the Terraform environment variables
+          export TF_VAR_api_key=$KAMATERA_API_KEY
+          export TF_VAR_api_secret=$KAMATERA_API_SECRET
+          export TF_VAR_environment=$KAMATERA_ENVIRONMENT
+          export TF_VAR_password=$APP_ROOT_PASSWORD
           export TF_TOKEN_app_terraform_io=$TF_API_SECRET
 
           # Initialize Terraform
+          echo "Running terraform...INIT"
           terraform init
 
           # Select or create the workspace based on the environment input
-          terraform workspace select -or-create huybrechts-xyz-${{ inputs.environment }}
-
+          # echo "Running terraform...WORKSPACE"
+          # terraform workspace select -or-create huybrechts-xyz-${{ inputs.environment }}
           # Initialize Terraform
-          terraform init
-        working-directory: ./deploy
-      - name: Terraform Plan
-        env:
-          APP_ROOT_PASSWORD: ${{ secrets.APP_ROOT_PASSWORD }}
-          KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
-          KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
-          KAMATERA_ENVIRONMENT: ${{ inputs.environment }}
-          TF_API_SECRET: ${{ secrets.TF_API_SECRET }}
-        run: |
-          echo "Setting up Kamatera credentials..."
-          export TF_VAR_api_key=$KAMATERA_API_KEY
-          export TF_VAR_api_secret=$KAMATERA_API_SECRET
-          export TF_VAR_environment=$KAMATERA_ENVIRONMENT
-          export TF_VAR_password=$APP_ROOT_PASSWORD
-          export TF_TOKEN_app_terraform_io=$TF_API_SECRET
+          # echo "Running terraform...REINIT"
+          # terraform init
+
+          # Create the plan file
           echo "Running terraform...PLAN"
           terraform plan -var-file="vars-${{ inputs.environment }}.tfvars" -input=false -out="plan.tfplan"
-        working-directory: ./deploy
-      - name: Terraform Apply
-        env:
-          APP_ROOT_PASSWORD: ${{ secrets.APP_ROOT_PASSWORD }}
-          KAMATERA_API_KEY: ${{ secrets.KAMATERA_API_KEY }}
-          KAMATERA_API_SECRET: ${{ secrets.KAMATERA_API_SECRET }}
-          KAMATERA_ENVIRONMENT: ${{ inputs.environment }}
-          TF_API_SECRET: ${{ secrets.TF_API_SECRET }}
-        run: |
-          echo "Setting up Kamatera credentials..."
-          export TF_VAR_api_key=$KAMATERA_API_KEY
-          export TF_VAR_api_secret=$KAMATERA_API_SECRET
-          export TF_VAR_environment=$KAMATERA_ENVIRONMENT
-          export TF_VAR_password=$APP_ROOT_PASSWORD
-          export TF_TOKEN_app_terraform_io=$TF_API_SECRET
+
+          # Apply the plan file
           echo "Running terraform...APPLY"
           #terraform apply -auto-approve -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
-        working-directory: ./deploy
