@@ -62,8 +62,9 @@ jobs:
           # terraform init
 
           # Create the plan file
+          # Terraform Cloud does not support saving the generated execution plan locally at this time.
           echo "Running terraform...PLAN"
-          terraform plan -var-file="vars-${{ inputs.environment }}.tfvars" -input=false -out="plan.tfplan"
+          terraform plan -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
 
           # Apply the plan file
           echo "Running terraform...APPLY"
