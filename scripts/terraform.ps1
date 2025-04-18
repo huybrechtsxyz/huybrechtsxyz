@@ -24,6 +24,9 @@ remove-item -Path "$APPPATH/.app/deploy/*" -Recurse -Force
 Copy-Item -Path "$APPPATH/deploy/*" -Destination "$APPPATH/.app/deploy" -Recurse -Force
 Copy-Item -Path "$APPPATH/src/develop.env" -Destination "$APPPATH/.app" -Recurse -Force
 
+# Copy the terraform template file to the app folder
+(Get-Content -Raw -Path "main.tf.template") -Replace '__ENVIRONMENT__', $env:ENVIRONMENT | Set-Content -Path "main.tf"
+
 # Initialize Terraform (if not already initialized)
 ./.app/terraform.exe `
     -chdir="$APPPATH/.app/deploy" `
