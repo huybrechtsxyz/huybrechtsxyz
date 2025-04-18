@@ -40,7 +40,7 @@ jobs:
           terraform init
 
           # Select or create the workspace based on the environment input
-          terraform workspace select huybrechts-xyz-${{ inputs.environment }} || terraform workspace new huybrechts-xyz-${{ inputs.environment }}
+          terraform workspace select -or-create huybrechts-xyz-${{ inputs.environment }}
 
           # Initialize Terraform
           terraform init
