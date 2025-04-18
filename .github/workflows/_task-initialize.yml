@@ -36,6 +36,9 @@ jobs:
           # Set the Terraform Cloud API token environment variable
           export TF_TOKEN_app_terraform_io=$TF_API_SECRET
 
+          # Initialize Terraform
+          terraform init
+
           # Select or create the workspace based on the environment input
           terraform workspace select huybrechts-xyz-${{ inputs.environment }} || terraform workspace new huybrechts-xyz-${{ inputs.environment }}
 
