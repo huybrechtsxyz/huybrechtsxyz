@@ -71,3 +71,10 @@ jobs:
           # Apply the plan file
           echo "Running terraform...APPLY"
           terraform apply -auto-approve -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
+          echo "manager_ips=$(terraform output -json manager_ips | jq -r 'join(",")')" >> $GITHUB_OUTPUT
+          echo "worker_ips=$(terraform output -json worker_ips | jq -r 'join(",")')" >> $GITHUB_OUTPUT
+          terraform output -json
+      - name: Deploy Docker Swarm
+        run: |
+          # Deploy Docker Swarm
+          echo "Deploying Docker Swarm..."
