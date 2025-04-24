@@ -1,0 +1,175 @@
+# Initialize docker swarm cluster
+name: _InitializeSwarmTask
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      kamatera_private_key:
+        required: true
+        type: string
+      tf_output_json:
+        required: true
+        type: string
+
+jobs:
+  initialize:
+    name: Extract Server Matrix
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    outputs:
+      matrix: ${{ steps.get.outputs.matrix }}
+    steps:
+      - name: Generate Server Matrix
+        id: get
+        run: |
+          echo "Parsing tf_output.json"
+          MATRIX=$(jq -n \
+            --argjson managers "$(jq -r '.manager_public_ips.value' tf_output.json)" \
+            --argjson workers "$(jq -r '.worker_public_ips.value' tf_output.json)" \
+            --argjson managers_internal "$(jq -r '.manager_private_ips.value' tf_output.json)" \
+            --argjson workers_internal "$(jq -r '.worker_private_ips.value' tf_output.json)" \
+            '{
+              include: (
+                [$managers, $managers_internal] | transpose | map({role: "manager", ip: .[0], private_ip: .[1]}) +
+                [$workers, $workers_internal] | transpose | map({role: "worker", ip: .[0], private_ip: .[1]})
+              )
+            }')
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+  configure:
+    name: Configure Swarm
+    needs: initialize
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    strategy:
+      matrix: ${{ fromJson(needs.initialize.outputs.matrix) }}
+    steps:
+      - name: Set up SSH connection
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ inputs.kamatera_private_key }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+      - name: Configure Server
+        run: |
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << EOF
+            echo "Initializing server"
+            set -e
+            cd /
+
+            update_system() {
+              echo "[*] Updating system packages..."
+              apt-get update -y
+              apt-get upgrade -y
+            }
+
+            configure_firewall() {
+              echo "[*] Configuring firewall..."
+              if ! command -v ufw &> /dev/null; then
+                echo "[*] Installing UFW..."
+                apt-get install -y ufw
+              fi
+
+              ufw --force reset
+              ufw default deny incoming
+              ufw default deny outgoing
+
+              # Allow essential outgoing
+              ufw allow out 53    # DNS
+              ufw allow out 123   # NTP
+
+              # Allow SSH and web traffic (from anywhere or limit to trusted IPs)
+              ufw allow in 22/tcp
+              ufw allow in 80/tcp
+              ufw allow in 443/tcp
+
+              # Docker Swarm (VLAN traffic only)
+              ufw allow from 10.0.0.0/23 to any port 2377 proto tcp   # Swarm control
+              ufw allow from 10.0.0.0/23 to any port 7946 proto tcp   # Container network
+              ufw allow from 10.0.0.0/23 to any port 7946 proto udp
+              ufw allow from 10.0.0.0/23 to any port 4789 proto udp   # Overlay network
+
+              # Enable the firewall
+              if ! ufw status | grep -q "active"; then
+                echo "[*] Enabling UFW..."
+                echo "y" | ufw enable
+              fi
+
+              ufw reload
+              ufw status verbose
+            }
+
+            configure_swarm() {
+              hostname=$(hostname)
+              echo "[*] Configuring Docker Swarm on $hostname..."
+
+              # Check if this node is already part of a swarm
+              if docker info | grep -q "Swarm: active"; then
+                echo "[*] Swarm is already initialized or joined on $hostname. Skipping..."
+                return
+              fi
+
+              # Only manager-1 initializes the swarm
+              if [[ "$hostname" == *"manager-1"* ]]; then
+                echo "[*] Initializing Swarm on $hostname..."
+                docker swarm init --advertise-addr ${{ matrix.private_ip }}
+
+                echo "[*] Ensuring /tmp exists..."
+                mkdir -p /tmp
+                chmod 1777 /tmp
+
+                # Extract join tokens and save locally
+                docker swarm join-token manager -q > /tmp/manager_token.txt
+                docker swarm join-token worker -q > /tmp/worker_token.txt
+
+                echo "[*] Manager and Worker join tokens saved on $hostname"
+
+              else
+                # Wait for tokens to become available
+                echo "[*] Waiting for join tokens from manager-1..."
+                for i in {1..12}; do
+                  if ssh root@manager-1 'test -f /tmp/manager_token.txt'; then
+                    break
+                  fi
+                  echo "Waiting for tokens..."
+                  sleep 10
+                done
+
+                # Retrieve join tokens
+                MANAGER_JOIN_TOKEN=$(ssh root@manager-1 'cat /tmp/manager_token.txt')
+                WORKER_JOIN_TOKEN=$(ssh root@manager-1 'cat /tmp/worker_token.txt')
+
+                # Join based on role
+                if [[ "$hostname" == *"manager-"* ]]; then
+                  echo "[*] Joining Swarm as manager..."
+                  docker swarm join --token "$MANAGER_JOIN_TOKEN" manager-1:2377 --advertise-addr ${{ matrix.private_ip }}
+                else
+                  echo "[*] Joining Swarm as worker..."
+                  docker swarm join --token "$WORKER_JOIN_TOKEN" manager-1:2377 --advertise-addr ${{ matrix.private_ip }}
+                fi
+              fi
+            }
+
+            install_docker_if_needed() {
+              if ! command -v docker &> /dev/null; then
+                echo "[*] Installing Docker..."
+                apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+                curl -fsSL https://get.docker.com | bash
+              else
+                echo "[*] Docker is already installed."
+              fi
+            }
+            
+            main() {
+              update_system
+              configure_firewall
+              install_docker_if_needed
+              configure_swarm
+              systemctl enable docker
+              systemctl start docker
+            }
+
+            main
+          EOF

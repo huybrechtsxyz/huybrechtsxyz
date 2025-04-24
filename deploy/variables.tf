@@ -1,3 +1,7 @@
+#
+# THESE VARIABLES ARE REQUIRED FOR THE DEPLOYMENT
+#
+
 # Kamatera API details
 variable "api_key" {
   description = "Kamatera API key"
@@ -8,6 +12,16 @@ variable "api_secret" {
   description = "Kamatera API secret"
   type        = string
 }
+
+# SSH key for SSH access to the server
+variable "ssh_public_key" {
+  description = "The public SSH key to use for access"
+  type        = string
+}
+
+#
+# THESE VARIABLES ARE COVERED BY THE TERRAFORM VARIABLES FILE
+#
 
 # Environment and password
 variable "environment" {

@@ -68,7 +68,8 @@ resource "kamatera_server" "manager" {
   disk_sizes_gb     = [ var.manager_disk_size ]
   billing_cycle     = "hourly"
   power_on          = true
-
+  ssh_pubkey        = var.ssh_public_key
+  
   network {
     name = "wan"
   }
@@ -90,6 +91,7 @@ resource "kamatera_server" "worker" {
   disk_sizes_gb     = [ var.worker_disk_size, var.block_storage_size ]
   billing_cycle     = "hourly"
   power_on          = true
+  ssh_pubkey        = var.ssh_public_key
 
   network {
     name = "wan"
