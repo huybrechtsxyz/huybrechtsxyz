@@ -7,12 +7,12 @@ on:
       environment:
         required: true
         type: string
-      kamatera_private_key:
-        required: true
-        type: string
       tf_output_json:
         required: true
         type: string
+    secrets:
+      BITWARDEN_TOKEN:
+        required: true
 
 jobs:
   initialize:

@@ -24,8 +24,8 @@ jobs:
     uses: ./.github/workflows/_task-terraform.yml
     with:
       environment: ${{ inputs.environment }}
-    secrets:
-      BITWARDEN_TOKEN: ${{ secrets.BITWARDEN_TOKEN }}
+    # Ensure the secret is defined in the referenced workflow or remove this section if not required
+    secrets: inherit
   
   initialize:
     name: Initialize Swarm Cluster
@@ -35,5 +35,4 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       tf_output_json: ${{ needs.terraform.outputs.tf_output_json }}
-    secrets:
-      BITWARDEN_TOKEN: ${{ secrets.BITWARDEN_TOKEN }}
+    secrets: inherit

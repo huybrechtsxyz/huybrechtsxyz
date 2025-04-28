@@ -7,6 +7,9 @@ on:
       environment:
         required: true
         type: string
+    secrets:
+      BITWARDEN_TOKEN:
+        required: true
     outputs:
       tf_output_json:
         description: "Full Terraform output JSON"
