@@ -1,0 +1,50 @@
+# Build and Deploy Jobs
+name: _BuildAndDeployJobs
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      initialize:
+        required: true
+        type: string
+      rebuild:
+        required: true
+        type: string
+    secrets:
+      BITWARDEN_TOKEN:
+        required: true
+
+jobs:
+  secrets:
+    name: Load Secrets From Bitwarden
+    uses: ./.github/workflows/_task-secrets.yml
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      BITWARDEN_TOKEN: ${{ secrets.BITWARDEN_TOKEN }}
+
+  terraform:
+    name: Create Server Job
+    needs: secrets
+    if: inputs.initialize == 'true'
+    uses: ./.github/workflows/_task-terraform.yml
+    with:
+      environment: ${{ inputs.environment }}
+      kamatera_api_key: ${{ needs.secrets.outputs.kamatera_api_key }}
+      kamatera_api_secret: ${{ needs.secrets.outputs.kamatera_api_secret }}
+      kamatera_public_key: ${{ needs.secrets.outputs.kamatera_public_key }}
+      terraform_api_token: ${{ needs.secrets.outputs.terraform_api_token }}
+      app_root_password: ${{ needs.secrets.outputs.app_root_password }}
+
+  initialize:
+    name: Initialize Server Job
+    needs: [secrets, terraform]
+    if: inputs.initialize == 'true'
+    uses: ./.github/workflows/_task-initialize.yml
+    with:
+      environment: ${{ inputs.environment }}
+      kamatera_private_key: ${{ needs.secrets.outputs.kamatera_private_key }}
+      tf_output_json: ${{ needs.terraform.outputs.tf_output_json }}

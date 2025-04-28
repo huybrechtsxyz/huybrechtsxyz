@@ -7,6 +7,21 @@ on:
       environment:
         required: true
         type: string
+      kamatera_api_key:
+        required: true
+        type: string
+      kamatera_api_secret:
+        required: true
+        type: string
+      kamatera_public_key:
+        required: true
+        type: string
+      terraform_api_token:
+        required: true
+        type: string
+      app_root_password:
+        required: true
+        type: string
     outputs:
       tf_output_json:
         description: "Full Terraform output JSON"
@@ -23,46 +38,6 @@ jobs:
       # Check out the repo
       - name: Check out the repo
         uses: actions/checkout@v4
-
-      # Set up GitHub Secrets
-      - name: Get Environment Secrets
-        uses: bitwarden/sm-action@v2
-        with:
-          access_token: ${{ secrets.BITWARDEN_TOKEN }}
-          secrets: |
-            d47e736b-2db8-47d5-b46b-b2c8016ece73 > TERRAFORM_API_TOKEN
-            357068b9-9f5f-4f79-940c-b2c8016cb88f > KAMATERA_API_KEY
-            6c9295a8-9fa4-4d38-8929-b2c8016d9b43 > KAMATERA_API_SECRET
-
-      # Set up GitHub Secrets for Test Environment
-      - name: Get Test Secrets
-        if: ${{ inputs.environment == 'test' }}
-        uses: bitwarden/sm-action@v2
-        with:  
-          access_token: ${{ secrets.BITWARDEN_TOKEN }}
-          secrets: |
-            6cc5b975-56a9-4d7a-80c7-b2c90151cce0 > KAMATERA_PUBLIC_KEY
-            5083ae32-429d-428b-b7df-b2c901441bbb > APP_ROOT_PASSWORD
-
-      # Set up GitHub Secrets for Staging Environment
-      - name: Get Staging Secrets
-        if: ${{ inputs.environment == 'staging' }}
-        uses: bitwarden/sm-action@v2
-        with:  
-          access_token: ${{ secrets.BITWARDEN_TOKEN }}
-          secrets: |
-            4dc11520-0305-47fd-bd2a-b2c901526d65 > KAMATERA_PUBLIC_KEY
-            924b9526-a6cf-43c1-93a9-b2c9014494ae > APP_ROOT_PASSWORD
-
-      # Set up GitHub Secrets for Production Environment
-      - name: Get Production Secrets
-        if: ${{ inputs.environment == 'production' }}
-        uses: bitwarden/sm-action@v2
-        with:  
-          access_token: ${{ secrets.BITWARDEN_TOKEN }}
-          secrets: |
-            ee623c15-a017-44c5-91e0-b2c9015298a9 > KAMATERA_PUBLIC_KEY
-            6db5856c-3f7f-4b62-9846-b2c90144cb0b > APP_ROOT_PASSWORD
 
       # Set up the Terraform CLI
       - name: Set up Terraform

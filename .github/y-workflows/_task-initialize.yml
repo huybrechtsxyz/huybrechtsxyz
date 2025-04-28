@@ -40,60 +40,29 @@ jobs:
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
 
   configure:
-    name: Configure Servers
+    name: Configure Swarm
     needs: initialize
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     strategy:
       matrix: ${{ fromJson(needs.initialize.outputs.matrix) }}
     steps:
-      # Set up GitHub Secrets for Test Environment
-      - name: Get Test Secrets
-        if: ${{ inputs.environment == 'test' }}
-        uses: bitwarden/sm-action@v2
-        with:  
-          access_token: ${{ secrets.BITWARDEN_TOKEN }}
-          secrets: |
-            f16fffe2-77b7-4d20-bf6c-b2c9015c71d3 > KAMATERA_PRIVATE_KEY
-
-      # Set up GitHub Secrets for Staging Environment
-      - name: Get Staging Secrets
-        if: ${{ inputs.environment == 'staging' }}
-        uses: bitwarden/sm-action@v2
-        with:  
-          access_token: ${{ secrets.BITWARDEN_TOKEN }}
-          secrets: |
-            0c1f1f1c-456b-47d5-aad4-b2c9015ca6dc > KAMATERA_PRIVATE_KEY
-
-      # Set up GitHub Secrets for Production Environment
-      - name: Get Production Secrets
-        if: ${{ inputs.environment == 'production' }}
-        uses: bitwarden/sm-action@v2
-        with:  
-          access_token: ${{ secrets.BITWARDEN_TOKEN }}
-          secrets: |
-            02ed2dea7-b72e-401b-ae7e-b2c9015cd76e > KAMATERA_PRIVATE_KEY
-
-      # Set up GitHub Secrets for Environments (trick to set the environment variables)
       - name: Set up SSH connection
         run: |
           mkdir -p ~/.ssh
-          echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
+          echo "${{ inputs.kamatera_private_key }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-
-      # Configure the server with initialization script
       - name: Configure Server
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << EOF
             echo "Initializing server"
-            set -euo pipefail
-
+            set -e
             cd /
 
             update_system() {
               echo "[*] Updating system packages..."
               apt-get update -y
-              DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+              apt-get upgrade -y
             }
 
             configure_firewall() {
@@ -108,28 +77,79 @@ jobs:
               ufw default deny outgoing
 
               # Allow essential outgoing
-              ufw allow out 53/tcp comment 'DNS'
-              ufw allow out 123/udp comment 'NTP'
+              ufw allow out 53    # DNS
+              ufw allow out 123   # NTP
 
-              # Allow SSH and web traffic
-              ufw allow 22/tcp comment 'SSH'
-              ufw allow 80/tcp comment 'HTTP'
-              ufw allow 443/tcp comment 'HTTPS'
+              # Allow SSH and web traffic (from anywhere or limit to trusted IPs)
+              ufw allow in 22/tcp
+              ufw allow in 80/tcp
+              ufw allow in 443/tcp
 
-              # Docker Swarm (private VLAN)
-              ufw allow from 10.0.0.0/23 to any port 2377 proto tcp comment 'Docker Swarm Control'
-              ufw allow from 10.0.0.0/23 to any port 7946 proto tcp comment 'Docker Overlay TCP'
-              ufw allow from 10.0.0.0/23 to any port 7946 proto udp comment 'Docker Overlay UDP'
-              ufw allow from 10.0.0.0/23 to any port 4789 proto udp comment 'Docker VXLAN Overlay'
+              # Docker Swarm (VLAN traffic only)
+              ufw allow from 10.0.0.0/23 to any port 2377 proto tcp   # Swarm control
+              ufw allow from 10.0.0.0/23 to any port 7946 proto tcp   # Container network
+              ufw allow from 10.0.0.0/23 to any port 7946 proto udp
+              ufw allow from 10.0.0.0/23 to any port 4789 proto udp   # Overlay network
 
-              # Enable firewall only if not active
-              if ! ufw status | grep -q "Status: active"; then
+              # Enable the firewall
+              if ! ufw status | grep -q "active"; then
                 echo "[*] Enabling UFW..."
                 echo "y" | ufw enable
               fi
 
               ufw reload
               ufw status verbose
+            }
+
+            configure_swarm() {
+              hostname=$(hostname)
+              echo "[*] Configuring Docker Swarm on $hostname..."
+
+              # Check if this node is already part of a swarm
+              if docker info | grep -q "Swarm: active"; then
+                echo "[*] Swarm is already initialized or joined on $hostname. Skipping..."
+                return
+              fi
+
+              # Only manager-1 initializes the swarm
+              if [[ "$hostname" == *"manager-1"* ]]; then
+                echo "[*] Initializing Swarm on $hostname..."
+                docker swarm init --advertise-addr ${{ matrix.private_ip }}
+
+                echo "[*] Ensuring /tmp exists..."
+                mkdir -p /tmp
+                chmod 1777 /tmp
+
+                # Extract join tokens and save locally
+                docker swarm join-token manager -q > /tmp/manager_token.txt
+                docker swarm join-token worker -q > /tmp/worker_token.txt
+
+                echo "[*] Manager and Worker join tokens saved on $hostname"
+
+              else
+                # Wait for tokens to become available
+                echo "[*] Waiting for join tokens from manager-1..."
+                for i in {1..12}; do
+                  if ssh root@manager-1 'test -f /tmp/manager_token.txt'; then
+                    break
+                  fi
+                  echo "Waiting for tokens..."
+                  sleep 10
+                done
+
+                # Retrieve join tokens
+                MANAGER_JOIN_TOKEN=$(ssh root@manager-1 'cat /tmp/manager_token.txt')
+                WORKER_JOIN_TOKEN=$(ssh root@manager-1 'cat /tmp/worker_token.txt')
+
+                # Join based on role
+                if [[ "$hostname" == *"manager-"* ]]; then
+                  echo "[*] Joining Swarm as manager..."
+                  docker swarm join --token "$MANAGER_JOIN_TOKEN" manager-1:2377 --advertise-addr ${{ matrix.private_ip }}
+                else
+                  echo "[*] Joining Swarm as worker..."
+                  docker swarm join --token "$WORKER_JOIN_TOKEN" manager-1:2377 --advertise-addr ${{ matrix.private_ip }}
+                fi
+              fi
             }
 
             install_docker_if_needed() {
@@ -141,64 +161,14 @@ jobs:
                 echo "[*] Docker is already installed."
               fi
             }
-
-            configure_swarm() {
-              local hostname
-              hostname=$(hostname)
-              echo "[*] Configuring Docker Swarm on $hostname..."
-
-              if docker info 2>/dev/null | grep -q "Swarm: active"; then
-                echo "[*] Node already part of a Swarm. Skipping initialization/joining."
-                return
-              fi
-
-              if [[ "$hostname" == *"manager-1"* ]]; then
-                echo "[*] Initializing new Swarm cluster..."
-                docker swarm init --advertise-addr ${{ matrix.private_ip }}
-
-                mkdir -p /tmp
-                chmod 1777 /tmp
-
-                docker swarm join-token manager -q > /tmp/manager_token.txt
-                docker swarm join-token worker -q > /tmp/worker_token.txt
-                echo "[*] Saved manager and worker join tokens."
-              else
-                echo "[*] Joining existing Swarm cluster..."
-                
-                # Wait for manager-1 tokens to appear
-                for i in {1..12}; do
-                  if ssh root@manager-1 'test -f /tmp/manager_token.txt' >/dev/null 2>&1; then
-                    break
-                  fi
-                  echo "Waiting for tokens on manager-1..."
-                  sleep 5
-                done
-
-                MANAGER_JOIN_TOKEN=$(ssh root@manager-1 'cat /tmp/manager_token.txt')
-                WORKER_JOIN_TOKEN=$(ssh root@manager-1 'cat /tmp/worker_token.txt')
-
-                if [[ "$hostname" == *"manager-"* ]]; then
-                  echo "[*] Joining as Manager..."
-                  docker swarm join --token "$MANAGER_JOIN_TOKEN" manager-1:2377 --advertise-addr ${{ matrix.private_ip }}
-                else
-                  echo "[*] Joining as Worker..."
-                  docker swarm join --token "$WORKER_JOIN_TOKEN" manager-1:2377 --advertise-addr ${{ matrix.private_ip }}
-                fi
-              fi
-            }
-
-            enable_docker_service() {
-              echo "[*] Ensuring Docker is enabled and running..."
-              systemctl enable docker
-              systemctl restart docker
-            }
-
+            
             main() {
               update_system
               configure_firewall
               install_docker_if_needed
               configure_swarm
-              enable_docker_service
+              systemctl enable docker
+              systemctl start docker
             }
 
             main
