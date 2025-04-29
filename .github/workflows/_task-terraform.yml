@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     outputs:
-      tf_output_json: ${{ steps.get.outputs.TF_OUTPUT }}
+      tf_output_json: ${{ steps.terraform.outputs.TF_OUTPUT }}
     steps:
       # Check out the repo
       - name: Check out the repo
