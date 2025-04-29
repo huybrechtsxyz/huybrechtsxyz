@@ -107,10 +107,12 @@ jobs:
           echo "Running terraform...APPLY"
           terraform apply -auto-approve -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
           echo "Running terraform...OUTPUT"
-          terraform output -json > tf_output.json
-          echo "Reading Terraform output..."
-          ls -la
-          cat -A tf_output.json
+          terraform output -json > tf_output1.json
+          terraform output -json | sed 's/\r$//' > tf_output2.json
+          echo "Reading Terraform output...1"
+          cat -A tf_output1.json
+          echo "Reading Terraform output...2"
+          cat -A tf_output2.json
 
           # Parse the output
           # Example output
