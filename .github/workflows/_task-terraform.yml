@@ -132,11 +132,15 @@ jobs:
           #   ]
           # }
           echo "Parsing tf_output.json"
+          managers=$(jq '.manager_public_ips.value' tf_output.json)
+          workers=$(jq '.worker_public_ips.value' tf_output.json)
+          managers_internal=$(jq '.manager_private_ips.value' tf_output.json)
+          workers_internal=$(jq '.worker_private_ips.value' tf_output.json)
           MATRIX=$(jq -n \
-            --argjson managers "$(jq '.manager_public_ips.value' tf_output.json)" \
-            --argjson workers "$(jq '.worker_public_ips.value' tf_output.json)" \
-            --argjson managers_internal "$(jq '.manager_private_ips.value' tf_output.json)" \
-            --argjson workers_internal "$(jq '.worker_private_ips.value' tf_output.json)" \
+            --argjson managers "$managers" \
+            --argjson workers "$workers" \
+            --argjson managers_internal "$managers_internal" \
+            --argjson workers_internal "$workers_internal" \
             '{
               include: (
                 [$managers, $managers_internal] | transpose | map({role: "manager", ip: .[0], private_ip: .[1]}) +
