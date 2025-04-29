@@ -79,7 +79,8 @@ resource "kamatera_server" "manager" {
   }
 }
 
-# Provision workernode 
+# Provision workernode
+# Workers do not get access to the WAN
 resource "kamatera_server" "worker" {
   count             = var.worker_count
   name              = "srv-${var.environment}-worker-${count.index + 1}-${random_string.suffix.result}"
@@ -92,10 +93,6 @@ resource "kamatera_server" "worker" {
   billing_cycle     = "hourly"
   power_on          = true
   ssh_pubkey        = var.ssh_public_key
-
-  network {
-    name = "wan"
-  }
 
   network {
     name = kamatera_network.private-lan.full_name
