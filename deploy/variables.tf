@@ -48,6 +48,10 @@ variable "manager_cpu" {
 variable "manager_ram" {
   description = "Amount of RAM (GB) for manager nodes"
   type        = number
+  validation {
+    condition     = var.ram_mb % 1024 == 0
+    error_message = "Manager RAM must be a multiple of 1024 MB."
+  }
 }
 
 variable "manager_disk_size" {
@@ -69,6 +73,10 @@ variable "worker_cpu" {
 variable "worker_ram" {
   description = "Amount of RAM (GB) for worker nodes"
   type        = number
+  validation {
+    condition     = var.ram_mb % 1024 == 0
+    error_message = "Worker RAM must be a multiple of 1024 MB."
+  }
 }
 
 variable "worker_disk_size" {
