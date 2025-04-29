@@ -107,7 +107,7 @@ jobs:
           echo "Running terraform...APPLY"
           terraform apply -auto-approve -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
           echo "Running terraform...OUTPUT"
-          terraform output -json | jq -r '.manager_public_ips.value[0]'
+          terraform output -json > tf_output.json
           
           # Parse the output
           # Example output
