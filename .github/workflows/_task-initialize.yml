@@ -7,7 +7,7 @@ on:
       environment:
         required: true
         type: string
-      tf_output_json:
+      tf_output:
         required: true
         type: string
     secrets:
@@ -15,37 +15,12 @@ on:
         required: true
 
 jobs:
-  initialize:
-    name: Extract Server Matrix
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    outputs:
-      matrix: ${{ steps.get.outputs.matrix }}
-    steps:
-      - name: Generate Server Matrix
-        id: get
-        run: |
-          echo "Parsing tf_output.json"
-          MATRIX=$(jq -n \
-            --argjson managers "$(jq -r '.manager_public_ips.value' tf_output.json)" \
-            --argjson workers "$(jq -r '.worker_public_ips.value' tf_output.json)" \
-            --argjson managers_internal "$(jq -r '.manager_private_ips.value' tf_output.json)" \
-            --argjson workers_internal "$(jq -r '.worker_private_ips.value' tf_output.json)" \
-            '{
-              include: (
-                [$managers, $managers_internal] | transpose | map({role: "manager", ip: .[0], private_ip: .[1]}) +
-                [$workers, $workers_internal] | transpose | map({role: "worker", ip: .[0], private_ip: .[1]})
-              )
-            }')
-          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
-
   configure:
-    name: Configure Servers
-    needs: initialize
+    name: Configure Swarm Cluster
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     strategy:
-      matrix: ${{ fromJson(needs.initialize.outputs.matrix) }}
+      matrix: ${{ fromJson(inputs.tf_output) }}
     steps:
       # Set up GitHub Secrets for Test Environment
       - name: Get Test Secrets

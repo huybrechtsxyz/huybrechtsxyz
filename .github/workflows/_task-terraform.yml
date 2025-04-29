@@ -11,9 +11,9 @@ on:
       BITWARDEN_TOKEN:
         required: true
     outputs:
-      tf_output_json:
+      tf_output:
         description: "Full Terraform output JSON"
-        value: ${{ jobs.terraform.outputs.tf_output_json }}
+        value: ${{ jobs.terraform.outputs.tf_output }}
 
 jobs:
   terraform:
@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     outputs:
-      tf_output_json: ${{ steps.terraform.outputs.TF_OUTPUT }}
+      tf_output: ${{ steps.tfapply.outputs.tf_output }}
     steps:
       # Check out the repo
       - name: Check out the repo
@@ -75,7 +75,7 @@ jobs:
 
       # Run Terraform to create docker swarm cluster
       - name: Run Terraform Apply
-        id: terraform
+        id: tfapply
         working-directory: ./deploy
         run: |
           # Set the Terraform environment variables
@@ -107,9 +107,41 @@ jobs:
           echo "Running terraform...APPLY"
           terraform apply -auto-approve -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
           terraform output -json > tf_output.json
-
-          # Read the Terraform output and set it as an environment variable
           echo "Reading Terraform output..."
           cat tf_output.json
-          TF_OUTPUT=$(cat tf_output.json)
-          echo "TF_OUTPUT=$TF_OUTPUT" >> $GITHUB_OUTPUT         
+
+          # Parse the output
+          # Example output
+          # {
+          #   "include": [
+          #     {
+          #       "role": "manager",
+          #       "ip": "192.0.2.1",
+          #       "private_ip": "10.0.0.1"
+          #     },
+          #     {
+          #       "role": "worker",
+          #       "ip": "192.0.2.2",
+          #       "private_ip": "10.0.0.2"
+          #     },
+          #     {
+          #       "role": "worker",
+          #       "ip": "192.0.2.3",
+          #       "private_ip": "10.0.0.3"
+          #     }
+          #   ]
+          # }
+          echo "Parsing tf_output.json"
+          MATRIX=$(jq -n \
+            --argjson managers "$(jq -r '.manager_public_ips.value' tf_output.json)" \
+            --argjson workers "$(jq -r '.worker_public_ips.value' tf_output.json)" \
+            --argjson managers_internal "$(jq -r '.manager_private_ips.value' tf_output.json)" \
+            --argjson workers_internal "$(jq -r '.worker_private_ips.value' tf_output.json)" \
+            '{
+              include: (
+                [$managers, $managers_internal] | transpose | map({role: "manager", ip: .[0], private_ip: .[1]}) +
+                [$workers, $workers_internal] | transpose | map({role: "worker", ip: .[0], private_ip: .[1]})
+              )
+            }')
+          echo "tf_output=$MATRIX" >> $GITHUB_OUTPUT
+       

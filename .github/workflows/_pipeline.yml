@@ -24,7 +24,6 @@ jobs:
     uses: ./.github/workflows/_task-terraform.yml
     with:
       environment: ${{ inputs.environment }}
-    # Ensure the secret is defined in the referenced workflow or remove this section if not required
     secrets: inherit
   
   initialize:
@@ -34,5 +33,5 @@ jobs:
     uses: ./.github/workflows/_task-initialize.yml
     with:
       environment: ${{ inputs.environment }}
-      tf_output_json: ${{ needs.terraform.outputs.tf_output_json }}
+      tf_output: ${{ needs.terraform.outputs.tf_output }}
     secrets: inherit
