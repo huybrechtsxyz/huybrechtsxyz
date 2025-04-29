@@ -95,6 +95,10 @@ resource "kamatera_server" "worker" {
   ssh_pubkey        = var.ssh_public_key
 
   network {
+    name = "wan"
+  }
+
+  network {
     name = kamatera_network.private-lan.full_name
   }
 }
