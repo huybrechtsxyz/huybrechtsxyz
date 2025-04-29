@@ -88,7 +88,7 @@ resource "kamatera_server" "worker" {
   cpu_cores         = var.worker_cpu
   cpu_type          = "A"
   ram_mb            = var.worker_ram
-  disk_sizes_gb     = [ var.worker_disk_size ]
+  disk_sizes_gb     = [ var.worker_disk_size, var.block_storage_size ]
   billing_cycle     = "hourly"
   power_on          = true
   ssh_pubkey        = var.ssh_public_key

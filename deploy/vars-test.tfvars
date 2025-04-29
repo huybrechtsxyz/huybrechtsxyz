@@ -10,7 +10,7 @@ manager_disk_size = 20
 # Worker configuration
 worker_count     = 1
 worker_cpu       = 1
-worker_ram       = 4048
+worker_ram       = 2048
 worker_disk_size = 20
 
 # MinIO block storage
