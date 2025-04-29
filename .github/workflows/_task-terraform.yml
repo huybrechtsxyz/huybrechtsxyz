@@ -110,7 +110,7 @@ jobs:
           terraform output -json > tf_output.json
           echo "Reading Terraform output..."
           ls -la
-          cat tf_output.json
+          cat -A tf_output.json
 
           # Parse the output
           # Example output
