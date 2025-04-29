@@ -75,6 +75,7 @@ jobs:
 
       # Run Terraform to create docker swarm cluster
       - name: Run Terraform Apply
+        id: terraform
         working-directory: ./deploy
         run: |
           # Set the Terraform environment variables
@@ -107,13 +108,8 @@ jobs:
           terraform apply -auto-approve -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
           terraform output -json > tf_output.json
 
-      # Get the Terraform output
-      - name: Get Terraform output
-        id: get
-        run: |
           # Read the Terraform output and set it as an environment variable
           echo "Reading Terraform output..."
           cat tf_output.json
-          # Set the output variable for GitHub Actions
           TF_OUTPUT=$(cat tf_output.json)
-          echo "TF_OUTPUT=$TF_OUTPUT" >> $GITHUB_OUTPUT
+          echo "TF_OUTPUT=$TF_OUTPUT" >> $GITHUB_OUTPUT         
