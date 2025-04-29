@@ -106,8 +106,10 @@ jobs:
           # Apply the plan file
           echo "Running terraform...APPLY"
           terraform apply -auto-approve -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
+          echo "Running terraform...OUTPUT"
           terraform output -json > tf_output.json
           echo "Reading Terraform output..."
+          ls -la
           cat tf_output.json
 
           # Parse the output
@@ -131,24 +133,25 @@ jobs:
           #     }
           #   ]
           # }
-          echo "Trying tf_output.json"
-          ip=$(jq -r '.manager_public_ips.value[0]' tf_output.json)
-          echo "The IP is $ip"
-          echo "Parsing tf_output.json"
-          managers=$(jq '.manager_public_ips.value' tf_output.json)
-          workers=$(jq '.worker_public_ips.value' tf_output.json)
-          managers_internal=$(jq '.manager_private_ips.value' tf_output.json)
-          workers_internal=$(jq '.worker_private_ips.value' tf_output.json)
-          MATRIX=$(jq -n \
-            --argjson managers "$managers" \
-            --argjson workers "$workers" \
-            --argjson managers_internal "$managers_internal" \
-            --argjson workers_internal "$workers_internal" \
-            '{
-              include: (
-                [$managers, $managers_internal] | transpose | map({role: "manager", ip: .[0], private_ip: .[1]}) +
-                [$workers, $workers_internal] | transpose | map({role: "worker", ip: .[0], private_ip: .[1]})
-              )
-            }')
+          # echo "Trying tf_output.json"
+          # ip=$(jq -r '.manager_public_ips.value[0]' tf_output.json)
+          # echo "The IP is $ip"
+          # echo "Parsing tf_output.json"
+          # managers=$(jq '.manager_public_ips.value' tf_output.json)
+          # workers=$(jq '.worker_public_ips.value' tf_output.json)
+          # managers_internal=$(jq '.manager_private_ips.value' tf_output.json)
+          # workers_internal=$(jq '.worker_private_ips.value' tf_output.json)
+          # MATRIX=$(jq -n \
+          #   --argjson managers "$managers" \
+          #   --argjson workers "$workers" \
+          #   --argjson managers_internal "$managers_internal" \
+          #   --argjson workers_internal "$workers_internal" \
+          #   '{
+          #     include: (
+          #       [$managers, $managers_internal] | transpose | map({role: "manager", ip: .[0], private_ip: .[1]}) +
+          #       [$workers, $workers_internal] | transpose | map({role: "worker", ip: .[0], private_ip: .[1]})
+          #     )
+          #   }')
+          MATRIX="abc"
           echo "tf_output=$MATRIX" >> $GITHUB_OUTPUT
        
