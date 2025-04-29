@@ -132,7 +132,8 @@ jobs:
           #   ]
           # }
           echo "Trying tf_output.json"
-          jq '.manager_public_ips.value' tf_output.json
+          ip=$(jq -r '.manager_public_ips.value[0]' tf_output.json)
+          echo "The IP is $ip"
           echo "Parsing tf_output.json"
           managers=$(jq '.manager_public_ips.value' tf_output.json)
           workers=$(jq '.worker_public_ips.value' tf_output.json)
