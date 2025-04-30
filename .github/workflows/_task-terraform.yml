@@ -109,7 +109,11 @@ jobs:
 
           # Get the output
           echo "Reading Terraform output..."
-          output_data=$(terraform output -json output_data)
+          terraform output -json outputdata
+          terraform output -json outputdata > tfoutput.json
+          cat tfoutput.json
+          
+          output_data=$(terraform output -json outputdata)
           echo "tf_output=$output_data" >> $GITHUB_OUTPUT
 
           # Example output

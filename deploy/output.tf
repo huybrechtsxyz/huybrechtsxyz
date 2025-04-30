@@ -16,7 +16,7 @@ output "worker_private_ips" {
   value = [for s in kamatera_server.worker : s.private_ips[0]]
 }
 
-output "output_data" {
+output "outputdata" {
   value = {
     include = concat(
       [
