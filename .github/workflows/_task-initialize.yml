@@ -57,7 +57,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
       # Configure the server with initialization script
-      - name: Configure ${{ inputs.environment }} Server ${{ matrix.name }}
+      - name: Configure ${{ inputs.environment }} Server ${{ matrix.label }}
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             echo "Initializing server"
@@ -141,26 +141,26 @@ jobs:
                 docker swarm join-token worker -q > /tmp/worker_token.txt
                 echo "[*] Saved manager and worker join tokens."
               else
-                echo "[*] Joining existing Swarm cluster..."
+                echo "[*] Joining existing Swarm cluster on ${{ matrix.manager_ip }}..."
                 
                 # Wait for manager-1 tokens to appear
                 for i in {1..12}; do
-                  if ssh root@manager-1 'test -f /tmp/manager_token.txt' >/dev/null 2>&1; then
+                  if ssh root@${{ matrix.manager_ip }} 'test -f /tmp/manager_token.txt' >/dev/null 2>&1; then
                     break
                   fi
-                  echo "Waiting for tokens on manager-1..."
+                  echo "Waiting for tokens on ${{ matrix.manager_ip }}..."
                   sleep 5
                 done
 
-                MANAGER_JOIN_TOKEN=$(ssh root@manager-1 'cat /tmp/manager_token.txt')
-                WORKER_JOIN_TOKEN=$(ssh root@manager-1 'cat /tmp/worker_token.txt')
+                MANAGER_JOIN_TOKEN=$(ssh root@${{ matrix.manager_ip }} 'cat /tmp/manager_token.txt')
+                WORKER_JOIN_TOKEN=$(ssh root@${{ matrix.manager_ip }} 'cat /tmp/worker_token.txt')
 
                 if [[ "$hostname" == *"manager-"* ]]; then
                   echo "[*] Joining as Manager..."
-                  docker swarm join --token "$MANAGER_JOIN_TOKEN" manager-1:2377 --advertise-addr ${{ matrix.private_ip }}
+                  docker swarm join --token "$MANAGER_JOIN_TOKEN" ${{ matrix.manager_ip }}:2377 --advertise-addr ${{ matrix.private_ip }}
                 else
                   echo "[*] Joining as Worker..."
-                  docker swarm join --token "$WORKER_JOIN_TOKEN" manager-1:2377 --advertise-addr ${{ matrix.private_ip }}
+                  docker swarm join --token "$WORKER_JOIN_TOKEN" ${{ matrix.manager_ip }}:2377 --advertise-addr ${{ matrix.private_ip }}
                 fi
               fi
             }

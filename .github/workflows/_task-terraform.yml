@@ -113,25 +113,3 @@ jobs:
           MATRIX=$(terraform output -json outputdata | jq -c '.')
           echo $MATRIX
           echo "tf_output=$MATRIX" >> "$GITHUB_OUTPUT"
-          
-          # Example output
-          # [
-          #   {
-          #     "role": "manager",
-          #     "name": "manager0",
-          #     "ip": "192.0.2.1",
-          #     "private_ip": "10.0.0.1"
-          #   },
-          #   {
-          #     "role": "worker",
-          #     "name": "worker1",
-          #     "ip": "192.0.2.2",
-          #     "private_ip": "10.0.0.2"
-          #   },
-          #   {
-          #     "role": "worker",
-          #     "name": "worker2",
-          #     "ip": "192.0.2.3",
-          #     "private_ip": "10.0.0.3"
-          #   }
-          # ]
