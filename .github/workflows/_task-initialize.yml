@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     strategy:
-      matrix: ${{ fromJson(inputs.tf_output) }}
+      matrix: ${{ fromJson(inputs.tf_output).include }}
     steps:
       # Set up GitHub Secrets for Test Environment
       - name: Get Test Secrets
@@ -57,7 +57,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
       # Configure the server with initialization script
-      - name: Configure Server
+      - name: Configure Server ${{ matrix.name }}
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             echo "Initializing server"

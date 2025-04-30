@@ -22,6 +22,7 @@ output "outputdata" {
       [
         for i in range(length(kamatera_server.manager)) : {
           role       = "manager"
+          name       = "manager[${i}]"
           ip         = kamatera_server.manager[i].public_ips[0]
           private_ip = kamatera_server.manager[i].private_ips[0]
         }
@@ -29,6 +30,7 @@ output "outputdata" {
       [
         for i in range(length(kamatera_server.worker)) : {
           role       = "worker"
+          name       = "worker[${i}]"
           ip         = kamatera_server.worker[i].public_ips[0]
           private_ip = kamatera_server.worker[i].private_ips[0]
         }
