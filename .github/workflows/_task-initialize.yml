@@ -163,27 +163,41 @@ jobs:
                 echo "[*] Saved manager and worker join tokens."
               else
                 echo "[*] Joining existing Swarm cluster on ${{ matrix.manager_ip }}..."
-                
-                # Wait for manager-1 tokens to appear
+
+                # SSH options for non-interactive CI (skip host key checking)
+                SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10"
+
+                # Wait for manager token to appear (max ~60s)
                 for i in {1..12}; do
-                  if ssh root@${{ matrix.manager_ip }} 'test -f /tmp/manager_token.txt' >/dev/null 2>&1; then
+                  if ssh $SSH_OPTS root@${{ matrix.manager_ip }} 'test -f /tmp/manager_token.txt && test -f /tmp/worker_token.txt'; then
+                    echo "[*] Swarm tokens are available on ${{ matrix.manager_ip }}"
                     break
                   fi
-                  echo "Waiting for tokens on ${{ matrix.manager_ip }}..."
+                  echo "[!] Attempt $i: Waiting for Swarm tokens on ${{ matrix.manager_ip }}..."
                   sleep 5
                 done
 
-                MANAGER_JOIN_TOKEN=$(ssh root@${{ matrix.manager_ip }} 'cat /tmp/manager_token.txt')
-                WORKER_JOIN_TOKEN=$(ssh root@${{ matrix.manager_ip }} 'cat /tmp/worker_token.txt')
+                # Final check before proceeding
+                if ! ssh $SSH_OPTS root@${{ matrix.manager_ip }} 'test -f /tmp/manager_token.txt && test -f /tmp/worker_token.txt'; then
+                  echo "[x] Timed out waiting for Swarm tokens. Exiting."
+                  exit 1
+                fi
 
+                # Retrieve tokens
+                MANAGER_JOIN_TOKEN=$(ssh $SSH_OPTS root@${{ matrix.manager_ip }} 'cat /tmp/manager_token.txt')
+                WORKER_JOIN_TOKEN=$(ssh $SSH_OPTS root@${{ matrix.manager_ip }} 'cat /tmp/worker_token.txt')
+
+                # Decide node role
                 if [[ "$hostname" == *"manager-"* ]]; then
-                  echo "[*] Joining as Manager..."
+                  echo "[*] Joining as Swarm Manager..."
                   docker swarm join --token "$MANAGER_JOIN_TOKEN" ${{ matrix.manager_ip }}:2377 --advertise-addr ${{ matrix.private_ip }}
                 else
-                  echo "[*] Joining as Worker..."
+                  echo "[*] Joining as Swarm Worker..."
                   docker swarm join --token "$WORKER_JOIN_TOKEN" ${{ matrix.manager_ip }}:2377 --advertise-addr ${{ matrix.private_ip }}
                 fi
-                echo "[*] Joined Swarm cluster"
+
+                echo "[*] Successfully joined Swarm cluster"
+
               fi
             }
 
