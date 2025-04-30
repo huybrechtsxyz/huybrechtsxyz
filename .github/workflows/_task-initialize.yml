@@ -26,11 +26,12 @@ jobs:
           echo "[*] Initializing Swarm cluster with..."
           echo '${{ toJson(inputs.tf_output) }}' | jq -c
           echo "[*] Initializing Swarm cluster for..."
-          echo '${{ fromJson(inputs.tf_output) }}'
+          jq . <<< '${{ inputs.tf_output }}'
 
   configure:
     name: Configure Swarm Cluster
     runs-on: ubuntu-latest
+    needs: [ validation ]
     environment: ${{ inputs.environment }}
     strategy:
       matrix: ${{ fromJson(inputs.tf_output) }}
