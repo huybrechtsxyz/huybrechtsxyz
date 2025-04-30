@@ -86,19 +86,28 @@ jobs:
               ufw allow out 53/tcp comment 'DNS'
               ufw allow out 123/udp comment 'NTP'
 
-              # Allow SSH and web traffic
+              # Allow SSH and WEB traffic IN
               ufw allow 22/tcp comment 'SSH'
               ufw allow 80/tcp comment 'HTTP'
               ufw allow 443/tcp comment 'HTTPS'
 
+              # Allow WEB traffic OUT
               ufw allow out 80/tcp comment 'HTTP'
               ufw allow out 443/tcp comment 'HTTPS'
 
-              # Docker Swarm (private VLAN)
-              ufw allow from 10.0.0.0/23 to any port 2377 proto tcp comment 'Docker Swarm Control'
-              ufw allow from 10.0.0.0/23 to any port 7946 proto tcp comment 'Docker Overlay TCP'
-              ufw allow from 10.0.0.0/23 to any port 7946 proto udp comment 'Docker Overlay UDP'
-              ufw allow from 10.0.0.0/23 to any port 4789 proto udp comment 'Docker VXLAN Overlay'
+              # Docker Swarm management traffic (TCP) over VLAN
+              ufw allow proto tcp from 10.0.0.0/23 to any port 2377 comment 'Swarm Control IN'
+              ufw allow out proto tcp to 10.0.0.0/23 port 2377 comment 'Swarm Control OUT'
+
+              # Docker overlay network discovery (TCP + UDP) over VLAN
+              ufw allow proto tcp from 10.0.0.0/23 to any port 7946 comment 'Overlay TCP IN'
+              ufw allow proto udp from 10.0.0.0/23 to any port 7946 comment 'Overlay UDP IN'
+              ufw allow out proto tcp to 10.0.0.0/23 port 7946 comment 'Overlay TCP OUT'
+              ufw allow out proto udp to 10.0.0.0/23 port 7946 comment 'Overlay UDP OUT'
+
+              # Docker VXLAN overlay network (UDP) over VLAN
+              ufw allow proto udp from 10.0.0.0/23 to any port 4789 comment 'VXLAN Overlay IN'
+              ufw allow out proto udp to 10.0.0.0/23 port 4789 comment 'VXLAN Overlay OUT'
 
               # Enable firewall only if not active
               if ! ufw status | grep -q "Status: active"; then
