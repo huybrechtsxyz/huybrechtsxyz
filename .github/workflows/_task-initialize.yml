@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     strategy:
-      matrix: ${{ fromJson(inputs.tf_output).include }}
+      matrix: ${{ fromJson(inputs.tf_output) }}
     steps:
       # Set up GitHub Secrets for Test Environment
       - name: Get Test Secrets
