@@ -196,6 +196,7 @@ jobs:
             main() {
               update_system
               configure_firewall
+              ufw disable
               install_docker_if_needed
               configure_swarm
               enable_docker_service
