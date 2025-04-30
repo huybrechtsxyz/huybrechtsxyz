@@ -110,30 +110,49 @@ jobs:
 
           # Get the output
           echo "Reading Terraform output..."
-          MATRIX=$(terraform output -json outputdata | jq -r -c '.include' | map(split("/")[0]) | unique')
+          MATRIX=$(terraform output -json outputdata | jq -c '.include')
+          echo $MATRIX > tf_output.json
           echo $MATRIX
-          echo "tf_output=$MATRIX" >> $GITHUB_OUTPUT
-
+          
           # Example output
-          # {
-          #   "include": [
-          #     {
-          #       "role": "manager",
-          #       "name": "manager0",
-          #       "ip": "192.0.2.1",
-          #       "private_ip": "10.0.0.1"
-          #     },
-          #     {
-          #       "role": "worker",
-          #       "name": "worker1",
-          #       "ip": "192.0.2.2",
-          #       "private_ip": "10.0.0.2"
-          #     },
-          #     {
-          #       "role": "worker",
-          #       "name": "worker2",
-          #       "ip": "192.0.2.3",
-          #       "private_ip": "10.0.0.3"
-          #     }
-          #   ]
-          # }
+          # [
+          #   {
+          #     "role": "manager",
+          #     "name": "manager0",
+          #     "ip": "192.0.2.1",
+          #     "private_ip": "10.0.0.1"
+          #   },
+          #   {
+          #     "role": "worker",
+          #     "name": "worker1",
+          #     "ip": "192.0.2.2",
+          #     "private_ip": "10.0.0.2"
+          #   },
+          #   {
+          #     "role": "worker",
+          #     "name": "worker2",
+          #     "ip": "192.0.2.3",
+          #     "private_ip": "10.0.0.3"
+          #   }
+          # ]
+
+      - name: Generate Matrix
+        id: matrix
+        run: |
+          python3 <<EOF
+            import json
+
+            # Read the Terraform output file
+            with open('tf_output.json') as f:
+                data = json.load(f)
+
+            # Extract the 'include' field from the output
+            include_matrix = data["include"]["value"]
+
+            # Format it for GitHub Actions matrix
+            matrix_json = json.dumps({"include": include_matrix})
+
+            # Write the formatted matrix to GitHub Actions output
+            with open(os.environ["GITHUB_OUTPUT"], "a") as gh_out:
+                gh_out.write(f"matrix={matrix_json}\n")
+          EOF
