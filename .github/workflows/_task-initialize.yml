@@ -89,8 +89,9 @@ jobs:
               # Allow SSH and web traffic
               ufw allow 22/tcp comment 'SSH'
               ufw allow 80/tcp comment 'HTTP'
-              ufw allow out 80/tcp comment 'HTTP'
               ufw allow 443/tcp comment 'HTTPS'
+
+              ufw allow out 80/tcp comment 'HTTP'
               ufw allow out 443/tcp comment 'HTTPS'
 
               # Docker Swarm (private VLAN)
@@ -128,6 +129,8 @@ jobs:
               #if docker info 2>/dev/null | grep -q "Swarm: active"; then
               if [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" = "active" ]; then
                 echo "[*] Node already part of a Swarm. Skipping initialization/joining."
+                docker swarm join-token manager -q > /tmp/manager_token.txt
+                docker swarm join-token worker -q > /tmp/worker_token.txt
                 return
               fi
 
