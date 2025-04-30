@@ -125,7 +125,8 @@ jobs:
               hostname=$(hostname)
               echo "[*] Configuring Docker Swarm on $hostname..."
 
-              if docker info 2>/dev/null | grep -q "Swarm: active"; then
+              #if docker info 2>/dev/null | grep -q "Swarm: active"; then
+              if [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" = "active" ]; then
                 echo "[*] Node already part of a Swarm. Skipping initialization/joining."
                 return
               fi
