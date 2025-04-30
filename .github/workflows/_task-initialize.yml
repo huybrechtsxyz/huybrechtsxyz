@@ -163,6 +163,7 @@ jobs:
                   echo "[*] Joining as Worker..."
                   docker swarm join --token "$WORKER_JOIN_TOKEN" ${{ matrix.manager_ip }}:2377 --advertise-addr ${{ matrix.private_ip }}
                 fi
+                echo "[*] Joined Swarm cluster"
               fi
             }
 
