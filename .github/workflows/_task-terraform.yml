@@ -110,6 +110,7 @@ jobs:
 
           # Get the output
           echo "Reading Terraform output..."
+          echo $(terraform output -json outputdata)
           MATRIX=$(terraform output -json outputdata | jq -c '.')
           echo $MATRIX
           echo "tf_output=$MATRIX" >> "$GITHUB_OUTPUT"
