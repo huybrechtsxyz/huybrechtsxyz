@@ -57,6 +57,7 @@ jobs:
           ${KAMATERA_PRIVATE_KEY}
           EOF
           chmod 600 ~/.ssh/id_rsa
+          head -n 1 ~/.ssh/id_rsa
           echo -e "Host *\n  StrictHostKeyChecking no\n" > ~/.ssh/config
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_rsa
