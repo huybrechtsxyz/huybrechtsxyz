@@ -72,6 +72,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.7
+          terraform_wrapper: false
 
       # Run Terraform to create docker swarm cluster
       - name: Run Terraform Apply
@@ -110,6 +111,9 @@ jobs:
           # Get the output
           echo "Reading Terraform output..."
           terraform output -json outputdata
+          echo "Reading Terraform output... JQ"
+          terraform output -json outputdata | jq .
+          echo "Reading Terraform output... EOF"
           echo "tf_output<<EOF" >> $GITHUB_OUTPUT
           echo $(terraform output -json outputdata) >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
