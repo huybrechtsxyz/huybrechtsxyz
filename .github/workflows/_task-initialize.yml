@@ -53,7 +53,9 @@ jobs:
       - name: Set up SSH connection
         run: |
           mkdir -p ~/.ssh
-          echo $KAMATERA_PRIVATE_KEY > ~/.ssh/id_rsa
+          cat <<EOF > ~/.ssh/id_rsa
+          ${KAMATERA_PRIVATE_KEY}
+          EOF
           chmod 600 ~/.ssh/id_rsa
           echo -e "Host *\n  StrictHostKeyChecking no\n" > ~/.ssh/config
           eval "$(ssh-agent -s)"
