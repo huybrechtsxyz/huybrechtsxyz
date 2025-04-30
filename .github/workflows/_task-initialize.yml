@@ -15,6 +15,17 @@ on:
         required: true
 
 jobs:
+  validation:
+    name: Validate Terraform Output
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      # Configure the server with initialization script
+      - name: Echo Output
+        run: |
+          echo "[*] Initializing Swarm cluster with..."
+          echo ${{ inputs.tf_output }}
+
   configure:
     name: Configure Swarm Cluster
     runs-on: ubuntu-latest

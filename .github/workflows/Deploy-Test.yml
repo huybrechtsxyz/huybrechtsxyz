@@ -12,7 +12,7 @@ on:
 
 jobs:
   deploy_pipeline:
-    name: Deploy Pipeline
+    name: Test Pipeline
     uses: ./.github/workflows/_pipeline.yml
     with:
       environment: test
