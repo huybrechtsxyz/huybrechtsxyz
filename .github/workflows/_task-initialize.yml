@@ -24,7 +24,9 @@ jobs:
       - name: Echo Output
         run: |
           echo "[*] Initializing Swarm cluster with..."
-          echo '${{ toJson(inputs.tf_output) }}'
+          echo '${{ toJson(inputs.tf_output) }}' | jq -c
+          echo "[*] Initializing Swarm cluster for..."
+          echo '${{ fromJson(inputs.tf_output) }}'
 
   configure:
     name: Configure Swarm Cluster
