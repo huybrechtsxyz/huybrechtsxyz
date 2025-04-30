@@ -15,3 +15,24 @@ output "worker_public_ips" {
 output "worker_private_ips" {
   value = [for s in kamatera_server.worker : s.private_ips[0]]
 }
+
+output "output_data" {
+  value = {
+    include = concat(
+      [
+        for i in range(length(kamatera_server.manager)) : {
+          role       = "manager"
+          ip         = kamatera_server.manager[i].public_ips[0]
+          private_ip = kamatera_server.manager[i].private_ips[0]
+        }
+      ],
+      [
+        for i in range(length(kamatera_server.worker)) : {
+          role       = "worker"
+          ip         = kamatera_server.worker[i].public_ips[0]
+          private_ip = kamatera_server.worker[i].private_ips[0]
+        }
+      ]
+    )
+  }
+}
