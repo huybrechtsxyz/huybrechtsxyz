@@ -64,14 +64,16 @@ jobs:
             set -euo pipefail
             cd /
 
-            # On the worker node, set up SSH so it can reach the manager
-            ssh root@${{ matrix.worker_ip }} << 'EOF'
+            install_private_key() {
+              echo "[*] Installing private key..."
               mkdir -p ~/.ssh
-              echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
+              cat <<EOK > ~/.ssh/id_rsa
+                ${KAMATERA_PRIVATE_KEY}
+              EOK
               chmod 600 ~/.ssh/id_rsa
               echo -e "Host *\n  StrictHostKeyChecking no\n" > ~/.ssh/config
-            EOF
-
+            }
+            
             update_system() {
               echo "[*] Updating system packages..."
               apt-get update -y
@@ -217,7 +219,7 @@ jobs:
             main() {
               update_system
               configure_firewall
-              ufw disable
+              install_private_key
               install_docker_if_needed
               configure_swarm
               enable_docker_service
