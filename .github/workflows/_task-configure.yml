@@ -30,7 +30,7 @@ jobs:
       - name: Check if tf_output.json exists
         run: |
           if [ ! -f ./tmp/tf_output.json ]; then
-            echo "❌ Artifact terraform-${{ inputs.environment }}-output not found or tf_output.json missing. Exiting."
+            echo "Artifact terraform-${{ inputs.environment }}-output not found or tf_output.json missing. Exiting."
             exit 1
           fi
 
@@ -38,7 +38,7 @@ jobs:
       - name: Parse Swarm Servers
         id: parse
         run: |
-          matrix=$(jq -c '[.include[] | select(.role == "manager") | {ip, name, role}]' ./tmp/tf_output.json)
+          matrix=$(jq -c '.include' ./tmp/tf_output.json)
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
   configure:
@@ -49,6 +49,91 @@ jobs:
       matrix:
         include: ${{ fromJson(needs.download.outputs.matrix) }}
     steps:
-      - name: Deploy to server
+      # Check out the repo
+      - name: Check Out
+        uses: actions/checkout@v4
+
+      # Configure the server for the app
+      - name: Configure Server
         run: |
-          echo "Deploying to IP: ${{ matrix.ip }}, Name: ${{ matrix.label }}"
+          echo "Configuring IP: ${{ matrix.ip }}, Name: ${{ matrix.label }}"
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+            function createpath() {
+              local newpath="$1"
+              if [ ! -d "$newpath" ]; then
+                  mkdir -p "$newpath"
+                  if [ $? -ne 0 ]; then
+                  echo "Error: Failed to create directory '$newpath'"
+                  return 1  # Return non-zero status to indicate failure
+                  fi
+                  #chmod 777 "$newpath"
+                  sudo chmod -R 777 "$newpath"
+              fi
+              return 0  # Return zero status to indicate success
+            }
+
+            # Function to check if a Docker secret is in use
+            function issecretinuse() {
+              local secret_name="$1"
+              # Check if any services are using the secret
+              if docker service ls --format '{{.Name}}' | xargs -I {} docker service inspect {} --format '{{range .Spec.TaskTemplate.ContainerSpec.Secrets}}{{if eq .SecretName "'"$secret_name"'"}}{{.SecretName}}{{end}}{{end}}' | grep -q "$secret_name"; then
+                  return 0
+              fi
+              # Check if any containers are using the secret
+              if docker ps --format '{{.Names}}' | xargs -I {} docker inspect {} --format '{{range .Mounts}}{{if eq .Type "secret"}}{{.Name}}{{end}}{{end}}' | grep -q "$secret_name"; then
+                  return 0
+              fi
+              return 1
+            }
+
+            # Function to create or update a Docker secret
+            function createsecret() {
+              local secret_label="$1"
+              local secret_name="$2"
+              local secret_value="$3"
+              echo "Inspecting $secret_label"
+              # Check if the secret already exists
+              if docker secret inspect "$secret_name" &> /dev/null; then
+                  echo "$secret_label - Secret already exists"
+                  # Check if the secret is in use
+                  echo "Checking if $secret_label is in use"
+                  if issecretinuse "$secret_name"; then
+                  echo "$secret_label is in use by services or containers. Skipping deletion."
+                  return 0
+                  fi
+                  # Remove the old secret
+                  echo "Removing old $secret_label"
+                  docker secret rm "$secret_name"
+              fi
+              # Check if secret_name is not empty and create a new secret
+              if [ -n "$secret_name" ]; then
+                  echo "Creating new $secret_label"
+                  echo "$secret_value" | docker secret create "$secret_name" -
+              else
+                  echo "$secret_label - Not defined"
+              fi
+            }
+            
+            main() {
+              #Create the PUBLIC network on docker
+              if [[ "${{ matrix.label }}" != "manager_1" ]]; then
+                echo "Creating PUBLIC network on docker"
+                docker network inspect public --format {{.Id}} 2>/dev/null \
+                || docker network create --driver overlay public
+              fi
+
+              cd /
+              createpath "/app"
+            }
+
+            main
+          EOF
+
+      # Copy the generic files to the server
+      - name: Copy Generic Files
+        run: |
+          main() {
+            if [[ "${{ matrix.role }}" != "manager" ]]; then
+              scp -o StrictHostKeyChecking=no /src/* root@${{ matrix.ip }}:/app/
+            fi
+          }

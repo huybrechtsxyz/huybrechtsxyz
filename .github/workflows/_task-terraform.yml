@@ -24,7 +24,7 @@ jobs:
       tf_output: ${{ steps.tfapply.outputs.tf_output }}
     steps:
       # Check out the repo
-      - name: Check out the repo
+      - name: Check Out
         uses: actions/checkout@v4
 
       # Set up GitHub Secrets
