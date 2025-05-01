@@ -15,8 +15,8 @@ on:
         required: true
 
 jobs:
-  configure:
-    name: Configure Swarm Cluster
+  initialize:
+    name: Initialize Swarm Cluster
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     strategy:
