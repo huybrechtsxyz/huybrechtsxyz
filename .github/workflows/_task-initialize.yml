@@ -59,8 +59,7 @@ jobs:
       # Step: Copy the key securely to the remote server using scp
       - name: Upload Private Key to Remote Server
         run: |
-          scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa root@${{ matrix.ip }}:/root/.ssh/id_rsa_temp
-
+          scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa root@${{ matrix.ip }}:/root/.ssh/id_rsa_temp || { echo "[x] Failed to transfer private key to remote server"; exit 1; }
 
       # Configure the server with initialization script
       - name: Configure ${{ inputs.environment }} Server ${{ matrix.label }}
