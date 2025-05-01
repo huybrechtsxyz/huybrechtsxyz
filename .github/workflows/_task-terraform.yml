@@ -121,4 +121,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: terraform-${{ inputs.environment }}-output
-          path: tf_output.json
+          path: ./deploy/tf_output.json
+          if-no-files-found: error
