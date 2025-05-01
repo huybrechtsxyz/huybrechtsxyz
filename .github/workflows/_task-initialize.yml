@@ -59,7 +59,7 @@ jobs:
       # Configure the server with initialization script
       - name: Configure ${{ inputs.environment }} Server ${{ matrix.label }}
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} KAMATERA_PRIVATE_KEY="${KAMATERA_PRIVATE_KEY}" 'bash -s' << 'EOF'
             echo "Initializing server"
             set -euo pipefail
             cd /
