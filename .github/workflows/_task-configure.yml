@@ -25,6 +25,14 @@ jobs:
         with:
           name: terraform-${{ inputs.environment }}-output
           path: ./tmp
+      
+      # Check if the artifact exists
+      - name: Check if tf_output.json exists
+        run: |
+          if [ ! -f ./tmp/tf_output.json ]; then
+            echo "❌ Artifact terraform-${{ inputs.environment }}-output not found or tf_output.json missing. Exiting."
+            exit 1
+          fi
 
       # Parse Terraform Output to find Swarm Servers
       - name: Parse Swarm Servers
@@ -35,6 +43,7 @@ jobs:
 
   configure:
     name: Configure Swarm Managers
+    needs: [ download ]
     runs-on: ubuntu-latest
     strategy:
       matrix:
