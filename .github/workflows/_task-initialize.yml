@@ -56,18 +56,24 @@ jobs:
           echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
+      # Step: Copy the key securely to the remote server using scp
+      - name: Upload Private Key to Remote Server
+        run: |
+          scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa root@${{ matrix.ip }}:/root/.ssh/id_rsa_temp
+
+
       # Configure the server with initialization script
       - name: Configure ${{ inputs.environment }} Server ${{ matrix.label }}
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} KAMATERA_PRIVATE_KEY="${KAMATERA_PRIVATE_KEY}" 'bash -s' << 'EOF'
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             echo "Initializing server"
             set -euo pipefail
             cd /
 
             install_private_key() {
-              echo "[*] Installing private key..."
+              echo "[*] Installing uploaded private key..."
               mkdir -p ~/.ssh
-              echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
+              mv /root/.ssh/id_rsa_temp ~/.ssh/id_rsa
               chmod 600 ~/.ssh/id_rsa
               echo -e "Host *\n  StrictHostKeyChecking no\n" > ~/.ssh/config
             }
