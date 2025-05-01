@@ -1,0 +1,76 @@
+# ---------------------
+# ENVIRONMENT VARIABLES
+# ---------------------
+
+# -------
+# SECRETS
+# -------
+
+services:
+
+  traefik:
+    image: "traefik:v3.3.6"
+    command: traefik --configFile=/etc/traefik/treafik.yml
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APP_PATH}/traefik/conf/traefik.${ENVIRONMENT}.yml:/etc/traefik/traefik.yml
+      - ${APP_PATH}/traefik/data:/app/data
+      - ${APP_PATH}/traefik/logs:/app/logs
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+      labels:
+        # Enable Traefik
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        # Redirection Middleware
+        - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+        # Basic Auth Middleware
+        - traefik.http.middlewares.basic-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU.
+        # Traefik dashboard
+        - traefik.http.services.traefik.loadbalancer.server.scheme=http
+        - traefik.http.services.traefik.loadbalancer.server.port=8080
+        - traefik.http.routers.traefik.rule=Host(`proxy.${DOMAIN_DEV}`)
+        - traefik.http.routers.traefik.service=api@internal
+        - traefik.http.routers.traefik.entrypoints=websecure
+        - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.traefik.middlewares=basic-auth
+
+networks:
+  public:
+    external: true
+
+#secrets:
