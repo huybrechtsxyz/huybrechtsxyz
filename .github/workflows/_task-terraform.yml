@@ -111,6 +111,14 @@ jobs:
           # Get the output
           echo "Reading Terraform output..."
           echo $(terraform output -json outputdata)
+          terraform output -json outputdata | jq -c '.' > tf_output.json
           MATRIX=$(terraform output -json outputdata | jq -c '.')
           echo $MATRIX
           echo "tf_output=$MATRIX" >> "$GITHUB_OUTPUT"
+
+      # Upload the Terraform output as an artifact
+      - name: Upload Terraform Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-${{ inputs.environment }}-output
+          path: tf_output.json
