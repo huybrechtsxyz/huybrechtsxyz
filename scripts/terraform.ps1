@@ -34,11 +34,6 @@ Remove-Item -Path "$APPPATH/.app/deploy/main.template.tf" -Force
 ./.app/terraform.exe `
     -chdir="$APPPATH/.app/deploy" `
     init
-    
-# Initialize Terraform (if not already initialized)
-# ./.app/terraform.exe `
-#     -chdir="$APPPATH/.app/deploy" `
-#     workspace select huybrechts-xyz-$Env:ENVIRONMENT
 
 # Initialize Terraform (if not already initialized)
 ./.app/terraform.exe `
