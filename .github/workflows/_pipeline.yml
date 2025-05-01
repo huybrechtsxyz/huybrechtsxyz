@@ -26,7 +26,7 @@ jobs:
       environment: ${{ inputs.environment }}
     secrets: inherit
   
-  initialize:
+  initialization:
     name: Initialize Swarm Cluster
     needs: [terraform]
     if: inputs.initialize == 'true'
@@ -36,10 +36,9 @@ jobs:
       tf_output: ${{ needs.terraform.outputs.tf_output }}
     secrets: inherit
 
-  configure:
+  configuration:
     name: Configure Swarm Cluster
-    needs: [initialize]
-    if: ${{ inputs.initialize != 'true' || needs.initialize.result == 'success' }}
+    if: inputs.initialize != 'true' || needs.initialization.result == 'success'
     uses: ./.github/workflows/_task-configure.yml
     with:
       environment: ${{ inputs.environment }}
