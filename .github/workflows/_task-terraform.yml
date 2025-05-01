@@ -72,6 +72,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.7
+          terraform_wrapper: false
 
       # Run Terraform to create docker swarm cluster
       - name: Run Terraform Apply
@@ -109,34 +110,7 @@ jobs:
 
           # Get the output
           echo "Reading Terraform output..."
-          terraform output -json outputdata
-
-          echo "Reading Terraform output...save to file and show"
-          terraform output -json outputdata > tfoutput.json
-          cat tfoutput.json
-          
-          echo "Reading Terraform output...save var"
-          outputdata=$(terraform output -json outputdata | jq -c .value)
-          echo $outputdata
-          echo "tf_output=$outputdata" >> $GITHUB_OUTPUT
-
-          # Example output
-          # {
-          #   "include": [
-          #     {
-          #       "role": "manager",
-          #       "ip": "192.0.2.1",
-          #       "private_ip": "10.0.0.1"
-          #     },
-          #     {
-          #       "role": "worker",
-          #       "ip": "192.0.2.2",
-          #       "private_ip": "10.0.0.2"
-          #     },
-          #     {
-          #       "role": "worker",
-          #       "ip": "192.0.2.3",
-          #       "private_ip": "10.0.0.3"
-          #     }
-          #   ]
-          # }
+          echo $(terraform output -json outputdata)
+          MATRIX=$(terraform output -json outputdata | jq -c '.')
+          echo $MATRIX
+          echo "tf_output=$MATRIX" >> "$GITHUB_OUTPUT"
