@@ -67,9 +67,7 @@ jobs:
             install_private_key() {
               echo "[*] Installing private key..."
               mkdir -p ~/.ssh
-              cat <<EOK > ~/.ssh/id_rsa
-                ${KAMATERA_PRIVATE_KEY}
-              EOK
+              echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
               chmod 600 ~/.ssh/id_rsa
               echo -e "Host *\n  StrictHostKeyChecking no\n" > ~/.ssh/config
             }
