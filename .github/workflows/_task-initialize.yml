@@ -53,14 +53,8 @@ jobs:
       - name: Set up SSH connection
         run: |
           mkdir -p ~/.ssh
-          cat <<EOF > ~/.ssh/id_rsa
-          ${KAMATERA_PRIVATE_KEY}
-          EOF
+          echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          head -n 1 ~/.ssh/id_rsa
-          echo -e "Host *\n  StrictHostKeyChecking no\n" > ~/.ssh/config
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_rsa
 
       # Configure the server with initialization script
       - name: Configure ${{ inputs.environment }} Server ${{ matrix.label }}
@@ -68,8 +62,15 @@ jobs:
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             echo "Initializing server"
             set -euo pipefail
-
             cd /
+
+            # On the worker node, set up SSH so it can reach the manager
+            ssh root@${{ matrix.worker_ip }} << 'EOF'
+              mkdir -p ~/.ssh
+              echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
+              chmod 600 ~/.ssh/id_rsa
+              echo -e "Host *\n  StrictHostKeyChecking no\n" > ~/.ssh/config
+            EOF
 
             update_system() {
               echo "[*] Updating system packages..."
