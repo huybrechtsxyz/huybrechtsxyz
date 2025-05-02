@@ -49,7 +49,7 @@ jobs:
           secrets: |
             02ed2dea7-b72e-401b-ae7e-b2c9015cd76e > KAMATERA_PRIVATE_KEY
 
-      # Set up GitHub Secrets for Environments (trick to set the environment variables)
+      # Set up GitHub Secrets for Environment
       - name: Set up SSH connection
         run: |
           mkdir -p ~/.ssh
@@ -65,7 +65,7 @@ jobs:
       - name: Configure ${{ inputs.environment }} Server ${{ matrix.label }}
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            echo "Initializing server"
+            echo "[*] Initializing server..."
             set -euo pipefail
             cd /
 
