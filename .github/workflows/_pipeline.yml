@@ -38,7 +38,7 @@ jobs:
 
   configuration:
     name: Configure Swarm Cluster
-    if: inputs.initialize != 'true' || needs.initialization.result == 'success' || needs.initialization.result == 'skipped'
+    if: needs.initialization.result == 'success' || needs.initialization.result == 'skipped'
     uses: ./.github/workflows/_task-configure.yml
     with:
       environment: ${{ inputs.environment }}
