@@ -144,6 +144,8 @@ jobs:
           # Copy /src to /app
           echo "[*] Copying source to remote server..."
           find ./src -maxdepth 1 -type f -exec scp -o StrictHostKeyChecking=no {} root@${{ matrix.ip }}:/app/ \;
+          scp -o StrictHostKeyChecking=no ./scripts/startenv.sh root@${{ matrix.ip }}:/app/startenv.sh
+          scp -o StrictHostKeyChecking=no ./scripts/stopenv.sh root@${{ matrix.ip }}:/app/stopenv.sh
 
           # TRAEFIK
           echo "[*] Deploying TRAEFIK to remote server..."
