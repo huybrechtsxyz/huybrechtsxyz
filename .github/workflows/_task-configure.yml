@@ -42,7 +42,7 @@ jobs:
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
   configure:
-    name: Configure Swarm Managers
+    name: Configure Swarm Servers
     needs: [ download ]
     runs-on: ubuntu-latest
     strategy:
@@ -58,6 +58,7 @@ jobs:
         run: |
           echo "Configuring IP: ${{ matrix.ip }}, Name: ${{ matrix.label }}"
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+            # Function to create a path if it does not already exist
             function createpath() {
               local newpath="$1"
               if [ ! -d "$newpath" ]; then
@@ -71,59 +72,19 @@ jobs:
               fi
               return 0  # Return zero status to indicate success
             }
-
-            # Function to check if a Docker secret is in use
-            function issecretinuse() {
-              local secret_name="$1"
-              # Check if any services are using the secret
-              if docker service ls --format '{{.Name}}' | xargs -I {} docker service inspect {} --format '{{range .Spec.TaskTemplate.ContainerSpec.Secrets}}{{if eq .SecretName "'"$secret_name"'"}}{{.SecretName}}{{end}}{{end}}' | grep -q "$secret_name"; then
-                  return 0
-              fi
-              # Check if any containers are using the secret
-              if docker ps --format '{{.Names}}' | xargs -I {} docker inspect {} --format '{{range .Mounts}}{{if eq .Type "secret"}}{{.Name}}{{end}}{{end}}' | grep -q "$secret_name"; then
-                  return 0
-              fi
-              return 1
-            }
-
-            # Function to create or update a Docker secret
-            function createsecret() {
-              local secret_label="$1"
-              local secret_name="$2"
-              local secret_value="$3"
-              echo "Inspecting $secret_label"
-              # Check if the secret already exists
-              if docker secret inspect "$secret_name" &> /dev/null; then
-                  echo "$secret_label - Secret already exists"
-                  # Check if the secret is in use
-                  echo "Checking if $secret_label is in use"
-                  if issecretinuse "$secret_name"; then
-                  echo "$secret_label is in use by services or containers. Skipping deletion."
-                  return 0
-                  fi
-                  # Remove the old secret
-                  echo "Removing old $secret_label"
-                  docker secret rm "$secret_name"
-              fi
-              # Check if secret_name is not empty and create a new secret
-              if [ -n "$secret_name" ]; then
-                  echo "Creating new $secret_label"
-                  echo "$secret_value" | docker secret create "$secret_name" -
-              else
-                  echo "$secret_label - Not defined"
-              fi
-            }
             
             main() {
-              #Create the PUBLIC network on docker
-              if [[ "${{ matrix.label }}" != "manager_1" ]]; then
-                echo "Creating PUBLIC network on docker"
-                docker network inspect public --format {{.Id}} 2>/dev/null \
-                || docker network create --driver overlay public
-              fi
-
+              # Start of scripts
+              echo Updating server
+              echo Creating application directories
               cd /
               createpath "/app"
+
+              # Traefik
+              createpath "/app/traefik"
+              createpath "/app/traefik/conf"
+              createpath "/app/traefik/data"
+              createpath "/app/traefik/logs"
             }
 
             main
@@ -133,7 +94,23 @@ jobs:
       - name: Copy Generic Files
         run: |
           main() {
-            if [[ "${{ matrix.role }}" != "manager" ]]; then
-              scp -o StrictHostKeyChecking=no /src/* root@${{ matrix.ip }}:/app/
-            fi
+            scp -o StrictHostKeyChecking=no /src/* root@${{ matrix.ip }}:/app/
           }
+
+          main
+
+      #
+      - name: Copy Traefik Files
+        run: |
+          main() {
+            scp -o StrictHostKeyChecking=no /src/traefik/* root@${{ matrix.ip }}:/app/traefik/conf
+
+            # Generate main.tf from template
+            cd /app/traefik/conf
+            echo "Generating config from template"
+            envsubst < traefik-config.template.yml > traefik-config.yml
+            rm -f traefik-config.template.yml
+            cat traefik-config.yml
+          }
+
+          main

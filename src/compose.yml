@@ -1,16 +1,17 @@
-# ---------------------
-# ENVIRONMENT VARIABLES
-# ---------------------
-
-# -------
-# SECRETS
-# -------
+secrets:
+  VERSIO_USERNAME:
+    external: true
+  VERSIO_PASSWORD:
+    external: true
 
 services:
 
   traefik:
     image: "traefik:v3.3.6"
-    command: traefik --configFile=/etc/traefik/treafik.yml
+    command: traefik --configFile=/etc/traefik/treafik-config.yml
+    secrets:
+      - VERSIO_USERNAME
+      - VERSIO_PASSWORD
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APP_PATH}/traefik/conf/traefik.${ENVIRONMENT}.yml:/etc/traefik/traefik.yml
@@ -20,7 +21,8 @@ services:
       - 80:80
       - 443:443
     networks:
-      - public
+      - wan
+      - lan
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
       interval: 15s
@@ -67,10 +69,10 @@ services:
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_RESOLVER}
-        - traefik.http.routers.traefik.middlewares=basic-auth
+        - traefik.http.routers.traefik.middlewares=${TRAEFIK_MIDDLEWARES}
 
 networks:
-  public:
+  wan:
     external: true
-
-#secrets:
+  lan:
+    external: true
