@@ -185,7 +185,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: terraform-output-${{ inputs.environment }}
-          path: /tmp/tf_output.json
+          path: /tmp
       
       # Check if the artifact exists
       - name: Check if tf_output.json exists
