@@ -35,10 +35,17 @@ jobs:
       tf_output: ${{ needs.terraform.outputs.tf_output }}
     secrets: inherit
 
+  initskip:
+    name: Skip Initialization
+    if: inputs.initialize == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip Initialization
+        run: echo "Skipping initialization as per input."
+
   configuration:
     name: Configure Swarm Cluster
-    needs: [initialization]
-    if: inputs.initialize == 'false' || needs.initialization.result == 'success'
+    needs: [initialization, initskip]
     uses: ./.github/workflows/_task-configure.yml
     with:
       environment: ${{ inputs.environment }}
