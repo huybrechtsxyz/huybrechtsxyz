@@ -27,6 +27,13 @@ jobs:
       - name: Check Out
         uses: actions/checkout@v4
 
+      - name: Restore Terraform output from cache
+        id: restore-cache
+        uses: actions/cache@v4
+        with:
+          path: tf_output.json
+          key: terraform-output-${{ inputs.environment }}
+
       # Set up GitHub Secrets
       - name: Get Environment Secrets
         uses: bitwarden/sm-action@v2
@@ -120,6 +127,13 @@ jobs:
       - name: Upload Terraform Output
         uses: actions/upload-artifact@v4
         with:
-          name: terraform-${{ inputs.environment }}-output
+          name: terraform-output-${{ inputs.environment }}
           path: ./deploy/tf_output.json
           if-no-files-found: error
+
+      # Upload the Terraform output as a job output
+      - name: Cache Terraform Output
+        uses: actions/cache@v4
+        with:
+          path: ./deploy/tf_output.json
+          key: terraform-output-${{ inputs.environment }}

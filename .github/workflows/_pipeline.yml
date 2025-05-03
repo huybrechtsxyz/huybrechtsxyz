@@ -18,37 +18,569 @@ on:
         required: true
 
 jobs:
-  terraform:
-    name: Terraform Swarm Cluster
-    if: inputs.initialize == 'true'
-    uses: ./.github/workflows/_task-terraform.yml
-    with:
-      environment: ${{ inputs.environment }}
-    secrets: inherit
-  
-  initialization:
-    name: Initialize Swarm Cluster
-    if: inputs.initialize == 'true'
-    needs: [terraform]
-    uses: ./.github/workflows/_task-initialize.yml
-    with:
-      environment: ${{ inputs.environment }}
-      tf_output: ${{ needs.terraform.outputs.tf_output }}
-    secrets: inherit
-
-  initskip:
-    name: Skip Initialization
+  # Restore the Terraform cache and upload the output as an artifact
+  restore:
+    name: Restore Cache
     if: inputs.initialize == 'false'
     runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.restore-cache.outputs.cache-hit }}
     steps:
-      - name: Skip Initialization
-        run: echo "Skipping initialization as per input."
+      # Restore Terraform Cache
+      - name: Restore Terraform Cache
+        id: restore-cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/tf_output.json
+          key: terraform-output-${{ inputs.environment }}
+      
+      # Update Terraform Cache as Artifact
+      - name: Upload Terraform Artifact
+        if: steps.restore-cache.outputs.cache-hit == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-output-${{ inputs.environment }}
+          path: /tmp/tf_output.json
+
+  # Terraform Plan and Apply
+  # This job will run if the cache is not hit or if the initialize input is set to true
+  # Stores the output in a JSON file and uploads it as an artifact and caches it for future runs
+  terraform:
+    name: Terraform Plan and Apply
+    needs: [restore]
+    if: inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true'
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      # Check out the repo
+      - name: Check Out
+        uses: actions/checkout@v4
+
+      # Restore Terraform Cache
+      - name: Restore Terraform Cache
+        id: restore-cache
+        uses: actions/cache@v4
+        with:
+          path: tf_output.json
+          key: terraform-output-${{ inputs.environment }}
+
+      # Set up GitHub Secrets
+      - name: Get Environment Secrets
+        uses: bitwarden/sm-action@v2
+        with:
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            d47e736b-2db8-47d5-b46b-b2c8016ece73 > TERRAFORM_API_TOKEN
+            357068b9-9f5f-4f79-940c-b2c8016cb88f > KAMATERA_API_KEY
+            6c9295a8-9fa4-4d38-8929-b2c8016d9b43 > KAMATERA_API_SECRET
+
+      # Set up GitHub Secrets for Test Environment
+      - name: Get Test Secrets
+        if: ${{ inputs.environment == 'test' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            6cc5b975-56a9-4d7a-80c7-b2c90151cce0 > KAMATERA_PUBLIC_KEY
+            5083ae32-429d-428b-b7df-b2c901441bbb > APP_ROOT_PASSWORD
+
+      # Set up GitHub Secrets for Staging Environment
+      - name: Get Staging Secrets
+        if: ${{ inputs.environment == 'staging' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            4dc11520-0305-47fd-bd2a-b2c901526d65 > KAMATERA_PUBLIC_KEY
+            924b9526-a6cf-43c1-93a9-b2c9014494ae > APP_ROOT_PASSWORD
+
+      # Set up GitHub Secrets for Production Environment
+      - name: Get Production Secrets
+        if: ${{ inputs.environment == 'production' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            ee623c15-a017-44c5-91e0-b2c9015298a9 > KAMATERA_PUBLIC_KEY
+            6db5856c-3f7f-4b62-9846-b2c90144cb0b > APP_ROOT_PASSWORD
+
+      # Set up the Terraform CLI
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
+          terraform_wrapper: false
+
+      # Run Terraform to create docker swarm cluster
+      - name: Run Terraform Apply
+        id: tfapply
+        working-directory: ./deploy
+        run: |
+          # Set the Terraform environment variables
+          export TF_TOKEN_app_terraform_io=$TERRAFORM_API_TOKEN
+          export TF_VAR_api_key=$KAMATERA_API_KEY
+          export TF_VAR_api_secret=$KAMATERA_API_SECRET
+          export TF_VAR_ssh_public_key=$KAMATERA_PUBLIC_KEY
+          export TF_VAR_password=$APP_ROOT_PASSWORD
+          export TF_VAR_environment=${{ inputs.environment }}
+          export TF_LOG=DEBUG
+          export ENVIRONMENT=${{ inputs.environment }}
+
+          # Generate main.tf from template
+          echo "Generating main.tf from template"
+          envsubst < main.template.tf > main.tf
+          rm -f main.template.tf
+          cat main.tf
+
+          # Initialize Terraform
+          echo "Running terraform...INIT"
+          terraform init
+
+          # Create the plan file
+          # Terraform Cloud does not support saving the generated execution plan locally at this time.
+          echo "Running terraform...PLAN"
+          terraform plan -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
+
+          # Apply the plan file
+          echo "Running terraform...APPLY"
+          terraform apply -auto-approve -var-file="vars-${{ inputs.environment }}.tfvars" -input=false
+
+          # Get the output
+          echo "Reading Terraform output..."
+          echo $(terraform output -json outputdata)
+          terraform output -json outputdata | jq -c '.' > tf_output.json
+          # MATRIX=$(terraform output -json outputdata | jq -c '.')
+          # echo $MATRIX
+          # echo "tf_output=$MATRIX" >> "$GITHUB_OUTPUT"
+
+      # Upload the Terraform output as an artifact
+      - name: Upload Terraform Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-output-${{ inputs.environment }}
+          path: ./deploy/tf_output.json
+          if-no-files-found: error
+
+      # Upload the Terraform output as a job output
+      - name: Cache Terraform Output
+        uses: actions/cache@v4
+        with:
+          path: ./deploy/tf_output.json
+          key: terraform-output-${{ inputs.environment }}
+  
+  # Download the Terraform output artifact and parse it to find Swarm servers
+  # This job will run if the cache is not hit or if the initialize input is set to true
+  # Parses the output to find Swarm servers and sets them as a matrix for the next jobs
+  download:
+    name: Download Terraform Output
+    needs: [restore, terraform]
+    if: always()
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    outputs:
+      matrix: ${{ steps.parse.outputs.matrix }}
+    steps:
+      # Download Terraform Output
+      - name: Download Terraform Output
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-output-${{ inputs.environment }}
+          path: /tmp/tf_output.json
+      
+      # Check if the artifact exists
+      - name: Check if tf_output.json exists
+        run: |
+          if [ ! -f /tmp/tf_output.json ]; then
+            echo "Artifact terraform-${{ inputs.environment }}-output not found or tf_output.json missing. Exiting."
+            exit 1
+          fi
+
+      # Parse Terraform Output to find Swarm Servers
+      - name: Parse Swarm Servers
+        id: parse
+        run: |
+          matrix=$(jq -c '.include' /tmp/tf_output.json)
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+
+  initialization:
+    name: Initialize Swarm Cluster
+    needs: [restore, download]
+    if: inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true'
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    strategy:
+      matrix: ${{ fromJson(needs.download.outputs.matrix) }}
+    steps:
+      # Set up GitHub Secrets for Test Environment
+      - name: Get Test Secrets
+        if: ${{ inputs.environment == 'test' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            f16fffe2-77b7-4d20-bf6c-b2c9015c71d3 > KAMATERA_PRIVATE_KEY
+
+      # Set up GitHub Secrets for Staging Environment
+      - name: Get Staging Secrets
+        if: ${{ inputs.environment == 'staging' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            0c1f1f1c-456b-47d5-aad4-b2c9015ca6dc > KAMATERA_PRIVATE_KEY
+
+      # Set up GitHub Secrets for Production Environment
+      - name: Get Production Secrets
+        if: ${{ inputs.environment == 'production' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            02ed2dea7-b72e-401b-ae7e-b2c9015cd76e > KAMATERA_PRIVATE_KEY
+
+      # Set up GitHub Secrets for Environment
+      - name: Set up SSH connection
+        run: |
+          mkdir -p ~/.ssh
+          echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      # Step: Copy the key securely to the remote server using scp
+      - name: Upload Private Key to Remote Server
+        run: |
+          scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa root@${{ matrix.ip }}:/root/.ssh/id_rsa_temp || { echo "[x] Failed to transfer private key to remote server"; exit 1; }
+
+      # Configure the server with initialization script
+      - name: Configure ${{ inputs.environment }} Server ${{ matrix.label }}
+        run: |
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+            echo "[*] Initializing server..."
+            set -euo pipefail
+            cd /
+
+            install_private_key() {
+              echo "[*] Installing uploaded private key..."
+              mkdir -p ~/.ssh
+              mv /root/.ssh/id_rsa_temp ~/.ssh/id_rsa
+              chmod 600 ~/.ssh/id_rsa
+              echo -e "Host *\n  StrictHostKeyChecking no\n" > ~/.ssh/config
+            }
+            
+            update_system() {
+              echo "[*] Updating system packages..."
+              apt-get update -y
+              DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+            }
+
+            configure_firewall() {
+              echo "[*] Configuring firewall..."
+              if ! command -v ufw &> /dev/null; then
+                echo "[*] Installing UFW..."
+                apt-get install -y ufw
+              fi
+
+              # Deny all traffic by default
+              ufw --force reset
+              ufw default deny incoming
+              ufw default deny outgoing
+
+              # Essential System Services
+              ufw allow out 53/tcp comment 'DNS (TCP)'
+              ufw allow out 53/udp comment 'DNS (UDP)'
+              ufw allow out 123/udp comment 'NTP'
+
+              # Loopback
+              ufw allow in on lo comment 'Loopback IN'
+              ufw allow out on lo comment 'Loopback OUT'
+
+              # Package Management (Optional)
+              ufw allow out 20,21/tcp comment 'FTP'
+              ufw allow out 11371/tcp comment 'GPG keyserver'
+
+              # Web & SSH
+              ufw allow 22/tcp comment 'SSH'
+              ufw allow 80/tcp comment 'HTTP'
+              ufw allow 443/tcp comment 'HTTPS'
+              ufw allow out 80/tcp comment 'HTTP'
+              ufw allow out 443/tcp comment 'HTTPS'
+
+              # Docker Swarm management traffic (TCP) over VLAN
+              ufw allow proto tcp from 10.0.0.0/23 to any port 2377 comment 'Swarm Control IN'
+              ufw allow out proto tcp to 10.0.0.0/23 port 2377 comment 'Swarm Control OUT'
+
+              # Docker VXLAN overlay network (UDP) over VLAN
+              ufw allow proto udp from 10.0.0.0/23 to any port 4789 comment 'Swarm Overlay Network IN'
+              ufw allow out proto udp to 10.0.0.0/23 port 4789 comment 'Swarm Overlay Network OUT'
+
+              # Docker overlay network discovery (TCP + UDP) over VLAN
+              ufw allow proto tcp from 10.0.0.0/23 to any port 7946 comment 'Swarm Discovery TCP'
+              ufw allow proto udp from 10.0.0.0/23 to any port 7946 comment 'Swarm Discovery UDP'
+              ufw allow out proto tcp to 10.0.0.0/23 port 7946 comment 'Swarm Gossip TCP OUT'
+              ufw allow out proto udp to 10.0.0.0/23 port 7946 comment 'Swarm Gossip UDP OUT'
+
+              # Enable firewall only if not active
+              if ! ufw status | grep -q "Status: active"; then
+                echo "[*] Enabling UFW..."
+                echo "y" | ufw enable
+              fi
+
+              ufw reload
+              ufw status verbose
+            }
+
+            install_docker_if_needed() {
+              if ! command -v docker &> /dev/null; then
+                echo "[*] Installing Docker..."
+                apt-get update
+                apt-get install -y ca-certificates curl gnupg lsb-release
+                curl -fsSL https://get.docker.com | bash
+              else
+                echo "[*] Docker is already installed."
+              fi
+            }
+
+            configure_swarm() {
+              local hostname
+              hostname=$(hostname)
+              echo "[*] Configuring Docker Swarm on $hostname..."
+
+              #if docker info 2>/dev/null | grep -q "Swarm: active"; then
+              if [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" = "active" ]; then
+                echo "[*] Node already part of a Swarm. Skipping initialization/joining."
+                if [[ "$hostname" == *"manager-1"* ]]; then
+                  docker swarm join-token manager -q > /tmp/manager_token.txt
+                  docker swarm join-token worker -q > /tmp/worker_token.txt
+                fi
+                return
+              fi
+
+              if [[ "$hostname" == *"manager-1"* ]]; then
+                echo "[*] Initializing new Swarm cluster..."
+                docker swarm init --advertise-addr ${{ matrix.private_ip }}
+
+                mkdir -p /tmp
+                chmod 1777 /tmp
+
+                docker swarm join-token manager -q > /tmp/manager_token.txt
+                docker swarm join-token worker -q > /tmp/worker_token.txt
+                echo "[*] Saved manager and worker join tokens."
+              else
+                echo "[*] Joining existing Swarm cluster on ${{ matrix.manager_ip }}..."
+
+                # SSH options for non-interactive CI (skip host key checking)
+                SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10"
+
+                # Wait for manager token to appear (max ~60s)
+                for i in {1..12}; do
+                  if ssh $SSH_OPTS root@${{ matrix.manager_ip }} 'test -f /tmp/manager_token.txt && test -f /tmp/worker_token.txt'; then
+                    echo "[*] Swarm tokens are available on ${{ matrix.manager_ip }}"
+                    break
+                  fi
+                  echo "[!] Attempt $i: Waiting for Swarm tokens on ${{ matrix.manager_ip }}..."
+                  sleep 5
+                done
+
+                # Final check before proceeding
+                if ! ssh $SSH_OPTS root@${{ matrix.manager_ip }} 'test -f /tmp/manager_token.txt && test -f /tmp/worker_token.txt'; then
+                  echo "[x] Timed out waiting for Swarm tokens. Exiting."
+                  exit 1
+                fi
+
+                # Retrieve tokens
+                MANAGER_JOIN_TOKEN=$(ssh $SSH_OPTS root@${{ matrix.manager_ip }} 'cat /tmp/manager_token.txt')
+                WORKER_JOIN_TOKEN=$(ssh $SSH_OPTS root@${{ matrix.manager_ip }} 'cat /tmp/worker_token.txt')
+
+                # Decide node role
+                if [[ "$hostname" == *"manager-"* ]]; then
+                  echo "[*] Joining as Swarm Manager..."
+                  docker swarm join --token "$MANAGER_JOIN_TOKEN" ${{ matrix.manager_ip }}:2377 --advertise-addr ${{ matrix.private_ip }}
+                else
+                  echo "[*] Joining as Swarm Worker..."
+                  docker swarm join --token "$WORKER_JOIN_TOKEN" ${{ matrix.manager_ip }}:2377 --advertise-addr ${{ matrix.private_ip }}
+                fi
+
+                echo "[*] Successfully joined Swarm cluster"
+
+              fi
+            }
+
+            enable_docker_service() {
+              echo "[*] Ensuring Docker is enabled and running..."
+              systemctl enable docker
+              systemctl restart docker
+            }
+
+            main() {
+              update_system
+              configure_firewall
+              install_private_key
+              ufw disable
+              install_docker_if_needed
+              configure_swarm
+              enable_docker_service
+            }
+
+            main
+          EOF
 
   configuration:
     name: Configure Swarm Cluster
-    needs: [initialization, initskip]
-    if: always()
-    uses: ./.github/workflows/_task-configure.yml
-    with:
-      environment: ${{ inputs.environment }}
-    secrets: inherit
+    needs: [download, initialization]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    strategy:
+      matrix: ${{ fromJson(needs.download.outputs.matrix) }}
+    steps:
+      # Check out the repo
+      - name: Check Out
+        uses: actions/checkout@v4
+
+      # Load environment variables from .env file
+      - name: Get Environment Variables
+        run: |
+          set -a  # automatically export all variables
+          source ./src/${{ inputs.environment }}.env
+          set +a
+
+      # Set up GitHub Secrets
+      - name: Get Secrets
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            f53a76ab-b87f-4af0-9aa4-b2d1016aba2b > VERSIO_USERNAME
+            f3d7bbfcd-18a5-4762-9064-b2d1016aef63 > VERSIO_PASSWORD
+
+      # Set up GitHub Secrets for Test Environment
+      - name: Get Test Secrets
+        if: ${{ inputs.environment == 'test' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            f16fffe2-77b7-4d20-bf6c-b2c9015c71d3 > KAMATERA_PRIVATE_KEY
+
+      # Set up GitHub Secrets for Staging Environment
+      - name: Get Staging Secrets
+        if: ${{ inputs.environment == 'staging' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            0c1f1f1c-456b-47d5-aad4-b2c9015ca6dc > KAMATERA_PRIVATE_KEY
+
+      # Set up GitHub Secrets for Production Environment
+      - name: Get Production Secrets
+        if: ${{ inputs.environment == 'production' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            02ed2dea7-b72e-401b-ae7e-b2c9015cd76e > KAMATERA_PRIVATE_KEY
+
+      # Set up SSH connection
+      - name: Set up SSH connection
+        run: |
+          mkdir -p ~/.ssh
+          echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      # Configure Swarm Server
+      - name: Configure Server
+        run: |
+          echo "[*] Generating configuration script..."
+          #envsubst < "./scripts/configure.template.sh" > "./scripts/configure.sh"
+          
+          echo "[*] Copying variables to remote server..."
+          cat <<EOF > /tmp/secrets.env
+          VERSIO_USERNAME=$version_username
+          VERSIO_PASSWORD=$version_password
+          EOF
+
+          # Copy secrets to remote server
+          scp -o StrictHostKeyChecking=no /tmp/secrets.env root@${{ matrix.ip }}:/tmp/secrets.env || {
+            echo "[x] Failed to transfer variables to remote server"
+            exit 1
+          }
+
+          # Copy environment variables to remote server
+          scp -o StrictHostKeyChecking=no ./src/${{ inputs.environment }}.env root@${{ matrix.ip }}:/tmp/variables.env || {
+            echo "[x] Failed to transfer variables to remote server"
+            exit 1
+          }
+
+          # Copy the configuration script to the remote server
+          echo "[*] Copying configuration script to remote server..."
+          scp -o StrictHostKeyChecking=no "./scripts/configure.sh" root@${{ matrix.ip }}:/tmp/configure.sh || {
+            echo "[x] Failed to transfer configuration script to remote server"
+            exit 1
+          }
+
+          # Copy the SSH key to the remote server
+          echo "[*] Executing configuration script remotely..."
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+            chmod +x /tmp/configure.sh
+            /tmp/configure.sh
+          EOF
+
+          # Copy /src to /app
+          echo "[*] Copying source to remote server..."
+          find ./src -maxdepth 1 -type f -exec scp -o StrictHostKeyChecking=no {} root@${{ matrix.ip }}:/app/ \;
+          scp -o StrictHostKeyChecking=no ./scripts/startenv.sh root@${{ matrix.ip }}:/app/startenv.sh
+          scp -o StrictHostKeyChecking=no ./scripts/stopenv.sh root@${{ matrix.ip }}:/app/stopenv.sh
+
+          # TRAEFIK
+          echo "[*] Deploying TRAEFIK to remote server..."
+          envsubst '${DOMAIN} ${EMAIL}' < "./src/traefik/traefik-conf.template.yml" > "./src/traefik/traefik-conf.yml"
+          rm -f "./src/traefik/traefik-conf.template.yml"
+          scp -o StrictHostKeyChecking=no "./src/traefik/*" root@${{ matrix.ip }}:/app/traefik/conf/* || {
+            echo "[x] Failed to transfer traefik configuration to remote server"
+            exit 1
+          }
+          echo "[*] Deploying TRAEFIK to remote server...DONE"
+
+          # Cleanup
+          echo "[*] Cleanup temporary files..."
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+            rm -f /tmp/variables.env
+            rm -f /tmp/secrets.env
+          EOF
+          echo "[*] Cleanup temporary files...DONE"
+
+
+
+  # terraform:
+  #   name: Terraform Swarm Cluster
+  #   needs: [restore]
+  #   if: inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true'
+  #   uses: ./.github/workflows/_task-terraform.yml
+  #   with:
+  #     environment: ${{ inputs.environment }}
+  #   secrets: inherit
+  
+  # initialization:
+  #   name: Initialize Swarm Cluster
+  #   if: inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true'
+  #   needs: [restore, terraform]
+  #   uses: ./.github/workflows/_task-initialize.yml
+  #   with:
+  #     environment: ${{ inputs.environment }}
+  #     tf_output: ${{ needs.terraform.outputs.tf_output }}
+  #   secrets: inherit
+
+  # initskip:
+  #   name: Skip Initialization
+  #   if: inputs.initialize == 'false'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Skip Initialization
+  #       run: echo "Skipping initialization as per input."
+
+  # configuration:
+  #   name: Configure Swarm Cluster
+  #   needs: [initialization, initskip]
+  #   if: always()
+  #   uses: ./.github/workflows/_task-configure.yml
+  #   with:
+  #     environment: ${{ inputs.environment }}
+  #   secrets: inherit

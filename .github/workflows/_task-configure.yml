@@ -23,7 +23,7 @@ jobs:
       - name: Download Terraform Output
         uses: actions/download-artifact@v4
         with:
-          name: terraform-${{ inputs.environment }}-output
+          name: terraform-output-${{ inputs.environment }}
           path: ./tmp
       
       # Check if the artifact exists

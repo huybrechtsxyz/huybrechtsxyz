@@ -1,0 +1,28 @@
+# Restores the cache for the Swarm cluster
+name: _RestoreCache
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+jobs:
+  restore:
+    name: Restore Cache
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Restore Terraform output from cache
+        id: restore-cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/tf_output.json
+          key: terraform-output-${{ inputs.environment }}
+      - name: Upload Terraform output as artifact
+        if: steps.restore-cache.outputs.cache-hit == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-output-${{ inputs.environment }}
+          path: /tmp/tf_output.json
