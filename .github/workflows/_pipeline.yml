@@ -199,7 +199,7 @@ jobs:
       - name: Parse Swarm Servers
         id: parse
         run: |
-          matrix=$(jq -c '.include' /tmp/tf_output.json)
+          matrix=$(jq -c '.' /tmp/tf_output.json)
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
   initialization:
