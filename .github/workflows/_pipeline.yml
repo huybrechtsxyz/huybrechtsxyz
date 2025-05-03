@@ -38,6 +38,7 @@ jobs:
 
   configuration:
     name: Configure Swarm Cluster
+    needs: [initialization]
     if: needs.initialization.result == 'success' || needs.initialization.result == 'skipped'
     uses: ./.github/workflows/_task-configure.yml
     with:
