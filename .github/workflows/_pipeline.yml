@@ -28,6 +28,7 @@ jobs:
   
   initialization:
     name: Initialize Swarm Cluster
+    if: inputs.initialize == 'true'
     needs: [terraform]
     uses: ./.github/workflows/_task-initialize.yml
     with:
@@ -46,6 +47,7 @@ jobs:
   configuration:
     name: Configure Swarm Cluster
     needs: [initialization, initskip]
+    if: always()
     uses: ./.github/workflows/_task-configure.yml
     with:
       environment: ${{ inputs.environment }}
