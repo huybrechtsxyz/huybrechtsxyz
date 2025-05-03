@@ -48,7 +48,7 @@ jobs:
   terraform:
     name: Terraform Plan and Apply
     needs: [restore]
-    if: inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true'
+    if: inputs.initialize == 'true' || needs.restore.outputs.cache-hit == 'false'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
@@ -191,7 +191,7 @@ jobs:
       - name: Check if tf_output.json exists
         run: |
           if [ ! -f /tmp/tf_output.json ]; then
-            echo "Artifact terraform-${{ inputs.environment }}-output not found or tf_output.json missing. Exiting."
+            echo "Artifact terraform-output-${{ inputs.environment }} not found or tf_output.json missing. Exiting."
             exit 1
           fi
 
@@ -448,8 +448,8 @@ jobs:
         with:  
           access_token: ${{ secrets.BITWARDEN_TOKEN }}
           secrets: |
-            f53a76ab-b87f-4af0-9aa4-b2d1016aba2b > VERSIO_USERNAME
-            f3d7bbfcd-18a5-4762-9064-b2d1016aef63 > VERSIO_PASSWORD
+            3d7bbfcd-18a5-4762-9064-b2d1016aef63 > VERSIO_USERNAME
+            ff53a76ab-b87f-4af0-9aa4-b2d1016aba2b > VERSIO_PASSWORD
 
       # Set up GitHub Secrets for Test Environment
       - name: Get Test Secrets
