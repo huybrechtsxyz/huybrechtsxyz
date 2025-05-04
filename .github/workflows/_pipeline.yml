@@ -414,7 +414,6 @@ jobs:
               update_system
               configure_firewall
               install_private_key
-              ufw disable
               install_docker_if_needed
               configure_swarm
               enable_docker_service
