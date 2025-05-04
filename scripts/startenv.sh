@@ -13,7 +13,7 @@ function clear_logs() {
 
 # START ENVIRONMENT
 echo "Starting environment..."
-HOSTNAME=$(hostname)
+export HOSTNAMEID=$(hostname)
 
 cd /app
 base_dir="/app"
