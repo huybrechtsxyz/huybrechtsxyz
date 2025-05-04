@@ -542,7 +542,8 @@ jobs:
         run: |
           # TRAEFIK
           echo "[*] Deploying TRAEFIK to remote server..."
-          ls -la ./src/traefik
+          echo DEV Domain: $DOMAIN_DEV
+          echo Environment: $ENVIRONMENT
           #envsubst '$DOMAIN_DEV $ENVIRONMENT' < "./src/traefik/traefik-config.template.yml" > "./src/traefik/traefik-config.yml"
           envsubst \
             '${DOMAIN_DEV} ${ENVIRONMENT}' \
