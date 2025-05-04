@@ -448,8 +448,8 @@ jobs:
         with:  
           access_token: ${{ secrets.BITWARDEN_TOKEN }}
           secrets: |
-            3d7bbfcd-18a5-4762-9064-b2d1016aef63 > VERSIO_USERNAME
-            ff53a76ab-b87f-4af0-9aa4-b2d1016aba2b > VERSIO_PASSWORD
+            f53a76ab-b87f-4af0-9aa4-b2d1016aba2b > VERSIO_USERNAME
+            3d7bbfcd-18a5-4762-9064-b2d1016aef63 > VERSIO_PASSWORD
 
       # Set up GitHub Secrets for Test Environment
       - name: Get Test Secrets
