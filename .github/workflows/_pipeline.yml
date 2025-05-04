@@ -29,7 +29,7 @@ jobs:
       # Restore Terraform Cache
       - name: Restore Terraform Cache
         id: restore-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: /tmp/tf_output.json
           key: terraform-output-${{ inputs.environment }}
@@ -42,6 +42,7 @@ jobs:
           name: terraform-output-${{ inputs.environment }}
           path: /tmp/tf_output.json
 
+      # Check if the cache was hit
       - name: Check Inputs
         run: |
           echo "Environment: ${{ inputs.environment }}"
@@ -63,16 +64,8 @@ jobs:
       - name: Check Out
         uses: actions/checkout@v4
 
-      # Restore Terraform Cache
-      - name: Restore Terraform Cache
-        id: restore-cache
-        uses: actions/cache@v4
-        with:
-          path: tf_output.json
-          key: terraform-output-${{ inputs.environment }}
-
       # Set up GitHub Secrets
-      - name: Get Environment Secrets
+      - name: Get General Secrets
         uses: bitwarden/sm-action@v2
         with:
           access_token: ${{ secrets.BITWARDEN_TOKEN }}
@@ -170,7 +163,7 @@ jobs:
 
       # Upload the Terraform output as a job output
       - name: Cache Terraform Output
-        uses: actions/cache@v4
+        uses: actions/cache/save@v4
         with:
           path: ./deploy/tf_output.json
           key: terraform-output-${{ inputs.environment }}
@@ -433,6 +426,7 @@ jobs:
   configuration:
     name: Configure Swarm Cluster
     needs: [download, initialization]
+    if: always()
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     strategy:
@@ -553,41 +547,3 @@ jobs:
             rm -f /tmp/secrets.env
           EOF
           echo "[*] Cleanup temporary files...DONE"
-
-
-
-  # terraform:
-  #   name: Terraform Swarm Cluster
-  #   needs: [restore]
-  #   if: inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true'
-  #   uses: ./.github/workflows/_task-terraform.yml
-  #   with:
-  #     environment: ${{ inputs.environment }}
-  #   secrets: inherit
-  
-  # initialization:
-  #   name: Initialize Swarm Cluster
-  #   if: inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true'
-  #   needs: [restore, terraform]
-  #   uses: ./.github/workflows/_task-initialize.yml
-  #   with:
-  #     environment: ${{ inputs.environment }}
-  #     tf_output: ${{ needs.terraform.outputs.tf_output }}
-  #   secrets: inherit
-
-  # initskip:
-  #   name: Skip Initialization
-  #   if: inputs.initialize == 'false'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Skip Initialization
-  #       run: echo "Skipping initialization as per input."
-
-  # configuration:
-  #   name: Configure Swarm Cluster
-  #   needs: [initialization, initskip]
-  #   if: always()
-  #   uses: ./.github/workflows/_task-configure.yml
-  #   with:
-  #     environment: ${{ inputs.environment }}
-  #   secrets: inherit
