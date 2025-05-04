@@ -1,6 +1,6 @@
 # This script runs the local development environment.
 # Run from the root of the repository.
-$APPPATH = "C:/Users/vince/Sources/huybrechtsxyz/"
+$APPPATH = "C:/Users/vince/Sources/huybrechtsxyz/.app"
 
 # Load the required modules
 . "$APPPATH/scripts/psfunctions.ps1"
@@ -39,19 +39,36 @@ $baseDir = './.app'
 New-Item -ItemType Directory -Path $baseDir -Force
 
 # Configure and run Traefik
-Write-Host 'Configuring TRAEFIK ... for DOCKER'
-$traefikDir = "$baseDir/traefik"
-$traefikConf = "$traefikDir/conf"
-$traefikData = "$traefikDir/data"
-$traefikLogs = "$traefikDir/logs"
-New-Item -ItemType Directory -Path $traefikDir, $traefikConf, $traefikData, $traefikLogs -Force
+function Invoke-Traefik {
+    Write-Host 'Configuring TRAEFIK ... for DOCKER'
+    $traefikDir = "$baseDir/traefik"
+    $traefikConf = "$traefikDir/conf"
+    $traefikData = "$traefikDir/data"
+    $traefikLogs = "$traefikDir/logs"
+    New-Item -ItemType Directory -Path $traefikDir, $traefikConf, $traefikData, $traefikLogs -Force
 
-$traefikConf = Resolve-Path -Path $traefikConf
-Copy-Item -Path "./src/traefik/*" -Destination $traefikConf -Recurse
-Remove-Item -Path "$traefikLogs/*" -Recurse -Force
+    $traefikConf = Resolve-Path -Path $traefikConf
+    Copy-Item -Path "./src/traefik/*" -Destination $traefikConf -Recurse
+    Remove-Item -Path "$traefikLogs/*" -Recurse -Force
 
-Apply-Template -templateFile "$APPPATH/.app/traefik/conf/traefik-config.template.yml" -configFile "$APPPATH/.app/traefik/conf/traefik-config.yml"
-Write-Host 'Configuring TRAEFIK ... Done'
+    Apply-Template -templateFile "$APPPATH/traefik/conf/traefik-config.template.yml" -configFile "$APPPATH/.app/traefik/conf/traefik-config.yml"
+    Write-Host 'Configuring TRAEFIK ... Done'
+}
+Invoke-Traefik
+
+# Configure and run CONSUL
+function Invoke-Consul {
+    Write-Host 'Configuring CONSUL ... for DOCKER'
+    $consulDir = "$baseDir/consul"
+    $consulConf = "$consulDir/conf"
+    $consulData = "$consulDir/data"
+    New-Item -ItemType Directory -Path $consulDir, $consulConf, $consulData -Force
+
+    $consulConf = Resolve-Path -Path $consulConf
+    Copy-Item -Path "./src/consul/*" -Destination $consulConf -Recurse
+    Write-Host 'Configuring CONSUL ... Done'
+}
+Invoke-Consul
 
 Write-Host "Validating Docker Compose..."
 docker compose -f $composeFile --env-file $environmentFile config

@@ -13,6 +13,8 @@ services:
       - VERSIO_USERNAME
       - VERSIO_PASSWORD
     environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
       VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
       VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
     volumes:
@@ -73,6 +75,70 @@ services:
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.traefik.middlewares=${TRAEFIK_MIDDLEWARES}
+
+  consul:
+    image: hashicorp/consul:1.20
+    environment:
+      DATACENTER: ${DATACENTER}
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      HOSTNAME: ${HOSTNAME}
+      CONSUL_BIND_INTERFACE: eth0
+    command:
+      - consul
+      - agent
+      - -data-dir=/consul/data
+      - -config-dir=/consul/config
+      - -bootstrap-expect=${DOCKER_MANAGERS}
+      - -datacenter=${DATACENTER}
+      - -node=${HOSTNAME}
+      - -bind=0.0.0.0
+      - -advertise={{ GetPrivateIP }}
+    volumes:
+      - ${APP_PATH}/consul/conf:/consul/config
+      - ${APP_PATH}/consul/data:/consul/data
+    networks: 
+      - lan
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "1G"
+      labels:
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.consul.loadbalancer.server.scheme=http
+        - traefik.http.services.consul.loadbalancer.server.port=8500
+        - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
+        - traefik.http.routers.consul.entrypoints=websecure
+        - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.consul.middlewares=${TRAEFIK_AUTH}
 
 networks:
   wan:

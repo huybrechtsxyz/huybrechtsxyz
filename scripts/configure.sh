@@ -115,6 +115,10 @@ main() {
   createpath "/app/traefik/conf"
   createpath "/app/traefik/data"
   createpath "/app/traefik/logs"
+  
+  createpath "/app/consul/"
+  createpath "/app/consul/conf"
+  createpath "/app/consul/data"
 }
 
 main

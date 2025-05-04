@@ -556,6 +556,17 @@ jobs:
             exit 1
           }
           echo "[*] Deploying TRAEFIK to remote server...DONE"
+      
+      # Configure Consul Server
+      - name: Configure Consul
+        run: |
+          # CONSUL
+          echo "[*] Deploying CONSUL to remote server..."
+          scp -o StrictHostKeyChecking=no ./src/consul/* root@${{ matrix.ip }}:/app/consul/conf/ || {
+            echo "[x] Failed to transfer consul configuration to remote server"
+            exit 1
+          }
+          echo "[*] Deploying CONSUL to remote server...DONE"
 
       # Finish Configuration
       - name: Finish Configuration

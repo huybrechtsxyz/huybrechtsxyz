@@ -13,6 +13,8 @@ function clear_logs() {
 
 # START ENVIRONMENT
 echo "Starting environment..."
+HOSTNAME=$(hostname)
+
 cd /app
 base_dir="/app"
 environment_file="/app/.env"
@@ -30,6 +32,11 @@ echo "Loading environment variables..."
 if [[ -f "$environment_file" ]]; then
     export $(grep -v '^#' "$environment_file" | xargs)
 fi
+
+# Count the number of manager nodes
+DOCKER_MANAGERS=$(docker node ls --filter "role=manager" --format '{{.Hostname}}' | wc -l)
+export DOCKER_MANAGERS=$DOCKER_MANAGERS
+echo "Number of Docker manager nodes: $DOCKER_MANAGERS"
 
 echo "Validating Docker Compose..."
 docker compose -f "$compose_file" --env-file "$environment_file" config > config.log || exit 1
