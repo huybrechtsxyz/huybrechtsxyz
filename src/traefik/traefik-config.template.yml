@@ -50,7 +50,7 @@ certificatesResolvers:
       email: webmaster@huybrechts.xyz
       storage: "/app/data/acme-tls.json"
       tlsChallenge: true
-  versioresolver:
+  versioResolver:
     acme:
       caServer: https://acme-v02.api.letsencrypt.org/directory
       email: webmaster@huybrechts.xyz

@@ -86,7 +86,7 @@ loadsecrets() {
 
   while IFS='=' read -r key value || [ -n "$key" ]; do
     # Skip blank lines or comments
-    [[ -z "$key" || "$key" =~ ^# ]] && continue
+    [[ -z "$key" || "$key" == \#* ]] && continue
 
     # Remove surrounding quotes from value if any
     value="${value%\"}"

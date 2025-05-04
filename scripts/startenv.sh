@@ -20,6 +20,7 @@ compose_file="/app/compose.yml"
 
 # Clear logs for "consul" "traefik" "minio" "postgres" "keycloak" "telemetry"
 echo "Clearing log directories..."
+rm -rf /app/config.log
 services=("traefik")
 for service in "${services[@]}"; do
     clear_logs "$service"
@@ -31,7 +32,7 @@ if [[ -f "$environment_file" ]]; then
 fi
 
 echo "Validating Docker Compose..."
-docker compose -f "$compose_file" --env-file "$environment_file" config || exit 1
+docker compose -f "$compose_file" --env-file "$environment_file" config > config.log || exit 1
 
 echo "Starting Docker Swarm..."
 docker stack deploy -c "$compose_file" app --detach=true

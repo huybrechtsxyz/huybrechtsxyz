@@ -12,6 +12,9 @@ services:
     secrets:
       - VERSIO_USERNAME
       - VERSIO_PASSWORD
+    environment:
+      VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
+      VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APP_PATH}/traefik/conf/traefik-config.yml:/etc/traefik/traefik-config.yml
