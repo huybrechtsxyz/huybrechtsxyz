@@ -543,7 +543,11 @@ jobs:
           # TRAEFIK
           echo "[*] Deploying TRAEFIK to remote server..."
           ls -la ./src/traefik
-          envsubst '$DOMAIN_DEV $ENVIRONMENT' < "./src/traefik/traefik-config.template.yml" > "./src/traefik/traefik-config.yml"
+          #envsubst '$DOMAIN_DEV $ENVIRONMENT' < "./src/traefik/traefik-config.template.yml" > "./src/traefik/traefik-config.yml"
+          envsubst \
+            '${DOMAIN_DEV} ${ENVIRONMENT}' \
+            < ./src/traefik/traefik-config.template.yml \
+            > ./src/traefik/traefik-config.yml
           scp -o StrictHostKeyChecking=no ./src/traefik/* root@${{ matrix.ip }}:/app/traefik/conf/ || {
             echo "[x] Failed to transfer traefik configuration to remote server"
             exit 1
@@ -560,8 +564,8 @@ jobs:
             # Set permissions for the app directory
             chown -R 777 /app
             # Remove temporary files
-            rm -f /tmp/variables.env
-            rm -f /tmp/secrets.env
+            #rm -f /tmp/variables.env
+            #rm -f /tmp/secrets.env
           EOF
           echo "[*] Cleanup temporary files...DONE"
 
