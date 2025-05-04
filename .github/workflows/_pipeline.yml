@@ -42,6 +42,13 @@ jobs:
           name: terraform-output-${{ inputs.environment }}
           path: /tmp/tf_output.json
 
+      - name: Check Inputs
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Initialize: ${{ inputs.initialize }}"
+          echo "Rebuild: ${{ inputs.rebuild }}"
+          echo "Cache Hit: ${{ steps.restore-cache.outputs.cache-hit }}"
+          
   # Terraform Plan and Apply
   # This job will run if the cache is not hit or if the initialize input is set to true
   # Stores the output in a JSON file and uploads it as an artifact and caches it for future runs
