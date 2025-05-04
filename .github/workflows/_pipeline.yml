@@ -446,9 +446,14 @@ jobs:
       # Load environment variables from .env file
       - name: Get Environment Variables
         run: |
-          set -a  # automatically export all variables
-          source ./src/${{ inputs.environment }}.env
-          set +a
+          echo "[*] Loading variables from ./src/${{ inputs.environment }}.env file..."
+          while IFS='=' read -r key value || [ -n "$key" ]; do
+            [[ -z "$key" || "$key" == \#* ]] && continue
+            value="${value%\"}"
+            value="${value#\"}"
+            echo "$key=$value" >> "$GITHUB_ENV"
+          done < ./src/${{ inputs.environment }}.env
+          echo "[*] Loading variables from ./src/${{ inputs.environment }}.env file...DONE"
 
       # Set up GitHub Secrets
       - name: Get Secrets
