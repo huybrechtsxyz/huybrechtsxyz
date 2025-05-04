@@ -149,6 +149,7 @@ jobs:
           echo "Reading Terraform output..."
           echo $(terraform output -json outputdata)
           terraform output -json outputdata | jq -c '.' > tf_output.json
+          cp tf_output.json /tmp/tf_output.json
           # MATRIX=$(terraform output -json outputdata | jq -c '.')
           # echo $MATRIX
           # echo "tf_output=$MATRIX" >> "$GITHUB_OUTPUT"
@@ -165,7 +166,7 @@ jobs:
       - name: Cache Terraform Output
         uses: actions/cache/save@v4
         with:
-          path: ./deploy/tf_output.json
+          path: /tmp/tf_output.json
           key: terraform-output-${{ inputs.environment }}
   
   # Download the Terraform output artifact and parse it to find Swarm servers
@@ -202,6 +203,9 @@ jobs:
           matrix=$(jq -c '.' /tmp/tf_output.json)
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
+  # Initialize the Swarm Cluster
+  # This job will run if the cache is not hit or if the initialize input is set to true
+  # Initializes the Swarm cluster
   initialization:
     name: Initialize Swarm Cluster
     needs: [restore, download]
@@ -422,6 +426,10 @@ jobs:
             main
           EOF
 
+  # Configure the Swarm Cluster
+  # This job will run if the cache is not hit or if the initialize input is set to true
+  # Configures the Swarm cluster with the provided environment variables and secrets
+  # Prepares the Swarm cluster for deployment
   configuration:
     name: Configure Swarm Cluster
     needs: [download, initialization]
@@ -516,7 +524,7 @@ jobs:
             exit 1
           }
 
-          # Copy the SSH key to the remote server
+          # Execute the configuration script remotely
           echo "[*] Executing configuration script remotely..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             chmod +x /tmp/configure.sh
@@ -531,9 +539,8 @@ jobs:
 
           # TRAEFIK
           echo "[*] Deploying TRAEFIK to remote server..."
-          envsubst '${DOMAIN} ${EMAIL}' < "./src/traefik/traefik-conf.template.yml" > "./src/traefik/traefik-conf.yml"
-          rm -f "./src/traefik/traefik-conf.template.yml"
-          scp -o StrictHostKeyChecking=no "./src/traefik/*" root@${{ matrix.ip }}:/app/traefik/conf/* || {
+          envsubst '${DOMAIN_DEV} ${ENVIRONMENT}' < "./src/traefik/*" > "./src/traefik/"
+          scp -o StrictHostKeyChecking=no "./src/traefik/*" root@${{ matrix.ip }}:/app/traefik/conf/ || {
             echo "[x] Failed to transfer traefik configuration to remote server"
             exit 1
           }
