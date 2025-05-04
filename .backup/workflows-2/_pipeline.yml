@@ -537,9 +537,6 @@ jobs:
           scp -o StrictHostKeyChecking=no ./scripts/startenv.sh root@${{ matrix.ip }}:/app/startenv.sh
           scp -o StrictHostKeyChecking=no ./scripts/stopenv.sh root@${{ matrix.ip }}:/app/stopenv.sh
 
-      # Configure Traefik Server
-      - name: Configure Traefik
-        run: |
           # TRAEFIK
           echo "[*] Deploying TRAEFIK to remote server..."
           ls -la ./src/traefik
@@ -550,9 +547,7 @@ jobs:
           }
           echo "[*] Deploying TRAEFIK to remote server...DONE"
 
-      # Finish Configuration
-      - name: Finish Configuration
-        run: |
+          # Finishing configuration
           echo "[*] Finishing configuration..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             # Set environment file
@@ -564,31 +559,3 @@ jobs:
             rm -f /tmp/secrets.env
           EOF
           echo "[*] Cleanup temporary files...DONE"
-
-  # Start the Environment
-  # This job will run only for the first manager node in the matrix
-  start:
-    name: Start Environment
-    needs: [download, configuration]
-    if: ${{ fromJson(needs.download.outputs.matrix).label == 'manager_1' }}
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    strategy:
-      matrix: ${{ fromJson(needs.download.outputs.matrix) }}
-    steps:
-      # Set up SSH connection
-      - name: Set up SSH Connection
-        run: |
-          mkdir -p ~/.ssh
-          echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-      # Start the environment
-      - name: Start Environment
-        run: |
-          echo "[*] Starting Environment..."
-          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            cd /app
-            ./startenv.sh
-          EOF
-          echo "[*] Starting Environment...DONE"
