@@ -13,6 +13,7 @@ function clear_logs() {
 
 # START ENVIRONMENT
 echo "Starting environment..."
+cd /app
 base_dir="/app"
 environment_file="/app/.env"
 compose_file="/app/compose.yml"

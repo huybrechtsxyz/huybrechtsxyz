@@ -8,13 +8,13 @@ services:
 
   traefik:
     image: "traefik:v3.3.6"
-    command: traefik --configFile=/etc/traefik/treafik-config.yml
+    command: traefik --configFile=/etc/traefik/traefik-config.yml
     secrets:
       - VERSIO_USERNAME
       - VERSIO_PASSWORD
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${APP_PATH}/traefik/conf/traefik.${ENVIRONMENT}.yml:/etc/traefik/traefik.yml
+      - ${APP_PATH}/traefik/conf/traefik-config.yml:/etc/traefik/traefik-config.yml
       - ${APP_PATH}/traefik/data:/app/data
       - ${APP_PATH}/traefik/logs:/app/logs
     ports:
