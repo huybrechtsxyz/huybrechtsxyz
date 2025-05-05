@@ -87,6 +87,8 @@ services:
     command:
       - consul
       - agent
+      - -config_dir=/consul/config
+      - -data_dir=/consul/data
       - -bootstrap-expect=${DOCKER_MANAGERS}
       - -datacenter=${DATACENTER}
       - -node=${HOSTNAMEID}

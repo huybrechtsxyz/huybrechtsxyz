@@ -2,8 +2,6 @@
   "server": true,
   "bind_addr": "0.0.0.0",
   "client_addr": "0.0.0.0",
-  "config_dir": "/consul/config",
-  "data_dir": "/consul/data",
   "retry_join": ["provider=docker"],
   "ui_config": {
     "enabled": true
