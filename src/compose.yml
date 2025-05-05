@@ -87,17 +87,15 @@ services:
     command:
       - consul
       - agent
-      - -data-dir=/consul/data
-      - -config-dir=/consul/config
       - -bootstrap-expect=${DOCKER_MANAGERS}
       - -datacenter=${DATACENTER}
       - -node=${HOSTNAMEID}
-      - -bind=0.0.0.0
       - -advertise={{ GetPrivateIP }}
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${APP_PATH}/consul/conf:/consul/config
       - ${APP_PATH}/consul/data:/consul/data
-    networks: 
+    networks:
       - lan
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
@@ -109,7 +107,7 @@ services:
       mode: global
       placement:
         constraints:
-          - node.role==manager
+          - node.role == manager
       restart_policy:
         condition: on-failure
         delay: 10s
