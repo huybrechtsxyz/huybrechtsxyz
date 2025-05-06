@@ -17,7 +17,6 @@ services:
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
-      VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
       VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
       VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
     volumes:
@@ -138,7 +137,7 @@ services:
         - traefik.tags=${ENVIRONMENT}
         - traefik.http.services.consul.loadbalancer.server.scheme=http
         - traefik.http.services.consul.loadbalancer.server.port=8500
-        - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
+        - traefik.http.routers.consul.rule=Host(`consul.${DOMAIN_DEV}`)
         - traefik.http.routers.consul.entrypoints=websecure
         - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.consul.middlewares=${TRAEFIK_MIDDLEWARES}
@@ -156,7 +155,7 @@ services:
     volumes:
       - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
     networks:
-      - public
+      - lan
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d xyzdb -U root"]
       interval: 1s
@@ -208,7 +207,7 @@ services:
     volumes:
       - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
     networks:
-      - public
+      - lan
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
       interval: 15s
