@@ -446,14 +446,9 @@ jobs:
       # Load environment variables from .env file
       - name: Get Environment Variables
         run: |
-          echo "[*] Loading variables from ./src/${{ inputs.environment }}.env file..."
-          while IFS='=' read -r key value || [ -n "$key" ]; do
-            [[ -z "$key" || "$key" == \#* ]] && continue
-            value="${value%\"}"
-            value="${value#\"}"
-            echo "$key=$value" >> "$GITHUB_ENV"
-          done < ./src/${{ inputs.environment }}.env
-          echo "[*] Loading variables from ./src/${{ inputs.environment }}.env file...DONE"
+          set -a  # automatically export all variables
+          source ./src/${{ inputs.environment }}.env
+          set +a
 
       # Set up GitHub Secrets
       - name: Get Secrets
@@ -506,8 +501,8 @@ jobs:
           
           echo "[*] Copying variables to remote server..."
           cat <<EOF > /tmp/secrets.env
-          VERSIO_USERNAME=$VERSIO_USERNAME
-          VERSIO_PASSWORD=$VERSIO_PASSWORD
+          VERSIO_USERNAME=$version_username
+          VERSIO_PASSWORD=$version_password
           EOF
 
           # Copy secrets to remote server
@@ -534,82 +529,33 @@ jobs:
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             chmod +x /tmp/configure.sh
             /tmp/configure.sh
-            cp /tmp/variables.env /app/.env
           EOF
 
           # Copy /src to /app
           echo "[*] Copying source to remote server..."
-          #find ./src -maxdepth 1 -type f -exec scp -o StrictHostKeyChecking=no {} root@${{ matrix.ip }}:/app/ \;
-          scp -o StrictHostKeyChecking=no ./src/*.yml root@${{ matrix.ip }}:/app
+          find ./src -maxdepth 1 -type f -exec scp -o StrictHostKeyChecking=no {} root@${{ matrix.ip }}:/app/ \;
           scp -o StrictHostKeyChecking=no ./scripts/startenv.sh root@${{ matrix.ip }}:/app/startenv.sh
           scp -o StrictHostKeyChecking=no ./scripts/stopenv.sh root@${{ matrix.ip }}:/app/stopenv.sh
 
-      # Configure Traefik Server
-      - name: Configure Traefik
-        run: |
           # TRAEFIK
           echo "[*] Deploying TRAEFIK to remote server..."
-          envsubst \
-            '${DOMAIN_DEV} ${ENVIRONMENT}' \
-            < ./src/traefik/traefik-config.template.yml \
-            > ./src/traefik/traefik-config.yml
+          ls -la ./src/traefik
+          envsubst '${DOMAIN_DEV} ${ENVIRONMENT}' < "./src/traefik/traefik-config.template.yml" > "./src/traefik/traefik-config.yml"
           scp -o StrictHostKeyChecking=no ./src/traefik/* root@${{ matrix.ip }}:/app/traefik/conf/ || {
             echo "[x] Failed to transfer traefik configuration to remote server"
             exit 1
           }
           echo "[*] Deploying TRAEFIK to remote server...DONE"
-      
-      # Configure Consul Server
-      - name: Configure Consul
-        run: |
-          # CONSUL
-          echo "[*] Deploying CONSUL to remote server..."
-          scp -o StrictHostKeyChecking=no ./src/consul/* root@${{ matrix.ip }}:/app/consul/conf/ || {
-            echo "[x] Failed to transfer consul configuration to remote server"
-            exit 1
-          }
-          echo "[*] Deploying CONSUL to remote server...DONE"
 
-      # Finish Configuration
-      - name: Finish Configuration
-        run: |
+          # Finishing configuration
           echo "[*] Finishing configuration..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             # Set environment file
-            cp -f /tmp/${{ inputs.environment }}.env /app/.env
-            
+            cp -f /app/${{ inputs.environment }}.env /app/.env
             # Set permissions for the app directory
             chown -R 777 /app
-            chmod -R 600 /app/traefik/data
-
             # Remove temporary files
             rm -f /tmp/variables.env
             rm -f /tmp/secrets.env
           EOF
           echo "[*] Cleanup temporary files...DONE"
-
-  # Start the Environment
-  # This job will run only for the first manager node in the matrix
-  start:
-    name: Start Environment
-    needs: [download, configuration]
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    strategy:
-      matrix: ${{ fromJson(needs.download.outputs.matrix) }}
-    steps:
-      # Start the environment
-      - name: Start Environment
-        if: ${{ matrix.label == 'manager_1' }}
-        run: |  
-          echo "[*] Set up SSH Connection..."
-          mkdir -p ~/.ssh
-          echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-          echo "[*] Starting Environment..."
-          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            cd /app
-            ./startenv.sh
-          EOF
-          echo "[*] Starting Environment...DONE"

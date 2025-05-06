@@ -1,25 +1,21 @@
 {
   "server": true,
-  "bind_addr": "0.0.0.0",
   "client_addr": "0.0.0.0",
-  "retry_join": ["provider=docker"],
   "ui_config": {
     "enabled": true
   },
-  "log_level": "INFO",
-  "ports": {
-    "http": 8500,
-    "dns": 8600
-  },
+  "retry_join": ["provider=docker"],
+  "log_level": "DEBUG",
+  "ports": { "dns": 8600, "http": 8500 },
+  "recursors": [ "10.0.0.10" ],
   "telemetry": {
     "prometheus_retention_time": "5m"
   },
   "service": {
     "id": "consul",
     "name": "consul",
-    "address": "127.0.0.1",
+    "address": "consul",
     "port": 8500,
-    "tags": ["consul", "dns", "discovery", "configuration", "docker-swarm", "system"],
     "meta": {
       "consul_path": "/"
     },
@@ -27,10 +23,11 @@
       {
         "id": "consul-http-check",
         "name": "Consul HTTP Health Check",
-        "http": "http://localhost:8500/v1/status/leader",
+        "http":  "http://localhost:8500/v1/status/leader",
         "interval": "15s",
         "timeout": "5s"
       }
-    ]
+    ],
+    "tags":[ "consul","dns","discovery","configuration","docker-swarm","system" ]
   }
 }

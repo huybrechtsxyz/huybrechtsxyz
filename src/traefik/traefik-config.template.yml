@@ -2,7 +2,7 @@
 providers:
   swarm:
     exposedByDefault: false
-    constraints: Label(`traefik.tags`, `test`)
+    constraints: Label(`traefik.tags`, `$ENVIRONMENT`)
   # consulcatalog:
   #   cache: true
   #   refreshInterval: 30s
@@ -10,7 +10,7 @@ providers:
   #     address: http://consul:8500
   #     scheme: http
   #   exposedByDefault: false
-  #   defaultRule: "Host(`config.localhost`)"
+  #   defaultRule: "Host(`config.$DOMAIN_DEV`)"
 
 # ENTRYPOINT
 entryPoints:
@@ -30,22 +30,29 @@ entryPoints:
 
 ## HTTPS & TLS
 certificatesResolvers:
-  httpresolver:
+  testResolver:
     acme:
       caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      email: webmaster@huybrechts.xyz
+      storage: "/app/data/acme-test.json"
+      httpChallenge:
+        entryPoint: "web"
+  httpResolver:
+    acme:
+      caserver: https://acme-v02.api.letsencrypt.org/directory
       email: webmaster@huybrechts.xyz
       storage: "/app/data/acme-http.json"
       httpChallenge:
         entryPoint: "web"
-  letlsresolver:
+  tlsResolver:
     acme:
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      caServer: https://acme-v02.api.letsencrypt.org/directory
       email: webmaster@huybrechts.xyz
-      storage: "/app/data/acme-letls.json"
+      storage: "/app/data/acme-tls.json"
       tlsChallenge: true
-  versioresolver:
+  versioResolver:
     acme:
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      caServer: https://acme-v02.api.letsencrypt.org/directory
       email: webmaster@huybrechts.xyz
       storage: "/app/data/acme-versio.json"
       dnsChallenge:

@@ -1,130 +1,34 @@
-# ---------------------
-# ENVIRONMENT VARIABLES
-# ---------------------
-  # APP_PATH                -> App root dir
-  # APP_PATH_DATA           -> Data path for S3 storage
-  # APP_ROOT_USERNAME       -> email
-  # DATACENTER              -> develop/test/staging/production [Or region]
-  # DOCKER_MANAGER_COUNT    -> [Automated]
-  # DOCKER_MANAGER          -> manager
-  # DOCKER_WORKER           -> worker
-  # DOCKER_PUBLIC_IP        -> [Automated]
-  # DOMAIN_DEV              -> dev.localhost
-  # DOMAIN_XYZ              -> xzy.localhost
-  # DOMAIN_MEEUS            -> meeus.localhost
-  # DOMAIN_LIZARD           -> lizard.localhost
-  # ENVIRONMENT             -> develop
-  # HOSTNAME                -> [Automated]
-  # TRAEFIK_AUTH            -> blank | openid-auth | basic-auth
-  # TRAEFIK_RESOLVER        -> httpresolver | letlsresolver | versioresolver
-  # VERSIO_ENDPOINT         -> https://www.versio.nl/testapi/v1/
-  #
-# -------
-# SECRETS
-# -------
-  # APP_ROOT_USERNAME       -> admin
-  # APP_ROOT_PASSWORD       -> password
-  # APP_AUTH_GOOGLE         -> { "client_id": "admin", "client_secret": "password" }
-  # APP_SMTP_OPTIONS        -> { "host": "smtp.gmail.com", "port": 587, "username": "admin", "password": "password" }
-  # TRAEFIK_CLIENTID        -> admin
-  # TRAEFIK_CLIENTSECRET    -> password
-  # VERSIO_USERNAME         -> email
-  # VERSIO_PASSWORD         -> abc123
+secrets:
+  VERSIO_USERNAME:
+    external: true
+  VERSIO_PASSWORD:
+    external: true
 
 services:
 
-  consul:
-    image: hashicorp/consul:1.20
-    environment:
-      DATACENTER: ${DATACENTER}
-      DOMAIN_DEV: ${DOMAIN_DEV}
-      ENVIRONMENT: ${ENVIRONMENT}
-      HOSTNAME: ${HOSTNAME}
-      CONSUL_BIND_INTERFACE: eth0
-    command:
-      - consul
-      - agent
-      - -data-dir=/consul/data
-      - -config-dir=/consul/config
-      - -bootstrap-expect=${DOCKER_MANAGER_COUNT}
-      - -datacenter=${DATACENTER}
-      - -node=${HOSTNAME}
-      - -bind=0.0.0.0
-      - -advertise={{ GetPrivateIP }}
-    volumes:
-      - ${APP_PATH}/consul/conf:/consul/config
-      - ${APP_PATH}/consul/data:/consul/data
-    networks: 
-      - public
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
-    deploy:
-      mode: global
-      placement:
-        constraints:
-          - node.role==${DOCKER_MANAGER}
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: "1G"
-      labels:
-        - traefik.enable=true
-        - traefik.tags=${ENVIRONMENT}
-        - traefik.http.services.consul.loadbalancer.server.scheme=http
-        - traefik.http.services.consul.loadbalancer.server.port=8500
-        - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
-        - traefik.http.routers.consul.entrypoints=websecure
-        - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
-        - traefik.http.routers.consul.middlewares=${TRAEFIK_AUTH}
-
   traefik:
-    image: "traefik:v3.2"
+    image: "traefik:v3.3.6"
+    command: traefik --configFile=/etc/traefik/traefik-config.yml
     secrets:
-      - TRAEFIK_CLIENTID
-      - TRAEFIK_CLIENTSECRET
       - VERSIO_USERNAME
       - VERSIO_PASSWORD
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
+      VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
       VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
       VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
-      VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
-      TRAEFIK_AUTH: ${TRAEFIK_AUTH}
-      TRAEFIK_RESOLVER: ${TRAEFIK_RESOLVER}
-      TRAEFIK_CLIENTID_FILE: ${TRAEFIK_CLIENTID}
-      TRAEFIK_CLIENTSECRET_FILE: ${TRAEFIK_CLIENTSECRET}
-    command: traefik --configFile=/etc/traefik/treafik.yml
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${APP_PATH}/traefik/conf/traefik.${ENVIRONMENT}.yml:/etc/traefik/traefik.yml
+      - ${APP_PATH}/traefik/conf/traefik-config.yml:/etc/traefik/traefik-config.yml
       - ${APP_PATH}/traefik/data:/app/data
       - ${APP_PATH}/traefik/logs:/app/logs
     ports:
       - 80:80
       - 443:443
     networks:
-      - public
+      - wan
+      - lan
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
       interval: 15s
@@ -135,7 +39,7 @@ services:
       mode: global
       placement:
         constraints:
-          - node.role==${DOCKER_MANAGER}
+          - node.role==manager
       restart_policy:
         condition: on-failure
         delay: 10s
@@ -164,15 +68,6 @@ services:
         - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
         # Basic Auth Middleware
         - traefik.http.middlewares.basic-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU.
-        # Keycloak OpenId Plugin Middleware
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakURL=http://iam.${DOMAIN_DEV}:8080/
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientIDFile=${TRAEFIK_CLIENTID_FILE}
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientSecretFile=${TRAEFIK_CLIENTSECRET_FILE}
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.Scope=openid profile email
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.UseAuthHeader=false
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.IgnorePathPrefixes=/favicon.ico
         # Traefik dashboard
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
@@ -180,44 +75,47 @@ services:
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_RESOLVER}
-        - traefik.http.routers.traefik.middlewares=${TRAEFIK_AUTH}
+        - traefik.http.routers.traefik.middlewares=${TRAEFIK_MIDDLEWARES}
 
-  minio:
-    image: minio/minio  #quay.io/minio/minio:RELEASE.2024-12-18T13-15-44Z
-    secrets:
-      - APP_ROOT_USERNAME
-      - APP_ROOT_PASSWORD
+  consul:
+    image: hashicorp/consul:1.20
     environment:
+      DATACENTER: ${DATACENTER}
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
-      MINIO_ROOT_USER_FILE: /run/secrets/APP_ROOT_USERNAME
-      MINIO_ROOT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-      MINIO_PROMETHEUS_AUTH_TYPE: public
-    command: server /data --console-address ":9001"
+      HOSTNAMEID: ${HOSTNAMEID}
+      CONSUL_BIND_INTERFACE: eth0
+    command:
+      - consul
+      - agent
+      - -config-dir=/consul/config
+      - -data-dir=/consul/data
+      - -bootstrap-expect=${DOCKER_MANAGERS}
+      - -datacenter=${DATACENTER}
+      - -node=${HOSTNAMEID}
+      - -advertise={{ GetPrivateIP }}
     volumes:
-      - ${APP_PATH_DATA}:/data
-      - ${APP_PATH}/minio/logs:/root/.minio/logs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${APP_PATH}/consul/conf:/consul/config
+      - ${APP_PATH}/consul/data:/consul/data
     networks:
-      - public
+      - lan
     healthcheck:
-      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
       interval: 15s
-      timeout: 10s
+      timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 5s
     deploy:
-      mode: replicated
-      replicas: 1
+      mode: global
       placement:
         constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
+          - node.role == manager
       restart_policy:
         condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+        delay: 10s
+        max_attempts: 5
+        window: 60s
       update_config:
         parallelism: 1
         delay: 15s
@@ -232,457 +130,19 @@ services:
       resources:
         limits:
           cpus: "1.0"
-          memory: "2G"
+          memory: "1G"
       labels:
-        # Enable Traefik
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
-        # MinIO UI Service
-        - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
-        - traefik.http.services.minio-ui.loadbalancer.server.port=9001
-        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
-        - traefik.http.routers.minio-ui.entrypoints=websecure
-        - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_RESOLVER}
-        - traefik.http.routers.minio-ui.service=minio-ui
-        - traefik.http.routers.minio-ui.middlewares=${TRAEFIK_AUTH}
-        # MinIO Data Service
-        - traefik.http.services.minio-data.loadbalancer.server.scheme=http
-        - traefik.http.services.minio-data.loadbalancer.server.port=9000
-        - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
-        - traefik.http.routers.minio-data.entrypoints=websecure
-        - traefik.http.routers.minio-data.tls.certresolver=${TRAEFIK_RESOLVER}
-        - traefik.http.routers.minio-data.service=minio-data
-
-  minio-init:
-    image: minio/mc
-    secrets:
-      - APP_ROOT_USERNAME
-      - APP_ROOT_PASSWORD
-    environment:
-      MINIO_ROOT_USER_FILE: /run/secrets/APP_ROOT_USERNAME
-      MINIO_ROOT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-    entrypoint: /bin/sh "/etc/entrypoint.sh"
-    volumes:
-      - ${APP_PATH}/minio/conf/minio-init.sh:/etc/entrypoint.sh
-    networks:
-      - public
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: none # Ensure this runs only once
-      labels:
-        - traefik.enable=false
-
-  postgres:
-    image: postgres
-    secrets:
-      - APP_ROOT_USERNAME
-      - APP_ROOT_PASSWORD
-    environment:
-      DOMAIN_DEV: ${DOMAIN_DEV}
-      ENVIRONMENT: ${ENVIRONMENT}
-      PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_DB: xyzdb
-      POSTGRES_USER_FILE: /run/secrets/APP_ROOT_USERNAME
-      POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-    volumes:
-      - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
-    networks:
-      - public
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d xyzdb -U $$(cat /run/secrets/APP_ROOT_USERNAME)"]
-      interval: 1s
-      timeout: 5s
-      retries: 10
-      start_period: 5s
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2G"
-      labels:
-        - traefik.enable=false
-
-  postgres-init:
-    image: postgres
-    secrets:
-      - APP_ROOT_USERNAME
-      - APP_ROOT_PASSWORD
-    environment:
-      POSTGRES_DB: xyzdb
-      POSTGRES_URL: postgres
-      POSTGRES_USER_FILE: /run/secrets/APP_ROOT_USERNAME
-      POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-    entrypoint: usr/local/bin/entrypoint.sh
-    volumes:
-      - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
-      - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
-    networks:
-      - public
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: none # Ensure this runs only once
-      labels:
-        - traefik.enable=false
-
-  pgadmin:
-    image: dpage/pgadmin4
-    secrets:
-      - APP_ROOT_PASSWORD
-    environment:
-      DOMAIN_DEV: ${DOMAIN_DEV}
-      ENVIRONMENT: ${ENVIRONMENT}
-      PGADMIN_LISTEN_PORT: 9080
-      PGADMIN_DEFAULT_EMAIL: ${APP_ROOT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-      SCRIPT_NAME: /pgadmin
-    volumes:
-      - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
-    networks:
-      - public
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
-      interval: 15s
-      retries: 3
-      timeout: 5s
-      start_period: 10s
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2G"
-      labels:
-        # Enable Traefik
-        - traefik.enable=true
-        - traefik.tags=${ENVIRONMENT}
-        - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
-        - traefik.http.services.pgadmin.loadbalancer.server.port=9080
-        - traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
-        - traefik.http.routers.pgadmin.entrypoints=websecure
-        - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_RESOLVER}
-        - traefik.http.routers.pgadmin.middlewares=${TRAEFIK_AUTH}
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.0
-    secrets:
-      - APP_ROOT_USERNAME
-      - APP_ROOT_PASSWORD
-    environment:
-      DOMAIN_DEV: ${DOMAIN_DEV}
-      ENVIRONMENT: ${ENVIRONMENT}
-      KC_LOG: console #,file
-      KC_LOG_LEVEL: INFO
-      #KC_LOG_FILE: /home/keycloak.log
-      KC_HTTP_ENABLED: "true"
-      KC_HTTPS_ENABLED: "false"
-      KC_HOSTNAME: https://iam.${DOMAIN_DEV}
-      KC_HOSTNAME_STRICT: "false"
-      KC_HEALTH_ENABLED: "true"
-      KC_METRICS_ENABLED: "true"
-      KC_HTTP_METRICS_HISTOGRAMS_ENABLED: "true"
-      KC_EVENT_METRICS_USER_ENABLED: "true"
-      KC_TRACING_ENABLED: "true"
-      KC_TRACING_PROPAGATORS: tracecontext,baggage
-      KC_TRACING_SAMPLER: always_on
-      KC_TRACING_ENDPOINT: http://telemetry:4317
-      KC_DB: postgres
-      KC_DB_URL_HOST: postgres
-      KC_DB_URL_DATABASE: xyzdb
-      KC_DB_SCHEMA: keycloak
-      KC_DB_USERNAME_FILE: /run/secrets/APP_ROOT_USERNAME
-      KC_DB_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-      KC_BOOTSTRAP_ADMIN_USERNAME_FILE: /run/secrets/APP_ROOT_USERNAME
-      KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-    entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true --features=opentelemetry #--import-realm
-    volumes:
-      - ${APP_PATH}/keycloak/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
-      #- ${APP_PATH}/keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
-    networks:
-      - public
-    healthcheck:
-      test: ["CMD", "bash", "-c", "[ $$(/opt/keycloak/bin/kcadm.sh get serverinfo --realm Keycloak --fields '*' --server http://localhost:8080/admin/serverinfo 2>&1 | grep Unauthorized | wc -l ) -eq 1 ]"]
-      interval: 15s
-      retries: 3
-      timeout: 5s
-      start_period: 30s
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2G"
-      labels:
-        # Enable Traefik
-        - traefik.enable=true
-        - traefik.tags=${ENVIRONMENT}
-        - traefik.http.services.keycloak.loadbalancer.server.scheme=http
-        - traefik.http.services.keycloak.loadbalancer.server.port=8080
-        - traefik.http.routers.keycloak.rule=Host(`iam.${DOMAIN_DEV}`)
-        - traefik.http.routers.keycloak.entrypoints=websecure
-        - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
-        - traefik.http.routers.keycloak.middlewares=${TRAEFIK_AUTH}
-
-  telemetry:
-    image: grafana/otel-lgtm
-    environment:
-      GF_PATHS_DATA: /data/grafana
-    volumes:
-      - ${APP_PATH}/telemetry/conf/otelcol-config.yml:/otel-lgtm/otelcol-config.yaml:ro
-      - ${APP_PATH}/telemetry/conf/prometheus.yml:/otel-lgtm/prometheus.yaml:ro
-      - ${APP_PATH}/telemetry/conf/tempo-config.yml:/otel-lgtm/tempo-config.yaml:ro
-      - ${APP_PATH}/telemetry/conf/loki-config.yml:/otel-lgtm/loki-config.yaml:ro
-      - ${APP_PATH}/telemetry/grafana:/data/grafana
-      - ${APP_PATH}/telemetry/prometheus:/data/prometheus
-      - ${APP_PATH}/telemetry/loki:/data/loki
-      - ${APP_PATH}/telemetry/tempo:/data/tempo
-    networks:
-      - public
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2G"
-      labels:
-        # Enable Traefik
-        - traefik.enable=true
-        - traefik.tags=${ENVIRONMENT}
-        - traefik.http.services.telemetry.loadbalancer.server.scheme=http
-        - traefik.http.services.telemetry.loadbalancer.server.port=3000
-        - traefik.http.routers.telemetry.rule=Host(`logs.${DOMAIN_DEV}`)
-        - traefik.http.routers.telemetry.entrypoints=websecure
-        - traefik.http.routers.telemetry.tls.certresolver=${TRAEFIK_RESOLVER}
-        - traefik.http.routers.telemetry.middlewares=${TRAEFIK_AUTH}
-
-  promtail:
-    image: grafana/promtail:latest
-    command: -config.file=/etc/promtail/promtail-config.yml
-    volumes:
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - ${APP_PATH}/telemetry/conf/promtail-config.yml:/etc/promtail/promtail-config.yml
-      - ${APP_PATH}/telemetry/promtail:/tmp
-    networks:
-      - public
-    deploy:
-      mode: replicated
-      replicas: ${DOCKER_MANAGER_COUNT}
-      placement:
-        constraints:
-          - node.role==${DOCKER_MANAGER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2G"
-      labels:
-        - traefik.enable=false
-
-  website:
-    image: huybrechts/website:${environment}
-    secrets:
-      - APP_ROOT_USERNAME
-      - APP_ROOT_PASSWORD
-      - APP_AUTH_GOOGLE
-      - APP_SMTP_OPTIONS
-      # - APP_HOST_EMAIL
-      # - APP_DATA_URL
-      # - APP_DATA_NAME
-      # - APP_DATA_USERNAME
-      # - APP_DATA_PASSWORD
-      # - APP_AUTH_GOOGLE
-      # - APP_SMTP_OPTIONS
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      DOTNET_RUNNING_IN_CONTAINER: 1
-      APP_ROOT_EMAIL: ${APP_ROOT_EMAIL}
-      APP_AUTH_GOOGLE: /run/secrets/APP_AUTH_GOOGLE
-      APP_SMTP_OPTIONS: /run/secrets/APP_SMTP_OPTIONS
-      APP_DATA_NAME: "xyzdb"
-      APP_DATA_USERNAME: /run/secrets/APP_ROOT_USERNAME
-      APP_DATA_PASSWORD: /run/secrets/APP_ROOT_PASSWORD
-      APP_HOST_EMAIL: APP_ROOT_EMAIL
-      APP_HOST_USERNAME: /run/secrets/APP_ROOT_USERNAME
-      APP_HOST_PASSWORD: /run/secrets/APP_ROOT_PASSWORD
-      # - APP_DATA_URL=/run/secrets/APP_DATA_URL
-    volumes:
-      - ${APP_PATH}/website/cert:/app/cert
-      - ${APP_PATH}/website/data:/app/data
-      - ${APP_PATH}/website/logs:/app/logs
-    networks:
-      - public
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2G"
-      labels:
-        # Enable Traefik
-        - traefik.enable=true
-        - traefik.tags=${ENVIRONMENT}
-        - traefik.http.services.website.loadbalancer.server.scheme=http
-        - traefik.http.serviceswebsite.loadbalancer.server.port=8080
-        - traefik.http.routers.website.rule=Host(`${DOMAIN_DEV}`)
-        - traefik.http.routers.website.entrypoints=websecure
-        - traefik.http.routers.website.tls.certresolver=${TRAEFIK_RESOLVER}
-        - traefik.http.routers.website.middlewares=${TRAEFIK_AUTH}
+        - traefik.http.services.consul.loadbalancer.server.scheme=http
+        - traefik.http.services.consul.loadbalancer.server.port=8500
+        - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
+        - traefik.http.routers.consul.entrypoints=websecure
+        - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.consul.middlewares=${TRAEFIK_MIDDLEWARES}
 
 networks:
-  public:
+  wan:
     external: true
-
-secrets:
-  APP_ROOT_USERNAME:
-    external: true
-  APP_ROOT_PASSWORD:
-    external: true
-  TRAEFIK_CLIENTID:
-    external: true
-  TRAEFIK_CLIENTSECRET:
-    external: true
-  VERSIO_USERNAME:
-    external: true
-  VERSIO_PASSWORD:
+  lan:
     external: true

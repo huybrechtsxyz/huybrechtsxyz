@@ -1,0 +1,166 @@
+# Configure docker swarm cluster
+name: _ConfigureSwarmTask
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      BITWARDEN_TOKEN:
+        required: true
+
+jobs:
+  download:
+    name: Download Terraform Output
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    outputs:
+      matrix: ${{ steps.parse.outputs.matrix }}
+    steps:
+      # Download Terraform Output
+      - name: Download Terraform Output
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-output-${{ inputs.environment }}
+          path: ./tmp
+      
+      # Check if the artifact exists
+      - name: Check if tf_output.json exists
+        run: |
+          if [ ! -f ./tmp/tf_output.json ]; then
+            echo "Artifact terraform-${{ inputs.environment }}-output not found or tf_output.json missing. Exiting."
+            exit 1
+          fi
+
+      # Parse Terraform Output to find Swarm Servers
+      - name: Parse Swarm Servers
+        id: parse
+        run: |
+          matrix=$(jq -c '.include' ./tmp/tf_output.json)
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+
+  configure:
+    name: Configure Swarm Servers
+    needs: [ download ]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.download.outputs.matrix) }}
+    steps:
+      # Check out the repo
+      - name: Check Out
+        uses: actions/checkout@v4
+
+      # Load environment variables from .env file
+      - name: Get Environment Variables
+        run: |
+          set -a  # automatically export all variables
+          source ./src/${{ inputs.environment }}.env
+          set +a
+
+      # Set up GitHub Secrets
+      - name: Get Secrets
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            f53a76ab-b87f-4af0-9aa4-b2d1016aba2b > VERSIO_USERNAME
+            f3d7bbfcd-18a5-4762-9064-b2d1016aef63 > VERSIO_PASSWORD
+
+      # Set up GitHub Secrets for Test Environment
+      - name: Get Test Secrets
+        if: ${{ inputs.environment == 'test' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            f16fffe2-77b7-4d20-bf6c-b2c9015c71d3 > KAMATERA_PRIVATE_KEY
+
+      # Set up GitHub Secrets for Staging Environment
+      - name: Get Staging Secrets
+        if: ${{ inputs.environment == 'staging' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            0c1f1f1c-456b-47d5-aad4-b2c9015ca6dc > KAMATERA_PRIVATE_KEY
+
+      # Set up GitHub Secrets for Production Environment
+      - name: Get Production Secrets
+        if: ${{ inputs.environment == 'production' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            02ed2dea7-b72e-401b-ae7e-b2c9015cd76e > KAMATERA_PRIVATE_KEY
+
+      # Set up SSH connection
+      - name: Set up SSH connection
+        run: |
+          mkdir -p ~/.ssh
+          echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      # Configure Swarm Server
+      - name: Configure Server
+        run: |
+          echo "[*] Generating configuration script..."
+          #envsubst < "./scripts/configure.template.sh" > "./scripts/configure.sh"
+          
+          echo "[*] Copying variables to remote server..."
+          cat <<EOF > /tmp/secrets.env
+          VERSIO_USERNAME=$version_username
+          VERSIO_PASSWORD=$version_password
+          EOF
+
+          # Copy secrets to remote server
+          scp -o StrictHostKeyChecking=no /tmp/secrets.env root@${{ matrix.ip }}:/tmp/secrets.env || {
+            echo "[x] Failed to transfer variables to remote server"
+            exit 1
+          }
+
+          # Copy environment variables to remote server
+          scp -o StrictHostKeyChecking=no ./src/${{ inputs.environment }}.env root@${{ matrix.ip }}:/tmp/variables.env || {
+            echo "[x] Failed to transfer variables to remote server"
+            exit 1
+          }
+
+          # Copy the configuration script to the remote server
+          echo "[*] Copying configuration script to remote server..."
+          scp -o StrictHostKeyChecking=no "./scripts/configure.sh" root@${{ matrix.ip }}:/tmp/configure.sh || {
+            echo "[x] Failed to transfer configuration script to remote server"
+            exit 1
+          }
+
+          # Copy the SSH key to the remote server
+          echo "[*] Executing configuration script remotely..."
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+            chmod +x /tmp/configure.sh
+            /tmp/configure.sh
+          EOF
+
+          # Copy /src to /app
+          echo "[*] Copying source to remote server..."
+          find ./src -maxdepth 1 -type f -exec scp -o StrictHostKeyChecking=no {} root@${{ matrix.ip }}:/app/ \;
+          scp -o StrictHostKeyChecking=no ./scripts/startenv.sh root@${{ matrix.ip }}:/app/startenv.sh
+          scp -o StrictHostKeyChecking=no ./scripts/stopenv.sh root@${{ matrix.ip }}:/app/stopenv.sh
+
+          # TRAEFIK
+          echo "[*] Deploying TRAEFIK to remote server..."
+          envsubst '${DOMAIN} ${EMAIL}' < "./src/traefik/traefik-conf.template.yml" > "./src/traefik/traefik-conf.yml"
+          rm -f "./src/traefik/traefik-conf.template.yml"
+          scp -o StrictHostKeyChecking=no "./src/traefik/*" root@${{ matrix.ip }}:/app/traefik/conf/* || {
+            echo "[x] Failed to transfer traefik configuration to remote server"
+            exit 1
+          }
+          echo "[*] Deploying TRAEFIK to remote server...DONE"
+
+          # Cleanup
+          echo "[*] Cleanup temporary files..."
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+            rm -f /tmp/variables.env
+            rm -f /tmp/secrets.env
+          EOF
+          echo "[*] Cleanup temporary files...DONE"

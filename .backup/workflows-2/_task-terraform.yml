@@ -24,8 +24,15 @@ jobs:
       tf_output: ${{ steps.tfapply.outputs.tf_output }}
     steps:
       # Check out the repo
-      - name: Check out the repo
+      - name: Check Out
         uses: actions/checkout@v4
+
+      - name: Restore Terraform output from cache
+        id: restore-cache
+        uses: actions/cache@v4
+        with:
+          path: tf_output.json
+          key: terraform-output-${{ inputs.environment }}
 
       # Set up GitHub Secrets
       - name: Get Environment Secrets
@@ -111,6 +118,22 @@ jobs:
           # Get the output
           echo "Reading Terraform output..."
           echo $(terraform output -json outputdata)
+          terraform output -json outputdata | jq -c '.' > tf_output.json
           MATRIX=$(terraform output -json outputdata | jq -c '.')
           echo $MATRIX
           echo "tf_output=$MATRIX" >> "$GITHUB_OUTPUT"
+
+      # Upload the Terraform output as an artifact
+      - name: Upload Terraform Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-output-${{ inputs.environment }}
+          path: ./deploy/tf_output.json
+          if-no-files-found: error
+
+      # Upload the Terraform output as a job output
+      - name: Cache Terraform Output
+        uses: actions/cache@v4
+        with:
+          path: ./deploy/tf_output.json
+          key: terraform-output-${{ inputs.environment }}
