@@ -649,15 +649,44 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.download.outputs.matrix) }}
     steps:
-      # Start the environment
-      - name: Start Environment
-        if: ${{ matrix.label == 'manager_1' }}
-        run: |  
-          echo "[*] Set up SSH Connection..."
+      # Set up GitHub Secrets for Test Environment
+      - name: Get Test Secrets
+        if: ${{ inputs.environment == 'test' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            f16fffe2-77b7-4d20-bf6c-b2c9015c71d3 > KAMATERA_PRIVATE_KEY
+
+      # Set up GitHub Secrets for Staging Environment
+      - name: Get Staging Secrets
+        if: ${{ inputs.environment == 'staging' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            0c1f1f1c-456b-47d5-aad4-b2c9015ca6dc > KAMATERA_PRIVATE_KEY
+
+      # Set up GitHub Secrets for Production Environment
+      - name: Get Production Secrets
+        if: ${{ inputs.environment == 'production' }}
+        uses: bitwarden/sm-action@v2
+        with:  
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            02ed2dea7-b72e-401b-ae7e-b2c9015cd76e > KAMATERA_PRIVATE_KEY
+
+      # Set up GitHub Secrets for Environment
+      - name: Set up SSH connection
+        run: |
           mkdir -p ~/.ssh
           echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
+      # Start the environment
+      - name: Start Environment
+        if: ${{ matrix.label == 'manager_1' }}
+        run: |
           echo "[*] Starting Environment..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             cd /app
