@@ -12,10 +12,10 @@ createpath() {
       echo "[x] Error: Failed to create directory '$newpath'"
       return 1
     fi
-
-    echo "[*] Setting permissions on $newpath"
-    sudo chmod -R 777 "$newpath"
   fi
+
+  echo "[*] Setting permissions on $newpath"
+  sudo chmod -R 777 "$newpath"
 
   return 0
 }

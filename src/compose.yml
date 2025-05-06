@@ -15,6 +15,7 @@ services:
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
+      VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
       VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
       VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
     volumes:
@@ -87,8 +88,8 @@ services:
     command:
       - consul
       - agent
-      - -config_dir=/consul/config
-      - -data_dir=/consul/data
+      - -config-dir=/consul/config
+      - -data-dir=/consul/data
       - -bootstrap-expect=${DOCKER_MANAGERS}
       - -datacenter=${DATACENTER}
       - -node=${HOSTNAMEID}

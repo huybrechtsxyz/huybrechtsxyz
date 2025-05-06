@@ -28,6 +28,9 @@ for service in "${services[@]}"; do
     clear_logs "$service"
 done
 
+echo "Setting permissions for directories..."
+chmod -R 777 /app/consul/config/data
+
 echo "Loading environment variables..."
 if [[ -f "$environment_file" ]]; then
     export $(grep -v '^#' "$environment_file" | xargs)
