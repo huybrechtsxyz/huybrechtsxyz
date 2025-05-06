@@ -534,11 +534,13 @@ jobs:
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             chmod +x /tmp/configure.sh
             /tmp/configure.sh
+            cp /tmp/variables.env /app/.env
           EOF
 
           # Copy /src to /app
           echo "[*] Copying source to remote server..."
-          find ./src -maxdepth 1 -type f -exec scp -o StrictHostKeyChecking=no {} root@${{ matrix.ip }}:/app/ \;
+          #find ./src -maxdepth 1 -type f -exec scp -o StrictHostKeyChecking=no {} root@${{ matrix.ip }}:/app/ \;
+          scp -o StrictHostKeyChecking=no ./src/*.yml root@${{ matrix.ip }}:/app
           scp -o StrictHostKeyChecking=no ./scripts/startenv.sh root@${{ matrix.ip }}:/app/startenv.sh
           scp -o StrictHostKeyChecking=no ./scripts/stopenv.sh root@${{ matrix.ip }}:/app/stopenv.sh
 
@@ -574,9 +576,12 @@ jobs:
           echo "[*] Finishing configuration..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             # Set environment file
-            cp -f /app/${{ inputs.environment }}.env /app/.env
+            cp -f /tmp/${{ inputs.environment }}.env /app/.env
+            
             # Set permissions for the app directory
             chown -R 777 /app
+            chmod -R 600 /app/traefik/data
+
             # Remove temporary files
             rm -f /tmp/variables.env
             rm -f /tmp/secrets.env

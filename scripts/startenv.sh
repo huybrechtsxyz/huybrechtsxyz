@@ -28,11 +28,12 @@ for service in "${services[@]}"; do
     clear_logs "$service"
 done
 
+# Set permissions for specific directories
 echo "Setting permissions for directories..."
 chmod -R 600 /app/traefik/data
-chmod -R 777 /app/consul/conf
-chmod -R 777 /app/consul/data
+chmod -R 777 /app/consul
 
+# Loading environment variables
 echo "Loading environment variables..."
 if [[ -f "$environment_file" ]]; then
     export $(grep -v '^#' "$environment_file" | xargs)
@@ -43,6 +44,7 @@ DOCKER_MANAGERS=$(docker node ls --filter "role=manager" --format '{{.Hostname}}
 export DOCKER_MANAGERS=$DOCKER_MANAGERS
 echo "Number of Docker manager nodes: $DOCKER_MANAGERS"
 
+# Start Docker Swarm if not already running
 echo "Validating Docker Compose..."
 docker compose -f "$compose_file" --env-file "$environment_file" config > config.log || exit 1
 
