@@ -472,6 +472,7 @@ jobs:
           access_token: ${{ secrets.BITWARDEN_TOKEN }}
           secrets: |
             f16fffe2-77b7-4d20-bf6c-b2c9015c71d3 > KAMATERA_PRIVATE_KEY
+            5083ae32-429d-428b-b7df-b2c901441bbb > APP_ROOT_PASSWORD
 
       # Set up GitHub Secrets for Staging Environment
       - name: Get Staging Secrets
@@ -481,6 +482,7 @@ jobs:
           access_token: ${{ secrets.BITWARDEN_TOKEN }}
           secrets: |
             0c1f1f1c-456b-47d5-aad4-b2c9015ca6dc > KAMATERA_PRIVATE_KEY
+            924b9526-a6cf-43c1-93a9-b2c9014494ae > APP_ROOT_PASSWORD
 
       # Set up GitHub Secrets for Production Environment
       - name: Get Production Secrets
@@ -490,6 +492,7 @@ jobs:
           access_token: ${{ secrets.BITWARDEN_TOKEN }}
           secrets: |
             02ed2dea7-b72e-401b-ae7e-b2c9015cd76e > KAMATERA_PRIVATE_KEY
+            6db5856c-3f7f-4b62-9846-b2c90144cb0b > APP_ROOT_PASSWORD
 
       # Set up SSH connection
       - name: Set up SSH connection
@@ -506,6 +509,7 @@ jobs:
           
           echo "[*] Copying variables to remote server..."
           cat <<EOF > /tmp/secrets.env
+          APP_ROOT_PASSWORD=$APP_ROOT_PASSWORD
           VERSIO_USERNAME=$VERSIO_USERNAME
           VERSIO_PASSWORD=$VERSIO_PASSWORD
           EOF
@@ -532,6 +536,42 @@ jobs:
           # Execute the configuration script remotely
           echo "[*] Executing configuration script remotely..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+            # Function to create a path if it does not already exist
+            createpath() {
+              local newpath="$1"
+
+              if [ ! -d "$newpath" ]; then
+                echo "[*] Creating directory: $newpath"
+                if ! mkdir -p "$newpath"; then
+                  echo "[x] Error: Failed to create directory '$newpath'"
+                  return 1
+                fi
+              fi
+
+              echo "[*] Setting permissions on $newpath"
+              sudo chmod -R 777 "$newpath"
+
+              return 0
+            }
+
+            # Create the necessary directories
+            createpath "/app"
+
+            createpath "/app/traefik"
+            createpath "/app/traefik/conf"
+            createpath "/app/traefik/data"
+            createpath "/app/traefik/logs"
+            
+            createpath "/app/consul"
+            createpath "/app/consul/conf"
+            createpath "/app/consul/data"
+
+            createpath "/app/postgres"
+            createpath "/app/postgres/conf"
+            createpath "/app/postgres/data"
+            createpath "/app/postgres/admin"
+            createpath "/app/postgres/backups"
+
             chmod +x /tmp/configure.sh
             /tmp/configure.sh
             cp /tmp/variables.env /app/.env
@@ -569,6 +609,17 @@ jobs:
             exit 1
           }
           echo "[*] Deploying CONSUL to remote server...DONE"
+
+      # Configure Postgres Server
+      - name: Configure Postgres
+        run: |
+          # POSTGRES
+          echo "[*] Deploying POSTGRES to remote server..."
+          scp -o StrictHostKeyChecking=no ./src/postgres/* root@${{ matrix.ip }}:/app/postgres/conf/ || {
+            echo "[x] Failed to transfer postgres configuration to remote server"
+            exit 1
+          }
+          echo "[*] Deploying POSTGRES to remote server...DONE"
 
       # Finish Configuration
       - name: Finish Configuration

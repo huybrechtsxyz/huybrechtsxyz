@@ -2,24 +2,6 @@
 
 set -euo pipefail
 
-# Function to create a path if it does not already exist
-createpath() {
-  local newpath="$1"
-
-  if [ ! -d "$newpath" ]; then
-    echo "[*] Creating directory: $newpath"
-    if ! mkdir -p "$newpath"; then
-      echo "[x] Error: Failed to create directory '$newpath'"
-      return 1
-    fi
-  fi
-
-  echo "[*] Setting permissions on $newpath"
-  sudo chmod -R 777 "$newpath"
-
-  return 0
-}
-
 # Function to check if a Docker secret is in use
 issecretinuse() {
   local secret_name="$1"
@@ -106,19 +88,6 @@ main() {
     createnetwork "lan"
     loadsecrets
   fi
-
-  echo "[*] Creating base paths..."
-  cd /
-  createpath "/app"
-
-  createpath "/app/traefik"
-  createpath "/app/traefik/conf"
-  createpath "/app/traefik/data"
-  createpath "/app/traefik/logs"
-  
-  createpath "/app/consul/"
-  createpath "/app/consul/conf"
-  createpath "/app/consul/data"
 }
 
 main

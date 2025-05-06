@@ -1,4 +1,6 @@
 secrets:
+  APP_ROOT_PASSWORD:
+    external: true
   VERSIO_USERNAME:
     external: true
   VERSIO_PASSWORD:
@@ -140,6 +142,57 @@ services:
         - traefik.http.routers.consul.entrypoints=websecure
         - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.consul.middlewares=${TRAEFIK_MIDDLEWARES}
+
+  postgres:
+    image: postgres
+    secrets:
+      - APP_ROOT_PASSWORD
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: xyzdb
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+    volumes:
+      - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d xyzdb -U root"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "2G"
+      labels:
+        - traefik.enable=false
 
 networks:
   wan:
