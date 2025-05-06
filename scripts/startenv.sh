@@ -29,7 +29,9 @@ for service in "${services[@]}"; do
 done
 
 echo "Setting permissions for directories..."
-chmod -R 777 /app/consul/config/data
+chmod -R 600 /app/traefik/data
+chmod -R 777 /app/consul/conf
+chmod -R 777 /app/consul/data
 
 echo "Loading environment variables..."
 if [[ -f "$environment_file" ]]; then
