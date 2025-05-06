@@ -194,6 +194,66 @@ services:
       labels:
         - traefik.enable=false
 
+  pgadmin:
+    image: dpage/pgadmin4
+    secrets:
+      - APP_ROOT_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      PGADMIN_LISTEN_PORT: 9080
+      PGADMIN_DEFAULT_EMAIL: ${APP_ROOT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+      SCRIPT_NAME: /pgadmin
+    volumes:
+      - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
+      interval: 15s
+      retries: 3
+      timeout: 5s
+      start_period: 10s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "2G"
+      labels:
+        # Enable Traefik
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
+        - traefik.http.services.pgadmin.loadbalancer.server.port=9080
+        - traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
+        - traefik.http.routers.pgadmin.entrypoints=websecure
+        - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.pgadmin.middlewares=${TRAEFIK_MIDDLEWARES}
+
 networks:
   wan:
     external: true
