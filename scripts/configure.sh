@@ -115,6 +115,7 @@ main() {
   createpath "/app/traefik/conf"
   createpath "/app/traefik/data"
   createpath "/app/traefik/logs"
+  chmod -R 600 /app/traefik/data
   
   createpath "/app/consul/"
   createpath "/app/consul/conf"
