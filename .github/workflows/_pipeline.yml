@@ -600,7 +600,7 @@ jobs:
     steps:
       # Start the environment
       - name: Start Environment
-        if: ${{ fromJson(needs.download.outputs.matrix).label == 'manager_1' }}
+        if: ${{ matrix.label == 'manager_1' }}
         run: |  
           echo "[*] Set up SSH Connection..."
           mkdir -p ~/.ssh
