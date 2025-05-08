@@ -17,6 +17,7 @@ services:
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
+      VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
       VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
       VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
     volumes:
@@ -57,10 +58,10 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: "512M"
+      # resources:
+      #   limits:
+      #     cpus: "1.0"
+      #     memory: "512M"
       labels:
         # Enable Traefik
         - traefik.enable=true
@@ -128,16 +129,16 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: "1G"
+      # resources:
+      #   limits:
+      #     cpus: "1.0"
+      #     memory: "1G"
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
         - traefik.http.services.consul.loadbalancer.server.scheme=http
         - traefik.http.services.consul.loadbalancer.server.port=8500
-        - traefik.http.routers.consul.rule=Host(`consul.${DOMAIN_DEV}`)
+        - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
         - traefik.http.routers.consul.entrypoints=websecure
         - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.consul.middlewares=${TRAEFIK_MIDDLEWARES}
@@ -185,10 +186,10 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2G"
+      # resources:
+      #   limits:
+      #     cpus: "2.0"
+      #     memory: "2G"
       labels:
         - traefik.enable=false
 
@@ -237,10 +238,10 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2G"
+      # resources:
+      #   limits:
+      #     cpus: "2.0"
+      #     memory: "2G"
       labels:
         # Enable Traefik
         - traefik.enable=true
