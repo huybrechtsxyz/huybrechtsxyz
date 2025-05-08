@@ -619,6 +619,11 @@ jobs:
             echo "[x] Failed to transfer postgres configuration to remote server"
             exit 1
           }
+          # Update the worker-1 node with the postgres tag
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+            POSTGRES_NODE=$(docker node ls --format '{{.Hostname}}' | grep "worker-1")
+            docker node update --label-add postgres=true $POSTGRES_NODE
+          EOF
           echo "[*] Deploying POSTGRES to remote server...DONE"
 
       # Finish Configuration

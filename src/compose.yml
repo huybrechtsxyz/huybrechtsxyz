@@ -168,8 +168,7 @@ services:
       placement:
         constraints:
           - node.role==${DOCKER_WORKER}
-        preferences:
-          - spread: node.id
+          - node.labels.postgres==true
       restart_policy:
         condition: on-failure
         delay: 10s
