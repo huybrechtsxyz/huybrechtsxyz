@@ -58,10 +58,10 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: "512M"
+      # resources:
+      #   limits:
+      #     cpus: "1.0"
+      #     memory: "512M"
       labels:
         # Enable Traefik
         - traefik.enable=true
@@ -129,10 +129,10 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: "1G"
+      # resources:
+      #   limits:
+      #     cpus: "1.0"
+      #     memory: "1G"
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
@@ -187,10 +187,10 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2G"
+      # resources:
+      #   limits:
+      #     cpus: "2.0"
+      #     memory: "2G"
       labels:
         - traefik.enable=false
 
@@ -239,10 +239,10 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2G"
+      # resources:
+      #   limits:
+      #     cpus: "2.0"
+      #     memory: "2G"
       labels:
         # Enable Traefik
         - traefik.enable=true
