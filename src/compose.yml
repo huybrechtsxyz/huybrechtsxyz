@@ -193,6 +193,33 @@ services:
       labels:
         - traefik.enable=false
 
+  postgres-init:
+    image: postgres
+    secrets:
+      - APP_ROOT_PASSWORD
+    environment:
+      POSTGRES_DB: xyzdb
+      POSTGRES_URL: postgres
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+    entrypoint: usr/local/bin/entrypoint.sh
+    volumes:
+      - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
+      - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
+    networks:
+      - lan
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.postgres==true
+      restart_policy:
+        condition: none # Ensure this runs only once
+      labels:
+        - traefik.enable=false
+
   pgadmin:
     image: dpage/pgadmin4
     secrets:
