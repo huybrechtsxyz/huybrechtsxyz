@@ -1,4 +1,6 @@
 secrets:
+  APP_ROOT_PASSWORD:
+    external: true
   VERSIO_USERNAME:
     external: true
   VERSIO_PASSWORD:
@@ -56,10 +58,10 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: "512M"
+      # resources:
+      #   limits:
+      #     cpus: "1.0"
+      #     memory: "512M"
       labels:
         # Enable Traefik
         - traefik.enable=true
@@ -127,10 +129,10 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: "1G"
+      # resources:
+      #   limits:
+      #     cpus: "1.0"
+      #     memory: "1G"
       labels:
         - traefik.enable=true
         - traefik.tags=${ENVIRONMENT}
@@ -140,6 +142,143 @@ services:
         - traefik.http.routers.consul.entrypoints=websecure
         - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.consul.middlewares=${TRAEFIK_MIDDLEWARES}
+
+  postgres:
+    image: postgres
+    secrets:
+      - APP_ROOT_PASSWORD
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: xyzdb
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+    volumes:
+      - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
+    networks:
+      - lan
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d xyzdb -U root"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.postgres==true
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "2.0"
+      #     memory: "2G"
+      labels:
+        - traefik.enable=false
+
+  postgres-init:
+    image: postgres
+    secrets:
+      - APP_ROOT_PASSWORD
+    environment:
+      POSTGRES_DB: xyzdb
+      POSTGRES_URL: postgres
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+    entrypoint: usr/local/bin/entrypoint.sh
+    volumes:
+      - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
+      - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
+    networks:
+      - lan
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.postgres==true
+      restart_policy:
+        condition: none # Ensure this runs only once
+      labels:
+        - traefik.enable=false
+
+  pgadmin:
+    image: dpage/pgadmin4
+    secrets:
+      - APP_ROOT_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      PGADMIN_LISTEN_PORT: 9080
+      PGADMIN_DEFAULT_EMAIL: ${APP_ROOT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+      SCRIPT_NAME: /pgadmin
+    volumes:
+      - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
+    networks:
+      - lan
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
+      interval: 15s
+      retries: 3
+      timeout: 5s
+      start_period: 10s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "2.0"
+      #     memory: "2G"
+      labels:
+        # Enable Traefik
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
+        - traefik.http.services.pgadmin.loadbalancer.server.port=9080
+        - traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
+        - traefik.http.routers.pgadmin.entrypoints=websecure
+        - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.pgadmin.middlewares=${TRAEFIK_MIDDLEWARES}
 
 networks:
   wan:

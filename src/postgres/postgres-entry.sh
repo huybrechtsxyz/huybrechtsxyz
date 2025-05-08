@@ -2,12 +2,13 @@
 set -e
 
 # Read PostgreSQL credentials from secrets files
-if [ -f "/run/secrets/APP_ROOT_USERNAME" ]; then
-  POSTGRES_USER=$(cat /run/secrets/APP_ROOT_USERNAME)
-else
-  echo "Error: POSTGRES_USER secret file not found!" >&2
-  exit 1
-fi
+# if [ -f "/run/secrets/APP_ROOT_USERNAME" ]; then
+#   POSTGRES_USER=$(cat /run/secrets/APP_ROOT_USERNAME)
+# else
+#   echo "Error: POSTGRES_USER secret file not found!" >&2
+#   exit 1
+# fi
+POSTGRES_USER="root"
 
 if [ -f "/run/secrets/APP_ROOT_PASSWORD" ]; then
   POSTGRES_PASSWORD=$(cat /run/secrets/APP_ROOT_PASSWORD)

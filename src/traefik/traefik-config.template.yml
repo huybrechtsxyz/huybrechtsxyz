@@ -30,13 +30,21 @@ entryPoints:
 
 ## HTTPS & TLS
 certificatesResolvers:
-  testResolver:
+  testHttpResolver:
+    acme:
+      caserver: https://acme-staging-v02.api.letsencrypt.org/directory
+      email: webmaster@huybrechts.xyz
+      storage: "/app/data/acme-http-test.json"
+      httpChallenge:
+        entryPoint: "web"
+  testVersioResolver:
     acme:
       caServer: https://acme-staging-v02.api.letsencrypt.org/directory
       email: webmaster@huybrechts.xyz
-      storage: "/app/data/acme-test.json"
-      httpChallenge:
-        entryPoint: "web"
+      storage: "/app/data/acme-versio-test.json"
+      dnsChallenge:
+        provider: versio
+        delayBeforeCheck: 0
   httpResolver:
     acme:
       caserver: https://acme-v02.api.letsencrypt.org/directory
