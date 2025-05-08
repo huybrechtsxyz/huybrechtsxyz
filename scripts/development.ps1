@@ -70,6 +70,22 @@ function Invoke-Consul {
 }
 Invoke-Consul
 
+# Configure and run POSTGRES
+function Invoke-Postgres {
+    Write-Host 'Configuring POSTGRES ... for DOCKER'
+    $postgresDir = "$baseDir/postgres"
+    $postgresConf = "$postgresDir/conf"
+    $postgresData = "$postgresDir/data"
+    $postgresAdmin = "$postgresDir/admin"
+    $postgresBU = "$postgresDir/backups"
+    New-Item -ItemType Directory -Path $postgresDir, $postgresConf, $postgresData, $postgresAdmin, $postgresBU -Force
+
+    $postgresConf = Resolve-Path -Path $postgresConf
+    Copy-Item -Path "./src/postgres/*" -Destination $postgresConf -Recurse
+    Write-Host 'Configuring POSTGRES ... Done'
+}
+Invoke-Postgres
+
 Write-Host "Validating Docker Compose..."
 docker compose -f $composeFile --env-file $environmentFile config
 if ($LASTEXITCODE -ne 0) {
