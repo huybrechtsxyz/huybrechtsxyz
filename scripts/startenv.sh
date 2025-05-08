@@ -23,7 +23,7 @@ compose_file="/app/compose.yml"
 # Clear logs for "consul" "traefik" "minio" "postgres" "keycloak" "telemetry"
 echo "Clearing log directories..."
 rm -rf /app/config.log
-services=("traefik,consul,postgres,pgadmin")
+services=("traefik,consul,postgres,pgadmin,keycloak")
 for service in "${services[@]}"; do
     clear_logs "$service"
 done

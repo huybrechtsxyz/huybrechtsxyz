@@ -86,6 +86,19 @@ function Invoke-Postgres {
 }
 Invoke-Postgres
 
+# Configure and run KEYCLOAK
+function Invoke-Keycloak {
+    Write-Host 'Configuring KEYCLOAK ... for DOCKER'
+    $keycloakDir = "$baseDir/keycloak"
+    $keycloakConf = "$keycloakDir/conf"
+    New-Item -ItemType Directory -Path $keycloakDir, $keycloakConf -Force
+
+    $keycloakConf = Resolve-Path -Path $keycloakConf
+    Copy-Item -Path "./src/keycloak/*" -Destination $keycloakConf -Recurse
+    Write-Host 'Configuring KEYCLOAK ... Done'
+}
+Invoke-Keycloak
+
 Write-Host "Validating Docker Compose..."
 docker compose -f $composeFile --env-file $environmentFile config
 if ($LASTEXITCODE -ne 0) {

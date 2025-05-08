@@ -572,6 +572,9 @@ jobs:
             createpath "/app/postgres/admin"
             createpath "/app/postgres/backups"
 
+            createpath "/app/keycloak"
+            createpath "/app/keycloak/conf"
+
             chmod +x /tmp/configure.sh
             /tmp/configure.sh
             cp /tmp/variables.env /app/.env
@@ -629,6 +632,17 @@ jobs:
           docker node update --label-add postgres=true $POSTGRES_NODE
           EOF
           echo "[*] Deploying POSTGRES to remote server...DONE"
+
+      # Configure Keycloak Server
+      - name: Configure Keycloak
+        run: |
+          # KEYCLOAK
+          echo "[*] Deploying KEYCLOAK to remote server..."
+          scp -o StrictHostKeyChecking=no ./src/keycloak/* root@${{ matrix.ip }}:/app/keycloak/conf/ || {
+            echo "[x] Failed to transfer keycloak configuration to remote server"
+            exit 1
+          }
+          echo "[*] Deploying KEYCLOAK to remote server...DONE"
 
       # Finish Configuration
       - name: Finish Configuration
