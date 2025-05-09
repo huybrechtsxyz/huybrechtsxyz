@@ -713,6 +713,7 @@ jobs:
           echo "[*] Starting Environment..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             cd /app
+            ./stopenv.sh
             ./startenv.sh
           EOF
           echo "[*] Starting Environment...DONE"
