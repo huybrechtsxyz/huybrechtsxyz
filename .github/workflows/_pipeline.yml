@@ -463,6 +463,8 @@ jobs:
           secrets: |
             f53a76ab-b87f-4af0-9aa4-b2d1016aba2b > VERSIO_USERNAME
             3d7bbfcd-18a5-4762-9064-b2d1016aef63 > VERSIO_PASSWORD
+            5db70d74-c5db-459a-b916-b2d80126d8a3 > TRAEFIK_CLIENTID
+            f5eaa406-b7cb-4ea8-b260-b2d80127303d > TRAEFIK_SECRET
 
       # Set up GitHub Secrets for Test Environment
       - name: Get Test Secrets
@@ -512,6 +514,8 @@ jobs:
           APP_ROOT_PASSWORD=$APP_ROOT_PASSWORD
           VERSIO_USERNAME=$VERSIO_USERNAME
           VERSIO_PASSWORD=$VERSIO_PASSWORD
+          TRAEFIK_CLIENTID=$TRAEFIK_CLIENTID
+          TRAEFIK_SECRET=$TRAEFIK_SECRET
           EOF
 
           # Copy secrets to remote server
@@ -638,6 +642,9 @@ jobs:
         run: |
           # KEYCLOAK
           echo "[*] Deploying KEYCLOAK to remote server..."
+          # Generate realm.json
+          envsubst < ./src/keycloak/keycloak-realm.template.json > ./src/keycloak/keycloak-realm.json
+          # Copy the keycloak configuration to the remote server
           scp -o StrictHostKeyChecking=no ./src/keycloak/* root@${{ matrix.ip }}:/app/keycloak/conf/ || {
             echo "[x] Failed to transfer keycloak configuration to remote server"
             exit 1

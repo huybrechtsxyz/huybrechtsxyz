@@ -4,7 +4,7 @@ $SecretsPath = "$env:APPDATA\Microsoft\UserSecrets\$ProjectGuid\secrets.json"
 
 # FUNCTION: Apply variable template
 function Apply-Template {
-    params(
+    param(
         [string]$templateFile,
         [string]$configFile
     )
@@ -17,9 +17,11 @@ function Apply-Template {
     # Loop through each environment variable and apply the replacement
     foreach ($key in $envVars.Keys) {
         # Construct the pattern to match the $<VAR_NAME> in the template
-        $pattern = "\$($key)"
+        #$pattern = "\$($key)"
         # Replace the placeholder with the actual value of the environment variable
-        $templateContent = $templateContent -Replace $pattern, $envVars[$key]
+        #$templateContent = $templateContent -Replace $pattern, $envVars[$key]
+
+        $templateContent = $templateContent.Replace("`$($key)", "`$($envVars[$key])")
     }
 
     # Save the modified content to the config file

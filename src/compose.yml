@@ -1,6 +1,10 @@
 secrets:
   APP_ROOT_PASSWORD:
     external: true
+  TRAEFIK_CLIENTID:
+    external: true
+  TRAEFIK_SECRET:
+    external: true
   VERSIO_USERNAME:
     external: true
   VERSIO_PASSWORD:
@@ -14,12 +18,16 @@ services:
     secrets:
       - VERSIO_USERNAME
       - VERSIO_PASSWORD
+      - TRAEFIK_CLIENTID
+      - TRAEFIK_SECRET
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
       VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
       VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
       VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
+      TRAEFIK_CLIENTID_FILE: /run/secrets/TRAEFIK_CLIENTID
+      TRAEFIK_SECRET_FILE: /run/secrets/TRAEFIK_SECRET
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APP_PATH}/traefik/conf/traefik-config.yml:/etc/traefik/traefik-config.yml
@@ -70,6 +78,15 @@ services:
         - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
         # Basic Auth Middleware
         - traefik.http.middlewares.basic-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU.
+        # Keycloak OpenId Plugin Middleware
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakURL=http://iam.${DOMAIN_DEV}:8080/
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientIDFile=${TRAEFIK_CLIENTID_FILE}
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientSecretFile=${TRAEFIK_SECRET_FILE}
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.Scope=openid profile email
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.UseAuthHeader=false
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.IgnorePathPrefixes=/favicon.ico
         # Traefik dashboard
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
@@ -310,10 +327,10 @@ services:
       KC_DB_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
       KC_BOOTSTRAP_ADMIN_USERNAME: root
       KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-    entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true --features=opentelemetry #--import-realm
+    entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true --features=opentelemetry --import-realm
     volumes:
-      - ${APP_PATH}/keycloak/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
-      #- ${APP_PATH}/keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
+      - ${APP_PATH}/keycloak/conf/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
+      #- ${APP_PATH}/keycloak/conf/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
     networks:
       - lan
     healthcheck:
@@ -346,10 +363,10 @@ services:
         delay: 10s
         failure_action: continue
         monitor: 30s
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2G"
+      # resources:
+      #   limits:
+      #     cpus: "2.0"
+      #     memory: "2G"
       labels:
         # Enable Traefik
         - traefik.enable=true

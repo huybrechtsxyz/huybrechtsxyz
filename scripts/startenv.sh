@@ -65,6 +65,7 @@ done
 echo "Setting permissions for directories..."
 chmod -R 600 /app/traefik/data
 chmod -R 777 /app/consul
+chmod -R 777 /app/traefik
 
 # Loading environment variables
 echo "Loading environment variables..."
