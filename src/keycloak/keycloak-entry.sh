@@ -1,4 +1,3 @@
-#!/bin/bash
 #!/bin/sh
 
 process_file_env_vars() {
