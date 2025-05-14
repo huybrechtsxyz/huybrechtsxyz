@@ -664,8 +664,8 @@ jobs:
             chmod -R 600 /app/traefik/data
 
             # Remove temporary files
-            rm -f /tmp/variables.env
-            rm -f /tmp/secrets.env
+            #rm -f /tmp/variables.env
+            #rm -f /tmp/secrets.env
           EOF
           echo "[*] Cleanup temporary files...DONE"
 
