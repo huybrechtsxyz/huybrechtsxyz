@@ -63,9 +63,13 @@ done
 
 # Set permissions for specific directories
 echo "Setting permissions for directories..."
+chmod -R 755 /app
 chmod -R 600 /app/traefik/data
-chmod -R 777 /app/consul
-chmod -R 777 /app/traefik
+chmod -R 777 /app/traefik/logs
+chmod -R 777 /app/consul/data
+chmod -R 777 /app/postgres/data
+chmod -R 777 /app/postgres/admin
+chmod -R 777 /app/postgres/backups
 
 # Loading environment variables
 echo "Loading environment variables..."

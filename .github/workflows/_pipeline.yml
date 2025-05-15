@@ -660,8 +660,8 @@ jobs:
             cp -f /tmp/${{ inputs.environment }}.env /app/.env
             
             # Set permissions for the app directory
-            chown -R 777 /app
-            chmod -R 600 /app/traefik/data
+            # Correct permissions for the app directory are set in the startenv.sh script
+            chown -R 755 /app
 
             # Remove temporary files
             #rm -f /tmp/variables.env
