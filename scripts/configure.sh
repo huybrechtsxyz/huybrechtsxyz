@@ -2,6 +2,24 @@
 
 set -euo pipefail
 
+# Function to create a path if it does not already exist
+createpath() {
+  local newpath="$1"
+
+  if [ ! -d "$newpath" ]; then
+    echo "[*] Creating directory: $newpath"
+    if ! mkdir -p "$newpath"; then
+      echo "[x] Error: Failed to create directory '$newpath'"
+      return 1
+    fi
+  fi
+
+  echo "[*] Setting permissions on $newpath"
+  sudo chmod -R 777 "$newpath"
+
+  return 0
+}
+
 # Function to check if a Docker secret is in use
 issecretinuse() {
   local secret_name="$1"
@@ -81,13 +99,35 @@ loadsecrets() {
 main() {
   local hostname
   hostname=$(hostname)
-
   echo "[*] Configuring Swarn Node: $hostname..."
+  
+  # Create the necessary directories
+  createpath "/app"
+
+  createpath "/app/traefik"
+  createpath "/app/traefik/conf"
+  createpath "/app/traefik/data"
+  createpath "/app/traefik/logs"
+  
+  createpath "/app/consul"
+  createpath "/app/consul/conf"
+  createpath "/app/consul/data"
+
+  createpath "/app/postgres"
+  createpath "/app/postgres/conf"
+  createpath "/app/postgres/data"
+  createpath "/app/postgres/admin"
+  createpath "/app/postgres/backups"
+
+  createpath "/app/keycloak"
+  createpath "/app/keycloak/conf"
+
   if [[ "$hostname" == *"manager-1"* ]]; then
     createnetwork "wan"
     createnetwork "lan"
     loadsecrets
   fi
+  echo "[*] Configuring Swarn Node: $hostname...DONE"
 }
 
 main

@@ -1,9 +1,11 @@
 # This script runs the local development environment.
 # Run from the root of the repository.
-$APPPATH = "C:/Users/vince/Sources/huybrechtsxyz/.app"
+$RootPath = "C:/Users/vince/Sources/huybrechtsxyz"
+$SourcePath = "$RootPath/src"
+$AppPath = "$RootPath/.app"
 
 # Load the required modules
-. "$APPPATH/scripts/psfunctions.ps1"
+. "$RootPath/scripts/psfunctions.ps1"
 
 # Start development environment
 Write-Host 'Starting DEVELOPMENT environment...'
@@ -17,9 +19,15 @@ if ($docker -ne 'true') {
 Configure-Docker
 Update-Secrets
 
+# Basic paths
+Write-Host 'Creating APP directories...'
+New-Item -ItemType Directory -Path $AppPath -Force
+Copy-Item -Path "$SourcePath/compose.yml" -Destination "$AppPath/compose.yml" -Force
+Copy-Item -Path "$SourcePath/develop.env" -Destination "$AppPath/.env" -Force
+
 # Importing the .env file and exporting the variables
-$composeFile = "./src/compose.yml"
-$environmentFile = "./src/develop.env"
+$composeFile = "$AppPath/compose.yml"
+$environmentFile = "$SourcePath/develop.env"
 Write-Host "Environment variables are:" 
 $env:HOSTNAME=$env:COMPUTERNAME
 Write-Host " -- HOSTNAME: $env:HOSTNAME" 
@@ -33,25 +41,20 @@ if (Test-Path $environmentFile) {
     }
 }
 
-# Basic paths
-Write-Host 'Creating APP directories...'
-$baseDir = './.app'
-New-Item -ItemType Directory -Path $baseDir -Force
-
 # Configure and run Traefik
 function Invoke-Traefik {
     Write-Host 'Configuring TRAEFIK ... for DOCKER'
-    $traefikDir = "$baseDir/traefik"
+    $traefikDir = "$AppPath/traefik"
     $traefikConf = "$traefikDir/conf"
     $traefikData = "$traefikDir/data"
     $traefikLogs = "$traefikDir/logs"
     New-Item -ItemType Directory -Path $traefikDir, $traefikConf, $traefikData, $traefikLogs -Force
 
     $traefikConf = Resolve-Path -Path $traefikConf
-    Copy-Item -Path "./src/traefik/*" -Destination $traefikConf -Recurse
+    Copy-Item -Path "$SourcePath/traefik/*" -Destination $traefikConf -Recurse
     Remove-Item -Path "$traefikLogs/*" -Recurse -Force
 
-    Apply-Template -templateFile "$APPPATH/traefik/conf/traefik-config.template.yml" -configFile "$APPPATH/.app/traefik/conf/traefik-config.yml"
+    Apply-Template -templateFile "$APPPATH/traefik/conf/traefik-config.template.yml" -configFile "$APPPATH/traefik/conf/traefik-config.yml"
     Write-Host 'Configuring TRAEFIK ... Done'
 }
 Invoke-Traefik
@@ -59,13 +62,13 @@ Invoke-Traefik
 # Configure and run CONSUL
 function Invoke-Consul {
     Write-Host 'Configuring CONSUL ... for DOCKER'
-    $consulDir = "$baseDir/consul"
+    $consulDir = "$AppPath/consul"
     $consulConf = "$consulDir/conf"
     $consulData = "$consulDir/data"
     New-Item -ItemType Directory -Path $consulDir, $consulConf, $consulData -Force
 
     $consulConf = Resolve-Path -Path $consulConf
-    Copy-Item -Path "./src/consul/*" -Destination $consulConf -Recurse
+    Copy-Item -Path "$SourcePath/consul/*" -Destination $consulConf -Recurse
     Write-Host 'Configuring CONSUL ... Done'
 }
 Invoke-Consul
@@ -73,7 +76,7 @@ Invoke-Consul
 # Configure and run POSTGRES
 function Invoke-Postgres {
     Write-Host 'Configuring POSTGRES ... for DOCKER'
-    $postgresDir = "$baseDir/postgres"
+    $postgresDir = "$AppPath/postgres"
     $postgresConf = "$postgresDir/conf"
     $postgresData = "$postgresDir/data"
     $postgresAdmin = "$postgresDir/admin"
@@ -81,10 +84,23 @@ function Invoke-Postgres {
     New-Item -ItemType Directory -Path $postgresDir, $postgresConf, $postgresData, $postgresAdmin, $postgresBU -Force
 
     $postgresConf = Resolve-Path -Path $postgresConf
-    Copy-Item -Path "./src/postgres/*" -Destination $postgresConf -Recurse
+    Copy-Item -Path "$SourcePath/postgres/*" -Destination $postgresConf -Recurse
     Write-Host 'Configuring POSTGRES ... Done'
 }
 Invoke-Postgres
+
+# Configure and run KEYCLOAK
+function Invoke-Keycloak {
+    Write-Host 'Configuring KEYCLOAK ... for DOCKER'
+    $keycloakDir = "$AppPath/keycloak"
+    $keycloakConf = "$keycloakDir/conf"
+    New-Item -ItemType Directory -Path $keycloakDir, $keycloakConf -Force
+
+    $keycloakConf = Resolve-Path -Path $keycloakConf
+    Copy-Item -Path "$SourcePath/keycloak/*" -Destination $keycloakConf -Recurse
+    Write-Host 'Configuring KEYCLOAK ... Done'
+}
+Invoke-Keycloak
 
 Write-Host "Validating Docker Compose..."
 docker compose -f $composeFile --env-file $environmentFile config

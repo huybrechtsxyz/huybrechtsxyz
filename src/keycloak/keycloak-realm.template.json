@@ -1,0 +1,20 @@
+{
+  "id": "huybrechts",
+  "realm": "huybrechts",
+  "enabled": true,
+  "displayName": "Huybrechts XYZ",
+  "displayNameHtml": "Huybrechts XYZ",
+  "clients": [
+    {
+      "clientId": "${TRAEFIK_CLIENTID}",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "${TRAEFIK_CLIENTSECRET}",
+      "redirectUris": ["http://*"],
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "serviceAccountsEnabled": true
+    }
+  ]
+}
