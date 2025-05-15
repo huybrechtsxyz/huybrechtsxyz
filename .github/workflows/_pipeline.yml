@@ -525,6 +525,7 @@ jobs:
           }
 
           # Copy environment variables to remote server
+          echo "[*] Copying environment variables to remote server..."
           scp -o StrictHostKeyChecking=no ./src/${{ inputs.environment }}.env root@${{ matrix.ip }}:/tmp/variables.env || {
             echo "[x] Failed to transfer variables to remote server"
             exit 1
@@ -540,45 +541,6 @@ jobs:
           # Execute the configuration script remotely
           echo "[*] Executing configuration script remotely..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            # Function to create a path if it does not already exist
-            createpath() {
-              local newpath="$1"
-
-              if [ ! -d "$newpath" ]; then
-                echo "[*] Creating directory: $newpath"
-                if ! mkdir -p "$newpath"; then
-                  echo "[x] Error: Failed to create directory '$newpath'"
-                  return 1
-                fi
-              fi
-
-              echo "[*] Setting permissions on $newpath"
-              sudo chmod -R 777 "$newpath"
-
-              return 0
-            }
-
-            # Create the necessary directories
-            createpath "/app"
-
-            createpath "/app/traefik"
-            createpath "/app/traefik/conf"
-            createpath "/app/traefik/data"
-            createpath "/app/traefik/logs"
-            
-            createpath "/app/consul"
-            createpath "/app/consul/conf"
-            createpath "/app/consul/data"
-
-            createpath "/app/postgres"
-            createpath "/app/postgres/conf"
-            createpath "/app/postgres/data"
-            createpath "/app/postgres/admin"
-            createpath "/app/postgres/backups"
-
-            createpath "/app/keycloak"
-            createpath "/app/keycloak/conf"
-
             chmod +x /tmp/configure.sh
             /tmp/configure.sh
             cp /tmp/variables.env /app/.env
@@ -657,7 +619,7 @@ jobs:
           echo "[*] Finishing configuration..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             # Set environment file
-            cp -f /tmp/${{ inputs.environment }}.env /app/.env
+            cp -f /tmp/variables.env /app/.env
             
             # Set permissions for the app directory does not have to be done here
             # Correct permissions for the app directory are set in the startenv.sh script
