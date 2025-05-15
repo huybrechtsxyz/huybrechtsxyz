@@ -678,9 +678,12 @@ jobs:
 
       # Start the environment
       - name: Start Environment
-        if: ${{ matrix.label == 'manager_1' }}
         run: |
           echo "[*] Starting Environment..."
+          if [[ "${{ matrix.name }}" != *"manager-1"* ]]; then
+            exit 0
+          fi
+
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             cd /app
             ./stopenv.sh
