@@ -18,7 +18,7 @@ function clear_logs() {
 # Problem this solves:
 # Docker Swarm deployment may fail with an error like: network sandbox join failed: subnet
 cleanup_vxlan_interfaces() {
-  echo "🛠  Checking for orphaned VXLAN interfaces..."
+  echo "Checking for orphaned VXLAN interfaces..."
 
   # Find all VXLAN interfaces
   interfaces=$(ls /sys/class/net | grep '^vx-')
@@ -30,14 +30,14 @@ cleanup_vxlan_interfaces() {
 
   # Loop through and delete each orphaned VXLAN interface
   for iface in $interfaces; do
-    echo "⚠️  Found orphaned interface: $iface"
-    echo "🔍 Details:"
+    echo "Found orphaned interface: $iface"
+    echo "Details:"
     ip -d link show "$iface"
-    echo "❌ Deleting interface $iface..."
+    echo "Deleting interface $iface..."
     sudo ip link delete "$iface"
   done
 
-  echo "✅ VXLAN cleanup completed."
+  echo "VXLAN cleanup completed."
 }
 
 # START ENVIRONMENT

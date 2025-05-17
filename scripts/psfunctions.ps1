@@ -62,11 +62,11 @@ function Configure-Docker {
     }
 
     # Get the public ip address and subnet
-    $publicDetails = docker network inspect $publicNetwork | ConvertFrom-Json
-    #$publicSubnetIP = $publicDetails.IPAM.Config[0].Subnet # For Subnet
-    $publicGatewayIP = $publicDetails.IPAM.Config[0].Gateway # For Gateway
-    Write-Host "Public Network IP: $publicGatewayIP"
-    [System.Environment]::SetEnvironmentVariable("DOCKER_PUBLIC_IP", $publicGatewayIP, [System.EnvironmentVariableTarget]::Process)
+    # $publicDetails = docker network inspect $publicNetwork | ConvertFrom-Json
+    # $publicSubnetIP = $publicDetails.IPAM.Config[0].Subnet # For Subnet
+    # $publicGatewayIP = $publicDetails.IPAM.Config[0].Gateway # For Gateway
+    # Write-Host "Public Network IP: $publicGatewayIP"
+    # [System.Environment]::SetEnvironmentVariable("DOCKER_PUBLIC_IP", $publicGatewayIP, [System.EnvironmentVariableTarget]::Process)
 
     # Check and create the "private" network if it doesn't exist
     $privateNetwork = "lan"
@@ -78,11 +78,11 @@ function Configure-Docker {
     }
 
     # Get the private ip address and subnet
-    $privateDetails = docker network inspect $privateNetwork | ConvertFrom-Json
+    # $privateDetails = docker network inspect $privateNetwork | ConvertFrom-Json
     #$privateSubnetIP = $privateDetails.IPAM.Config[0].Subnet # For Subnet
-    $privateGatewayIP = $privateDetails.IPAM.Config[0].Gateway # For Gateway
-    Write-Host "Private Network IP: $privateGatewayIP"
-    [System.Environment]::SetEnvironmentVariable("DOCKER_PRIVATE_IP", $privateGatewayIP, [System.EnvironmentVariableTarget]::Process)
+    # $privateGatewayIP = $privateDetails.IPAM.Config[0].Gateway # For Gateway
+    # Write-Host "Private Network IP: $privateGatewayIP"
+    # [System.Environment]::SetEnvironmentVariable("DOCKER_PRIVATE_IP", $privateGatewayIP, [System.EnvironmentVariableTarget]::Process)
 
     # Get the number of manager nodes
     # $managerNodes = docker node ls --filter "role=manager" --quiet

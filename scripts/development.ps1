@@ -29,7 +29,9 @@ Copy-Item -Path "$SourcePath/develop.env" -Destination "$AppPath/.env" -Force
 $composeFile = "$AppPath/compose.yml"
 $environmentFile = "$SourcePath/develop.env"
 Write-Host "Environment variables are:" 
+$env:HOSTNAMEID=$(hostname)
 $env:HOSTNAME=$env:COMPUTERNAME
+$env:DOCKER_MANAGERS=1
 Write-Host " -- HOSTNAME: $env:HOSTNAME" 
 Write-Host " -- DOCKER_PUBLIC_IP: $env:DOCKER_PUBLIC_IP" 
 Write-Host " -- DOCKER_MANGER_COUNT: $env:DOCKER_MANAGER_COUNT" 
@@ -72,6 +74,20 @@ function Invoke-Consul {
     Write-Host 'Configuring CONSUL ... Done'
 }
 Invoke-Consul
+
+# Configure and run MINIO
+function Invoke-Minio {
+    Write-Host 'Configuring MINIO ... for DOCKER'
+    $minioDir = "$AppPath/minio"
+    $minioConf = "$minioDir/conf"
+    $minioData = "$minioDir/data"
+    New-Item -ItemType Directory -Path $minioDir, $minioConf, $minioData -Force
+
+    $minioConf = Resolve-Path -Path $minioConf
+    Copy-Item -Path "$SourcePath/minio/*" -Destination $minioConf -Recurse
+    Write-Host 'Configuring MINIO ... Done'
+}
+Invoke-Minio
 
 # Configure and run POSTGRES
 function Invoke-Postgres {
@@ -116,6 +132,9 @@ docker stack deploy -c $composeFile app --detach=true
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" `
     "http://proxy.$env:DOMAIN_DEV/dashboard/",
+    "http://config.$env:DOMAIN_DEV/",
+    "http://s3.$env:DOMAIN_DEV",
+    "http://db.$env:DOMAIN_DEV/pgamin",
     "--inprivate",
     "--ignore-certificate-errors",
     "--ignore-urlfetcher-cert-requests",

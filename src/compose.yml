@@ -1,3 +1,5 @@
+# version: '3.9'
+
 secrets:
   APP_ROOT_PASSWORD:
     external: true
@@ -10,11 +12,30 @@ secrets:
   VERSIO_PASSWORD:
     external: true
 
+# configs:
+# volumes:
+
+networks:
+  wan:
+    external: true
+  lan:
+    external: true
+
 services:
 
   traefik:
     image: "traefik:v3.3.6"
-    command: traefik --configFile=/etc/traefik/traefik-config.yml
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APP_PATH}/traefik/conf/traefik-config.yml:/etc/traefik/traefik-config.yml
+      - ${APP_PATH}/traefik/data:/app/data
+      - ${APP_PATH}/traefik/logs:/app/logs
+    networks:
+      - wan
+      - lan
     secrets:
       - VERSIO_USERNAME
       - VERSIO_PASSWORD
@@ -26,17 +47,7 @@ services:
       VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
       VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
       VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${APP_PATH}/traefik/conf/traefik-config.yml:/etc/traefik/traefik-config.yml
-      - ${APP_PATH}/traefik/data:/app/data
-      - ${APP_PATH}/traefik/logs:/app/logs
-    ports:
-      - 80:80
-      - 443:443
-    networks:
-      - wan
-      - lan
+    command: traefik --configFile=/etc/traefik/traefik-config.yml
     # healthcheck:
     #   test: ["CMD", "traefik", "healthcheck", "--ping"]
     #   interval: 15s
@@ -96,6 +107,12 @@ services:
 
   consul:
     image: hashicorp/consul:1.20
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${APP_PATH}/consul/conf:/consul/config
+      - ${APP_PATH}/consul/data:/consul/data
+    networks:
+      - lan
     environment:
       DATACENTER: ${DATACENTER}
       DOMAIN_DEV: ${DOMAIN_DEV}
@@ -111,18 +128,12 @@ services:
       - -datacenter=${DATACENTER}
       - -node=${HOSTNAMEID}
       - -advertise={{ GetPrivateIP }}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${APP_PATH}/consul/conf:/consul/config
-      - ${APP_PATH}/consul/data:/consul/data
-    networks:
-      - lan
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+    #   interval: 15s
+    #   timeout: 5s
+    #   retries: 5
+    #   start_period: 5s
     deploy:
       mode: global
       placement:
@@ -160,6 +171,11 @@ services:
 
   minio:
     image: minio/minio  #quay.io/minio/minio:RELEASE.2024-12-18T13-15-44Z
+    volumes:
+      - ${APP_PATH_DATA}:/data
+      - ${APP_PATH}/minio/logs:/root/.minio/logs
+    networks:
+      - lan
     secrets:
       - APP_ROOT_PASSWORD
     environment:
@@ -169,17 +185,12 @@ services:
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
       MINIO_PROMETHEUS_AUTH_TYPE: public
     command: server /data --console-address ":9001"
-    volumes:
-      - ${APP_PATH_DATA}:/data
-      - ${APP_PATH}/minio/logs:/root/.minio/logs
-    networks:
-      - public
-    healthcheck:
-      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+    # healthcheck:
+    #   test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
+    #   interval: 15s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 30s
     deploy:
       mode: replicated
       replicas: 1
@@ -230,16 +241,16 @@ services:
 
   minio-init:
     image: minio/mc
+    volumes:
+      - ${APP_PATH}/minio/conf/minio-init.sh:/etc/entrypoint.sh
+    networks:
+      - lan
     secrets:
       - APP_ROOT_PASSWORD
     environment:
       MINIO_ROOT_USER: root
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
     entrypoint: /bin/sh "/etc/entrypoint.sh"
-    volumes:
-      - ${APP_PATH}/minio/conf/minio-init.sh:/etc/entrypoint.sh
-    networks:
-      - public
     deploy:
       mode: replicated
       replicas: 1
@@ -255,6 +266,10 @@ services:
 
   postgres:
     image: postgres
+    volumes:
+      - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
+    networks:
+      - lan
     secrets:
       - APP_ROOT_PASSWORD
     environment:
@@ -263,10 +278,6 @@ services:
       POSTGRES_DB: xyzdb
       POSTGRES_USER: root
       POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-    volumes:
-      - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
-    networks:
-      - lan
     # healthcheck:
     #   test: ["CMD-SHELL", "pg_isready -d xyzdb -U root"]
     #   interval: 1s
@@ -305,6 +316,11 @@ services:
 
   postgres-init:
     image: postgres
+    volumes:
+      - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
+      - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
+    networks:
+      - lan
     secrets:
       - APP_ROOT_PASSWORD
     environment:
@@ -313,11 +329,6 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
     entrypoint: usr/local/bin/entrypoint.sh
-    volumes:
-      - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
-      - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
-    networks:
-      - lan
     deploy:
       mode: replicated
       replicas: 1
@@ -332,6 +343,10 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
+    volumes:
+      - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
+    networks:
+      - lan
     secrets:
       - APP_ROOT_PASSWORD
     environment:
@@ -341,10 +356,6 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${APP_ROOT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
       SCRIPT_NAME: /pgadmin
-    volumes:
-      - ${APP_PATH}/postgres/admin:/var/lib/pgadmin
-    networks:
-      - lan
     # healthcheck:
     #   test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
     #   interval: 15s
@@ -392,6 +403,11 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
+    volumes:
+      - ${APP_PATH}/keycloak/conf/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
+      #- ${APP_PATH}/keycloak/conf/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
+    networks:
+      - lan
     secrets:
       - APP_ROOT_PASSWORD
     environment:
@@ -421,12 +437,7 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: root
       KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
     entrypoint: usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true --features=opentelemetry --import-realm
-    volumes:
-      - ${APP_PATH}/keycloak/conf/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
-      #- ${APP_PATH}/keycloak/conf/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
-    networks:
-      - lan
-    # healthcheck:
+    healthcheck:
     #   test: ["CMD", "bash", "-c", "[ $$(/opt/keycloak/bin/kcadm.sh get serverinfo --realm Keycloak --fields '*' --server http://localhost:8080/admin/serverinfo 2>&1 | grep Unauthorized | wc -l ) -eq 1 ]"]
     #   interval: 15s
     #   retries: 3
@@ -470,9 +481,3 @@ services:
         - traefik.http.routers.keycloak.entrypoints=websecure
         - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.keycloak.middlewares=${TRAEFIK_MIDDLEWARES}
-
-networks:
-  wan:
-    external: true
-  lan:
-    external: true
