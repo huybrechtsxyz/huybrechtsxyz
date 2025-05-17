@@ -467,7 +467,7 @@ jobs:
 
           # Copy the configuration script to the remote server
           echo "[*] Copying configuration script to remote server..."
-          scp -o StrictHostKeyChecking=no "./scripts/configure*.sh" root@${{ matrix.ip }}:/tmp || {
+          scp -o StrictHostKeyChecking=no "./scripts/configure.sh" root@${{ matrix.ip }}:/tmp/configure.sh || {
             echo "[x] Failed to transfer configuration script to remote server"
             exit 1
           }
@@ -475,8 +475,8 @@ jobs:
           # Execute the configuration script remotely
           echo "[*] Executing configuration script remotely..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            chmod +x /tmp/configure-begin.sh
-            /tmp/configure-begin.sh
+            chmod +x /tmp/configure.sh
+            /tmp/configure.sh
             cp /tmp/variables.env /app/.env
           EOF
 
