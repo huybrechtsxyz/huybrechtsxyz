@@ -87,9 +87,57 @@ install_docker_if_needed() {
     fi
 }
 
+mount_data_volume() {
+    echo "[*] Mounting data volume..."
+    DISK="/dev/sdb"
+    PART="${DISK}1"
+    MOUNTPOINT="/mnt/data"
+
+    # 1. Ensure the partition exists and is the right size
+    if ! lsblk -no NAME "${PART}" &>/dev/null; then
+        echo "Partition not found. Creating partition table and partition..."
+        echo ',,L,*' | sudo sfdisk "${DISK}"
+        sudo partprobe "${DISK}"
+    else
+        echo "Partition ${PART} already exists."
+    fi
+
+    # 2. Ensure the partition is formatted as ext4
+    FS_TYPE=$(sudo blkid -o value -s TYPE "${PART}" 2>/dev/null || echo "")
+    if [ "$FS_TYPE" != "ext4" ]; then
+        echo "Formatting ${PART} as ext4..."
+        sudo mkfs.ext4 -F "${PART}"
+    else
+        echo "${PART} is already formatted as ext4."
+    fi
+
+    # 3. Ensure the mount point exists
+    sudo mkdir -p "${MOUNTPOINT}"
+
+    # 4. Ensure the partition is mounted
+    if ! mountpoint -q "${MOUNTPOINT}"; then
+        echo "Mounting ${PART} to ${MOUNTPOINT}..."
+        sudo mount "${PART}" "${MOUNTPOINT}"
+    else
+        echo "${MOUNTPOINT} is already a mount point."
+    fi
+
+    # 5. Ensure /etc/fstab entry exists for persistent mounting
+    FSTAB_ENTRY="${PART} ${MOUNTPOINT} ext4 defaults 0 0"
+    if ! grep -qs "^${PART} " /etc/fstab; then
+        echo "Adding entry to /etc/fstab..."
+        echo "${FSTAB_ENTRY}" | sudo tee -a /etc/fstab
+    else
+        echo "Entry for ${PART} already exists in /etc/fstab."
+    fi
+
+    echo "Disk setup complete."
+}
+
 main() {
     update_system
     configure_firewall
+    mount_data_volume
     install_private_key
     install_docker_if_needed
 }
