@@ -158,6 +158,101 @@ services:
         - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.consul.middlewares=${TRAEFIK_MIDDLEWARES}
 
+  minio:
+    image: minio/minio  #quay.io/minio/minio:RELEASE.2024-12-18T13-15-44Z
+    secrets:
+      - APP_ROOT_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      MINIO_ROOT_USER: root
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+    command: server /data --console-address ":9001"
+    volumes:
+      - ${APP_PATH_DATA}:/data
+      - ${APP_PATH}/minio/logs:/root/.minio/logs
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      # resources:
+      #   limits:
+      #     cpus: "1.0"
+      #     memory: "2G"
+      labels:
+        # Enable Traefik
+        - traefik.enable=true
+        - traefik.tags=${ENVIRONMENT}
+        # MinIO UI Service
+        - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
+        - traefik.http.services.minio-ui.loadbalancer.server.port=9001
+        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-ui.entrypoints=websecure
+        - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.minio-ui.service=minio-ui
+        - traefik.http.routers.minio-ui.middlewares=${TRAEFIK_MIDDLEWARES}
+        # MinIO Data Service
+        - traefik.http.services.minio-data.loadbalancer.server.scheme=http
+        - traefik.http.services.minio-data.loadbalancer.server.port=9000
+        - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-data.entrypoints=websecure
+        - traefik.http.routers.minio-data.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.minio-data.service=minio-data
+
+  minio-init:
+    image: minio/mc
+    secrets:
+      - APP_ROOT_PASSWORD
+    environment:
+      MINIO_ROOT_USER: root
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
+    entrypoint: /bin/sh "/etc/entrypoint.sh"
+    volumes:
+      - ${APP_PATH}/minio/conf/minio-init.sh:/etc/entrypoint.sh
+    networks:
+      - public
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: none # Ensure this runs only once
+      labels:
+        - traefik.enable=false
+
   postgres:
     image: postgres
     secrets:
