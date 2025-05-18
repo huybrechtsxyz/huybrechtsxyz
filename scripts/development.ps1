@@ -101,6 +101,9 @@ function Invoke-Postgres {
 
     $postgresConf = Resolve-Path -Path $postgresConf
     Copy-Item -Path "$SourcePath/postgres/*" -Destination $postgresConf -Recurse
+
+    Add-DockerNodeLabel -NodeName "docker-desktop" -LabelKey "postgres"
+
     Write-Host 'Configuring POSTGRES ... Done'
 }
 Invoke-Postgres

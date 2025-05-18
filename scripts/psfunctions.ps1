@@ -78,12 +78,33 @@ function Ensure-NetworkExistsAndValid([string]$networkName) {
 # FUNCTION: Configure required docker networks
 function Configure-Docker {
     Write-Host "Docker configuration in progress."
-    # Ensure Docker Swarm is initialized
     Ensure-SwarmInitialized
-    # Ensure the required networks exist
     $wanNetworkInfo = Ensure-NetworkExistsAndValid -networkName "wan"
     $lanNetworkInfo = Ensure-NetworkExistsAndValid -networkName "lan"
+    docker node update --label-add postgres=true $POSTGRES_NODE
     Write-Host "Docker configuration completed successfully."
+}
+
+# FUNCTION: Add a label to a Docker node
+function Add-DockerNodeLabel {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$NodeName,
+
+        [Parameter(Mandatory=$true)]
+        [string]$LabelKey
+    )
+
+    # Get the matching node's hostname
+    $node = docker node ls --format '{{.Hostname}}' | Where-Object { $_ -eq $NodeName }
+
+    if ($node) {
+        # Add the label (e.g., postgres=true)
+        docker node update --label-add "$LabelKey=true" $node
+        Write-Host "Label '$LabelKey=true' added to node '$node'."
+    } else {
+        Write-Warning "Node '$NodeName' not found."
+    }
 }
 
 # FUNCTION: Extract zipfile for local development
