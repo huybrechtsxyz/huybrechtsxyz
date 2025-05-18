@@ -225,7 +225,7 @@ jobs:
   initialization:
     name: Initialize Swarm Cluster
     needs: [restore, download]
-    if: inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true'
+    if: always() && ( inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true' )
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     strategy:
