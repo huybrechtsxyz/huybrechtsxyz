@@ -273,7 +273,7 @@ jobs:
       # Step: Copy the initialization script securely to the remote server using scp
       - name: Upload Initialization Script to Remote Server
         run: |
-          scp -o StrictHostKeyChecking=no ./scripts/initialize*.sh root@${{ matrix.ip }}:/tmp || { echo "[x] Failed to transfer initialization script to remote server"; exit 1; }
+          scp -o StrictHostKeyChecking=no ./scripts/initialize* root@${{ matrix.ip }}:/tmp || { echo "[x] Failed to transfer initialization script to remote server"; exit 1; }
 
       # Initialize the server with initialization script
       - name: Initialize BEFORE ${{ inputs.environment }} Server ${{ matrix.label }}
@@ -483,7 +483,7 @@ jobs:
 
           # Copy the configuration script to the remote server
           echo "[*] Copying configuration script to remote server..."
-          scp -o StrictHostKeyChecking=no "./scripts/configure*.sh" root@${{ matrix.ip }}:/tmp || {
+          scp -o StrictHostKeyChecking=no "./scripts/configure*" root@${{ matrix.ip }}:/tmp || {
             echo "[x] Failed to transfer configuration script to remote server"
             exit 1
           }
