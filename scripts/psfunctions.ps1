@@ -4,31 +4,25 @@ $SecretsPath = "$env:APPDATA\Microsoft\UserSecrets\$ProjectGuid\secrets.json"
 
 # FUNCTION: Apply variable template
 function Apply-Template {
-    param(
-        [string]$templateFile,
-        [string]$configFile
+    param (
+        [Parameter(Mandatory=$true)][string]$InputFile,
+        [Parameter(Mandatory=$true)][string]$OutputFile
     )
-    # Read the content of the template file
-    $templateContent = Get-Content -Raw -Path "$templateFile"
 
-    # Get all environment variables that are in the form of $<VAR_NAME>
-    $envVars = [System.Environment]::GetEnvironmentVariables()
-
-    # Loop through each environment variable and apply the replacement
-    foreach ($key in $envVars.Keys) {
-        # Construct the pattern to match the $<VAR_NAME> in the template
-        #$pattern = "\$($key)"
-        # Replace the placeholder with the actual value of the environment variable
-        #$templateContent = $templateContent -Replace $pattern, $envVars[$key]
-
-        $templateContent = $templateContent.Replace("`$($key)", "`$($envVars[$key])")
+    if (-not (Test-Path $InputFile)) {
+        throw "Input file '$InputFile' not found."
     }
 
-    # Save the modified content to the config file
-    Set-Content -Path "$configFile" -Value $templateContent
+    $content = Get-Content -Path $InputFile -Raw
 
-    # Remove the template file
-    Remove-Item -Path "$templateFile" -Force
+    $processed = [regex]::Replace($content, '\$(\w+)|\$\{(\w+)\}', {
+        param($match)
+        $varName = if ($match.Groups[1].Success) { $match.Groups[1].Value } else { $match.Groups[2].Value }
+        $value = [System.Environment]::GetEnvironmentVariable($varName)
+        return $value
+    })
+
+    Set-Content -Path $OutputFile -Value $processed
 }
 
 # FUNCTION: Ensure Docker Swarm is initialized

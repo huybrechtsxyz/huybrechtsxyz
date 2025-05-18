@@ -6,11 +6,11 @@
   "displayNameHtml": "Huybrechts XYZ",
   "clients": [
     {
-      "clientId": "${TRAEFIK_CLIENTID}",
+      "clientId": "$TRAEFIK_CLIENTID",
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": false,
-      "secret": "${TRAEFIK_CLIENTSECRET}",
+      "secret": "$TRAEFIK_SECRET",
       "redirectUris": ["http://*"],
       "directAccessGrantsEnabled": true,
       "standardFlowEnabled": true,

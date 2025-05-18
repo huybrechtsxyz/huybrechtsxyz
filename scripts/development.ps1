@@ -43,6 +43,9 @@ if (Test-Path $environmentFile) {
     }
 }
 
+# Set the environment variables from the secrets file
+Get-SecretsAsVars
+
 # Configure and run Traefik
 function Invoke-Traefik {
     Write-Host 'Configuring TRAEFIK ... for DOCKER'
@@ -56,7 +59,7 @@ function Invoke-Traefik {
     Copy-Item -Path "$SourcePath/traefik/*" -Destination $traefikConf -Recurse
     Remove-Item -Path "$traefikLogs/*" -Recurse -Force
 
-    Apply-Template -templateFile "$APPPATH/traefik/conf/traefik-config.template.yml" -configFile "$APPPATH/traefik/conf/traefik-config.yml"
+    Apply-Template -InputFile "$APPPATH/traefik/conf/traefik-config.template.yml" -OutputFile "$APPPATH/traefik/conf/traefik-config.yml"
     Write-Host 'Configuring TRAEFIK ... Done'
 }
 Invoke-Traefik
@@ -114,9 +117,9 @@ function Invoke-Keycloak {
     $keycloakDir = "$AppPath/keycloak"
     $keycloakConf = "$keycloakDir/conf"
     New-Item -ItemType Directory -Path $keycloakDir, $keycloakConf -Force
-
     $keycloakConf = Resolve-Path -Path $keycloakConf
     Copy-Item -Path "$SourcePath/keycloak/*" -Destination $keycloakConf -Recurse
+    Apply-Template -InputFile "$APPPATH/keycloak/conf/keycloak-realm.template.json" -OutputFile "$APPPATH/keycloak/conf/keycloak-realm.json"
     Write-Host 'Configuring KEYCLOAK ... Done'
 }
 Invoke-Keycloak
@@ -136,6 +139,7 @@ docker stack deploy -c $composeFile app --detach=true
 Start-Process -FilePath "msedge.exe" `
     "http://proxy.$env:DOMAIN_DEV/dashboard/",
     "http://config.$env:DOMAIN_DEV/",
+    "http://iam.$env:DOMAIN_DEV",
     "http://s3.$env:DOMAIN_DEV",
     "http://db.$env:DOMAIN_DEV/pgamin",
     "--inprivate",
