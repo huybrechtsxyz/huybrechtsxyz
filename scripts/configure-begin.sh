@@ -122,6 +122,13 @@ main() {
   createpath "/app/keycloak"
   createpath "/app/keycloak/conf"
 
+  createpath "/app/telemetry"
+  createpath "/app/telemetry/conf"
+  createpath "/app/telemetry/grafana"
+  createpath "/app/telemetry/prometheus"
+  createpath "/app/telemetry/loki"
+  createpath "/app/telemetry/promtail"
+
   if [[ "$hostname" == *"manager-1"* ]]; then
     createnetwork "wan"
     createnetwork "lan"

@@ -547,6 +547,18 @@ jobs:
           }
           echo "[*] Deploying KEYCLOAK to remote server...DONE"
 
+      # Configure Telemetry Server
+      - name: Configure Telemetry
+        run: |
+          # TELEMETRY
+          echo "[*] Deploying TELEMETRY to remote server..."
+          # Copy the telemetry configuration to the remote server
+          scp -o StrictHostKeyChecking=no ./src/telemetry/* root@${{ matrix.ip }}:/app/telemetry/conf/ || {
+            echo "[x] Failed to transfer telemetry configuration to remote server"
+            exit 1
+          }
+          echo "[*] Deploying TELEMETRY to remote server...DONE"
+
       # Finish Configuration
       - name: Finish Configuration
         run: |

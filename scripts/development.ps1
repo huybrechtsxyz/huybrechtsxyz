@@ -124,6 +124,23 @@ function Invoke-Keycloak {
 }
 Invoke-Keycloak
 
+# Configure and run TELEMETRY
+function Invoke-Telemetry {
+    Write-Host 'Configuring TELEMETRY ... for DOCKER'
+    $telemetryDir = "$AppPath/telemetry"
+    $telemetryConf = "$telemetryDir/conf"
+    $telemetryGrafana = "$telemetryDir/grafana"
+    $telemetryPrometheus = "$telemetryDir/prometheus"
+    $telemetryLoki = "$telemetryDir/loki"
+    $telemetryTail = "$telemetryDir/promtail"
+    New-Item -ItemType Directory -Path $telemetryDir, $telemetryConf -Force
+    New-Item -ItemType Directory -Path $telemetryGrafana, $telemetryPrometheus, $telemetryLoki, $telemetryTail -Force
+    $telemetryConf = Resolve-Path -Path $telemetryConf
+    Copy-Item -Path "$SourcePath/telemetry/*" -Destination $telemetryConf -Recurse
+    Write-Host 'Configuring TELEMETRY ... Done'
+}
+Invoke-Telemetry
+
 Write-Host "Validating Docker Compose..."
 docker compose -f $composeFile --env-file $environmentFile config
 if ($LASTEXITCODE -ne 0) {
