@@ -31,18 +31,14 @@ function Apply-Template {
     Remove-Item -Path "$templateFile" -Force
 }
 
-# FUNCTION: Configure required docker networks
-function Configure-Docker {
-    # Check if the current node is already part of a swarm
+# FUNCTION: Ensure Docker Swarm is initialized
+function Ensure-SwarmInitialized {
     $swarmState = docker info --format '{{.Swarm.LocalNodeState}}'
-
     if ($swarmState -eq "active") {
         Write-Host "Swarm is already initialized." -ForegroundColor Green
     } else {
-        # Initialize a new swarm
         Write-Host "Initializing a new Docker Swarm..." -ForegroundColor Yellow
         $initResult = docker swarm init
-
         if ($initResult -like "*is now a manager*") {
             Write-Host "Swarm initialized successfully!" -ForegroundColor Green
         } else {
@@ -51,44 +47,43 @@ function Configure-Docker {
             exit 1
         }
     }
+}
 
-    # Check and create the "public" network if it doesn't exist
-    $publicNetwork = "wan"
-    if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$publicNetwork$")) {
-        Write-Host "Creating external network '$publicNetwork'..."
-        docker network create --subnet=10.0.0.0/24 --driver overlay $publicNetwork
+# FUNCTION: Ensure a docker network exists and is valid
+function Ensure-NetworkExistsAndValid([string]$networkName) {
+    if (-not (docker network ls --format '{{.Name}}' | Select-String -Pattern "^$networkName$")) {
+        Write-Host "Creating external network '$networkName'..."
+        docker network create --driver overlay --attachable $networkName
     } else {
-        Write-Host "Network '$publicNetwork' already exists."
+        Write-Host "Network '$networkName' already exists."
     }
 
-    # Get the public ip address and subnet
-    # $publicDetails = docker network inspect $publicNetwork | ConvertFrom-Json
-    # $publicSubnetIP = $publicDetails.IPAM.Config[0].Subnet # For Subnet
-    # $publicGatewayIP = $publicDetails.IPAM.Config[0].Gateway # For Gateway
-    # Write-Host "Public Network IP: $publicGatewayIP"
-    # [System.Environment]::SetEnvironmentVariable("DOCKER_PUBLIC_IP", $publicGatewayIP, [System.EnvironmentVariableTarget]::Process)
+    $networkInfo = docker network inspect $networkName | ConvertFrom-Json
+    $driver = $networkInfo[0].Driver
+    $scope = $networkInfo[0].Scope
 
-    # Check and create the "private" network if it doesn't exist
-    $privateNetwork = "lan"
-    if (!(docker network ls --format '{{.Name}}' | Select-String -Pattern "^$privateNetwork$")) {
-        Write-Host "Creating external network '$privateNetwork'..."
-        docker network create --subnet=10.0.0.0/24 --driver overlay $privateNetwork
+    Write-Host "Network '$networkName':"
+    Write-Host "  Driver: $driver"
+    Write-Host "  Scope:  $scope"
+
+    if ($driver -ne "overlay" -or $scope -ne "swarm") {
+        Write-Warning "Network '$networkName' is not a valid Swarm overlay network."
     } else {
-        Write-Host "Network '$privateNetwork' already exists."
+        Write-Host "Network '$networkName' is a valid Swarm overlay network."
     }
 
-    # Get the private ip address and subnet
-    # $privateDetails = docker network inspect $privateNetwork | ConvertFrom-Json
-    #$privateSubnetIP = $privateDetails.IPAM.Config[0].Subnet # For Subnet
-    # $privateGatewayIP = $privateDetails.IPAM.Config[0].Gateway # For Gateway
-    # Write-Host "Private Network IP: $privateGatewayIP"
-    # [System.Environment]::SetEnvironmentVariable("DOCKER_PRIVATE_IP", $privateGatewayIP, [System.EnvironmentVariableTarget]::Process)
+    return $networkInfo
+}
 
-    # Get the number of manager nodes
-    # $managerNodes = docker node ls --filter "role=manager" --quiet
-    # $managerCount = ($managerNodes | Measure-Object -Line).Lines
-    # Write-Host "Number of manager nodes in the Docker Swarm: $managerCount"
-    # [System.Environment]::SetEnvironmentVariable("DOCKER_MANAGER_COUNT", $managerCount)
+# FUNCTION: Configure required docker networks
+function Configure-Docker {
+    Write-Host "Docker configuration in progress."
+    # Ensure Docker Swarm is initialized
+    Ensure-SwarmInitialized
+    # Ensure the required networks exist
+    $wanNetworkInfo = Ensure-NetworkExistsAndValid -networkName "wan"
+    $lanNetworkInfo = Ensure-NetworkExistsAndValid -networkName "lan"
+    Write-Host "Docker configuration completed successfully."
 }
 
 # FUNCTION: Extract zipfile for local development
