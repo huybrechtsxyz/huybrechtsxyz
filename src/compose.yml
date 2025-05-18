@@ -310,7 +310,7 @@ services:
       POSTGRES_URL: postgres
       POSTGRES_USER: root
       POSTGRES_PASSWORD_FILE: /run/secrets/APP_ROOT_PASSWORD
-    entrypoint: usr/local/bin/entrypoint.sh
+    entrypoint: /usr/local/bin/entrypoint.sh
     deploy:
       mode: replicated
       replicas: 1
