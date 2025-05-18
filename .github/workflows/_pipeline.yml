@@ -50,6 +50,22 @@ jobs:
           echo "Rebuild: ${{ inputs.rebuild }}"
           echo "Cache Hit: ${{ steps.restore-cache.outputs.cache-hit }}"
 
+  debug-vars:
+    name: Debug Vars
+    needs: [restore]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug Vars
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Initialize: ${{ inputs.initialize }}"
+          echo "Rebuild: ${{ inputs.rebuild }}"
+          echo "Cache Hit: ${{ needs.restore.outputs.cache-hit }}"
+          echo "Cache Hit (Debug): ${{ needs.restore.outputs.cache-hit }}"
+          echo "Cache Result (Debug): ${{ needs.restore.result }}"
+          echo "Cache Conclusion (Debug): ${{ needs.restore.conclusion }}"
+
   # Terraform Plan and Apply
   # This job will run if the cache is not hit or if the initialize input is set to true
   # Stores the output in a JSON file and uploads it as an artifact and caches it for future runs
