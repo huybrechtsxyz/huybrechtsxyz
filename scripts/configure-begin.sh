@@ -104,31 +104,7 @@ main() {
   # Create the necessary directories
   createpath "/app"
 
-  createpath "/app/traefik"
-  createpath "/app/traefik/conf"
-  createpath "/app/traefik/data"
-  createpath "/app/traefik/logs"
-  
-  createpath "/app/consul"
-  createpath "/app/consul/conf"
-  createpath "/app/consul/data"
-
-  createpath "/app/postgres"
-  createpath "/app/postgres/conf"
-  createpath "/app/postgres/data"
-  createpath "/app/postgres/admin"
-  createpath "/app/postgres/backups"
-
-  createpath "/app/keycloak"
-  createpath "/app/keycloak/conf"
-
-  createpath "/app/telemetry"
-  createpath "/app/telemetry/conf"
-  createpath "/app/telemetry/grafana"
-  createpath "/app/telemetry/prometheus"
-  createpath "/app/telemetry/loki"
-  createpath "/app/telemetry/promtail"
-
+  # Create docker networks and secrets only leader node
   if [[ "$hostname" == *"manager-1"* ]]; then
     createnetwork "wan"
     createnetwork "lan"
