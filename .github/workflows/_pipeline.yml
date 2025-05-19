@@ -64,7 +64,6 @@ jobs:
           echo "Cache Hit: ${{ needs.restore.outputs.cache-hit }}"
           echo "Cache Hit (Debug): ${{ needs.restore.outputs.cache-hit }}"
           echo "Cache Result (Debug): ${{ needs.restore.result }}"
-          echo "Cache Conclusion (Debug): ${{ needs.restore.conclusion }}"
 
   # Terraform Plan and Apply
   # This job will run if the cache is not hit or if the initialize input is set to true
