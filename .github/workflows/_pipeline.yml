@@ -272,8 +272,16 @@ jobs:
       # Step: Copy the initialization script securely to the remote server using scp
       - name: Upload Initialization Script to Remote Server
         run: |
-          scp -o StrictHostKeyChecking=no ./scripts/initialize-begin.sh root@${{ matrix.ip }}:/tmp/initialize-begin.sh || { echo "[x] Failed to transfer before initialization script to remote server"; exit 1; }
-          scp -o StrictHostKeyChecking=no ./scripts/initialize-end.sh root@${{ matrix.ip }}:/tmp/initialize-end.sh || { echo "[x] Failed to transfer after initialization script to remote server"; exit 1; }
+          # Copy the initialization scripts to the remote server
+          echo "[*] Copying initialization script to remote server..."
+          scp -o StrictHostKeyChecking=no "./scripts/initialize-begin.sh" root@${{ matrix.ip }}:/tmp/initialize-begin.sh || {
+            echo "[x] Failed to transfer before initialization script to remote server"
+            exit 1
+          }
+          scp -o StrictHostKeyChecking=no "./scripts/initialize-end.sh" root@${{ matrix.ip }}:/tmp/initialize-end.sh || {
+            echo "[x] Failed to transfer after initialization script to remote server"
+            exit 1
+          }
 
       # Initialize the server with initialization script
       - name: Initialize BEFORE ${{ inputs.environment }} Server ${{ matrix.label }}
