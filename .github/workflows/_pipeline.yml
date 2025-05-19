@@ -272,7 +272,8 @@ jobs:
       # Step: Copy the initialization script securely to the remote server using scp
       - name: Upload Initialization Script to Remote Server
         run: |
-          scp -o StrictHostKeyChecking=no ./scripts/initialize* root@${{ matrix.ip }}:/tmp || { echo "[x] Failed to transfer initialization script to remote server"; exit 1; }
+          scp -o StrictHostKeyChecking=no ./scripts/initialize-begin.sh root@${{ matrix.ip }}:/tmp/initialize-begin.sh || { echo "[x] Failed to transfer before initialization script to remote server"; exit 1; }
+          scp -o StrictHostKeyChecking=no ./scripts/initialize-end.sh root@${{ matrix.ip }}:/tmp/initialize-end.sh || { echo "[x] Failed to transfer after initialization script to remote server"; exit 1; }
 
       # Initialize the server with initialization script
       - name: Initialize BEFORE ${{ inputs.environment }} Server ${{ matrix.label }}
@@ -480,10 +481,14 @@ jobs:
             exit 1
           }
 
-          # Copy the configuration script to the remote server
+          # Copy the configuration scripts to the remote server
           echo "[*] Copying configuration script to remote server..."
-          scp -o StrictHostKeyChecking=no "./scripts/configure*" root@${{ matrix.ip }}:/tmp || {
-            echo "[x] Failed to transfer configuration script to remote server"
+          scp -o StrictHostKeyChecking=no "./scripts/configure-begin.sh" root@${{ matrix.ip }}:/tmp/configure-begin.sh || {
+            echo "[x] Failed to transfer before configuration script to remote server"
+            exit 1
+          }
+          scp -o StrictHostKeyChecking=no "./scripts/configure-end.sh" root@${{ matrix.ip }}:/tmp/configure-end.sh || {
+            echo "[x] Failed to transfer after configuration script to remote server"
             exit 1
           }
 
@@ -502,6 +507,7 @@ jobs:
           scp -o StrictHostKeyChecking=no ./scripts/startenv.sh root@${{ matrix.ip }}:/app/startenv.sh
           scp -o StrictHostKeyChecking=no ./scripts/stopenv.sh root@${{ matrix.ip }}:/app/stopenv.sh
 
+      # Configure Application Services
       - name: Configure App Services
         run: |
           set -e
