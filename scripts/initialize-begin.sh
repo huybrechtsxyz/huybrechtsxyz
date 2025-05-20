@@ -93,6 +93,12 @@ mount_data_volume() {
     PART="${DISK}1"
     MOUNTPOINT="/srv/appdata"
 
+    if [[ "$HOSTNAME" != *worker* ]]; then
+        echo "[!] Skipping: This node ($HOSTNAME) is not a worker node."
+        echo "[!] Skipping: Only worker nodes contain blockstorage disks."
+        return 0
+    fi
+
     # 0. Wait for the disk to become available
     for i in {1..10}; do
         if [ -b "$DISK" ]; then
