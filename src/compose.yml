@@ -163,7 +163,7 @@ services:
   minio:
     image: minio/minio
     volumes:
-      - ${APP_PATH_DATA}:/data
+      - ${APP_DATA}:/data
       - ${APP_PATH}/minio/logs:/root/.minio/logs
     networks:
       - lan

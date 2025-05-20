@@ -91,47 +91,69 @@ mount_data_volume() {
     echo "[*] Mounting data volume..."
     DISK="/dev/sdb"
     PART="${DISK}1"
-    MOUNTPOINT="/mnt/data"
+    MOUNTPOINT="/srv/appdata"
 
-    # 1. Ensure the partition exists and is the right size
+    # 0. Wait for the disk to become available
+    for i in {1..10}; do
+        if [ -b "$DISK" ]; then
+            echo "[+] Found disk ${DISK}."
+            break
+        fi
+        echo "[*] Waiting for ${DISK} to become available... ($i/10)"
+        sleep 1
+    done
+
+    if [ ! -b "$DISK" ]; then
+        echo "[!] Error: Disk ${DISK} not found after waiting."
+        return 1
+    fi
+
+    # 1. Check if partition exists
     if ! lsblk -no NAME "${PART}" &>/dev/null; then
-        echo "Partition not found. Creating partition table and partition..."
+        echo "[*] Creating partition on ${DISK}..."
         echo ',,L,*' | sudo sfdisk "${DISK}"
         sudo partprobe "${DISK}"
+        sleep 2
     else
-        echo "Partition ${PART} already exists."
+        echo "[+] Partition ${PART} already exists."
     fi
 
-    # 2. Ensure the partition is formatted as ext4
+    # 2. Format as ext4 if necessary
     FS_TYPE=$(sudo blkid -o value -s TYPE "${PART}" 2>/dev/null || echo "")
     if [ "$FS_TYPE" != "ext4" ]; then
-        echo "Formatting ${PART} as ext4..."
+        echo "[*] Formatting ${PART} as ext4..."
         sudo mkfs.ext4 -F "${PART}"
     else
-        echo "${PART} is already formatted as ext4."
+        echo "[+] ${PART} is already formatted as ext4."
     fi
 
-    # 3. Ensure the mount point exists
+    # 3. Create mount point
     sudo mkdir -p "${MOUNTPOINT}"
 
-    # 4. Ensure the partition is mounted
+    # 4. Get UUID
+    UUID=$(sudo blkid -s UUID -o value "${PART}")
+    if [ -z "$UUID" ]; then
+        echo "[!] Error: Could not retrieve UUID for ${PART}."
+        return 1
+    fi
+
+    # 5. Add to /etc/fstab
+    if ! grep -q "UUID=${UUID}" /etc/fstab; then
+        echo "[*] Adding fstab entry..."
+        echo "UUID=${UUID} ${MOUNTPOINT} ext4 defaults 0 2" | sudo tee -a /etc/fstab
+    else
+        echo "[+] fstab entry already exists."
+    fi
+
+    # 6. Mount if not already mounted
     if ! mountpoint -q "${MOUNTPOINT}"; then
-        echo "Mounting ${PART} to ${MOUNTPOINT}..."
-        sudo mount "${PART}" "${MOUNTPOINT}"
+        echo "[*] Mounting ${PART}..."
+        sudo mount "${MOUNTPOINT}"
     else
-        echo "${MOUNTPOINT} is already a mount point."
+        echo "[+] ${MOUNTPOINT} is already mounted."
     fi
 
-    # 5. Ensure /etc/fstab entry exists for persistent mounting
-    FSTAB_ENTRY="${PART} ${MOUNTPOINT} ext4 defaults 0 0"
-    if ! grep -qs "^${PART} " /etc/fstab; then
-        echo "Adding entry to /etc/fstab..."
-        echo "${FSTAB_ENTRY}" | sudo tee -a /etc/fstab
-    else
-        echo "Entry for ${PART} already exists in /etc/fstab."
-    fi
-
-    echo "Disk setup complete."
+    echo "[+] Disk setup complete."
 }
 
 main() {
