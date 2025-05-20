@@ -23,14 +23,14 @@ createpath() {
   return 0
 }
 
-createpath "/app/traefik"
-createpath "/app/traefik/conf"
-createpath "/app/traefik/data"
-createpath "/app/traefik/logs"
+createpath "/srv/app/traefik"
+createpath "/srv/app/traefik/conf"
+createpath "/srv/app/traefik/data"
+createpath "/srv/app/traefik/logs"
 
 envsubst \
   '${DOMAIN_DEV} ${ENVIRONMENT}' \
-  < /app/traefik/conf/traefik-config.template.yml \
-  > /app/traefik/conf/traefik-config.yml
+  < /srv/app/traefik/conf/traefik-config.template.yml \
+  > /srv/app/traefik/conf/traefik-config.yml
 
 echo "[*] Deploying TRAEFIK to remote server...DONE"

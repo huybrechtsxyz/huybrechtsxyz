@@ -23,8 +23,8 @@ createpath() {
   return 0
 }
 
-createpath "/app/consul"
-createpath "/app/consul/conf"
-createpath "/app/consul/data"
+createpath "/srv/app/consul"
+createpath "/srv/app/consul/conf"
+createpath "/srv/app/consul/data"
 
 echo "[*] Deploying CONSUL to remote server...DONE"

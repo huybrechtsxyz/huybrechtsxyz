@@ -509,15 +509,15 @@ jobs:
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             chmod +x /tmp/configure-begin.sh
             /tmp/configure-begin.sh
-            cp /tmp/variables.env /app/.env
+            cp /tmp/variables.env /srv/app/.env
           EOF
 
-          # Copy /src to /app
+          # Copy /src to /srv/app
           echo "[*] Copying source to remote server..."
-          #find ./src -maxdepth 1 -type f -exec scp -o StrictHostKeyChecking=no {} root@${{ matrix.ip }}:/app/ \;
-          scp -o StrictHostKeyChecking=no ./src/*.yml root@${{ matrix.ip }}:/app
-          scp -o StrictHostKeyChecking=no ./scripts/startenv.sh root@${{ matrix.ip }}:/app/startenv.sh
-          scp -o StrictHostKeyChecking=no ./scripts/stopenv.sh root@${{ matrix.ip }}:/app/stopenv.sh
+          #find ./src -maxdepth 1 -type f -exec scp -o StrictHostKeyChecking=no {} root@${{ matrix.ip }}:/srv/app/ \;
+          scp -o StrictHostKeyChecking=no ./src/*.yml root@${{ matrix.ip }}:/srv/app
+          scp -o StrictHostKeyChecking=no ./scripts/startenv.sh root@${{ matrix.ip }}:/srv/app/startenv.sh
+          scp -o StrictHostKeyChecking=no ./scripts/stopenv.sh root@${{ matrix.ip }}:/srv/app/stopenv.sh
 
       # Configure Application Services
       - name: Configure App Services
@@ -530,7 +530,7 @@ jobs:
             echo "[*] Configuring service '$service'..."
 
             remote_script="/tmp/configure-$service.sh"
-            remote_conf_dir="/app/$service/conf"
+            remote_conf_dir="/srv/app/$service/conf"
 
             # Copy configure script
             scp -o StrictHostKeyChecking=no "$script" root@${{ matrix.ip }}:"$remote_script"
@@ -618,7 +618,7 @@ jobs:
           fi
 
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            cd /app
+            cd /srv/app
             ./stopenv.sh
             ./startenv.sh
           EOF
