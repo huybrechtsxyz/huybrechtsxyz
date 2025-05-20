@@ -614,7 +614,7 @@ jobs:
       - name: Start Environment
         run: |
           if [[ "${{ matrix.name }}" != *"manager-1"* ]]; then
-            echo "[*] Environments are not started on worker nodes."
+            echo "[*] Environments are only started on leader node."
             exit 0
           fi
 
