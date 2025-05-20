@@ -63,7 +63,7 @@ resource "kamatera_server" "manager" {
   image_id          = data.kamatera_image.ubuntu.id
   datacenter_id     = data.kamatera_datacenter.frankfurt.id
   cpu_cores         = var.manager_cpu
-  cpu_type          = "A"
+  cpu_type          = var.manager_type
   ram_mb            = var.manager_ram
   disk_sizes_gb     = [ var.manager_disk_size ]
   billing_cycle     = "hourly"
@@ -80,17 +80,40 @@ resource "kamatera_server" "manager" {
   }
 }
 
-# Provision workernode
-# Workers do not get access to the WAN
+# Provision shared node
+resource "kamatera_server" "shared" {
+  count             = var.shared_count
+  name              = "srv-${var.environment}-shared-${count.index + 1}-${random_string.suffix.result}"
+  image_id          = data.kamatera_image.ubuntu.id
+  datacenter_id     = data.kamatera_datacenter.frankfurt.id
+  cpu_cores         = var.shared_cpu
+  cpu_type          = var.shared_type
+  ram_mb            = var.shared_ram
+  disk_sizes_gb     = [ var.shared_disk_size, var.shared_block_size ]
+  billing_cycle     = "hourly"
+  power_on          = true
+  password          = var.password
+  ssh_pubkey        = var.ssh_public_key
+
+  network {
+    name = "wan"
+  }
+
+  network {
+    name = kamatera_network.private-lan.full_name
+  }
+}
+
+# Provision worker nodes
 resource "kamatera_server" "worker" {
   count             = var.worker_count
   name              = "srv-${var.environment}-worker-${count.index + 1}-${random_string.suffix.result}"
   image_id          = data.kamatera_image.ubuntu.id
   datacenter_id     = data.kamatera_datacenter.frankfurt.id
   cpu_cores         = var.worker_cpu
-  cpu_type          = "A"
+  cpu_type          = var.worker_type
   ram_mb            = var.worker_ram
-  disk_sizes_gb     = [ var.worker_disk_size, var.block_storage_size ]
+  disk_sizes_gb     = [ var.worker_disk_size, var.worker_block_size ]
   billing_cycle     = "hourly"
   power_on          = true
   password          = var.password
