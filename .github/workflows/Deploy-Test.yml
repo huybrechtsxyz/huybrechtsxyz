@@ -16,7 +16,7 @@ jobs:
     uses: ./.github/workflows/_pipeline.yml
     with:
       environment: test
-      initialize: 'true'
-      rebuild: 'true'
+      initialize: 'false'
+      rebuild: 'false'
     secrets:
       BITWARDEN_TOKEN: ${{ secrets.BITWARDEN_TOKEN }}

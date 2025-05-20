@@ -50,6 +50,7 @@ jobs:
           echo "Rebuild: ${{ inputs.rebuild }}"
           echo "Cache Hit: ${{ steps.restore-cache.outputs.cache-hit }}"
 
+  # Debugging step to check the cache hit status
   debug-vars:
     name: Debug Vars
     needs: [restore]
@@ -64,6 +65,142 @@ jobs:
           echo "Cache Hit: ${{ needs.restore.outputs.cache-hit }}"
           echo "Cache Hit (Debug): ${{ needs.restore.outputs.cache-hit }}"
           echo "Cache Result (Debug): ${{ needs.restore.result }}"
+
+  # Get all information.json files and set them as a matrix
+  # This job will run if the rebuild input is set to true
+  # It will find all information.json files in the src directory and set them as a matrix
+  # The matrix will be used to build and push the Docker images
+  docker-matrix:
+    name: Docker Matrix
+    if: inputs.rebuild == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      # Check out the repo
+      - name: Check Out
+        uses: actions/checkout@v4
+
+      # Find all information.json files and set them as a matrix
+      - name: Generate Matrix
+        id: set-matrix
+        run: |
+          matrix='['
+          for dir in ./src/*; do
+            json_file="$dir/information.json"
+            dockerfile="$(jq -r .dockerfile "$json_file" 2>/dev/null)"
+            if [[ -f "$json_file" && -n "$dockerfile" && -f "$dir/$dockerfile" ]]; then
+              service=$(basename "$dir")
+              json=$(cat "$json_file")
+              merged=$(echo "$json" | jq --arg service "$service" '. + {service: $service}')
+              matrix+="$merged,"
+            fi
+          done
+          matrix="${matrix%,}]"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+  
+  # Build and Push Docker Images
+  # This job will run if the rebuild input is set to true
+  # It will build and push the Docker images for each service in the matrix
+  docker-build:
+    name: Docker Build
+    needs: [docker-matrix]
+    if: inputs.rebuild == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.docker-matrix.outputs.matrix) }}
+    steps:
+      # Debugging step to check the matrix values
+      - name: Debug Info
+        run: |
+          echo "Matrix values:"
+          echo "Service: ${{ matrix.service }}"
+          echo "Project:   ${{ matrix.projectname }}"
+          echo "Projectfile: ${{ matrix.projectfile }}"
+          echo "Registry: ${{ matrix.registry }}"
+          echo "Image Name: ${{ matrix.imagename }}"
+          echo "Dockerfile: ${{ matrix.dockerfile }}"
+          echo "Configuration: ${{ matrix.build_config }}"
+          echo "Runtime: ${{ matrix.runtime }}"
+          echo "Version: ${{ matrix.run_version }}"
+
+      # Check out the repo
+      - name: Check Out
+        uses: actions/checkout@v4
+
+      # Set up GitHub Secrets
+      - name: Get General Secrets
+        id: get-secrets
+        uses: bitwarden/sm-action@v2
+        with:
+          access_token: ${{ secrets.BITWARDEN_TOKEN }}
+          secrets: |
+            9b5e0f00-d567-4357-a5fb-b2e30124e3fe > REGISTRY_USERNAME
+            3bb3cf2a-6766-4715-8642-b2e301251ed1 > REGISTRY_PASSWORD
+            
+      # Set up .NET SDK
+      - name: Setup .NET
+        if: ${{ matrix.runtime == 'dotnet' }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.run_version }} #8.0.x
+      
+      # Build .NET Project
+      - name: Build .NET Project
+        if: ${{ matrix.runtime == 'dotnet' }}
+        run: |
+          echo "Building .NET project for ${{ matrix.service }}"
+          cd ./src/${{ matrix.service }}/
+          if [[ ! -f "${{ matrix.projectfile }}" ]]; then
+            echo "::error::Project file not found at ${{ matrix.projectfile }}"
+            exit 1
+          fi
+          dotnet restore "${{ matrix.projectfile }}"
+          dotnet build "${{ matrix.projectfile }}" --no-restore --configuration ${{ matrix.build_config }}
+          dotnet test "${{ matrix.projectfile }}" --no-build --verbosity normal
+
+      # Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ steps.get-secrets.outputs.REGISTRY_USERNAME }}
+          password: ${{ steps.get-secrets.outputs.REGISTRY_PASSWORD }}
+      
+      # Cache Docker layers
+      # This step caches the Docker layers to speed up the build process
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      
+      # Extract metadata for docker
+      # This step extracts metadata for the Docker image        
+      - name: Extract metadata for docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ matrix.registry }}/${{ matrix.imagename }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+            type=raw,value=${{ matrix.imagename }}
+            type=raw,value=${{ inputs.environment }}
+      
+      # Build and push docker image
+      # This step builds and pushes the Docker image to the registry
+      - name: Build and push docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./src/${{ matrix.service }}/${{ matrix.projectname }}
+          file: ${{ matrix.dockerfile }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
   # Terraform Plan and Apply
   # This job will run if the cache is not hit or if the initialize input is set to true
@@ -569,7 +706,7 @@ jobs:
   # This job will run only for the first manager node in the matrix
   start:
     name: Start Environment
-    needs: [download, configuration]
+    needs: [docker-build, download, configuration]
     if: always()
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -614,7 +751,7 @@ jobs:
       - name: Start Environment
         run: |
           if [[ "${{ matrix.name }}" != *"manager-1"* ]]; then
-            echo "[*] Environments are not started on worker nodes."
+            echo "[*] Environments are only started on leader node."
             exit 0
           fi
 
