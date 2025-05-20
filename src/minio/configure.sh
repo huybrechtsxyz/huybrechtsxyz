@@ -23,7 +23,7 @@ createpath() {
   return 0
 }
 
-createpath "/srv/app/minio"
-createpath "/srv/app/minio/conf"
+createpath "/opt/app/minio"
+createpath "/opt/app/minio/conf"
 
 echo "[*] Deploying MINIO to remote server...DONE"

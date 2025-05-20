@@ -102,7 +102,7 @@ main() {
   echo "[*] Configuring Swarn Node: $hostname..."
   
   # Create the necessary directories
-  createpath "/srv/app"
+  createpath "/opt/app"
 
   # Create docker networks and secrets only leader node
   if [[ "$hostname" == *"manager-1"* ]]; then

@@ -48,28 +48,28 @@ export HOSTNAMEID=$(hostname)
 cleanup_vxlan_interface
 
 # Get the basic directory and environment file
-cd /srv/app
-base_dir="/srv/app"
-environment_file="/srv/app/.env"
-compose_file="/srv/app/compose.yml"
+cd /opt/app
+base_dir="/opt/app"
+environment_file="/opt/app/.env"
+compose_file="/opt/app/compose.yml"
 services=("traefik" "consul" "postgres" "pgadmin" "keycloak")
 
 # Clear logs for "consul" "traefik" "minio" "postgres" "keycloak" "telemetry"
 echo "Clearing log directories..."
-rm -rf /srv/app/config.log
+rm -rf /opt/app/config.log
 for service in "${services[@]}"; do
     clear_logs "$service"
 done
 
 # Set permissions for specific directories
 echo "Setting permissions for directories..."
-chmod -R 755 /srv/app
-chmod -R 600 /srv/app/traefik/data
-chmod -R 777 /srv/app/traefik/logs
-chmod -R 777 /srv/app/consul/data
-chmod -R 777 /srv/app/postgres/data
-chmod -R 777 /srv/app/postgres/admin
-chmod -R 777 /srv/app/postgres/backups
+chmod -R 755 /opt/app
+chmod -R 600 /opt/app/traefik/data
+chmod -R 777 /opt/app/traefik/logs
+chmod -R 777 /opt/app/consul/data
+chmod -R 777 /opt/app/postgres/data
+chmod -R 777 /opt/app/postgres/admin
+chmod -R 777 /opt/app/postgres/backups
 
 # Loading environment variables
 echo "Loading environment variables..."

@@ -23,11 +23,11 @@ createpath() {
   return 0
 }
 
-createpath "/srv/app/telemetry"
-createpath "/srv/app/telemetry/conf"
-createpath "/srv/app/telemetry/grafana"
-createpath "/srv/app/telemetry/prometheus"
-createpath "/srv/app/telemetry/loki"
-createpath "/srv/app/telemetry/promtail"
+createpath "/opt/app/telemetry"
+createpath "/opt/app/telemetry/conf"
+createpath "/opt/app/telemetry/grafana"
+createpath "/opt/app/telemetry/prometheus"
+createpath "/opt/app/telemetry/loki"
+createpath "/opt/app/telemetry/promtail"
 
 echo "[*] Deploying TELEMETRY to remote server...DONE"

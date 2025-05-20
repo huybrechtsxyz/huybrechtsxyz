@@ -23,11 +23,11 @@ createpath() {
   return 0
 }
 
-createpath "/srv/app/postgres"
-createpath "/srv/app/postgres/conf"
-createpath "/srv/app/postgres/data"
-createpath "/srv/app/postgres/admin"
-createpath "/srv/app/postgres/backups"
+createpath "/opt/app/postgres"
+createpath "/opt/app/postgres/conf"
+createpath "/opt/app/postgres/data"
+createpath "/opt/app/postgres/admin"
+createpath "/opt/app/postgres/backups"
 
 # Update the worker-1 node with the postgres tag
 if [[ "$hostname" == *"manager-1"* ]]; then

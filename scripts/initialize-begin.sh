@@ -91,7 +91,7 @@ mount_data_volume() {
     echo "[*] Mounting data volume..."
     DISK="/dev/sdb"
     PART="${DISK}1"
-    MOUNTPOINT="/srv/appdata"
+    MOUNTPOINT="/opt/appdata"
 
     if [[ "$HOSTNAME" != *worker* ]]; then
         echo "[!] Skipping: This node ($HOSTNAME) is not a worker node."

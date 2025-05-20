@@ -23,11 +23,11 @@ createpath() {
   return 0
 }
 
-createpath "/srv/app/keycloak"
-createpath "/srv/app/keycloak/conf"
+createpath "/opt/app/keycloak"
+createpath "/opt/app/keycloak/conf"
 
 envsubst < \
-  /srv/app/keycloak/conf/keycloak-realm.template.json > \
-  /srv/app/keycloak/conf/keycloak-realm.json
+  /opt/app/keycloak/conf/keycloak-realm.template.json > \
+  /opt/app/keycloak/conf/keycloak-realm.json
 
 echo "[*] Deploying KEYCLOAK to remote server...DONE"
