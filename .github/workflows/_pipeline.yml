@@ -613,11 +613,12 @@ jobs:
       # Start the environment
       - name: Start Environment
         run: |
-          echo "[*] Starting Environment..."
           if [[ "${{ matrix.name }}" != *"manager-1"* ]]; then
+            echo "[*] Environments are not started on worker nodes."
             exit 0
           fi
 
+          echo "[*] Starting Environment..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             cd /opt/app
             ./stopenv.sh
