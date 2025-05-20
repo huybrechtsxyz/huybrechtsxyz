@@ -102,26 +102,9 @@ main() {
   echo "[*] Configuring Swarn Node: $hostname..."
   
   # Create the necessary directories
-  createpath "/app"
+  createpath "/opt/app"
 
-  createpath "/app/traefik"
-  createpath "/app/traefik/conf"
-  createpath "/app/traefik/data"
-  createpath "/app/traefik/logs"
-  
-  createpath "/app/consul"
-  createpath "/app/consul/conf"
-  createpath "/app/consul/data"
-
-  createpath "/app/postgres"
-  createpath "/app/postgres/conf"
-  createpath "/app/postgres/data"
-  createpath "/app/postgres/admin"
-  createpath "/app/postgres/backups"
-
-  createpath "/app/keycloak"
-  createpath "/app/keycloak/conf"
-
+  # Create docker networks and secrets only leader node
   if [[ "$hostname" == *"manager-1"* ]]; then
     createnetwork "wan"
     createnetwork "lan"

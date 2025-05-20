@@ -18,7 +18,7 @@ function clear_logs() {
 # Problem this solves:
 # Docker Swarm deployment may fail with an error like: network sandbox join failed: subnet
 cleanup_vxlan_interfaces() {
-  echo "🛠  Checking for orphaned VXLAN interfaces..."
+  echo "Checking for orphaned VXLAN interfaces..."
 
   # Find all VXLAN interfaces
   interfaces=$(ls /sys/class/net | grep '^vx-')
@@ -30,14 +30,14 @@ cleanup_vxlan_interfaces() {
 
   # Loop through and delete each orphaned VXLAN interface
   for iface in $interfaces; do
-    echo "⚠️  Found orphaned interface: $iface"
-    echo "🔍 Details:"
+    echo "Found orphaned interface: $iface"
+    echo "Details:"
     ip -d link show "$iface"
-    echo "❌ Deleting interface $iface..."
+    echo "Deleting interface $iface..."
     sudo ip link delete "$iface"
   done
 
-  echo "✅ VXLAN cleanup completed."
+  echo "VXLAN cleanup completed."
 }
 
 # START ENVIRONMENT
@@ -48,28 +48,28 @@ export HOSTNAMEID=$(hostname)
 cleanup_vxlan_interface
 
 # Get the basic directory and environment file
-cd /app
-base_dir="/app"
-environment_file="/app/.env"
-compose_file="/app/compose.yml"
+cd /opt/app
+base_dir="/opt/app"
+environment_file="/opt/app/.env"
+compose_file="/opt/app/compose.yml"
 services=("traefik" "consul" "postgres" "pgadmin" "keycloak")
 
 # Clear logs for "consul" "traefik" "minio" "postgres" "keycloak" "telemetry"
 echo "Clearing log directories..."
-rm -rf /app/config.log
+rm -rf /opt/app/config.log
 for service in "${services[@]}"; do
     clear_logs "$service"
 done
 
 # Set permissions for specific directories
 echo "Setting permissions for directories..."
-chmod -R 755 /app
-chmod -R 600 /app/traefik/data
-chmod -R 777 /app/traefik/logs
-chmod -R 777 /app/consul/data
-chmod -R 777 /app/postgres/data
-chmod -R 777 /app/postgres/admin
-chmod -R 777 /app/postgres/backups
+chmod -R 755 /opt/app
+chmod -R 600 /opt/app/traefik/data
+chmod -R 777 /opt/app/traefik/logs
+chmod -R 777 /opt/app/consul/data
+chmod -R 777 /opt/app/postgres/data
+chmod -R 777 /opt/app/postgres/admin
+chmod -R 777 /opt/app/postgres/backups
 
 # Loading environment variables
 echo "Loading environment variables..."

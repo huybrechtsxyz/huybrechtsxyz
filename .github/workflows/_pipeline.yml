@@ -50,13 +50,28 @@ jobs:
           echo "Rebuild: ${{ inputs.rebuild }}"
           echo "Cache Hit: ${{ steps.restore-cache.outputs.cache-hit }}"
 
+  debug-vars:
+    name: Debug Vars
+    needs: [restore]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug Vars
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Initialize: ${{ inputs.initialize }}"
+          echo "Rebuild: ${{ inputs.rebuild }}"
+          echo "Cache Hit: ${{ needs.restore.outputs.cache-hit }}"
+          echo "Cache Hit (Debug): ${{ needs.restore.outputs.cache-hit }}"
+          echo "Cache Result (Debug): ${{ needs.restore.result }}"
+
   # Terraform Plan and Apply
   # This job will run if the cache is not hit or if the initialize input is set to true
   # Stores the output in a JSON file and uploads it as an artifact and caches it for future runs
   terraform:
     name: Terraform Plan and Apply
     needs: [restore]
-    if: inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true'
+    if: always() && ( inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true' )
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
@@ -209,12 +224,16 @@ jobs:
   initialization:
     name: Initialize Swarm Cluster
     needs: [restore, download]
-    if: inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true'
+    if: always() && ( inputs.initialize == 'true' || needs.restore.outputs.cache-hit != 'true' )
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     strategy:
       matrix: ${{ fromJson(needs.download.outputs.matrix) }}
     steps:
+      # Check out the repo
+      - name: Check Out
+        uses: actions/checkout@v4
+
       # Set up GitHub Secrets for Test Environment
       - name: Get Test Secrets
         if: ${{ inputs.environment == 'test' }}
@@ -254,94 +273,38 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa root@${{ matrix.ip }}:/root/.ssh/id_rsa_temp || { echo "[x] Failed to transfer private key to remote server"; exit 1; }
 
-      # Configure the server with initialization script
-      - name: Configure ${{ inputs.environment }} Server ${{ matrix.label }}
+      # Step: Copy the initialization script securely to the remote server using scp
+      - name: Upload Initialization Script to Remote Server
         run: |
+          # Copy the initialization scripts to the remote server
+          echo "[*] Copying initialization script to remote server..."
+          scp -o StrictHostKeyChecking=no "./scripts/initialize-begin.sh" root@${{ matrix.ip }}:/tmp/initialize-begin.sh || {
+            echo "[x] Failed to transfer before initialization script to remote server"
+            exit 1
+          }
+          scp -o StrictHostKeyChecking=no "./scripts/initialize-end.sh" root@${{ matrix.ip }}:/tmp/initialize-end.sh || {
+            echo "[x] Failed to transfer after initialization script to remote server"
+            exit 1
+          }
+
+      # Initialize the server with initialization script
+      - name: Initialize BEFORE ${{ inputs.environment }} Server ${{ matrix.label }}
+        run: |
+          echo "[*] Executing BEFORE initializing remotely..."
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+            chmod +x /tmp/initialize-begin.sh
+            /tmp/initialize-begin.sh
+          EOF
+          echo "[*] Executing BEFORE initializing remotely...DONE"
+
+      # Initialize the server with initialization script
+      - name: Initialize ${{ inputs.environment }} Server ${{ matrix.label }}
+        run: |
+          echo "[*] Executing INTERNAL initializing remotely..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             echo "[*] Initializing server..."
             set -euo pipefail
             cd /
-
-            install_private_key() {
-              echo "[*] Installing uploaded private key..."
-              mkdir -p ~/.ssh
-              mv /root/.ssh/id_rsa_temp ~/.ssh/id_rsa
-              chmod 600 ~/.ssh/id_rsa
-              echo -e "Host *\n  StrictHostKeyChecking no\n" > ~/.ssh/config
-            }
-            
-            update_system() {
-              echo "[*] Updating system packages..."
-              apt-get update -y
-              DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-            }
-
-            configure_firewall() {
-              echo "[*] Configuring firewall..."
-              if ! command -v ufw &> /dev/null; then
-                echo "[*] Installing UFW..."
-                apt-get install -y ufw
-              fi
-
-              # Deny all traffic by default
-              ufw --force reset
-              ufw default deny incoming
-              ufw default deny outgoing
-
-              # Essential System Services
-              ufw allow out 53/tcp comment 'DNS (TCP)'
-              ufw allow out 53/udp comment 'DNS (UDP)'
-              ufw allow out 123/udp comment 'NTP'
-
-              # Loopback
-              ufw allow in on lo comment 'Loopback IN'
-              ufw allow out on lo comment 'Loopback OUT'
-
-              # Package Management (Optional)
-              ufw allow out 20,21/tcp comment 'FTP'
-              ufw allow out 11371/tcp comment 'GPG keyserver'
-
-              # Web & SSH
-              ufw allow 22/tcp comment 'SSH'
-              ufw allow 80/tcp comment 'HTTP'
-              ufw allow 443/tcp comment 'HTTPS'
-              ufw allow out 80/tcp comment 'HTTP'
-              ufw allow out 443/tcp comment 'HTTPS'
-
-              # Docker Swarm management traffic (TCP) over VLAN
-              ufw allow proto tcp from 10.0.0.0/23 to any port 2377 comment 'Swarm Control IN'
-              ufw allow out proto tcp to 10.0.0.0/23 port 2377 comment 'Swarm Control OUT'
-
-              # Docker VXLAN overlay network (UDP) over VLAN
-              ufw allow proto udp from 10.0.0.0/23 to any port 4789 comment 'Swarm Overlay Network IN'
-              ufw allow out proto udp to 10.0.0.0/23 port 4789 comment 'Swarm Overlay Network OUT'
-
-              # Docker overlay network discovery (TCP + UDP) over VLAN
-              ufw allow proto tcp from 10.0.0.0/23 to any port 7946 comment 'Swarm Discovery TCP'
-              ufw allow proto udp from 10.0.0.0/23 to any port 7946 comment 'Swarm Discovery UDP'
-              ufw allow out proto tcp to 10.0.0.0/23 port 7946 comment 'Swarm Gossip TCP OUT'
-              ufw allow out proto udp to 10.0.0.0/23 port 7946 comment 'Swarm Gossip UDP OUT'
-
-              # Enable firewall only if not active
-              if ! ufw status | grep -q "Status: active"; then
-                echo "[*] Enabling UFW..."
-                echo "y" | ufw enable
-              fi
-
-              ufw reload
-              ufw status verbose
-            }
-
-            install_docker_if_needed() {
-              if ! command -v docker &> /dev/null; then
-                echo "[*] Installing Docker..."
-                apt-get update
-                apt-get install -y ca-certificates curl gnupg lsb-release
-                curl -fsSL https://get.docker.com | bash
-              else
-                echo "[*] Docker is already installed."
-              fi
-            }
 
             configure_swarm() {
               local hostname
@@ -408,23 +371,22 @@ jobs:
               fi
             }
 
-            enable_docker_service() {
-              echo "[*] Ensuring Docker is enabled and running..."
-              systemctl enable docker
-              systemctl restart docker
-            }
-
             main() {
-              update_system
-              configure_firewall
-              install_private_key
-              install_docker_if_needed
               configure_swarm
-              enable_docker_service
             }
-
             main
           EOF
+          echo "[*] Executing INTERNAL initializing remotely...DONE"
+
+      # Initialize the server with initialization script
+      - name: Initialize AFTER ${{ inputs.environment }} Server ${{ matrix.label }}
+        run: |
+          echo "[*] Executing AFTER initializing remotely..."
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+            chmod +x /tmp/initialize-end.sh
+            /tmp/initialize-end.sh
+          EOF
+          echo "[*] Executing AFTER initializing remotely...DONE"
 
   # Configure the Swarm Cluster
   # This job will run if the cache is not hit or if the initialize input is set to true
@@ -531,112 +493,84 @@ jobs:
             exit 1
           }
 
-          # Copy the configuration script to the remote server
+          # Copy the configuration scripts to the remote server
           echo "[*] Copying configuration script to remote server..."
-          scp -o StrictHostKeyChecking=no "./scripts/configure.sh" root@${{ matrix.ip }}:/tmp/configure.sh || {
-            echo "[x] Failed to transfer configuration script to remote server"
+          scp -o StrictHostKeyChecking=no "./scripts/configure-begin.sh" root@${{ matrix.ip }}:/tmp/configure-begin.sh || {
+            echo "[x] Failed to transfer before configuration script to remote server"
+            exit 1
+          }
+          scp -o StrictHostKeyChecking=no "./scripts/configure-end.sh" root@${{ matrix.ip }}:/tmp/configure-end.sh || {
+            echo "[x] Failed to transfer after configuration script to remote server"
             exit 1
           }
 
           # Execute the configuration script remotely
           echo "[*] Executing configuration script remotely..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            chmod +x /tmp/configure.sh
-            /tmp/configure.sh
-            cp /tmp/variables.env /app/.env
+            chmod +x /tmp/configure-begin.sh
+            /tmp/configure-begin.sh
+            cp /tmp/variables.env /opt/app/.env
           EOF
 
-          # Copy /src to /app
+          # Copy /src to /opt/app
           echo "[*] Copying source to remote server..."
-          #find ./src -maxdepth 1 -type f -exec scp -o StrictHostKeyChecking=no {} root@${{ matrix.ip }}:/app/ \;
-          scp -o StrictHostKeyChecking=no ./src/*.yml root@${{ matrix.ip }}:/app
-          scp -o StrictHostKeyChecking=no ./scripts/startenv.sh root@${{ matrix.ip }}:/app/startenv.sh
-          scp -o StrictHostKeyChecking=no ./scripts/stopenv.sh root@${{ matrix.ip }}:/app/stopenv.sh
+          #find ./src -maxdepth 1 -type f -exec scp -o StrictHostKeyChecking=no {} root@${{ matrix.ip }}:/opt/app/ \;
+          scp -o StrictHostKeyChecking=no ./src/*.yml root@${{ matrix.ip }}:/opt/app
+          scp -o StrictHostKeyChecking=no ./scripts/startenv.sh root@${{ matrix.ip }}:/opt/app/startenv.sh
+          scp -o StrictHostKeyChecking=no ./scripts/stopenv.sh root@${{ matrix.ip }}:/opt/app/stopenv.sh
 
-      # Configure Traefik Server
-      - name: Configure Traefik
+      # Configure Application Services
+      - name: Configure App Services
         run: |
-          # TRAEFIK
-          echo "[*] Deploying TRAEFIK to remote server..."
-          envsubst \
-            '${DOMAIN_DEV} ${ENVIRONMENT}' \
-            < ./src/traefik/traefik-config.template.yml \
-            > ./src/traefik/traefik-config.yml
-          scp -o StrictHostKeyChecking=no ./src/traefik/* root@${{ matrix.ip }}:/app/traefik/conf/ || {
-            echo "[x] Failed to transfer traefik configuration to remote server"
-            exit 1
-          }
-          echo "[*] Deploying TRAEFIK to remote server...DONE"
-      
-      # Configure Consul Server
-      - name: Configure Consul
-        run: |
-          # CONSUL
-          echo "[*] Deploying CONSUL to remote server..."
-          scp -o StrictHostKeyChecking=no ./src/consul/* root@${{ matrix.ip }}:/app/consul/conf/ || {
-            echo "[x] Failed to transfer consul configuration to remote server"
-            exit 1
-          }
-          echo "[*] Deploying CONSUL to remote server...DONE"
+          set -e
 
-      # Configure Postgres Server
-      - name: Configure Postgres
-        run: |
-          # POSTGRES
-          echo "[*] Deploying POSTGRES to remote server..."
-          scp -o StrictHostKeyChecking=no ./src/postgres/* root@${{ matrix.ip }}:/app/postgres/conf/ || {
-            echo "[x] Failed to transfer postgres configuration to remote server"
-            exit 1
-          }
-          # Update the worker-1 node with the postgres tag
-          if [[ "$hostname" != *"manager-1"* ]]; then
-            exit 0
-          fi
-          echo "[*] Updating worker-1 node with postgres tag..."
-          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-          POSTGRES_NODE=$(docker node ls --format '{{.Hostname}}' | grep "worker-1")
-          docker node update --label-add postgres=true $POSTGRES_NODE
-          EOF
-          echo "[*] Deploying POSTGRES to remote server...DONE"
+          echo "[*] Configuring application services..."
+          for script in ./src/*/configure.sh; do
+            service=$(basename "$(dirname "$script")")
+            echo "[*] Configuring service '$service'..."
 
-      # Configure Keycloak Server
-      - name: Configure Keycloak
-        run: |
-          # KEYCLOAK
-          echo "[*] Deploying KEYCLOAK to remote server..."
-          # Generate realm.json
-          envsubst < ./src/keycloak/keycloak-realm.template.json > ./src/keycloak/keycloak-realm.json
-          # Copy the keycloak configuration to the remote server
-          scp -o StrictHostKeyChecking=no ./src/keycloak/* root@${{ matrix.ip }}:/app/keycloak/conf/ || {
-            echo "[x] Failed to transfer keycloak configuration to remote server"
-            exit 1
-          }
-          echo "[*] Deploying KEYCLOAK to remote server...DONE"
+            remote_script="/tmp/configure-$service.sh"
+            remote_conf_dir="/opt/app/$service/conf"
+
+            # Copy configure script
+            scp -o StrictHostKeyChecking=no "$script" root@${{ matrix.ip }}:"$remote_script"
+
+            # Ensure remote conf directory exists
+            ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} "mkdir -p '$remote_conf_dir'"
+
+            # Copy service config files
+            scp -o StrictHostKeyChecking=no ./src/$service/* root@${{ matrix.ip }}:"$remote_conf_dir/" || {
+              echo "[x] Failed to transfer $service configuration to remote server"
+              exit 1
+            }
+
+            # Run the config script remotely
+            ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} \
+              "chmod +x '$remote_script' && bash '$remote_script'" || {
+                echo "[x] Configuration for $service failed"
+                exit 1
+              }
+
+            echo "[✓] Configured service '$service'"
+          done
+          echo "[*] Configuring application services...DONE"
 
       # Finish Configuration
       - name: Finish Configuration
         run: |
           echo "[*] Finishing configuration..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            # Set environment file
-            cp -f /tmp/variables.env /app/.env
-            
-            # Set permissions for the app directory does not have to be done here
-            # Correct permissions for the app directory are set in the startenv.sh script
-            # This would break the permissions for the app directory when its running
-            # chown -R 755 /app
-
-            # Remove temporary files
-            #rm -f /tmp/variables.env
-            #rm -f /tmp/secrets.env
+            chmod +x /tmp/configure-end.sh
+            /tmp/configure-end.sh
           EOF
-          echo "[*] Cleanup temporary files...DONE"
+          echo "[*] Finishing configuration...DONE"
 
   # Start the Environment
   # This job will run only for the first manager node in the matrix
   start:
     name: Start Environment
     needs: [download, configuration]
+    if: always()
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     strategy:
@@ -679,14 +613,16 @@ jobs:
       # Start the environment
       - name: Start Environment
         run: |
-          echo "[*] Starting Environment..."
           if [[ "${{ matrix.name }}" != *"manager-1"* ]]; then
+            echo "[*] Environments are not started on worker nodes."
             exit 0
           fi
 
+          echo "[*] Starting Environment..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            cd /app
+            cd /opt/app
             ./stopenv.sh
+            sleep 30
             ./startenv.sh
           EOF
           echo "[*] Starting Environment...DONE"

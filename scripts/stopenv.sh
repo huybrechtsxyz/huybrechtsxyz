@@ -1,6 +1,6 @@
 #!/bin/bash
 
 # STOP DEVELOPMENT ENVIRONMENT
-cd "/app"
+cd "/opt/app"
 echo "Stopping development environment..."
 docker stack rm app

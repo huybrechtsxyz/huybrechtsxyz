@@ -29,7 +29,9 @@ Copy-Item -Path "$SourcePath/develop.env" -Destination "$AppPath/.env" -Force
 $composeFile = "$AppPath/compose.yml"
 $environmentFile = "$SourcePath/develop.env"
 Write-Host "Environment variables are:" 
+$env:HOSTNAMEID=$(hostname)
 $env:HOSTNAME=$env:COMPUTERNAME
+$env:DOCKER_MANAGERS=1
 Write-Host " -- HOSTNAME: $env:HOSTNAME" 
 Write-Host " -- DOCKER_PUBLIC_IP: $env:DOCKER_PUBLIC_IP" 
 Write-Host " -- DOCKER_MANGER_COUNT: $env:DOCKER_MANAGER_COUNT" 
@@ -40,6 +42,9 @@ if (Test-Path $environmentFile) {
         Write-Host " -- $key : $value" 
     }
 }
+
+# Set the environment variables from the secrets file
+Get-SecretsAsVars
 
 # Configure and run Traefik
 function Invoke-Traefik {
@@ -54,7 +59,7 @@ function Invoke-Traefik {
     Copy-Item -Path "$SourcePath/traefik/*" -Destination $traefikConf -Recurse
     Remove-Item -Path "$traefikLogs/*" -Recurse -Force
 
-    Apply-Template -templateFile "$APPPATH/traefik/conf/traefik-config.template.yml" -configFile "$APPPATH/traefik/conf/traefik-config.yml"
+    Apply-Template -InputFile "$APPPATH/traefik/conf/traefik-config.template.yml" -OutputFile "$APPPATH/traefik/conf/traefik-config.yml"
     Write-Host 'Configuring TRAEFIK ... Done'
 }
 Invoke-Traefik
@@ -73,6 +78,20 @@ function Invoke-Consul {
 }
 Invoke-Consul
 
+# Configure and run MINIO
+function Invoke-Minio {
+    Write-Host 'Configuring MINIO ... for DOCKER'
+    $minioDir = "$AppPath/minio"
+    $minioConf = "$minioDir/conf"
+    $minioData = "$minioDir/data"
+    New-Item -ItemType Directory -Path $minioDir, $minioConf, $minioData -Force
+
+    $minioConf = Resolve-Path -Path $minioConf
+    Copy-Item -Path "$SourcePath/minio/*" -Destination $minioConf -Recurse
+    Write-Host 'Configuring MINIO ... Done'
+}
+Invoke-Minio
+
 # Configure and run POSTGRES
 function Invoke-Postgres {
     Write-Host 'Configuring POSTGRES ... for DOCKER'
@@ -85,6 +104,9 @@ function Invoke-Postgres {
 
     $postgresConf = Resolve-Path -Path $postgresConf
     Copy-Item -Path "$SourcePath/postgres/*" -Destination $postgresConf -Recurse
+
+    Add-DockerNodeLabel -NodeName "docker-desktop" -LabelKey "postgres"
+
     Write-Host 'Configuring POSTGRES ... Done'
 }
 Invoke-Postgres
@@ -95,12 +117,29 @@ function Invoke-Keycloak {
     $keycloakDir = "$AppPath/keycloak"
     $keycloakConf = "$keycloakDir/conf"
     New-Item -ItemType Directory -Path $keycloakDir, $keycloakConf -Force
-
     $keycloakConf = Resolve-Path -Path $keycloakConf
     Copy-Item -Path "$SourcePath/keycloak/*" -Destination $keycloakConf -Recurse
+    Apply-Template -InputFile "$APPPATH/keycloak/conf/keycloak-realm.template.json" -OutputFile "$APPPATH/keycloak/conf/keycloak-realm.json"
     Write-Host 'Configuring KEYCLOAK ... Done'
 }
 Invoke-Keycloak
+
+# Configure and run TELEMETRY
+function Invoke-Telemetry {
+    Write-Host 'Configuring TELEMETRY ... for DOCKER'
+    $telemetryDir = "$AppPath/telemetry"
+    $telemetryConf = "$telemetryDir/conf"
+    $telemetryGrafana = "$telemetryDir/grafana"
+    $telemetryPrometheus = "$telemetryDir/prometheus"
+    $telemetryLoki = "$telemetryDir/loki"
+    $telemetryTail = "$telemetryDir/promtail"
+    New-Item -ItemType Directory -Path $telemetryDir, $telemetryConf -Force
+    New-Item -ItemType Directory -Path $telemetryGrafana, $telemetryPrometheus, $telemetryLoki, $telemetryTail -Force
+    $telemetryConf = Resolve-Path -Path $telemetryConf
+    Copy-Item -Path "$SourcePath/telemetry/*" -Destination $telemetryConf -Recurse
+    Write-Host 'Configuring TELEMETRY ... Done'
+}
+Invoke-Telemetry
 
 Write-Host "Validating Docker Compose..."
 docker compose -f $composeFile --env-file $environmentFile config
@@ -116,6 +155,10 @@ docker stack deploy -c $composeFile app --detach=true
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" `
     "http://proxy.$env:DOMAIN_DEV/dashboard/",
+    "http://config.$env:DOMAIN_DEV/",
+    "http://iam.$env:DOMAIN_DEV",
+    "http://s3.$env:DOMAIN_DEV",
+    "http://db.$env:DOMAIN_DEV/pgamin",
     "--inprivate",
     "--ignore-certificate-errors",
     "--ignore-urlfetcher-cert-requests",
