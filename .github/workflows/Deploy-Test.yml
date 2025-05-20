@@ -17,6 +17,6 @@ jobs:
     with:
       environment: test
       initialize: 'false'
-      rebuild: 'true'
+      rebuild: 'false'
     secrets:
       BITWARDEN_TOKEN: ${{ secrets.BITWARDEN_TOKEN }}

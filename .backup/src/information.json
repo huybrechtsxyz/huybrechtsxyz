@@ -1,0 +1,12 @@
+{
+  "service": "web.xyz",
+  "description": "Web service for XYZ",
+  "projectname": "Huybrechts.Web",
+  "projectfile": "Huybrechts.Web/Huybrechts.Web.csproj",
+  "registry": "huybrechts",
+  "imagename": "myapp-myservice",
+  "dockerfile": "Dockerfile",
+  "build_config": "Release",
+  "runtime": "dotnet",
+  "run_version": "8.0.x"
+}
