@@ -28,8 +28,13 @@ createpath "/opt/app/traefik/conf"
 createpath "/opt/app/traefik/data"
 createpath "/opt/app/traefik/logs"
 
+echo Environment: $ENVIRONMENT
+EXPORT ENVIRONMENT=$ENVIRONMENT
+
+echo Environment: $ENVIRONMENT
+EXPORT DOMAIN_DEV=$DOMAIN_DEV
+
 envsubst \
-  '${DOMAIN_DEV} ${ENVIRONMENT}' \
   < /opt/app/traefik/conf/traefik-config.template.yml \
   > /opt/app/traefik/conf/traefik-config.yml
 
