@@ -1,0 +1,23 @@
+# Build and Deploy Jobs
+name: _BuildAndDeploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      BITWARDEN_TOKEN:
+        required: true
+
+jobs:
+  download:
+    name: Download Terraform Output
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    outputs:
+      matrix: ${{ steps.getoutput.outputs.matrix }}
+    steps:
+      # Download Terraform Output
+      - name: Download Terraform Output
