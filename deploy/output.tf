@@ -1,54 +1,15 @@
-#Expose important values, such as the load balancer's public IP and Elastic IPs.
-
-output "manager_public_ips" {
-  value = [for s in kamatera_server.manager : s.public_ips[0]]
-}
-
-output "manager_private_ips" {
-  value = [for s in kamatera_server.manager : s.private_ips[0]]
-}
-
-output "worker_public_ips" {
-  value = [for s in kamatera_server.worker : s.public_ips[0]]
-}
-
-output "worker_private_ips" {
-  value = [for s in kamatera_server.worker : s.private_ips[0]]
-}
-
-output "outputdata" {
-  value = {
-    include = concat(
-      [
-        for i in range(length(kamatera_server.manager)) : {
-          role       = "manager"
-          label      = "manager_${i+1}"
-          name       = kamatera_server.manager[i].name
-          ip         = kamatera_server.manager[i].public_ips[0]
-          private_ip = kamatera_server.manager[i].private_ips[0]
-          manager_ip = kamatera_server.manager[i].private_ips[0]
-        }
-      ],
-      [
-        for i in range(length(kamatera_server.shared)) : {
-          role       = "shared"
-          label      = "shared_${i+1}"
-          name       = kamatera_server.worker[i].name
-          ip         = kamatera_server.worker[i].public_ips[0]
-          private_ip = kamatera_server.worker[i].private_ips[0]
-          manager_ip = kamatera_server.manager[i].private_ips[0]
-        }
-      ],
-      [
-        for i in range(length(kamatera_server.worker)) : {
-          role       = "worker"
-          label      = "worker_${i+1}"
-          name       = kamatera_server.worker[i].name
-          ip         = kamatera_server.worker[i].public_ips[0]
-          private_ip = kamatera_server.worker[i].private_ips[0]
-          manager_ip = kamatera_server.manager[i].private_ips[0]
-        }
-      ]
-    )
-  }
+# Output the server details
+# Name example: srv-shared-manager-1-1234
+# Name example: srv-shared-infra-2-1234
+# Name example: srv-shared-worker-3-1234
+output "serverdata" {
+  value = [
+    for key, srv in kamatera_server.server : {
+      role       = split("-", key)[2]
+      label      = "${split("-", key)[2]}_${tonumber(split("-", key)[3]) + 1}"
+      name       = srv.name
+      ip         = srv.public_ips[0]
+      private_ip = srv.private_ips[0]
+    }
+  ]
 }
