@@ -1,5 +1,5 @@
-# This workflow deploys all components to the test environment
-name: Deploy To Test
+# This workflow deploys all infrastructure to the shared environment
+name: Deploy Infrastructure
 
 on:
   workflow_dispatch:
@@ -11,12 +11,10 @@ on:
   #     - '!src/website/*.yml'
 
 jobs:
-  deploy_pipeline:
+  deploy_infrastructure:
     name: Test Pipeline
-    uses: ./.github/workflows/_pipeline.yml
+    uses: ./.github/workflows/_infrastructure.yml
     with:
-      environment: test
-      initialize: 'false'
-      rebuild: 'false'
+      environment: shared
     secrets:
       BITWARDEN_TOKEN: ${{ secrets.BITWARDEN_TOKEN }}

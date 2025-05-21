@@ -93,7 +93,7 @@ mount_data_volume() {
     PART="${DISK}1"
     MOUNTPOINT="/opt/appdata"
 
-    if [[ "$HOSTNAME" != *worker* ]]; then
+    if [[ "$HOSTNAME" != *infra* ]]; then
         echo "[!] Skipping: This node ($HOSTNAME) is not a worker node."
         echo "[!] Skipping: Only worker nodes contain blockstorage disks."
         return 0
