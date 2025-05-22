@@ -1,0 +1,90 @@
+# version: '3.9'
+
+# secrets:
+# configs:
+# volumes:
+
+networks:
+  lan-platform:
+    external: true
+
+services:
+
+  telemetry:
+    image: grafana/otel-lgtm
+    volumes:
+      - ${APP_PATH}/telemetry/conf/otelcol-config.yml:/otel-lgtm/otelcol-config.yaml:ro
+      - ${APP_PATH}/telemetry/conf/prometheus.yml:/otel-lgtm/prometheus.yaml:ro
+      - ${APP_PATH}/telemetry/conf/tempo-config.yml:/otel-lgtm/tempo-config.yaml:ro
+      - ${APP_PATH}/telemetry/conf/loki-config.yml:/otel-lgtm/loki-config.yaml:ro
+      - ${APP_PATH}/telemetry/grafana:/data/grafana
+      - ${APP_PATH}/telemetry/prometheus:/data/prometheus
+      - ${APP_PATH}/telemetry/loki:/data/loki
+      - ${APP_PATH}/telemetry/tempo:/data/tempo
+    networks:
+      - lan-${WORKSPACE}
+    environment:
+      GF_PATHS_DATA: /data/grafana
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.role==infra
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      labels:
+        - traefik.enable=true
+        - traefik.http.services.telemetry.loadbalancer.server.scheme=http
+        - traefik.http.services.telemetry.loadbalancer.server.port=3000
+        - traefik.http.routers.telemetry.rule=Host(`logs.${DOMAIN_DEV}`)
+        - traefik.http.routers.telemetry.entrypoints=websecure
+        - traefik.http.routers.telemetry.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.telemetry.middlewares=${TRAEFIK_MIDDLEWARES}
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ${APP_PATH}/telemetry/conf/promtail-config.yml:/etc/promtail/promtail-config.yml
+      - ${APP_PATH}/telemetry/promtail:/tmp
+    networks:
+      - lan-${WORKSPACE}
+    command: -config.file=/etc/promtail/promtail-config.yml
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      labels:
+        - traefik.enable=false

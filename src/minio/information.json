@@ -1,0 +1,13 @@
+{
+  "role": "infra",
+  "service": "minio",
+  "description": "High-performance object storage for unstructured data",
+  "projectname": "",
+  "projectfile": "",
+  "registry": "",
+  "imagename": "",
+  "dockerfile": "",
+  "build_config": "",
+  "runtime": "",
+  "run_version": ""
+}

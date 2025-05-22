@@ -1,0 +1,13 @@
+{
+  "role": "infra",
+  "service": "telemetry",
+  "description": "Telemetry service for monitoring and logging",
+  "projectname": "",
+  "projectfile": "",
+  "registry": "",
+  "imagename": "",
+  "dockerfile": "",
+  "build_config": "",
+  "runtime": "",
+  "run_version": ""
+}

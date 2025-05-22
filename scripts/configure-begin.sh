@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -euo pipefail
+source /tmp/variables.env
+source /tmp/secrets.env
 
 # Function to create a path if it does not already exist
 createpath() {
@@ -96,7 +98,7 @@ loadsecrets() {
   done < /tmp/secrets.env
 }
 
-createnode() {
+createnodes() {
   # Get the current hostname
   hostname=$(hostname)
   # Extract the role from hostname (3rd part in hyphen-separated string)
@@ -125,12 +127,13 @@ main() {
 
   # Create docker networks and secrets only leader node
   if [[ "$hostname" == *"manager-1"* ]]; then
-    createnetwork "shared-wan"
-    createnetwork "shared-lan"
-    createnetwork "test-lan"
-    createnetwork "staging-lan"
-    createnetwork "production-lan"
+    createnetwork "wan-$WORKSPACE"
+    createnetwork "lan-$WORKSPACE"
+    createnetwork "lan-test"
+    createnetwork "lan-staging"
+    createnetwork "lan-production"
     loadsecrets
+    createnodes
   fi
   echo "[*] Configuring Swarn Node: $hostname...DONE"
 }

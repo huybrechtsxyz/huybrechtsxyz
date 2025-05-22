@@ -1,0 +1,71 @@
+# version: '3.9'
+
+#secrets:
+# configs:
+# volumes:
+
+networks:
+  lan-platform:
+    external: true
+
+services:
+
+  consul:
+    image: hashicorp/consul:1.20
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${APP_PATH}/consul/conf:/consul/config
+      - ${APP_PATH}/consul/data:/consul/data
+    networks:
+      - lan-${WORKSPACE}
+    environment:
+      DATACENTER: ${DATACENTER}
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      HOSTNAMEID: ${HOSTNAMEID}
+      CONSUL_BIND_INTERFACE: eth0
+    command:
+      - consul
+      - agent
+      - -config-dir=/consul/config
+      - -data-dir=/consul/data
+      - -bootstrap-expect=${DOCKER_MANAGERS}
+      - -datacenter=${DATACENTER}
+      - -node=${HOSTNAMEID}
+      - -advertise={{ GetPrivateIP }}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.role==infra
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      labels:
+        - traefik.enable=true
+        - traefik.http.services.consul.loadbalancer.server.scheme=http
+        - traefik.http.services.consul.loadbalancer.server.port=8500
+        - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
+        - traefik.http.routers.consul.entrypoints=websecure
+        - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.consul.middlewares=${TRAEFIK_MIDDLEWARES}

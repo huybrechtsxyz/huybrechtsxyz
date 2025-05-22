@@ -1,0 +1,13 @@
+{
+  "role": "infra",
+  "service": "traefik",
+  "description": "Reverse proxy and load balancer for microservices",
+  "projectname": "",
+  "projectfile": "",
+  "registry": "",
+  "imagename": "",
+  "dockerfile": "",
+  "build_config": "",
+  "runtime": "",
+  "run_version": ""
+}

@@ -1,0 +1,13 @@
+{
+  "role": "infra",
+  "service": "consul",
+  "description": "Service discovery and configuration management tool",
+  "projectname": "",
+  "projectfile": "",
+  "registry": "",
+  "imagename": "",
+  "dockerfile": "",
+  "build_config": "",
+  "runtime": "",
+  "run_version": ""
+}

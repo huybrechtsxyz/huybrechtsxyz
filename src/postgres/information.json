@@ -1,0 +1,13 @@
+{
+  "role": "infra",
+  "service": "postgres",
+  "description": "PostgreSQL database service for data storage and retrieval",
+  "projectname": "",
+  "projectfile": "",
+  "registry": "",
+  "imagename": "",
+  "dockerfile": "",
+  "build_config": "",
+  "runtime": "",
+  "run_version": ""
+}
