@@ -96,6 +96,25 @@ loadsecrets() {
   done < /tmp/secrets.env
 }
 
+createnode() {
+  # Get the current hostname
+  hostname=$(hostname)
+  # Extract the role from hostname (3rd part in hyphen-separated string)
+  srvrole=$(echo "$hostname" | cut -d'-' -f3)
+  echo "[*] Detected role: $srvrole"
+  # Apply the label only if this is the manager node
+  if [[ "$hostname" == *"manager-1"* ]]; then
+    echo "[*] Applying role label to all nodes..."
+    # Get all node hostnames
+    for node in $(docker node ls --format '{{.Hostname}}'); do
+      # Extract the role from each node's hostname
+      role=$(echo "$node" | cut -d'-' -f3)
+      echo "    - Setting role=$role on $node"
+      docker node update --label-add role=$role "$node"
+    done
+  fi
+}
+
 main() {
   local hostname
   hostname=$(hostname)
@@ -106,8 +125,11 @@ main() {
 
   # Create docker networks and secrets only leader node
   if [[ "$hostname" == *"manager-1"* ]]; then
-    createnetwork "wan"
-    createnetwork "lan"
+    createnetwork "shared-wan"
+    createnetwork "shared-lan"
+    createnetwork "test-lan"
+    createnetwork "staging-lan"
+    createnetwork "production-lan"
     loadsecrets
   fi
   echo "[*] Configuring Swarn Node: $hostname...DONE"

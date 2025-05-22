@@ -2,7 +2,7 @@
 providers:
   swarm:
     exposedByDefault: false
-    constraints: Label(`traefik.tags`, `$ENVIRONMENT`)
+  #  constraints: Label(`traefik.tags`, `$ENVIRONMENT`)
   # consulcatalog:
   #   cache: true
   #   refreshInterval: 30s

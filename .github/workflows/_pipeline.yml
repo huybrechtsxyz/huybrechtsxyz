@@ -458,7 +458,7 @@ jobs:
             echo "[*] Configuring service '$service'..."
 
             remote_script="/tmp/configure-$service.sh"
-            remote_conf_dir="/opt/$service/conf"
+            remote_conf_dir="/opt/app/$service/conf"
 
             # Copy configure script
             scp -o StrictHostKeyChecking=no "$script" root@${{ matrix.ip }}:"$remote_script"

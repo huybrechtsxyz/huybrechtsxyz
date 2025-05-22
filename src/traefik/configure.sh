@@ -28,10 +28,10 @@ createpath "/opt/app/traefik/conf"
 createpath "/opt/app/traefik/data"
 createpath "/opt/app/traefik/logs"
 
-echo Environment: $ENVIRONMENT
+echo ENVIRONMENT: $ENVIRONMENT
 export ENVIRONMENT=$ENVIRONMENT
 
-echo Environment: $ENVIRONMENT
+echo DOMAIN_DEV: $ENVIRONMENT
 export DOMAIN_DEV=$DOMAIN_DEV
 
 envsubst \

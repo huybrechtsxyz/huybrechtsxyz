@@ -16,7 +16,7 @@ jobs:
     uses: ./.github/workflows/_pipeline.yml
     with:
       workspace: shared
-      environment: test
+      environment: shared
       infrastructure: true
       rebuild: true
       services: ''

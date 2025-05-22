@@ -93,11 +93,12 @@ mount_data_volume() {
     PART="${DISK}1"
     MOUNTPOINT="/opt/appdata"
 
-    if [[ "$HOSTNAME" != *infra* ]]; then
-        echo "[!] Skipping: This node ($HOSTNAME) is not a worker node."
-        echo "[!] Skipping: Only worker nodes contain blockstorage disks."
-        return 0
-    fi
+    # Assumption: if it exists? mount it.
+    # if [[ "$HOSTNAME" != *infra* ]]; then
+    #     echo "[!] Skipping: This node ($HOSTNAME) is not a worker node."
+    #     echo "[!] Skipping: Only worker nodes contain blockstorage disks."
+    #     return 0
+    # fi
 
     # 0. Wait for the disk to become available
     for i in {1..10}; do
@@ -110,8 +111,8 @@ mount_data_volume() {
     done
 
     if [ ! -b "$DISK" ]; then
-        echo "[!] Error: Disk ${DISK} not found after waiting."
-        return 1
+        echo "[!] Disk ${DISK} not found after waiting."
+        return 0
     fi
 
     # 1. Check if partition exists
