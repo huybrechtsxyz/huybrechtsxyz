@@ -70,9 +70,11 @@ jobs:
           export TF_VAR_api_secret=$KAMATERA_API_SECRET
           export TF_VAR_ssh_public_key=$KAMATERA_PUBLIC_KEY
           export TF_VAR_password=$KAMATERA_ROOT_PASSWORD
-          export TF_VAR_environment=${{ inputs.workspace }}
+          export TF_VAR_workspace=${{ inputs.workspace }}
+          export TF_VAR_environment=${{ inputs.environment }}
           export TF_LOG=DEBUG
-          export ENVIRONMENT=${{ inputs.workspace }}
+          export WORKSPACE=${{ inputs.workspace }}
+          export ENVIRONMENT=${{ inputs.environment }}
 
           # Generate main.tf from template
           echo "Generating main.tf from template"
@@ -637,9 +639,10 @@ jobs:
   # This job will run only for the first manager node in the matrix
   start:
     name: Start Environment
-    needs: [restore, configuration]
+    needs: [restore, configuration, docker-build]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    if: always()
     strategy:
       matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:

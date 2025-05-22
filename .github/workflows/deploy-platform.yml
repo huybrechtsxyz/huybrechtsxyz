@@ -1,21 +1,15 @@
 # This workflow deploys all infrastructure to the shared environment
-name: Deploy Infrastructure
+name: Deploy Platform
 
 on:
   workflow_dispatch:
 
-  # push:
-  #   branches: [ "main" ]
-  #   paths: 
-  #     - 'src/website/**'
-  #     - '!src/website/*.yml'
-
 jobs:
-  deploy_infrastructure:
-    name: Test Pipeline
+  deploy_platform:
+    name: Deploy Platform
     uses: ./.github/workflows/_pipeline.yml
     with:
-      workspace: shared
+      workspace: platform
       environment: shared
       infrastructure: true
       rebuild: true
