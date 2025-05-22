@@ -13,8 +13,12 @@ on:
 jobs:
   deploy_infrastructure:
     name: Test Pipeline
-    uses: ./.github/workflows/_infrastructure.yml
+    uses: ./.github/workflows/_pipeline.yml
     with:
-      environment: shared
+      workspace: shared
+      environment: test
+      infrastructure: true
+      rebuild: true
+      services: ''
     secrets:
       BITWARDEN_TOKEN: ${{ secrets.BITWARDEN_TOKEN }}

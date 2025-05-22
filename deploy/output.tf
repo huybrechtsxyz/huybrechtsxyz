@@ -10,6 +10,7 @@ output "serverdata" {
       name       = srv.name
       ip         = srv.public_ips[0]
       private_ip = srv.private_ips[0]
+      manager_ip = values(kamatera_server.server)[0].private_ips[0]
     }
   ]
 }
