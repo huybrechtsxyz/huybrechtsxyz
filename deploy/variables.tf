@@ -28,7 +28,12 @@ variable "password" {
 # THESE VARIABLES ARE COVERED BY THE TERRAFORM VARIABLES FILE
 #
 
-# Environment and password
+# Workspace and Environment
+variable "Workspace" {
+  description = "Workspace: test, staging, production"
+  type        = string  
+}
+
 variable "environment" {
   description = "Environment to deploy: test, staging, production"
   type        = string

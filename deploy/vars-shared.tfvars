@@ -1,4 +1,5 @@
 # Environment configuration
+workspace = "shared"
 environment = "shared"
 
 # Server roles configuration
@@ -15,9 +16,9 @@ server_roles = {
     count     = 2
     cpu_type  = "A"
     cpu_cores = 1
-    ram_mb    = 3.072
+    ram_mb    = 4096
     disks_gb  = [20,40]  # root + block
-    unit_cost = 8.00
+    unit_cost = 11.00
   }
   worker = {
     count     = 2

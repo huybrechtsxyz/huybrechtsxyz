@@ -12,7 +12,7 @@ terraform {
   cloud {
     organization = "huybrechts-xyz"
     workspaces {
-      name = "huybrechts-xyz-$ENVIRONMENT"
+      name = "huybrechts-xyz-$WORKSPACE"
     }
   } 
 }
@@ -49,7 +49,7 @@ resource "random_string" "suffix" {
 # Name example: vlan-shared-1234
 resource "kamatera_network" "private-lan" {
   datacenter_id = data.kamatera_datacenter.frankfurt.id
-  name = "vlan-${var.environment}-${random_string.suffix.result}"
+  name = "vlan-${var.workspace}-${random_string.suffix.result}"
 
   subnet {
     ip = "10.0.0.0"
@@ -64,7 +64,7 @@ resource "kamatera_network" "private-lan" {
 resource "kamatera_server" "server" {
   for_each         = { for idx, server in local.servers : "${server.role}-${idx}" => server }
 
-  name             = "srv-${var.environment}-${each.value.name_suffix}-${random_string.suffix.result}"
+  name             = "srv-${var.workspace}-${each.value.full_name}-${random_string.suffix.result}"
   image_id         = data.kamatera_image.ubuntu.id
   datacenter_id    = data.kamatera_datacenter.frankfurt.id
   cpu_cores        = each.value.cpu_cores
