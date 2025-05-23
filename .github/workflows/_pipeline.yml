@@ -451,8 +451,8 @@ jobs:
           # Copy /src to /opt/app
           echo "[*] Copying source to remote server..."
           scp -o StrictHostKeyChecking=no ./src/*.yml root@${{ matrix.ip }}:/opt/app
-          scp -o StrictHostKeyChecking=no ./scripts/startenv.sh root@${{ matrix.ip }}:/opt/app/startenv.sh
-          scp -o StrictHostKeyChecking=no ./scripts/stopenv.sh root@${{ matrix.ip }}:/opt/app/stopenv.sh
+          scp -o StrictHostKeyChecking=no ./scripts/start-stack.sh root@${{ matrix.ip }}:/opt/app/start-stack.sh
+          scp -o StrictHostKeyChecking=no ./scripts/stop-stack.sh root@${{ matrix.ip }}:/opt/app/stop-stack.sh
 
       # Configure Application Services
       - name: Configure App Services
@@ -499,9 +499,9 @@ jobs:
           EOF
           echo "[*] Finishing configuration...DONE"
 
-  # Get all information.json files and set them as a matrix
+  # Get all metadata.json files and set them as a matrix
   # This job will run if the rebuild input is set to true
-  # It will find all information.json files in the src directory and set them as a matrix
+  # It will find all metadata.json files in the src directory and set them as a matrix
   # The matrix will be used to build and push the Docker images
   docker-matrix:
     name: Get Docker Matrix
@@ -515,7 +515,7 @@ jobs:
       - name: Check Out
         uses: actions/checkout@v4
 
-      # Find all information.json files and set them as a matrix
+      # Find all metadata.json files and set them as a matrix
       - name: Generate Matrix
         id: set-matrix
         run: |
@@ -535,7 +535,7 @@ jobs:
           matrix='['
           for dir in ./src/*; do
             service=$(basename "$dir")
-            json_file="$dir/information.json"
+            json_file="$dir/metadata.json"
             dockerfile="$(jq -r .dockerfile "$json_file" 2>/dev/null)"
             # Only include services that are in the inputs.services (if provided)
             if [[ -f "$json_file" && -n "$dockerfile" && -f "$dir/$dockerfile" ]]; then
@@ -676,8 +676,8 @@ jobs:
           echo "[*] Starting Environment..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             cd /opt/app
-            ./stopenv.sh ${{ inputs.services }}
+            ./stop-stack.sh ${{ inputs.services }}
             sleep 30
-            ./startenv.sh ${{ inputs.services }}
+            ./start-stack.sh ${{ inputs.services }}
           EOF
           echo "[*] Starting Environment...DONE"
