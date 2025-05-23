@@ -402,10 +402,9 @@ jobs:
       # Configure Swarm Server
       - name: Configure Server
         run: |
-          echo "[*] Generating configuration script..."
-          #envsubst < "./scripts/configure.template.sh" > "./scripts/configure.sh"
-          
           echo "[*] Copying variables to remote server..."
+
+          # Generating secrets for remote server
           cat <<EOF > /tmp/secrets.env
           APP_ROOT_PASSWORD=$APP_ROOT_PASSWORD
           VERSIO_USERNAME=$VERSIO_USERNAME
@@ -448,11 +447,9 @@ jobs:
             cp /tmp/variables.env /opt/app/.env
           EOF
 
-          # Copy /src to /opt/app
+          # Copy /src and /scripts to /opt/app
           echo "[*] Copying source to remote server..."
-          scp -o StrictHostKeyChecking=no ./src/*.yml root@${{ matrix.ip }}:/opt/app
-          scp -o StrictHostKeyChecking=no ./scripts/start-stack.sh root@${{ matrix.ip }}:/opt/app/start-stack.sh
-          scp -o StrictHostKeyChecking=no ./scripts/stop-stack.sh root@${{ matrix.ip }}:/opt/app/stop-stack.sh
+          scp -o StrictHostKeyChecking=no ./scripts/*.sh root@${{ matrix.ip }}:/opt/app
 
       # Configure Application Services
       - name: Configure App Services
@@ -463,12 +460,9 @@ jobs:
             service=$(basename "$(dirname "$script")")
             echo "[*] Configuring service '$service'..."
 
-            remote_script="/tmp/configure-$service.sh"
             remote_conf_dir="/opt/app/$service/conf"
-
-            # Copy configure script
-            scp -o StrictHostKeyChecking=no "$script" root@${{ matrix.ip }}:"$remote_script"
-
+            remote_script="/opt/app/$service/conf/configure.sh"
+            
             # Ensure remote conf directory exists
             ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} "mkdir -p '$remote_conf_dir'"
 
@@ -477,7 +471,7 @@ jobs:
               echo "[x] Failed to transfer $service configuration to remote server"
               exit 1
             }
-
+            
             # Run the config script remotely
             ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} \
               "chmod +x '$remote_script' && bash '$remote_script'" || {
@@ -485,7 +479,7 @@ jobs:
                 exit 1
               }
 
-            echo "[✓] Configured service '$service'"
+            echo "[V] Configured service '$service'"
           done
           echo "[*] Configuring application services...DONE"
 

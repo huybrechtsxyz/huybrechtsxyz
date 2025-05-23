@@ -6,7 +6,7 @@ source /tmp/variables.env
 source /tmp/secrets.env
 source $APP_PATH/functions.sh
 
-createpaths_from_metadata "consul"
+createpaths_from_metadata "keycloak"
 
 echo Environment: $ENVIRONMENT
 export ENVIRONMENT=$ENVIRONMENT

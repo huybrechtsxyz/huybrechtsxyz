@@ -17,7 +17,7 @@ createpath() {
   fi
 
   echo "[*] Setting permissions on $newpath"
-  sudo chmod -R 777 "$newpath"
+  sudo chmod -R 755 "$newpath"
 
   return 0
 }
@@ -46,7 +46,7 @@ issecretinuse() {
 }
 
 # Function to create or update a Docker secret
-createsecret() {
+createdockersecret() {
   local label="$1"
   local name="$2"
   local value="$3"
@@ -82,7 +82,8 @@ createnetwork() {
   docker network create --driver overlay "$network"
 }
 
-loadsecrets() {
+# Function that loads secrets as environment variables
+loaddockersecrets() {
   # --- Load /tmp/secrets.env ---
   echo "[*] Loading secrets from /tmp/secrets.env..."
 
@@ -94,11 +95,12 @@ loadsecrets() {
     value="${value%\"}"
     value="${value#\"}"
 
-    createsecret "$key" "$key" "$value"
+    createdockersecret "$key" "$key" "$value"
   done < /tmp/secrets.env
 }
 
-createnodes() {
+# Create default nodelables
+createnodelabels() {
   # Get the current hostname
   hostname=$(hostname)
   # Extract the role from hostname (3rd part in hyphen-separated string)
@@ -132,8 +134,8 @@ main() {
     createnetwork "lan-test"
     createnetwork "lan-staging"
     createnetwork "lan-production"
-    loadsecrets
-    createnodes
+    loaddockersecrets
+    createnodelabels
   fi
   echo "[*] Configuring Swarn Node: $hostname...DONE"
 }

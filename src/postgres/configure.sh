@@ -6,7 +6,7 @@ source /tmp/variables.env
 source /tmp/secrets.env
 source $APP_PATH/functions.sh
 
-createpaths_from_metadata "consul"
+createpaths_from_metadata "postgres"
 
 # Update the worker-1 node with the postgres tag
 if [[ "$hostname" == *"infra-1"* ]]; then

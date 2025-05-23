@@ -73,9 +73,17 @@ function Ensure-NetworkExistsAndValid([string]$networkName) {
 function Configure-Docker {
     Write-Host "Docker configuration in progress."
     Ensure-SwarmInitialized
-    $wanNetworkInfo = Ensure-NetworkExistsAndValid -networkName "wan"
-    $lanNetworkInfo = Ensure-NetworkExistsAndValid -networkName "lan"
-    docker node update --label-add postgres=true $POSTGRES_NODE
+
+    $nodeName = docker node ls --format '{{.Hostname}}' | Where-Object { $_ -eq $hostname }
+
+    $wanNetworkInfo = Ensure-NetworkExistsAndValid -networkName "wan-platform"
+    $lanNetworkInfo = Ensure-NetworkExistsAndValid -networkName "lan-platform"
+
+    docker node update --label-add postgres=true $nodeName
+    docker node update --label-add role=manager $nodeName
+    docker node update --label-add role=infra $nodeName
+    docker node update --label-add role=worker $nodeName
+    
     Write-Host "Docker configuration completed successfully."
 }
 
@@ -221,4 +229,32 @@ function Update-Secrets {
         docker secret create $Key $TempSecretFile
         Remove-Item -Path $TempSecretFile
     }
+}
+
+function Load-Metadata {
+    param ([string]$MetaFile)
+    return Get-Content $MetaFile | ConvertFrom-Json
+}
+
+function Validate-Compose {
+    param (
+        [string]$ComposeFile,
+        [string]$ServiceName
+    )
+    Write-Host "Validating Docker Compose for $ServiceName..."
+    docker compose -f $ComposeFile --env-file $EnvironmentFile config | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Invalid Docker Compose for $ServiceName" -ForegroundColor Red
+        return $false
+    }
+    return $true
+}
+
+function Deploy-Service {
+    param (
+        [string]$ServiceName,
+        [string]$ComposeFile
+    )
+    Write-Host "Deploying $ServiceName stack..."
+    docker stack deploy -c $ComposeFile $ServiceName --detach
 }

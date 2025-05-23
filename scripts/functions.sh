@@ -2,7 +2,7 @@
 
 createpaths_from_metadata() {
   local service="$1"
-  local metadata_file="$APP_PATH/$service/metadata.json"
+  local metadata_file="$APP_PATH/$service/conf/metadata.json"
 
   if [[ ! -f "$metadata_file" ]]; then
     echo "[x] Error: Metadata file '$metadata_file' not found."
