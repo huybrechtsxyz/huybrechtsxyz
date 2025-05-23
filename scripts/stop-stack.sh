@@ -1,36 +1,16 @@
 #!/bin/bash
 
-source /opt/app/.env
-
-# Parse options
-ROLE=""
-SERVICES=()
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    -r)
-      ROLE="$2"
-      shift 2
-      ;;
-    -s)
-      shift
-      while [[ $# -gt 0 && "$1" != -* ]]; do
-        SERVICES+=("$1")
-        shift
-      done
-      ;;
-    *)
-      echo "Usage: $0 [-r role] [-s service1 service2 ...]"
-      exit 1
-      ;;
-  esac
-done
-
 echo "[*] Stopping services..."
+
+source /opt/app/.env
+source /opt/app/functions.sh
+
+parse_options "$@"
 
 cd "$APP_PATH" || exit 1
 
 for dir in "$APP_PATH"/*/; do
-  METADATA_FILE="${dir}metadata.json"
+  METADATA_FILE="${dir}/conf/metadata.json"
 
   if [ ! -f "$METADATA_FILE" ]; then
     continue
