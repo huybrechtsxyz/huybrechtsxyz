@@ -2,6 +2,9 @@
   "role": "infra",
   "service": "minio",
   "description": "High-performance object storage for unstructured data",
+  "servicepaths": [
+    { "path":"conf", "chmod": 755 }
+  ],
   "projectname": "",
   "projectfile": "",
   "registry": "",

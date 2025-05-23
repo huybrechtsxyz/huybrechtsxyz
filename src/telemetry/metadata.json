@@ -2,6 +2,14 @@
   "role": "infra",
   "service": "telemetry",
   "description": "Telemetry service for monitoring and logging",
+  "servicepaths": [
+    { "path":"conf", "chmod": 755 },
+    { "path":"grafana", "chmod": 777 },
+    { "path":"prometheus", "chmod": 777 },
+    { "path":"loki", "chmod": 777 },
+    { "path":"prometheus", "chmod": 777 },
+    { "path":"promtail", "chmod": 777 }
+  ],
   "projectname": "",
   "projectfile": "",
   "registry": "",

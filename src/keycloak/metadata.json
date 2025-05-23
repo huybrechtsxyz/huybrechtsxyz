@@ -2,6 +2,9 @@
   "role": "infra",
   "service": "keycloak",
   "description": "Identity and access management for applications and services",
+  "servicepaths": [
+    { "path":"conf", "chmod": 755 }
+  ],
   "projectname": "",
   "projectfile": "",
   "registry": "",
