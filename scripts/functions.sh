@@ -7,22 +7,22 @@
 # Problem this solves:
 # Docker Swarm deployment may fail with an error like: network sandbox join failed: subnet
 cleanup_vxlan_interfaces() {
-  echo "Checking for orphaned VXLAN interfaces..."
+  log INFO "    - Checking for orphaned VXLAN interfaces..."
   interfaces=$(ls /sys/class/net | grep '^vx-')
 
   if [ -z "$interfaces" ]; then
-    echo "✅ No orphaned VXLAN interfaces found."
+    log INFO "    - No orphaned VXLAN interfaces found."
     return
   fi
 
   for iface in $interfaces; do
-    echo "Found orphaned interface: $iface"
+    log INFO "    - Found orphaned interface: $iface"
     ip -d link show "$iface"
-    echo "Deleting interface $iface..."
+    log INFO "    - Deleting interface $iface..."
     sudo ip link delete "$iface"
   done
 
-  echo "VXLAN cleanup completed."
+  log INFO "    - Checking for orphaned VXLAN interfaces...DONE"
 }
 
 # Create the paths defined in the metadata.json of the service/conf
@@ -31,7 +31,7 @@ createpaths_from_metadata() {
   local metadata_file="$APP_PATH/$service/conf/metadata.json"
 
   if [[ ! -f "$metadata_file" ]]; then
-    echo "[x] Error: Metadata file '$metadata_file' not found."
+    log ERROR "[!] Metadata file '$metadata_file' not found."
     return 1
   fi
 
@@ -39,7 +39,7 @@ createpaths_from_metadata() {
   paths=$(jq -c '.servicepaths[]?' "$metadata_file")
 
   if [[ -z "$paths" ]]; then
-    echo "[*] No servicepaths defined for service '$service'"
+    log WARN "[!] No servicepaths defined for service '$service'"
     return 0
   fi
 
@@ -50,14 +50,14 @@ createpaths_from_metadata() {
     dirpath="$APP_PATH/$service/$subpath"
 
     if [[ ! -d "$dirpath" ]]; then
-      echo "[*] Creating directory: $dirpath"
+      log INFO "    - Creating directory: $dirpath"
       if ! mkdir -p "$dirpath"; then
-        echo "[x] Error: Failed to create directory '$dirpath'"
+        log ERROR "[!] Failed to create directory '$dirpath'"
         continue
       fi
     fi
 
-    echo "[*] Setting permissions on $dirpath to $chmod"
+    log INFO "    -Setting permissions on $dirpath to $chmod"
     sudo chmod -R "$chmod" "$dirpath"
   done <<< "$paths"
 
@@ -104,7 +104,7 @@ copy_to_consul() {
     consul_file="$dir/conf/consul.${service}.json"
     # If the consul file exists, copy it
     if [[ -f "$consul_file" ]]; then
-      echo "[*] Found $consul_file, copying to $CONSUL_CONF_PATH"
+      log INFO "    - Found $consul_file, copying to $CONSUL_CONF_PATH"
       cp "$consul_file" "$CONSUL_CONF_PATH/"
     fi
   done
@@ -115,8 +115,27 @@ function clear_logs() {
     local service_path="$1"
     local log_dir="${service_path}/logs"
     if [[ -d "$log_dir" ]]; then
-        echo "Clearing logs for ${service_path}..."
+        log INFO "    - Clearing logs for ${service_path}..."
         rm -rf "$log_dir"/*
-        echo "Logs cleared."
     fi
+}
+
+# Logging function
+log() {
+  local level="$1"; shift
+  local msg="$*"
+  local timestamp
+  timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+  # case "$level" in
+  #   INFO)    echo -e "[\033[1;34mINFO\033[0m]  $timestamp - $msg" ;;
+  #   WARN)    echo -e "[\033[1;33mWARN\033[0m]  $timestamp - $msg" ;;
+  #   ERROR)   echo -e "[\033[1;31mERROR\033[0m] $timestamp - $msg" >&2 ;;
+  #   *)       echo -e "[UNKNOWN] $timestamp - $msg" ;;
+  # esac
+  case "$level" in
+    INFO)    echo -e "[\033[1;34mINFO\033[0m]  - $msg" ;;
+    WARN)    echo -e "[\033[1;33mWARN\033[0m]  - $msg" ;;
+    ERROR)   echo -e "[\033[1;31mERROR\033[0m] - $msg" >&2 ;;
+    *)       echo -e "[UNKNOWN] - $msg" ;;
+  esac
 }

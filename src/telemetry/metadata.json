@@ -1,5 +1,5 @@
 {
-  "role": "infra",
+  "group": "infra",
   "service": "telemetry",
   "description": "Telemetry service for monitoring and logging",
   "servicepaths": [

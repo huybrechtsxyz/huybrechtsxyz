@@ -1,5 +1,5 @@
 {
-  "role": "infra",
+  "group": "infra",
   "service": "traefik",
   "description": "Reverse proxy and load balancer for microservices",
   "servicepaths": [

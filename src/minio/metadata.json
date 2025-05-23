@@ -1,5 +1,5 @@
 {
-  "role": "infra",
+  "group": "infra",
   "service": "minio",
   "description": "High-performance object storage for unstructured data",
   "servicepaths": [

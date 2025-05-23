@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "[*] Stopping services..."
+log INFO "[*] Stopping services..."
 
 source /opt/app/.env
 source /opt/app/functions.sh
@@ -13,13 +13,15 @@ for dir in "$APP_PATH"/*/; do
   METADATA_FILE="${dir}/conf/metadata.json"
 
   if [ ! -f "$METADATA_FILE" ]; then
+    log WARN "[!] Metadata file not found in $dir, skipping..."
     continue
   fi
 
-  META_ROLE=$(jq -r .role "$METADATA_FILE")
+  META_GROUP=$(jq -r .group "$METADATA_FILE")
   META_SERVICE=$(jq -r .service "$METADATA_FILE")
 
-  if [[ -n "$ROLE" && "$ROLE" != "$META_ROLE" ]]; then
+  if [[ -n "$GROUP" && "$GROUP" != "$META_GROUP" ]]; then
+    log INFO "[!] Skipping $META_SERVICE (group mismatch: $META_GROUP)"
     continue
   fi
 
@@ -32,10 +34,12 @@ for dir in "$APP_PATH"/*/; do
       fi
     done
     if [[ "$MATCHED" == false ]]; then
+      log INFO "[!] Skipping $META_SERVICE (not in selected service list)"
       continue
     fi
   fi
 
-  echo "Stopping service stack: $META_SERVICE"
+  log INFO "[+] Stopping service stack: $META_SERVICE"
   docker stack rm "$META_SERVICE"
 done
+log INFO "[*] Stopping services...DONE"

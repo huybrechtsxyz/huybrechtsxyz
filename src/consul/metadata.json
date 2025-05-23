@@ -1,5 +1,5 @@
 {
-  "role": "infra",
+  "group": "infra",
   "service": "consul",
   "description": "Service discovery and configuration management tool",
   "servicepaths": [
