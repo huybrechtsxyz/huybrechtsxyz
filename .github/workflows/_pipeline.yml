@@ -97,8 +97,8 @@ jobs:
 
           # Get the output
           echo "Reading Terraform output..."
-          echo $(terraform output -json outputdata)
-          terraform output -json outputdata | jq -c '.' > tf_output.json
+          echo $(terraform output -json serverdata)
+          terraform output -json serverdata | jq -c '.' > tf_output.json
           cp tf_output.json /tmp/tf_output.json
 
       # Upload the Terraform output as an artifact
