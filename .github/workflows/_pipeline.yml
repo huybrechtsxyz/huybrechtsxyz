@@ -642,7 +642,7 @@ jobs:
     environment: ${{ inputs.environment }}
     if: always()
     strategy:
-      matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.restore.outputs.matrix).server }}
     steps:
       # Set up GitHub Secrets
       - name: Get General Secrets
