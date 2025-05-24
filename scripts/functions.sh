@@ -66,12 +66,12 @@ createpaths_from_metadata() {
 
 # Parse the command line options for start/stop
 parse_options() {
-  ROLE=""
+  GROUP=""
   SERVICES=()
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      -r)
-        ROLE="$2"
+      -g)
+        GROUP="$2"
         shift 2
         ;;
       -s)
@@ -88,9 +88,9 @@ parse_options() {
     esac
   done
 
-  echo "[*] Stopping services..."
-  echo "Role: $ROLE"
-  echo "Services: ${SERVICES[*]}"
+  echo "[*] For services..."
+  echo "    - Group: $GROUP"
+  echo "    - Services: ${SERVICES[*]}"
 }
 
 # Copy consul discovery files to consul/conf

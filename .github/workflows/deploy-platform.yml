@@ -13,6 +13,6 @@ jobs:
       environment: shared
       infrastructure: true
       rebuild: true
-      services: ' -r infra'
+      services: ' -g infra'
     secrets:
       BITWARDEN_TOKEN: ${{ secrets.BITWARDEN_TOKEN }}
