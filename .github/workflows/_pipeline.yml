@@ -550,7 +550,7 @@ jobs:
   docker-build:
     name: Build Docker Services
     needs: [docker-matrix]
-    if: inputs.rebuild == 'true'
+    if: inputs.rebuild == true
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.docker-matrix.outputs.matrix) }}
@@ -664,6 +664,11 @@ jobs:
         run: |
           if [[ "${{ matrix.name }}" != *"manager-1"* ]]; then
             echo "[*] Environments are only started on leader node."
+            exit 0
+          fi
+
+          if [[ "${{ inputs.services}}" == "" ]]; then
+            echo "[*] No services selected for startup."
             exit 0
           fi
 
