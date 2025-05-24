@@ -29,7 +29,7 @@ variable "password" {
 #
 
 # Workspace and Environment
-variable "Workspace" {
+variable "workspace" {
   description = "Workspace: test, staging, production"
   type        = string  
 }
