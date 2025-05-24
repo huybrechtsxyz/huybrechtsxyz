@@ -177,7 +177,7 @@ jobs:
     environment: ${{ inputs.environment }}
     if: inputs.infrastructure == true
     strategy:
-      matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.restore.outputs.matrix).server }}
     steps:
       # Check out the repo
       - name: Check Out
@@ -329,7 +329,7 @@ jobs:
     environment: ${{ inputs.environment }}
     if: always() 
     strategy:
-      matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.restore.outputs.matrix).server }}
     steps:
       # Check out the repo
       - name: Check Out
