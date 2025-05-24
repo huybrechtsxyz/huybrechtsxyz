@@ -106,14 +106,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: terraform-output-${{ inputs.workspace }}
-          path: ./deploy/tf_output.json
+          path: /tmp/tf_output.json
           if-no-files-found: error
       
       # Upload the Terraform output as a job output
       - name: Cache Terraform Output
         uses: actions/cache/save@v4
         with:
-          path: /deploy/tf_output.json
+          path: /tmp/tf_output.json
           key: terraform-output-${{ inputs.workspace }}
 
       # Parse Terraform Output to find Swarm Servers
