@@ -31,7 +31,7 @@ jobs:
     name: Terraform Plan and Apply
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: inputs.infrastructure == 'true'
+    if: inputs.infrastructure == true
     outputs:
       success: ${{ steps.set_output.outputs.did_run }}
     steps:
