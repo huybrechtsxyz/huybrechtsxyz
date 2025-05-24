@@ -12,7 +12,7 @@ jobs:
       workspace: platform
       environment: shared
       infrastructure: true
-      rebuild: true
-      services: ' -g infra'
+      rebuild: false
+      services: ''
     secrets:
       BITWARDEN_TOKEN: ${{ secrets.BITWARDEN_TOKEN }}
