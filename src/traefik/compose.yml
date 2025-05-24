@@ -1,0 +1,97 @@
+# version: '3.9'
+
+secrets:
+  TRAEFIK_CLIENTID:
+    external: true
+  TRAEFIK_SECRET:
+    external: true
+  VERSIO_USERNAME:
+    external: true
+  VERSIO_PASSWORD:
+    external: true
+
+# configs:
+# volumes:
+
+networks:
+  wan-platform:
+    external: true
+  lan-platform:
+    external: true
+
+services:
+
+  traefik:
+    image: "traefik:v3.3.6"
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APP_PATH}/traefik/conf/traefik-config.yml:/etc/traefik/traefik-config.yml
+      - ${APP_PATH}/traefik/data:/app/data
+      - ${APP_PATH}/traefik/logs:/app/logs
+    networks:
+      - wan-${WORKSPACE}
+      - lan-${WORKSPACE}
+    secrets:
+      - VERSIO_USERNAME
+      - VERSIO_PASSWORD
+      - TRAEFIK_CLIENTID
+      - TRAEFIK_SECRET
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
+      VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
+      VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
+    command: traefik --configFile=/etc/traefik/traefik-config.yml
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role==manager
+          - node.labels.role==manager
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      labels:
+        - traefik.enable=true
+        - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+        - traefik.http.middlewares.basic-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU.
+        # Keycloak OpenId Plugin Middleware
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakURL=http://iam.${DOMAIN_DEV}:8080/
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientIDFile=/run/secrets/TRAEFIK_CLIENTID
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientSecretFile=/run/secrets/TRAEFIK_SECRET
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.Scope=openid profile email
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.UseAuthHeader=false
+        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.IgnorePathPrefixes=/favicon.ico
+        # Traefik dashboard
+        - traefik.http.services.traefik.loadbalancer.server.scheme=http
+        - traefik.http.services.traefik.loadbalancer.server.port=8080
+        - traefik.http.routers.traefik.rule=Host(`proxy.${DOMAIN_DEV}`)
+        - traefik.http.routers.traefik.service=api@internal
+        - traefik.http.routers.traefik.entrypoints=websecure
+        - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.traefik.middlewares=${TRAEFIK_MIDDLEWARES}

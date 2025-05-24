@@ -1,0 +1,19 @@
+{
+  "group": "infra",
+  "service": "postgres",
+  "description": "PostgreSQL database service for data storage and retrieval",
+  "servicepaths": [
+    { "path":"conf", "chmod": 755 },
+    { "path":"data", "chmod": 777 },
+    { "path":"admin", "chmod": 777 },
+    { "path":"backups", "chmod": 777 }
+  ],
+  "projectname": "",
+  "projectfile": "",
+  "registry": "",
+  "imagename": "",
+  "dockerfile": "",
+  "build_config": "",
+  "runtime": "",
+  "run_version": ""
+}

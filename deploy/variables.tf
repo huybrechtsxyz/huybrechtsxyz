@@ -19,72 +19,44 @@ variable "ssh_public_key" {
   type        = string
 }
 
-#
-# THESE VARIABLES ARE COVERED BY THE TERRAFORM VARIABLES FILE
-#
-
-# Environment and password
-variable "environment" {
-  description = "Environment to deploy: test, staging, production"
-  type        = string
-}
-
 variable "password" {
   description = "Root password for the servers"
   type        = string
 }
 
-# Manager configuration
-variable "manager_count" {
-  description = "Number of manager nodes"
-  type        = number
+#
+# THESE VARIABLES ARE COVERED BY THE TERRAFORM VARIABLES FILE
+#
+
+# Workspace and Environment
+variable "Workspace" {
+  description = "Workspace: test, staging, production"
+  type        = string  
 }
 
-variable "manager_cpu" {
-  description = "Number of CPU cores for manager nodes"
-  type        = number
+variable "environment" {
+  description = "Environment to deploy: test, staging, production"
+  type        = string
 }
 
-variable "manager_ram" {
-  description = "Amount of RAM (GB) for manager nodes"
-  type        = number
+variable "server_roles" {
+  type = map(object({
+    count     : number
+    cpu_cores : number
+    cpu_type  : string
+    ram_mb    : number
+    disks_gb  : list(number)
+    unit_cost : number
+  }))
+  description = "Map of server roles and their hardware specs including list of disk sizes"
+
   validation {
-    condition     = var.manager_ram % 1024 == 0
-    error_message = "Manager RAM must be a multiple of 1024 MB."
+    condition = alltrue([for r in var.server_roles : contains(["A", "B", "D", "T"], r.cpu_type) ])
+    error_message = "Type of manager nodes must be one of A, B, D, or T."
   }
-}
 
-variable "manager_disk_size" {
-  description = "Disk size (GB) for manager nodes"
-  type        = number
-}
-
-# Worker configuration
-variable "worker_count" {
-  description = "Number of worker nodes"
-  type        = number
-}
-
-variable "worker_cpu" {
-  description = "Number of CPU cores for worker nodes"
-  type        = number
-}
-
-variable "worker_ram" {
-  description = "Amount of RAM (GB) for worker nodes"
-  type        = number
   validation {
-    condition     = var.worker_ram % 1024 == 0
-    error_message = "Worker RAM must be a multiple of 1024 MB."
+    condition     = alltrue([for r in var.server_roles : r.ram_mb % 1024 == 0])
+    error_message = "Each role's RAM must be a multiple of 1024 MB."
   }
-}
-
-variable "worker_disk_size" {
-  description = "Disk size (GB) for worker nodes"
-  type        = number
-}
-
-variable "block_storage_size" {
-  description = "Size of each block storage volume (GB)"
-  type        = number
 }

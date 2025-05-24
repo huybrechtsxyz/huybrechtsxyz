@@ -1,3 +1,9 @@
+#!/bin/bash
+
+set -e
+source /tmp/variables.env
+source /tmp/secrets.env
+
 # Set environment file
 cp -f /tmp/variables.env /opt/app/.env
 

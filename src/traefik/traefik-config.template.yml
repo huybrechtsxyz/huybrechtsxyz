@@ -2,15 +2,6 @@
 providers:
   swarm:
     exposedByDefault: false
-    constraints: Label(`traefik.tags`, `$ENVIRONMENT`)
-  # consulcatalog:
-  #   cache: true
-  #   refreshInterval: 30s
-  #   endpoint:
-  #     address: http://consul:8500
-  #     scheme: http
-  #   exposedByDefault: false
-  #   defaultRule: "Host(`config.$DOMAIN_DEV`)"
 
 # ENTRYPOINT
 entryPoints:

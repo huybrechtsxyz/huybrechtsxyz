@@ -12,8 +12,9 @@ Get-SecretsAsVars
 
 $env:TF_VAR_api_key = $env:KAMATERA_API_KEY
 $env:TF_VAR_api_secret = $env:KAMATERA_API_SECRET
+$env:TF_VAR_workspace = $Env:WORKSPACE
 $env:TF_VAR_environment = $Env:ENVIRONMENT
-$env:TF_VAR_password = $Env:APP_ROOT_PASSWORD
+$env:TF_VAR_password = $Env:KAMATERA_ROOT_PASSWORD
 $env:TF_TOKEN_app_terraform_io = $Env:TF_API_SECRET
 
 # Copy terraform code to the app folder

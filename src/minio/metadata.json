@@ -1,0 +1,16 @@
+{
+  "group": "infra",
+  "service": "minio",
+  "description": "High-performance object storage for unstructured data",
+  "servicepaths": [
+    { "path":"conf", "chmod": 755 }
+  ],
+  "projectname": "",
+  "projectfile": "",
+  "registry": "",
+  "imagename": "",
+  "dockerfile": "",
+  "build_config": "",
+  "runtime": "",
+  "run_version": ""
+}

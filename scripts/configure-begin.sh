@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -euo pipefail
+source /tmp/variables.env
+source /tmp/secrets.env
 
 # Function to create a path if it does not already exist
 createpath() {
@@ -15,7 +17,7 @@ createpath() {
   fi
 
   echo "[*] Setting permissions on $newpath"
-  sudo chmod -R 777 "$newpath"
+  sudo chmod -R 755 "$newpath"
 
   return 0
 }
@@ -44,7 +46,7 @@ issecretinuse() {
 }
 
 # Function to create or update a Docker secret
-createsecret() {
+createdockersecret() {
   local label="$1"
   local name="$2"
   local value="$3"
@@ -80,7 +82,8 @@ createnetwork() {
   docker network create --driver overlay "$network"
 }
 
-loadsecrets() {
+# Function that loads secrets as environment variables
+loaddockersecrets() {
   # --- Load /tmp/secrets.env ---
   echo "[*] Loading secrets from /tmp/secrets.env..."
 
@@ -92,8 +95,28 @@ loadsecrets() {
     value="${value%\"}"
     value="${value#\"}"
 
-    createsecret "$key" "$key" "$value"
+    createdockersecret "$key" "$key" "$value"
   done < /tmp/secrets.env
+}
+
+# Create default nodelables
+createnodelabels() {
+  # Get the current hostname
+  hostname=$(hostname)
+  # Extract the role from hostname (3rd part in hyphen-separated string)
+  srvrole=$(echo "$hostname" | cut -d'-' -f3)
+  echo "[*] Detected role: $srvrole"
+  # Apply the label only if this is the manager node
+  if [[ "$hostname" == *"manager-1"* ]]; then
+    echo "[*] Applying role label to all nodes..."
+    # Get all node hostnames
+    for node in $(docker node ls --format '{{.Hostname}}'); do
+      # Extract the role from each node's hostname
+      role=$(echo "$node" | cut -d'-' -f3)
+      echo "    - Setting role=$role on $node"
+      docker node update --label-add role=$role "$node"
+    done
+  fi
 }
 
 main() {
@@ -106,9 +129,13 @@ main() {
 
   # Create docker networks and secrets only leader node
   if [[ "$hostname" == *"manager-1"* ]]; then
-    createnetwork "wan"
-    createnetwork "lan"
-    loadsecrets
+    createnetwork "wan-$WORKSPACE"
+    createnetwork "lan-$WORKSPACE"
+    createnetwork "lan-test"
+    createnetwork "lan-staging"
+    createnetwork "lan-production"
+    loaddockersecrets
+    createnodelabels
   fi
   echo "[*] Configuring Swarn Node: $hostname...DONE"
 }
