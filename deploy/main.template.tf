@@ -62,7 +62,7 @@ resource "kamatera_network" "private-lan" {
 # Name example: srv-shared-infra-2-1234
 # Name example: srv-shared-worker-3-1234
 resource "kamatera_server" "server" {
-  for_each         = { for idx, server in local.servers : "${server.role}-${idx}" => server }
+  for_each         = { for server in local.servers : server.full_name => server }
 
   name             = "srv-${var.workspace}-${each.value.full_name}-${random_string.suffix.result}"
   image_id         = data.kamatera_image.ubuntu.id

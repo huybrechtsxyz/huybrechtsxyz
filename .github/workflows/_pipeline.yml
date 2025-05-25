@@ -31,9 +31,7 @@ jobs:
     name: Terraform Plan and Apply
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: inputs.infrastructure == 'true'
-    outputs:
-      success: ${{ steps.set_output.outputs.did_run }}
+    if: inputs.infrastructure == true
     steps:
       # Check out the repo
       - name: Check Out
@@ -97,29 +95,36 @@ jobs:
 
           # Get the output
           echo "Reading Terraform output..."
-          echo $(terraform output -json outputdata)
-          terraform output -json outputdata | jq -c '.' > tf_output.json
+          echo $(terraform output -json serverdata)
+          terraform output -json serverdata | jq -c '.' > tf_output.json
           cp tf_output.json /tmp/tf_output.json
+          echo "Reading Terraform output...CAT"
+          cat /tmp/tf_output.json
+          echo "Reading Terraform output...DONE"
 
       # Upload the Terraform output as an artifact
       - name: Upload Terraform Artifact
         uses: actions/upload-artifact@v4
         with:
           name: terraform-output-${{ inputs.workspace }}
-          path: ./deploy/tf_output.json
+          path: /tmp/tf_output.json
           if-no-files-found: error
       
-      # Upload the Terraform output as a job output
-      - name: Cache Terraform Output
-        uses: actions/cache/save@v4
+      # Check if Terraform cache exists
+      - name: Check Existing Terraform Cache
+        id: check-cache
+        uses: actions/cache/restore@v4
         with:
-          path: /deploy/tf_output.json
+          path: /tmp/tf_output.json
           key: terraform-output-${{ inputs.workspace }}
 
-      # Parse Terraform Output to find Swarm Servers
-      - name: Set Output
-        id: set_output
-        run:  echo "success=true" >> $GITHUB_OUTPUT
+      # Upload the Terraform output as a job output
+      - name: Cache Terraform Output
+        if: steps.check-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/tf_output.json
+          key: terraform-output-${{ inputs.workspace }}
 
   # Download the Terraform output artifact and parse it to find Swarm servers
   # This job will run if the cache is not hit or if the initialize input is set to true
@@ -132,13 +137,9 @@ jobs:
     outputs:
       matrix: ${{ steps.parse.outputs.matrix }}
     steps:
-      # Debug Terraform Success
-      - name: Did Terraform Run?
-        run: echo "[*] Terraform? => '${{ needs.terraform.outputs.success }}'"
-
       # Download Terraform Artifact
       - name: Download Terraform Artifact
-        if: needs.terraform.outputs.success == 'true'
+        if: inputs.infrastructure == true
         uses: actions/download-artifact@v4
         with:
           name: terraform-output-${{ inputs.workspace }}
@@ -147,6 +148,7 @@ jobs:
       # Restore Terraform Cache
       - name: Restore Terraform Cache
         id: restore-cache
+        if: inputs.infrastructure != true
         uses: actions/cache/restore@v4
         with:
           path: /tmp/tf_output.json
@@ -182,6 +184,12 @@ jobs:
       # Check out the repo
       - name: Check Out
         uses: actions/checkout@v4
+
+      # Debug the matrix
+      - name: Debug Matrix
+        run: |
+          echo "Matrix IP: ${{ matrix.ip }}"
+          echo "Matrix IP: ${{ matrix.name }}"
 
       # Set up GitHub Secrets
       - name: Get General Secrets
@@ -550,7 +558,7 @@ jobs:
   docker-build:
     name: Build Docker Services
     needs: [docker-matrix]
-    if: inputs.rebuild == 'true'
+    if: inputs.rebuild == true
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.docker-matrix.outputs.matrix) }}
@@ -664,6 +672,11 @@ jobs:
         run: |
           if [[ "${{ matrix.name }}" != *"manager-1"* ]]; then
             echo "[*] Environments are only started on leader node."
+            exit 0
+          fi
+
+          if [[ "${{ inputs.services}}" == "" ]]; then
+            echo "[*] No services selected for startup."
             exit 0
           fi
 

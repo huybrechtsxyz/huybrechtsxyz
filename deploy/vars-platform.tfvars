@@ -1,6 +1,6 @@
 # Environment configuration
-workspace = "shared"
-environment = "shared"
+# workspace = "platform" > pipe will use this workspace
+# environment = "shared" > pipe will use this environment
 
 # Server roles configuration
 server_roles = {
