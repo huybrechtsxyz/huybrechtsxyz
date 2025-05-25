@@ -14,28 +14,12 @@ services:
 
   bitwarden:
     image: "traefik:v3.3.6"
-    ports:
-      - 80:80
-      - 443:443
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${APP_PATH}/traefik/conf/traefik-config.yml:/etc/traefik/traefik-config.yml
-      - ${APP_PATH}/traefik/data:/app/data
-      - ${APP_PATH}/traefik/logs:/app/logs
+      - ${APP_PATH}/bitwarden:/etc/bitwarden
     networks:
-      - wan-${WORKSPACE}
       - lan-${WORKSPACE}
-    secrets:
-      - VERSIO_USERNAME
-      - VERSIO_PASSWORD
-      - TRAEFIK_CLIENTID
-      - TRAEFIK_SECRET
     environment:
-      DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
-      VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
-      VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
-      VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
     command: traefik --configFile=/etc/traefik/traefik-config.yml
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
