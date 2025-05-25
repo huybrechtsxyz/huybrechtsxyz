@@ -14,7 +14,7 @@ output "serverdata" {
         private_ip = srv.private_ips[0]
         manager_ip = [
           for s in values(kamatera_server.server) : s.private_ips[0]
-          if contains(s.name, "-manager-1-")
+          if can(regex("-manager-1-", s.name))
         ][0]
       }
     ]
