@@ -42,7 +42,7 @@ copy_to_consul
 log INFO "[*] Copying Consul discovery files...DONE"
 
 # Process services
-for dir in ./src/*/; do
+for dir in /opt/app/*/; do
   METADATA_FILE="${dir}conf/metadata.json"
   COMPOSE_FILE="${dir}conf/compose.yml"
   LOG_PATH="${dir}logs/"
