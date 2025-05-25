@@ -110,13 +110,6 @@ jobs:
           path: /tmp/tf_output.json
           if-no-files-found: error
       
-       - name: Check if Terraform output cache exists
-        id: check-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: /tmp/tf_output.json
-          key: terraform-output-platform
-
       # Check if Terraform cache exists
       - name: Check Existing Terraform Cache
         id: check-cache
