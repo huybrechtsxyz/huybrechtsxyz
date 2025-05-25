@@ -167,6 +167,9 @@ jobs:
         id: parse
         run: |
           matrix=$(jq -c '.' /tmp/tf_output.json)
+          echo "================"
+          echo "$matrix"
+          echo "================"
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
   # Initialize the Swarm Cluster
