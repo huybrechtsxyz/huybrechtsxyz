@@ -191,7 +191,7 @@ jobs:
       # Debug the matrix
       - name: Debug Matrix
         run: |
-          echo "Matrix=${{ matrix }}"
+          echo "Matrix=${{ toJson(matrix) }}"
 
       # Set up GitHub Secrets
       - name: Get General Secrets
