@@ -188,8 +188,7 @@ jobs:
       # Debug the matrix
       - name: Debug Matrix
         run: |
-          echo "Matrix IP: ${{ matrix.ip }}"
-          echo "Matrix IP: ${{ matrix.name }}"
+          echo "Matrix=${{ matrix }}"
 
       # Set up GitHub Secrets
       - name: Get General Secrets
