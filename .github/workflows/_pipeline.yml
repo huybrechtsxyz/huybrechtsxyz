@@ -100,6 +100,9 @@ jobs:
           echo $(terraform output -json serverdata)
           terraform output -json serverdata | jq -c '.' > tf_output.json
           cp tf_output.json /tmp/tf_output.json
+          echo "Reading Terraform output...CAT"
+          cat /tmp/tf_output.json
+          echo "Reading Terraform output...DONE"
 
       # Upload the Terraform output as an artifact
       - name: Upload Terraform Artifact
@@ -177,7 +180,7 @@ jobs:
     environment: ${{ inputs.environment }}
     if: inputs.infrastructure == true
     strategy:
-      matrix: ${{ fromJson(needs.restore.outputs.matrix).server }}
+      matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:
       # Check out the repo
       - name: Check Out
@@ -329,7 +332,7 @@ jobs:
     environment: ${{ inputs.environment }}
     if: always() 
     strategy:
-      matrix: ${{ fromJson(needs.restore.outputs.matrix).server }}
+      matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:
       # Check out the repo
       - name: Check Out
@@ -642,7 +645,7 @@ jobs:
     environment: ${{ inputs.environment }}
     if: always()
     strategy:
-      matrix: ${{ fromJson(needs.restore.outputs.matrix).server }}
+      matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:
       # Set up GitHub Secrets
       - name: Get General Secrets
