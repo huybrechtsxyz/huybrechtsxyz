@@ -1,0 +1,19 @@
+{
+  "service": {
+    "id": "bitwarden",
+    "name": "bitwarden",
+    "address": "bitwarden",
+    "port": 8080,
+    "meta": { },
+    "checks": [
+      {
+        "id": "bitwarden-http-check",
+        "name": "Bitwarden HTTP Health Check",
+        "http": "http://bitwarden:8080",
+        "interval": "15s",
+        "timeout": "5s"
+      }
+    ],
+    "tags":[ "bitwarden","passwords","docker-swarm","system" ]
+  }
+}
