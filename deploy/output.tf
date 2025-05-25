@@ -4,7 +4,7 @@
 # Name example: srv-shared-worker-3-1234
 output "serverdata" {
   value = {
-    server = [
+    include = [
       for key, srv in kamatera_server.server : {
         role       = split("-", key)[0]
         index      = split("-", key)[1]
