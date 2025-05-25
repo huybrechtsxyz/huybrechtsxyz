@@ -110,8 +110,24 @@ jobs:
           path: /tmp/tf_output.json
           if-no-files-found: error
       
+       - name: Check if Terraform output cache exists
+        id: check-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/tf_output.json
+          key: terraform-output-platform
+
+      # Check if Terraform cache exists
+      - name: Check Existing Terraform Cache
+        id: check-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/tf_output.json
+          key: terraform-output-${{ inputs.workspace }}
+
       # Upload the Terraform output as a job output
       - name: Cache Terraform Output
+        if: steps.check-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: /tmp/tf_output.json
@@ -175,6 +191,12 @@ jobs:
       # Check out the repo
       - name: Check Out
         uses: actions/checkout@v4
+
+      # Debug the matrix
+      - name: Debug Matrix
+        run: |
+          echo "Matrix IP: ${{ matrix.ip }}"
+          echo "Matrix IP: ${{ matrix.name }}"
 
       # Set up GitHub Secrets
       - name: Get General Secrets
