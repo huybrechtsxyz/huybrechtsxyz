@@ -32,8 +32,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     if: inputs.infrastructure == true
-    outputs:
-      success: ${{ steps.set_output.outputs.did_run }}
     steps:
       # Check out the repo
       - name: Check Out
@@ -119,11 +117,6 @@ jobs:
           path: /tmp/tf_output.json
           key: terraform-output-${{ inputs.workspace }}
 
-      # Parse Terraform Output to find Swarm Servers
-      - name: Set Output
-        id: set_output
-        run:  echo "success=true" >> $GITHUB_OUTPUT
-
   # Download the Terraform output artifact and parse it to find Swarm servers
   # This job will run if the cache is not hit or if the initialize input is set to true
   # Parses the output to find Swarm servers and sets them as a matrix for the next jobs
@@ -135,13 +128,9 @@ jobs:
     outputs:
       matrix: ${{ steps.parse.outputs.matrix }}
     steps:
-      # Debug Terraform Success
-      - name: Did Terraform Run?
-        run: echo "[*] Terraform? => '${{ needs.terraform.outputs.success }}'"
-
       # Download Terraform Artifact
       - name: Download Terraform Artifact
-        if: needs.terraform.outputs.success == 'true'
+        if: inputs.infrastructure == true
         uses: actions/download-artifact@v4
         with:
           name: terraform-output-${{ inputs.workspace }}
@@ -150,6 +139,7 @@ jobs:
       # Restore Terraform Cache
       - name: Restore Terraform Cache
         id: restore-cache
+        if: inputs.infrastructure != true
         uses: actions/cache/restore@v4
         with:
           path: /tmp/tf_output.json
