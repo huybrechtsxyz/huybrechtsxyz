@@ -79,14 +79,14 @@ services:
         - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
         - traefik.http.middlewares.basic-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU.
         # Keycloak OpenId Plugin Middleware
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakURL=http://iam.${DOMAIN_DEV}:8080/
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientIDFile=/run/secrets/TRAEFIK_CLIENTID
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientSecretFile=/run/secrets/TRAEFIK_SECRET
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.Scope=openid profile email
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.UseAuthHeader=false
-        - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.IgnorePathPrefixes=/favicon.ico
+        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakURL=http://iam.${DOMAIN_DEV}:8080/
+        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientIDFile=/run/secrets/TRAEFIK_CLIENTID
+        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.ClientSecretFile=/run/secrets/TRAEFIK_SECRET
+        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.KeycloakRealm=huybrechts
+        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.Scope=openid profile email
+        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
+        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.UseAuthHeader=false
+        # - traefik.http.middlewares.openid-auth.plugin.keycloakopenid.IgnorePathPrefixes=/favicon.ico
         # Traefik dashboard
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
