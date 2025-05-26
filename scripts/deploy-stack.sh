@@ -101,7 +101,7 @@ for dir in $APP_PATH/*/; do
   fi
 
   log INFO "[+] Deploying $META_SERVICE to Docker Swarm..."
-  docker stack deploy -c "$COMPOSE_FILE" "$META_STACK" --detach=true
+  docker stack deploy -c "$COMPOSE_FILE" "$META_SERVICE" --detach=true
 done
 
 log INFO "[*] Cleaning up temporary /opt/app/.env"
