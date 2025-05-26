@@ -39,6 +39,9 @@ fi
 export DOCKER_MANAGERS=$(docker node ls --filter "role=manager" --format '{{.Hostname}}' | wc -l)
 echo "[*] Number of Docker manager nodes: $DOCKER_MANAGERS"
 
+export DOCKER_INFRAS=$(docker node ls --filter "node.label=role=infra" --format '{{.Hostname}}' | wc -l)
+echo "[*] Number of Docker infra nodes: $DOCKER_INFRAS"
+
 log INFO "[*] Cleaning up VXLAN interfaces..."
 cleanup_vxlan_interfaces
 log INFO "[*] Cleaning up VXLAN interfaces...DONE"

@@ -29,7 +29,7 @@ services:
       - agent
       - -config-dir=/consul/config
       - -data-dir=/consul/data
-      - -bootstrap-expect=${DOCKER_MANAGERS}
+      - -bootstrap-expect=${DOCKER_INFRAS}
       - -datacenter=${DATACENTER}
       - -node=${HOSTNAMEID}
       - -advertise={{ GetPrivateIP }}
