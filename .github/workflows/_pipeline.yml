@@ -461,7 +461,11 @@ jobs:
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             chmod +x /tmp/configure-begin.sh
             /tmp/configure-begin.sh
-            cp /tmp/variables.env /opt/app/.env
+            cp -f /tmp/variables.env /opt/app/.env
+            cp -f /tmp/vars-test.env /opt/app/test.env
+            cp -f /tmp/vars-staging.env /opt/app/staging.env
+            cp -f /tmp/vars-production.env /opt/app/production.env
+            cp -f /tmp/vars-shared.env /opt/app/shared.env
           EOF
 
           # Copy /src and /scripts to /opt/app
