@@ -706,8 +706,8 @@ jobs:
           echo "[*] Starting Environment..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             cd /opt/app
-            ./stop-stack.sh ${{ inputs.services }}
+            ./remove-stack.sh ${{ inputs.services }}
             sleep 30
-            ./start-stack.sh ${{ inputs.services }}
+            ./deploy-stack.sh ${{ inputs.services }}
           EOF
           echo "[*] Starting Environment...DONE"
