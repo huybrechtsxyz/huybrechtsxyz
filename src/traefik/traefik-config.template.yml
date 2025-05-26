@@ -56,7 +56,7 @@ certificatesResolvers:
       storage: "/app/data/acme-versio.json"
       dnsChallenge:
         provider: versio
-        delayBeforeCheck: 0
+        delayBeforeCheck: 30
 
 ## Traefik Plugins
 experimental:
