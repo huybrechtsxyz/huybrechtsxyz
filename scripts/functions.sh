@@ -66,10 +66,15 @@ createpaths_from_metadata() {
 
 # Parse the command line options for start/stop
 parse_options() {
+  ENV_FILE=""
   GROUP=""
   SERVICES=()
   while [[ $# -gt 0 ]]; do
     case "$1" in
+      -e)
+        ENV_FILE="$2"
+        shift 2
+        ;;
       -g)
         GROUP="$2"
         shift 2
@@ -82,13 +87,14 @@ parse_options() {
         done
         ;;
       *)
-        echo "Usage: $0 [-r role] [-s service1 service2 ...]"
+        echo "Usage: $0 [-e envfile] [-r role] [-s service1 service2 ...]"
         return 1
         ;;
     esac
   done
 
   echo "[*] For services..."
+  echo "    - Environment file: $ENV_FILE"
   echo "    - Group: $GROUP"
   echo "    - Services: ${SERVICES[*]}"
 }

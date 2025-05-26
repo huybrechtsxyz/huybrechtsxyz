@@ -436,6 +436,10 @@ jobs:
 
           # Copy environment variables to remote server
           echo "[*] Copying environment variables to remote server..."
+          scp -o StrictHostKeyChecking=no ./src/test.env root@${{ matrix.ip }}:/tmp/vars-test.env
+          scp -o StrictHostKeyChecking=no ./src/staging.env root@${{ matrix.ip }}:/tmp/vars-staging.env
+          scp -o StrictHostKeyChecking=no ./src/production.env root@${{ matrix.ip }}:/tmp/vars-production.env
+          scp -o StrictHostKeyChecking=no ./src/shared.env root@${{ matrix.ip }}:/tmp/vars-shared.env
           scp -o StrictHostKeyChecking=no ./src/${{ inputs.environment }}.env root@${{ matrix.ip }}:/tmp/variables.env || {
             echo "[x] Failed to transfer variables to remote server"
             exit 1

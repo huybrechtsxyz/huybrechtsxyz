@@ -9,14 +9,30 @@ source /opt/app/functions.sh
 cd "$APP_PATH" || exit 1
 parse_options "$@"
 
+if [[ -z "$ENV_FILE" ]]; then
+    ENV_FILE="shared"
+    log ERROR "[*] No -e specified."
+    exit 1
+fi
+
+# Validate required input
+if [[ -z "$GROUP" && ${#SERVICES[@]} -eq 0 ]]; then
+  log ERROR "[!] You must specify at least -g <group> or -s <service1 service2 ...>"
+  log ERROR "Usage: $0 [-e envfile] [-g group] [-s service1 service2 ...]"
+  return 1
+fi
+
 # Load environment variables
 export HOSTNAMEID=$(hostname)
-environment_file="/opt/app/.env"
+environment_file="/opt/app/$ENV_FILE.env"
 if [[ -f "$environment_file" ]]; then
     export $(grep -v '^#' "$environment_file" | xargs)
     log INFO "[*] Loaded environment variables from $environment_file"
+    cp -f "$environment_file" /opt/app/.env
+    log INFO "[*] Copied environment variables to /opt/app/.env"
 else
     log WARN "[!] Environment file $environment_file not found"
+    exit 1
 fi
 
 # Count manager nodes
@@ -86,6 +102,9 @@ for dir in /opt/app/*/; do
   log INFO "[+] Deploying $META_SERVICE to Docker Swarm..."
   docker stack deploy -c "$COMPOSE_FILE" "$META_SERVICE" --detach=true
 done
+
+log INFO "[*] Cleaning up temporary /opt/app/.env"
+rm -f /opt/app/.env
 
 log INFO "[+] Starting services...DONE"
 log INFO "[+] Listing services..."
