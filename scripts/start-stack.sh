@@ -2,12 +2,12 @@
 
 log INFO "[*] Starting services..."
 
-source /opt/app/.env
 source /opt/app/functions.sh
 
 # Get the basic directory and environment file
-cd "$APP_PATH" || exit 1
+APP_PATH="/opt/app"
 parse_options "$@"
+cd "$APP_PATH" || exit 1
 
 if [[ -z "$ENV_FILE" ]]; then
     ENV_FILE="shared"
@@ -24,7 +24,7 @@ fi
 
 # Load environment variables
 export HOSTNAMEID=$(hostname)
-environment_file="/opt/app/$ENV_FILE.env"
+environment_file="$APP_PATH/$ENV_FILE.env"
 if [[ -f "$environment_file" ]]; then
     export $(grep -v '^#' "$environment_file" | xargs)
     log INFO "[*] Loaded environment variables from $environment_file"
@@ -44,13 +44,13 @@ cleanup_vxlan_interfaces
 log INFO "[*] Cleaning up VXLAN interfaces...DONE"
 
 log INFO "[*] Setting permissions on relevant directories..."
-chmod -R 755 /opt/app
-chmod -R 600 /opt/app/traefik/data
-chmod -R 777 /opt/app/traefik/logs
-chmod -R 777 /opt/app/consul/data
-chmod -R 777 /opt/app/postgres/data
-chmod -R 777 /opt/app/postgres/admin
-chmod -R 777 /opt/app/postgres/backups
+chmod -R 755 $APP_PATH
+chmod -R 600 $APP_PATH/traefik/data
+chmod -R 777 $APP_PATH/traefik/logs
+chmod -R 777 $APP_PATH/consul/data
+chmod -R 777 $APP_PATH/postgres/data
+chmod -R 777 $APP_PATH/postgres/admin
+chmod -R 777 $APP_PATH/postgres/backups
 log INFO "[*] Setting permissions on relevant directories...DONE"
 
 log INFO "[*] Copying Consul discovery files..."
@@ -58,7 +58,7 @@ copy_to_consul
 log INFO "[*] Copying Consul discovery files...DONE"
 
 # Process services
-for dir in /opt/app/*/; do
+for dir in $APP_PATH/*/; do
   METADATA_FILE="${dir}conf/metadata.json"
   COMPOSE_FILE="${dir}conf/compose.yml"
   LOG_PATH="${dir}logs/"
