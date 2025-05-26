@@ -3,7 +3,7 @@ providers:
   swarm:
     exposedByDefault: false
 
-# ENTRYPOINT
+## ENTRYPOINT
 entryPoints:
   web:
     address: ":80"
@@ -21,34 +21,34 @@ entryPoints:
 
 ## HTTPS & TLS
 certificatesResolvers:
-  testHttpResolver:
-    acme:
-      caserver: https://acme-staging-v02.api.letsencrypt.org/directory
-      email: webmaster@huybrechts.xyz
-      storage: "/app/data/acme-http-test.json"
-      httpChallenge:
-        entryPoint: "web"
-  testVersioResolver:
-    acme:
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-      email: webmaster@huybrechts.xyz
-      storage: "/app/data/acme-versio-test.json"
-      dnsChallenge:
-        provider: versio
-        delayBeforeCheck: 0
-  httpResolver:
-    acme:
-      caserver: https://acme-v02.api.letsencrypt.org/directory
-      email: webmaster@huybrechts.xyz
-      storage: "/app/data/acme-http.json"
-      httpChallenge:
-        entryPoint: "web"
-  tlsResolver:
-    acme:
-      caServer: https://acme-v02.api.letsencrypt.org/directory
-      email: webmaster@huybrechts.xyz
-      storage: "/app/data/acme-tls.json"
-      tlsChallenge: true
+  # testHttpResolver:
+  #   acme:
+  #     caserver: https://acme-staging-v02.api.letsencrypt.org/directory
+  #     email: webmaster@huybrechts.xyz
+  #     storage: "/app/data/acme-http-test.json"
+  #     httpChallenge:
+  #       entryPoint: "web"
+  # testVersioResolver:
+  #   acme:
+  #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+  #     email: webmaster@huybrechts.xyz
+  #     storage: "/app/data/acme-versio-test.json"
+  #     dnsChallenge:
+  #       provider: versio
+  #       delayBeforeCheck: 0
+  # httpResolver:
+  #   acme:
+  #     caserver: https://acme-v02.api.letsencrypt.org/directory
+  #     email: webmaster@huybrechts.xyz
+  #     storage: "/app/data/acme-http.json"
+  #     httpChallenge:
+  #       entryPoint: "web"
+  # tlsResolver:
+  #   acme:
+  #     caServer: https://acme-v02.api.letsencrypt.org/directory
+  #     email: webmaster@huybrechts.xyz
+  #     storage: "/app/data/acme-tls.json"
+  #     tlsChallenge: true
   versioResolver:
     acme:
       caServer: https://acme-v02.api.letsencrypt.org/directory
@@ -57,6 +57,11 @@ certificatesResolvers:
       dnsChallenge:
         provider: versio
         delayBeforeCheck: 0
+        domains: >
+          *.huybrechts.xyz, huybrechts.xyz,
+          *.huybrechts.dev, huybrechts.dev,
+          *.meeus.family, meeus.family,
+          *.theorderoftheblacklizard.be, theorderoftheblacklizard.be
 
 ## Traefik Plugins
 experimental:
