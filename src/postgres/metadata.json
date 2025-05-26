@@ -1,5 +1,6 @@
 {
   "group": "infra",
+  "name": "sql",
   "service": "postgres",
   "description": "PostgreSQL database service for data storage and retrieval",
   "servicepaths": [

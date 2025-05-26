@@ -1,5 +1,6 @@
 {
   "group": "infra",
+  "name": "iam",
   "service": "keycloak",
   "description": "Identity and access management for applications and services",
   "servicepaths": [

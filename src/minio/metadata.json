@@ -1,5 +1,6 @@
 {
   "group": "infra",
+  "name": "s3",
   "service": "minio",
   "description": "High-performance object storage for unstructured data",
   "servicepaths": [

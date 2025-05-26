@@ -1,5 +1,6 @@
 {
   "group": "infra",
+  "name": "otel",
   "service": "telemetry",
   "description": "Telemetry service for monitoring and logging",
   "servicepaths": [
