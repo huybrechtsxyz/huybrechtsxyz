@@ -499,7 +499,7 @@ jobs:
             ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} "mkdir -p '$remote_conf_dir'"
 
             # Copy service config files
-            scp -o StrictHostKeyChecking=no ./src/$service/* root@${{ matrix.ip }}:"$remote_conf_dir/" || {
+            scp -o StrictHostKeyChecking=no ./src/$service/*.* root@${{ matrix.ip }}:"$remote_conf_dir/" || {
               echo "[x] Failed to transfer $service configuration to remote server"
               exit 1
             }
