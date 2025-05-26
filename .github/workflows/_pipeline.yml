@@ -418,15 +418,25 @@ jobs:
           echo "[*] Copying variables to remote server..."
 
           # Generating secrets for remote server
-          cat <<EOF > /tmp/secrets.env
-          APP_ROOT_PASSWORD=$APP_ROOT_PASSWORD
-          VERSIO_USERNAME=$VERSIO_USERNAME
-          VERSIO_PASSWORD=$VERSIO_PASSWORD
-          TRAEFIK_CLIENTID=$TRAEFIK_CLIENTID
-          TRAEFIK_SECRET=$TRAEFIK_SECRET
-          PLATFORM_USERNAME=$PLATFORM_USERNAME
-          PLATFORM_PASSWORD=$PLATFORM_PASSWORD
-          EOF
+          # Using printf to minimize the risk of variable expansion issues
+          # cat <<EOF > /tmp/secrets.env
+          # APP_ROOT_PASSWORD=$APP_ROOT_PASSWORD
+          # VERSIO_USERNAME=$VERSIO_USERNAME
+          # VERSIO_PASSWORD=$VERSIO_PASSWORD
+          # TRAEFIK_CLIENTID=$TRAEFIK_CLIENTID
+          # TRAEFIK_SECRET=$TRAEFIK_SECRET
+          # PLATFORM_USERNAME=$PLATFORM_USERNAME
+          # PLATFORM_PASSWORD=$PLATFORM_PASSWORD
+          # EOF
+          {
+            printf "APP_ROOT_PASSWORD=%s\n" "$APP_ROOT_PASSWORD"
+            printf "VERSIO_USERNAME=%s\n" "$VERSIO_USERNAME"
+            printf "VERSIO_PASSWORD=%s\n" "$VERSIO_PASSWORD"
+            printf "TRAEFIK_CLIENTID=%s\n" "$TRAEFIK_CLIENTID"
+            printf "TRAEFIK_SECRET=%s\n" "$TRAEFIK_SECRET"
+            printf "PLATFORM_USERNAME=%s\n" "$PLATFORM_USERNAME"
+            printf "PLATFORM_PASSWORD=%s\n" "$PLATFORM_PASSWORD"
+          } > /tmp/secrets.env
 
           # Copy secrets to remote server
           scp -o StrictHostKeyChecking=no /tmp/secrets.env root@${{ matrix.ip }}:/tmp/secrets.env || {

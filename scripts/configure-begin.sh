@@ -66,7 +66,9 @@ createdockersecret() {
   fi
 
   if [ -n "$name" ]; then
-    echo "$value" | docker secret create "$name" -
+    #echo "$value" | docker secret create "$name" -
+    #echo has tendency to add newline at the end
+    printf "%s" "$value" | docker secret create "$name" -
     echo "[*] Secret '$name' created."
   else
     echo "[!] Secret name is not defined for $label."
