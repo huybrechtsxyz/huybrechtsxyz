@@ -14,7 +14,7 @@ services:
     image: hashicorp/consul:1.20
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${APP_PATH}/consul/conf:/consul/config
+      - ${APP_PATH}/consul/etc:/consul/config
       - ${APP_PATH}/consul/data:/consul/data
     networks:
       - lan-${WORKSPACE}
@@ -65,7 +65,7 @@ services:
         - traefik.enable=true
         - traefik.http.services.consul.loadbalancer.server.scheme=http
         - traefik.http.services.consul.loadbalancer.server.port=8500
-        - traefik.http.routers.consul.rule=Host(`config.${DOMAIN_DEV}`)
+        - traefik.http.routers.consul.rule=Host(`cfg.${DOMAIN_DEV}`)
         - traefik.http.routers.consul.entrypoints=websecure
         - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.consul.middlewares=${TRAEFIK_MIDDLEWARES}

@@ -99,9 +99,9 @@ parse_options() {
   echo "    - Services: ${SERVICES[*]}"
 }
 
-# Copy consul discovery files to consul/conf
+# Copy consul discovery files to consul/etc
 copy_to_consul() {
-  CONSUL_CONF_PATH="$APP_PATH/consul/conf"
+  CONSUL_CONF_PATH="$APP_PATH/consul/etc"
   # Loop through all service directories in /opt/app
   for dir in "$APP_PATH"/*/; do
     # Get the service name from the directory path
