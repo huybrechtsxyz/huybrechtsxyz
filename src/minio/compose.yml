@@ -16,7 +16,7 @@ networks:
 services:
 
   minio:
-    image: minio/minio
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
     volumes:
       - ${APP_DATA}:/data
     networks:
