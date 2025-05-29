@@ -6,6 +6,7 @@ source /opt/app/functions.sh
 log INFO "[*] Removing ALL services..."
 
 # Remove in reverse order of dependencies
+remove-stack.sh -e shared -s redis
 remove-stack.sh -e shared -s postgres
 remove-stack.sh -e shared -s minio
 remove-stack.sh -e shared -s consul
