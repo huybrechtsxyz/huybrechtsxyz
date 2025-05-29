@@ -46,10 +46,11 @@ function Enable-Docker {
     Confirm-NetworkExistsAndValid -networkName "wan-$env:WORKSPACE"
     Confirm-NetworkExistsAndValid -networkName "lan-$env:WORKSPACE"
     Confirm-NetworkExistsAndValid -networkName "lan-develop"
-    docker node update --label-add postgres=true $POSTGRES_NODE
-    docker node update --label-add role=manager
-    docker node update --label-add role=worker
-    docker node update --label-add role=infra
+    $NODE=docker node ls --format '{{.Hostname}}'
+    docker node update --label-add postgres=true $NODE
+    docker node update --label-add role=manager $NODE
+    docker node update --label-add role=worker $NODE
+    docker node update --label-add role=infra $NODE
     Write-Host "Docker configuration completed successfully."
 }
 
@@ -95,4 +96,27 @@ function Confirm-NetworkExistsAndValid([string]$networkName) {
     }
 
     return $networkInfo
+}
+
+# FUNCTION: Apply variable template
+function Merge-Template {
+    param (
+        [Parameter(Mandatory=$true)][string]$InputFile,
+        [Parameter(Mandatory=$true)][string]$OutputFile
+    )
+
+    if (-not (Test-Path $InputFile)) {
+        throw "Input file '$InputFile' not found."
+    }
+
+    $content = Get-Content -Path $InputFile -Raw
+
+    $processed = [regex]::Replace($content, '\$(\w+)|\$\{(\w+)\}', {
+        param($match)
+        $varName = if ($match.Groups[1].Success) { $match.Groups[1].Value } else { $match.Groups[2].Value }
+        $value = [System.Environment]::GetEnvironmentVariable($varName)
+        return $value
+    })
+
+    Set-Content -Path $OutputFile -Value $processed
 }
