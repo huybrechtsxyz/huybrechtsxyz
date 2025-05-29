@@ -5,9 +5,6 @@
       "name": "redis",
       "address": "redis",
       "port": 6379,
-      "meta": {
-        "redis_path": "/ping"
-      },
       "checks": [
         {
           "id": "redis-tcp-check",
@@ -24,9 +21,6 @@
       "name": "redisinsight",
       "address": "redisinsight",
       "port": 8001,
-      "meta": {
-        "redis_path": "/redis"
-      },
       "checks": [
         {
           "id": "redisinsight-http-check",
