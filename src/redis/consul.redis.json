@@ -1,0 +1,42 @@
+{
+  "services": [
+    {
+      "id": "redis",
+      "name": "redis",
+      "address": "redis",
+      "port": 6379,
+      "meta": {
+        "redis_path": "/ping"
+      },
+      "checks": [
+        {
+          "id": "redis-tcp-check",
+          "name": "Redis TCP Health Check",
+          "tcp": "redis:6379",
+          "interval": "15s",
+          "timeout": "5s"
+        }
+      ],
+      "tags":[ "redis","caching","docker-swarm","system" ]
+    },
+    {
+      "id": "redisinsight",
+      "name": "redisinsight",
+      "address": "redisinsight",
+      "port": 8001,
+      "meta": {
+        "redis_path": "/redis"
+      },
+      "checks": [
+        {
+          "id": "redisinsight-http-check",
+          "name": "Redis Insight HTTP Health Check",
+          "http": "http://redisinsight:8001/",
+          "interval": "15s",
+          "timeout": "5s"
+        }
+      ],
+      "tags":[ "redis","caching","docker-swarm","system" ]
+    }
+  ]
+}
