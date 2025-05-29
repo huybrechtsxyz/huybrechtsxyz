@@ -8,6 +8,7 @@ log INFO "[*] Starting ALL services..."
 deploy-stack.sh -e shared -s traefik
 deploy-stack.sh -e shared -s consul
 deploy-stack.sh -e shared -s minio
+deploy-stack.sh -e shared -s postgres
 
 log INFO "[+] Starting ALL services...DONE"
 log INFO "[+] Listing ALL services..."

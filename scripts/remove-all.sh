@@ -6,9 +6,10 @@ source /opt/app/functions.sh
 log INFO "[*] Removing ALL services..."
 
 # Remove in reverse order of dependencies
-docker stack rm minio
-docker stack rm consul
-docker stack rm traefik
+remove-stack.sh -e shared -s postgres
+remove-stack.sh -e shared -s minio
+remove-stack.sh -e shared -s consul
+remove-stack.sh -e shared -s traefik
 
 log INFO "[+] Remove request sent for all services."
 log INFO "[+] Waiting for cleanup to complete..."
