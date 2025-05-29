@@ -19,7 +19,6 @@ services:
     image: minio/minio
     volumes:
       - ${APP_DATA}:/data
-      - ${APP_PATH}/minio/logs:/root/.minio/logs
     networks:
       - lan-${WORKSPACE}
     secrets:
@@ -28,7 +27,7 @@ services:
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
-      MINIO_ROOT_USER: /run/secrets/PLATFORM_USERNAME
+      MINIO_ROOT_USER_FILE: /run/secrets/PLATFORM_USERNAME
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
       MINIO_PROMETHEUS_AUTH_TYPE: public
     command: server /data --console-address ":9001"
