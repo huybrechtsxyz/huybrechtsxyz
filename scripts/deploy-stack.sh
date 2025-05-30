@@ -1,8 +1,8 @@
 #!/bin/bash
 
-log INFO "[*] Starting services..."
-
 source /opt/app/functions.sh
+
+log INFO "[*] Starting services..."
 
 # Get the basic directory and environment file
 APP_PATH="/opt/app"

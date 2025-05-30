@@ -35,8 +35,6 @@ services:
       restart_policy:
         condition: on-failure
         delay: 10s
-        # max_attempts: 5
-        # window: 60s
       update_config:
         parallelism: 1
         delay: 15s
@@ -89,11 +87,10 @@ services:
         monitor: 30s
       labels:
         - traefik.enable=true
-        - traefik.http.middlewares.redisinsight-strip-prefix.stripprefix.prefixes=/redis
         - traefik.http.services.redisinsight.loadbalancer.server.scheme=http
         - traefik.http.services.redisinsight.loadbalancer.server.port=8001
-        - traefik.http.routers.redisinsight.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/redis`)
+        - traefik.http.routers.redisinsight.rule=Host(`redis.${DOMAIN_DEV}`)
         - traefik.http.routers.redisinsight.entrypoints=websecure
         - traefik.http.routers.redisinsight.tls.certresolver=${TRAEFIK_RESOLVER}
         - traefik.http.routers.redisinsight.service=redisinsight
-        - traefik.http.routers.redisinsight.middlewares=redisinsight-strip-prefix,${TRAEFIK_MIDDLEWARES}
+        - traefik.http.routers.redisinsight.middlewares=${TRAEFIK_MIDDLEWARES}

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-log INFO "[*] Stopping services..."
-
 source /opt/app/functions.sh
+
+log INFO "[*] Stopping services..."
 
 APP_PATH="/opt/app"
 parse_options "$@"
