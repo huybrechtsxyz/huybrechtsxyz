@@ -30,7 +30,7 @@
           "timeout": "5s"
         }
       ],
-      "tags":[ "redis","caching","docker-swarm","system" ]
+      "tags":[ "redis", "admin", "caching","docker-swarm","system" ]
     }
   ]
 }

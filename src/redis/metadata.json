@@ -2,7 +2,7 @@
   "group": "infra",
   "name": "redis",
   "service": "redis",
-  "description": "Redis is an flexible data structures for various caching, AI, and vector databases.",
+  "description": "Redis allows flexible data structure stored for caching, AI workloads, and vector databases",
   "servicepaths": [
     { "path":"conf", "chmod": 755 },
     { "path":"data", "chmod": 777 }

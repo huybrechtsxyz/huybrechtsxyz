@@ -16,6 +16,7 @@ services:
       - ${APP_PATH}/redis/data:/data
     networks:
       - lan-${WORKSPACE}
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 30s
@@ -56,6 +57,7 @@ services:
       - lan-${WORKSPACE}
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:8001/"]
+      #test: ["CMD-SHELL", "wget --spider -q http://localhost:8001/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
