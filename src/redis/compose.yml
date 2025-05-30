@@ -51,11 +51,12 @@ services:
 
   redisinsight:
     image: redis/redisinsight:latest
+    volumes:
+      - ${APP_PATH}/redis/logs:/data/logs
     networks:
       - lan-${WORKSPACE}
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:5540/api/health/"]
-      #test: ["CMD-SHELL", "wget --spider -q http://localhost:5540/api/health/ || exit 1"]
+      test: ["CMD", "wget", "--spider", "http://0.0.0.0:5540/api/health/"]
       interval: 60s
       timeout: 15s
       retries: 5
@@ -72,8 +73,6 @@ services:
       restart_policy:
         condition: on-failure
         delay: 10s
-        # max_attempts: 5
-        # window: 60s
       update_config:
         parallelism: 1
         delay: 15s
@@ -88,7 +87,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.http.services.redisinsight.loadbalancer.server.scheme=http
-        - traefik.http.services.redisinsight.loadbalancer.server.port=8001
+        - traefik.http.services.redisinsight.loadbalancer.server.port=5540
         - traefik.http.routers.redisinsight.rule=Host(`redis.${DOMAIN_DEV}`)
         - traefik.http.routers.redisinsight.entrypoints=websecure
         - traefik.http.routers.redisinsight.tls.certresolver=${TRAEFIK_TLS_DNS}

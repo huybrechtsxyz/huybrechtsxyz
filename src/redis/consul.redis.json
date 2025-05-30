@@ -20,12 +20,12 @@
       "id": "redisinsight",
       "name": "redisinsight",
       "address": "redisinsight",
-      "port": 8001,
+      "port": 5540,
       "checks": [
         {
           "id": "redisinsight-http-check",
           "name": "Redis Insight HTTP Health Check",
-          "http": "http://redisinsight:8001/",
+          "http": "http://redisinsight:5540/api/health/",
           "interval": "60s",
           "timeout": "15s"
         }

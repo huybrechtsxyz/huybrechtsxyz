@@ -5,7 +5,8 @@
   "description": "Redis allows flexible data structure stored for caching, AI workloads, and vector databases",
   "servicepaths": [
     { "path":"conf", "chmod": 755 },
-    { "path":"data", "chmod": 777 }
+    { "path":"data", "chmod": 777 },
+    { "path":"logs", "chmod": 777 }
   ],
   "projectname": "",
   "projectfile": "",
