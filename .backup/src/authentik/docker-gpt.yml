@@ -29,7 +29,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.auth.rule=Host(`auth.${DOMAIN_DEV}`)
       - traefik.http.routers.auth.entrypoints=websecure
-      - traefik.http.routers.auth.tls.certresolver=${TRAEFIK_RESOLVER}
+      - traefik.http.routers.auth.tls.certresolver=${TRAEFIK_TLS_DNS}
       - traefik.http.services.auth.loadbalancer.server.port=8000
 
   authentik-worker:

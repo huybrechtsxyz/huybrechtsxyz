@@ -69,7 +69,7 @@ services:
         - traefik.http.services.minio-ui.loadbalancer.server.port=9001
         - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
         - traefik.http.routers.minio-ui.entrypoints=websecure
-        - traefik.http.routers.minio-ui.tls.certresolver=versioResolver
+        - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_TLS_DNS}
         - traefik.http.routers.minio-ui.service=minio-ui
         - traefik.http.routers.minio-ui.middlewares=${TRAEFIK_MIDDLEWARES}
         # MinIO Data Service
@@ -78,7 +78,7 @@ services:
         - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
         - traefik.http.routers.minio-data.entrypoints=websecure
         - traefik.http.routers.minio-data.service=minio-data
-        - traefik.http.routers.minio-data.tls.certresolver=versioResolver
+        - traefik.http.routers.minio-data.tls.certresolver=${TRAEFIK_TLS_DNS}
 
   minio-init:
     image: minio/mc

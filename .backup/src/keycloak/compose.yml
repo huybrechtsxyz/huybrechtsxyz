@@ -89,5 +89,5 @@ services:
         - traefik.http.services.keycloak.loadbalancer.server.port=8080
         - traefik.http.routers.keycloak.rule=Host(`iam.${DOMAIN_DEV}`)
         - traefik.http.routers.keycloak.entrypoints=websecure
-        - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_TLS_DNS}
         - traefik.http.routers.keycloak.middlewares=${TRAEFIK_MIDDLEWARES}
