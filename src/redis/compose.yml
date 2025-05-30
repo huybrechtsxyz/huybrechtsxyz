@@ -19,8 +19,8 @@ services:
     command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
+      interval: 60s
+      timeout: 15s
       retries: 5
       start_period: 120s
     deploy:
@@ -35,8 +35,8 @@ services:
       restart_policy:
         condition: on-failure
         delay: 10s
-        max_attempts: 5
-        window: 60s
+        # max_attempts: 5
+        # window: 60s
       update_config:
         parallelism: 1
         delay: 15s
@@ -58,8 +58,8 @@ services:
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:8001/"]
       #test: ["CMD-SHELL", "wget --spider -q http://localhost:8001/ || exit 1"]
-      interval: 30s
-      timeout: 10s
+      interval: 60s
+      timeout: 15s
       retries: 5
       start_period: 120s
     deploy:
@@ -74,8 +74,8 @@ services:
       restart_policy:
         condition: on-failure
         delay: 10s
-        max_attempts: 5
-        window: 60s
+        # max_attempts: 5
+        # window: 60s
       update_config:
         parallelism: 1
         delay: 15s

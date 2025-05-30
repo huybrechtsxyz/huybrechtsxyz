@@ -48,8 +48,8 @@ services:
     command: traefik --configFile=/etc/traefik/traefik-config.yml
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 30s
-      timeout: 10s
+      interval: 60s
+      timeout: 15s
       retries: 5
       start_period: 120s
     deploy:
@@ -61,8 +61,8 @@ services:
       restart_policy:
         condition: on-failure
         delay: 10s
-        max_attempts: 5
-        window: 60s
+        # max_attempts: 5
+        # window: 60s
       update_config:
         parallelism: 1
         delay: 15s
