@@ -1,0 +1,38 @@
+# version: '3.9'
+
+# secrets:
+# configs:
+# volumes:
+
+networks:
+  lan-platform:
+    external: true
+
+services:
+
+  authentik-server:
+    image: authentik/authentik:latest
+    # ports:
+    #   - "${COMPOSE_PORT_HTTP:-9000}:9000"
+    #   - "${COMPOSE_PORT_HTTPS:-9443}:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APP_PATH}/auth/certs:/certs
+      - ${APP_PATH}/auth/media:/media
+      - ${APP_PATH}/auth/tmpl:/templates
+    networks:
+      - lan-${WORKSPACE}
+    secrets:
+      - AUTHENTIK_SECRET_KEY
+      - PLATFORM_USERNAME
+      - PLATFORM_PASSWORD
+    environment:
+      AUTHENTIK_SECRET_KEY_FILE: /run/secrets/AUTHENTIK_SECRET_KEY
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgres
+      AUTHENTIK_POSTGRESQL__DEFAULT_SCHEMA: authentik 
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__USER_FILE: file:///run/secrets/PLATFORM_USERNAME
+      AUTHENTIK_POSTGRESQL__PASSWORD: file:///run/secrets/PLATFORM_PASSWORD
+
+        
