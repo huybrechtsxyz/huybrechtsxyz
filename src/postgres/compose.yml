@@ -144,5 +144,5 @@ services:
         - traefik.http.services.pgadmin.loadbalancer.server.port=9080
         - traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
         - traefik.http.routers.pgadmin.entrypoints=websecure
-        - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.pgadmin.tls.certresolver=versioResolver
         - traefik.http.routers.pgadmin.middlewares=${TRAEFIK_MIDDLEWARES}

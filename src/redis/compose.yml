@@ -54,8 +54,8 @@ services:
     networks:
       - lan-${WORKSPACE}
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:8001/"]
-      #test: ["CMD-SHELL", "wget --spider -q http://localhost:8001/ || exit 1"]
+      test: ["CMD", "wget", "--spider", "http://localhost:5540/api/health/"]
+      #test: ["CMD-SHELL", "wget --spider -q http://localhost:5540/api/health/ || exit 1"]
       interval: 60s
       timeout: 15s
       retries: 5
@@ -91,6 +91,6 @@ services:
         - traefik.http.services.redisinsight.loadbalancer.server.port=8001
         - traefik.http.routers.redisinsight.rule=Host(`redis.${DOMAIN_DEV}`)
         - traefik.http.routers.redisinsight.entrypoints=websecure
-        - traefik.http.routers.redisinsight.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.redisinsight.tls.certresolver=versioResolver
         - traefik.http.routers.redisinsight.service=redisinsight
         - traefik.http.routers.redisinsight.middlewares=${TRAEFIK_MIDDLEWARES}

@@ -61,8 +61,6 @@ services:
       restart_policy:
         condition: on-failure
         delay: 10s
-        # max_attempts: 5
-        # window: 60s
       update_config:
         parallelism: 1
         delay: 15s
@@ -93,5 +91,5 @@ services:
         - traefik.http.routers.traefik.rule=Host(`proxy.${DOMAIN_DEV}`)
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=websecure
-        - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.traefik.tls.certresolver=httpResolver
         - traefik.http.routers.traefik.middlewares=${TRAEFIK_MIDDLEWARES}
