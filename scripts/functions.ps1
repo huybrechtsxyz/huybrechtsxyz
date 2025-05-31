@@ -46,6 +46,7 @@ function Enable-Docker {
     Confirm-NetworkExistsAndValid -networkName "wan-$env:WORKSPACE"
     Confirm-NetworkExistsAndValid -networkName "lan-$env:WORKSPACE"
     Confirm-NetworkExistsAndValid -networkName "lan-develop"
+    Set-DockerSecrets
     $NODE=docker node ls --format '{{.Hostname}}'
     docker node update --label-add postgres=true $NODE
     docker node update --label-add manager=true $NODE
@@ -96,6 +97,33 @@ function Confirm-NetworkExistsAndValid([string]$networkName) {
     }
 
     return $networkInfo
+}
+
+function Set-DockerSecrets {
+    if (-not (Test-Path -Path $SecretsPath)){
+        throw 'User secrets not found'
+    }
+
+    $Secrets = Get-Content -Path $SecretsPath | ConvertFrom-Json
+    foreach ($Key in $Secrets.PSObject.Properties.Name) {
+        $Value = $Secrets.$Key
+        Write-Host "Creating or updating secret: $Key"
+        
+        # Remove the secret if it already exists
+        if (docker secret inspect $Key 2>&1) {
+            docker secret rm $Key 2>&1
+        }
+
+        # Create the Docker secret
+        $TempSecretFile = [System.IO.Path]::GetTempFileName()
+        Set-Content -Path $TempSecretFile -Value $Value -NoNewLine
+        $WrittenValue = Get-Content -Path $TempSecretFile -Raw
+        if ($WrittenValue -ne $Value) {
+            throw "The written secret value for '$Key' does not match the original."
+        }
+        docker secret create $Key $TempSecretFile
+        Remove-Item -Path $TempSecretFile
+    }
 }
 
 # FUNCTION: Apply variable template

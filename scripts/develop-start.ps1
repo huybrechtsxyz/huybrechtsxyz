@@ -115,6 +115,7 @@ if(Test-Path -Path "$AppPath/traefik/conf/traefik-config.template.yml") {
     Merge-Template `
         -InputFile "$AppPath/traefik/conf/traefik-config.template.yml" `
         -OutputFile "$AppPath/traefik/conf/traefik-config.yml"
+    Move-Item -Path "$AppPath/traefik/conf/consul.traefik.json" -Destination "$AppPath/consul/etc" -Force
 }
 Write-Host 'Configuring TRAEFIK ... Done'
 
@@ -126,28 +127,32 @@ Write-Host 'Configuring CONSUL ... Done'
 
 # Configure and run MINIO
 Write-Host 'Configuring MINIO ... for DOCKER'
+Move-Item -Path "$AppPath/minio/conf/consul.minio.json" -Destination "$AppPath/consul/etc" -Force
 Write-Host 'Configuring MINIO ... Done'
 
 # Configure and run POSTGRES
 Write-Host 'Configuring POSTGRES ... for DOCKER'
+Move-Item -Path "$AppPath/postgres/conf/consul.postgres.json" -Destination "$AppPath/consul/etc" -Force
 Write-Host 'Configuring POSTGRES ... Done'
 
 # Configure and run REDIS
 Write-Host 'Configuring REDIS ... for DOCKER'
+Move-Item -Path "$AppPath/redis/conf/consul.redis.json" -Destination "$AppPath/consul/etc" -Force
 Write-Host 'Configuring REDIS ... Done'
 
 # Configure and run KEYCLOAK
-Write-Host 'Configuring KEYCLOAK ... for DOCKER'
-if (Test-Path -Path "$AppPath/keycloak/conf/keycloak-realm.template.json") {
-    Merge-Template `
-        -InputFile "$AppPath/keycloak/conf/keycloak-realm.template.json" `
-        -OutputFile "$AppPath/keycloak/conf/keycloak-realm.json"
-}
-Write-Host 'Configuring KEYCLOAK ... Done'
+# Write-Host 'Configuring KEYCLOAK ... for DOCKER'
+# if (Test-Path -Path "$AppPath/keycloak/conf/keycloak-realm.template.json") {
+#     Merge-Template `
+#         -InputFile "$AppPath/keycloak/conf/keycloak-realm.template.json" `
+#         -OutputFile "$AppPath/keycloak/conf/keycloak-realm.json"
+#     Move-Item -Path "$AppPath/keycloak/conf/consul.keycloak.json" -Destination "$AppPath/consul/etc" -Force
+# }
+# Write-Host 'Configuring KEYCLOAK ... Done'
 
 # Configure and run TELEMETRY
-Write-Host 'Configuring TELEMETRY ... for DOCKER'
-Write-Host 'Configuring TELEMETRY ... Done'
+# Write-Host 'Configuring TELEMETRY ... for DOCKER'
+# Write-Host 'Configuring TELEMETRY ... Done'
 
 # Loop through all services
 Get-ChildItem "$AppPath" -Directory | ForEach-Object {
@@ -177,11 +182,10 @@ Get-ChildItem "$AppPath" -Directory | ForEach-Object {
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" `
     "http://proxy.$env:DOMAIN_DEV/dashboard/",
-    "http://config.$env:DOMAIN_DEV/",
-    "http://iam.$env:DOMAIN_DEV",
+    "http://cfg.$env:DOMAIN_DEV/",
     "http://s3.$env:DOMAIN_DEV",
     "http://db.$env:DOMAIN_DEV/pgamin",
-    "http://db.$env:DOMAIN_DEV/redis",
+    "http://redis.$env:DOMAIN_DEV",
     "--inprivate",
     "--ignore-certificate-errors",
     "--ignore-urlfetcher-cert-requests",
