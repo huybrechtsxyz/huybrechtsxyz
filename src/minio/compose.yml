@@ -10,6 +10,8 @@ secrets:
 # volumes:
 
 networks:
+  lan-develop:
+    external: true
   lan-platform:
     external: true
 
