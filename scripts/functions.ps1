@@ -48,9 +48,9 @@ function Enable-Docker {
     Confirm-NetworkExistsAndValid -networkName "lan-develop"
     $NODE=docker node ls --format '{{.Hostname}}'
     docker node update --label-add postgres=true $NODE
-    docker node update --label-add role=manager $NODE
-    docker node update --label-add role=worker $NODE
-    docker node update --label-add role=infra $NODE
+    docker node update --label-add manager=true $NODE
+    docker node update --label-add worker=true $NODE
+    docker node update --label-add infra=true $NODE
     Write-Host "Docker configuration completed successfully."
 }
 

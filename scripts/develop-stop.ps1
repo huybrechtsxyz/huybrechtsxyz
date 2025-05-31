@@ -12,8 +12,8 @@ Write-Host "[*] Stopping DEVELOPMENT environment..."
 # Loop through all services
 Get-ChildItem "$AppPath" -Directory | ForEach-Object {
     $ServicePath = $_.FullName
-    $MetadataFile = Join-Path $ServicePath "metadata.json"
-    $ComposeFile = Join-Path $ServicePath "compose.yml"
+    $MetadataFile = Join-Path $ServicePath "conf/metadata.json"
+    $ComposeFile = Join-Path $ServicePath "conf/compose.yml"
 
     if (-not (Test-Path $MetadataFile) -or -not (Test-Path $ComposeFile)) {
         return
@@ -27,10 +27,8 @@ Get-ChildItem "$AppPath" -Directory | ForEach-Object {
         return
     }
 
-    Write-Host "Validating Docker Compose for $serviceName..."
-    docker compose -f $composeFile --env-file $environmentFile config
-    Write-Host "Deploying $ServiceName stack..."
-    docker stack deploy -c $ComposeFile $ServiceName --detach=true
+    Write-Host "Removing $ServiceName stack..."
+    docker stack rm $ServiceName
 }
 
 Write-Host "[*] Stopping DEVELOPMENT environment...DONE"

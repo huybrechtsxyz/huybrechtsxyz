@@ -115,8 +115,8 @@ createnodelabels() {
     for node in $(docker node ls --format '{{.Hostname}}'); do
       # Extract the role from each node's hostname
       role=$(echo "$node" | cut -d'-' -f3)
-      echo "    - Setting role=$role on $node"
-      docker node update --label-add role=$role "$node"
+      echo "    - Setting $role=true on $node"
+      docker node update --label-add $role=true "$node"
     done
   fi
 }

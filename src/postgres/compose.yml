@@ -45,7 +45,7 @@ services:
       placement:
         constraints:
           - node.role==${DOCKER_WORKER}
-          - node.labels.role==infra
+          - node.labels.infra==true
           - node.labels.postgres==true
       restart_policy:
         condition: on-failure
@@ -87,7 +87,7 @@ services:
       placement:
         constraints:
           - node.role==${DOCKER_WORKER}
-          - node.labels.role==infra
+          - node.labels.infra==true
           - node.labels.postgres==true
       restart_policy:
         condition: none # Ensure this runs only once

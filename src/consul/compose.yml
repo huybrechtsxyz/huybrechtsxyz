@@ -46,7 +46,7 @@ services:
       placement:
         constraints:
           - node.role==manager
-          - node.labels.role==manager
+          - node.labels.manager==true
       restart_policy:
         condition: on-failure
         delay: 10s
