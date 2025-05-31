@@ -109,9 +109,12 @@ function Set-DockerSecrets {
         $Value = $Secrets.$Key
         Write-Host "Creating or updating secret: $Key"
         
-        # Remove the secret if it already exists
-        if (docker secret inspect $Key 2>&1) {
-            docker secret rm $Key 2>&1
+        # Check if the secret exists before trying to remove it
+        if (docker secret ls --format '{{.Name}}' | Where-Object { $_ -eq $Key }) {
+            docker secret rm $Key | Out-Null
+            Write-Host "Removed secret: $Key"
+        } else {
+            Write-Host "Secret $Key does not exist. Skipping removal."
         }
 
         # Create the Docker secret
