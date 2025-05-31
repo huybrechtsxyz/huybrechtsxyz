@@ -11,7 +11,7 @@
           "id": "postgres-tcp-check",
           "name": "PostgreSql TCP Health Check",
           "tcp": "postgres:5432",
-          "interval": "50s",
+          "interval": "60s",
           "timeout": "15s"
         }
       ],
