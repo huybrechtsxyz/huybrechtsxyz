@@ -16,6 +16,8 @@ secrets:
 networks:
   lan-develop:
     external: true
+  wan-develop:
+    external: true
   wan-platform:
     external: true
   lan-platform:

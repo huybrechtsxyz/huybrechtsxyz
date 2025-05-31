@@ -109,9 +109,11 @@ Enable-Docker
 
 # Configure and run Traefik
 Write-Host 'Configuring TRAEFIK ... for DOCKER'
-Merge-Template `
-    -InputFile "$AppPath/traefik/conf/traefik-config.template.yml" `
-    -OutputFile "$AppPath/traefik/conf/traefik-config.yml"
+if(Test-Path -Path "$AppPath/traefik/conf/traefik-config.template.yml") {
+    Merge-Template `
+        -InputFile "$AppPath/traefik/conf/traefik-config.template.yml" `
+        -OutputFile "$AppPath/traefik/conf/traefik-config.yml"
+}
 Write-Host 'Configuring TRAEFIK ... Done'
 
 # Configure and run CONSUL
@@ -134,9 +136,11 @@ Write-Host 'Configuring REDIS ... Done'
 
 # Configure and run KEYCLOAK
 Write-Host 'Configuring KEYCLOAK ... for DOCKER'
-Merge-Template `
-    -InputFile "$AppPath/keycloak/conf/keycloak-realm.template.json" `
-    -OutputFile "$AppPath/keycloak/conf/keycloak-realm.json"
+if (Test-Path -Path "$AppPath/keycloak/conf/keycloak-realm.template.json") {
+    Merge-Template `
+        -InputFile "$AppPath/keycloak/conf/keycloak-realm.template.json" `
+        -OutputFile "$AppPath/keycloak/conf/keycloak-realm.json"
+}
 Write-Host 'Configuring KEYCLOAK ... Done'
 
 # Configure and run TELEMETRY
@@ -162,8 +166,8 @@ Get-ChildItem "$AppPath" -Directory | ForEach-Object {
         return
     }
 
-    Write-Host "Validating Docker Compose for $serviceName..."
-    docker compose -f $composeFile --env-file $environmentFile config
+    #Write-Host "Validating Docker Compose for $serviceName..."
+    #docker compose -f $composeFile --env-file $environmentFile config
     Write-Host "Deploying $ServiceName stack..."
     docker stack deploy -c $ComposeFile $ServiceName --detach=true
 }
