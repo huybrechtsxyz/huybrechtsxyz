@@ -7,6 +7,8 @@ param (
 $RootPath = "C:/Users/vince/Sources/huybrechtsxyz"
 . "$RootPath/scripts/functions.ps1"
 
+Set-Location $AppPath
+
 Write-Host "[*] Starting DEVELOPMENT environment..."
 
 # Basic paths
