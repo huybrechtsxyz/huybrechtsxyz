@@ -22,6 +22,7 @@ Write-Host "[*] Environment variables are:"
 $env:HOSTNAMEID=$(hostname)
 $env:HOSTNAME=$env:COMPUTERNAME
 $env:DOCKER_MANAGERS=1
+$env:DOCKER_INFRAS=1
 Write-Host " -- HOSTNAME: $env:HOSTNAME" 
 Write-Host " -- DOCKER_PUBLIC_IP: $env:DOCKER_PUBLIC_IP" 
 Write-Host " -- DOCKER_MANGER_COUNT: $env:DOCKER_MANAGER_COUNT" 
