@@ -1,6 +1,6 @@
 # version: '3.9'
-# image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
-# https://github.com/minio/minio/blob/master/docs/orchestration/docker-compose/docker-compose.yaml
+# image with sso: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
+# based on: https://github.com/minio/minio/blob/master/docs/orchestration/docker-compose/docker-compose.yaml
 secrets:
   PLATFORM_USERNAME:
     external: true
@@ -16,80 +16,123 @@ networks:
   lan-platform:
     external: true
 
-# Settings and configurations that are common for all containers
 x-minio-common: &minio-common
-  
-  command: server --console-address ":9001" http://minio{1...4}/data{1...2}
-  # expose:
-  #   - "9000"
-  #   - "9001"
-  # environment:
-    # MINIO_ROOT_USER: minioadmin
-    # MINIO_ROOT_PASSWORD: minioadmin
+  image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
+  command: >
+    server --console-address ":9001"
+    http://minio-1/data1
+    http://minio-1/data2
+    http://minio-2/data1
+    http://minio-2/data2
+    http://minio-3/data1
+    http://minio-3/data2
+    http://minio-4/data1
+    http://minio-4/data2
+  expose:
+    - "9000"
+    - "9001"
+  networks:
+    - lan-${WORKSPACE}
+  secrets:
+    - PLATFORM_USERNAME
+    - PLATFORM_PASSWORD
+  environment:
+    DOMAIN_DEV: ${DOMAIN_DEV}
+    ENVIRONMENT: ${ENVIRONMENT}
+    MINIO_USERNAME_FILE: /run/secrets/PLATFORM_USERNAME
+    MINIO_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
   healthcheck:
     test: ["CMD", "mc", "ready", "local"]
-    interval: 5s
-    timeout: 5s
+    interval: 30s
+    timeout: 10s
     retries: 5
+    start_period: 120s
+  deploy:
+    mode: replicated
+    replicas: 1
+    placement:
+      constraints:
+        - node.role==${DOCKER_WORKER}
+        - node.labels.role==infra
+      preferences:
+        - spread: node.id
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+    update_config:
+      parallelism: 1
+      delay: 15s
+      failure_action: rollback
+      monitor: 30s
+      order: start-first
+    rollback_config:
+      parallelism: 1
+      delay: 10s
+      failure_action: continue
+      monitor: 30s
 
 # starts 4 docker containers running minio server instances.
 # using nginx reverse proxy, load balancing, you can access
 # it through port 9000.
 services:
-  minio1:
-    image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
-    command: server --console-address ":9001" http://minio{1...4}/data{1...2}
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    hostname: minio1
+  minio-1:
+    <<: *minio-common
+    hostname: minio-1
     volumes:
-      - ${APP_PATH}/minio/data11:/data1
-      - ${APP_PATH}/minio/data12:/data2
+      - ${APP_PATH}/minio/data-1-1:/data1
+      - ${APP_PATH}/minio/data-1-2:/data2
 
-  minio2:
-    image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
-    command: server --console-address ":9001" http://minio{1...4}/data{1...2}
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    hostname: minio2
+  minio-2:
+    <<: *minio-common
+    hostname: minio-2
     volumes:
-      - ${APP_PATH}/minio/data21:/data1
-      - ${APP_PATH}/minio/data22:/data2
+      - ${APP_PATH}/minio/data-2-1:/data1
+      - ${APP_PATH}/minio/data-2-2:/data2
 
-  minio3:
-    image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
-    command: server --console-address ":9001" http://minio{1...4}/data{1...2}
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    hostname: minio3
+  minio-3:
+    <<: *minio-common
+    hostname: minio-3
     volumes:
-      - ${APP_PATH}/minio/data31:/data1
-      - ${APP_PATH}/minio/data32:/data2
+      - ${APP_PATH}/minio/data-3-1:/data1
+      - ${APP_PATH}/minio/data-3-2:/data2
 
-  minio4:
-    image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
-    command: server --console-address ":9001" http://minio{1...4}/data{1...2}
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    hostname: minio4
+  minio-4:
+    <<: *minio-common
+    hostname: minio-4
     volumes:
-      - ${APP_PATH}/minio/data41:/data1
-      - ${APP_PATH}/minio/data42:/data2
+      - ${APP_PATH}/minio/data-4-1:/data1
+      - ${APP_PATH}/minio/data-4-2:/data2
 
   nginx:
     image: nginx:1.19.2-alpine
-    hostname: nginx
+    hostname: minio
+    expose:
+      - "9000"
+      - "9001"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    depends_on:
-      - minio1
-      - minio2
-      - minio3
-      - minio4
+      - ${APP_PATH}/minio/conf/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - lan-${WORKSPACE}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9000"]
+      interval: 60s
+      timeout: 15s
+      retries: 5
+      start_period: 120s
+    labels:
+      - traefik.enable=true
+      # MinIO UI Service
+      - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
+      - traefik.http.services.minio-ui.loadbalancer.server.port=9001
+      - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
+      - traefik.http.routers.minio-ui.entrypoints=websecure
+      - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_RESOLVER}
+      - traefik.http.routers.minio-ui.service=minio-ui
+      - traefik.http.routers.minio-ui.middlewares=${TRAEFIK_MIDDLEWARES}
+      # MinIO Data Service
+      - traefik.http.services.minio-data.loadbalancer.server.scheme=http
+      - traefik.http.services.minio-data.loadbalancer.server.port=9000
+      - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
+      - traefik.http.routers.minio-data.entrypoints=websecure
+      - traefik.http.routers.minio-data.service=minio-data
+      - traefik.http.routers.minio-data.tls.certresolver=${TRAEFIK_RESOLVER}
