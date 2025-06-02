@@ -65,6 +65,11 @@ createdockersecret() {
     docker secret rm "$name"
   fi
 
+  if [ -z "$value" ]; then
+    echo "[!] Secret value for '$name' is empty. Skipping."
+    return 0
+  fi
+
   if [ -n "$name" ]; then
     #echo "$value" | docker secret create "$name" -
     #echo has tendency to add newline at the end

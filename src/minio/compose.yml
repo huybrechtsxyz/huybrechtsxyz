@@ -100,8 +100,8 @@ services:
       placement:
         constraints:
           - node.role==${DOCKER_WORKER}
-          - node.labels.infra=true
-          - node.lables.minio=true
+          - node.labels.infra==true
+          - node.lables.minio==true
         preferences:
           - spread: node.id
       restart_policy:
