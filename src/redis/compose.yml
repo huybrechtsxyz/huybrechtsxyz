@@ -69,7 +69,7 @@ services:
       placement:
         constraints:
           - node.role==${DOCKER_WORKER}
-          - node.labels.role==infra
+          - node.labels.infra==true
         preferences:
           - spread: node.id
       restart_policy:

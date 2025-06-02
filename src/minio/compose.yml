@@ -21,7 +21,6 @@ services:
     image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
     volumes:
       - ${APP_DATA}:/data
-      - ${APP_PATH}/minio/logs:/root/.minio/logs
     networks:
       - lan-${WORKSPACE}
     secrets:
