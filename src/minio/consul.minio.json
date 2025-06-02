@@ -1,9 +1,9 @@
 {
   "services": [
     {
-      "id": "minio-data-${MINIO_INSTANCE}",
-      "name": "minio-data-${MINIO_INSTANCE}",
-      "address": "minio-${MINIO_INSTANCE}",
+      "id": "minio-data",
+      "name": "minio-data",
+      "address": "minio",
       "port": 9000,
       "meta": {
         "prometheus_path": "/minio/metrics"
@@ -12,7 +12,7 @@
         {
           "id": "minio-http-check",
           "name": "MinIO Health Check",
-          "http": "http://minio-${MINIO_INSTANCE}:9000/minio/health/live",
+          "http": "http://minio:9000/minio/health/live",
           "interval": "60s",
           "timeout": "15s"
         }
@@ -22,14 +22,14 @@
     {
       "id": "minio-ui",
       "name": "minio-ui",
-      "address": "minio-${MINIO_INSTANCE}",
+      "address": "minio",
       "port": 9001,
       "meta": {},
       "checks": [
         {
           "id": "minio-ui-http-check",
           "name": "MinIO UI Health Check",
-          "http": "http://minio-${MINIO_INSTANCE}:9001",
+          "http": "http://minio:9001",
           "interval": "60s",
           "timeout": "15s"
         }

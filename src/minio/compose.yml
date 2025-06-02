@@ -16,123 +16,98 @@ networks:
   lan-platform:
     external: true
 
-x-minio-common: &minio-common
-  image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
-  command: >
-    server --console-address ":9001"
-    http://minio-1/data1
-    http://minio-1/data2
-    http://minio-2/data1
-    http://minio-2/data2
-    http://minio-3/data1
-    http://minio-3/data2
-    http://minio-4/data1
-    http://minio-4/data2
-  expose:
-    - "9000"
-    - "9001"
-  networks:
-    - lan-${WORKSPACE}
-  secrets:
-    - PLATFORM_USERNAME
-    - PLATFORM_PASSWORD
-  environment:
-    DOMAIN_DEV: ${DOMAIN_DEV}
-    ENVIRONMENT: ${ENVIRONMENT}
-    MINIO_USERNAME_FILE: /run/secrets/PLATFORM_USERNAME
-    MINIO_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
-  healthcheck:
-    test: ["CMD", "mc", "ready", "local"]
-    interval: 30s
-    timeout: 10s
-    retries: 5
-    start_period: 120s
-  deploy:
-    mode: replicated
-    replicas: 1
-    placement:
-      constraints:
-        - node.role==${DOCKER_WORKER}
-        - node.labels.role==infra
-      preferences:
-        - spread: node.id
-    restart_policy:
-      condition: on-failure
-      delay: 5s
-    update_config:
-      parallelism: 1
-      delay: 15s
-      failure_action: rollback
-      monitor: 30s
-      order: start-first
-    rollback_config:
-      parallelism: 1
-      delay: 10s
-      failure_action: continue
-      monitor: 30s
-
-# starts 4 docker containers running minio server instances.
-# using nginx reverse proxy, load balancing, you can access
-# it through port 9000.
 services:
-  minio-1:
-    <<: *minio-common
-    hostname: minio-1
-    volumes:
-      - ${APP_PATH}/minio/data-1-1:/data1
-      - ${APP_PATH}/minio/data-1-2:/data2
-
-  minio-2:
-    <<: *minio-common
-    hostname: minio-2
-    volumes:
-      - ${APP_PATH}/minio/data-2-1:/data1
-      - ${APP_PATH}/minio/data-2-2:/data2
-
-  minio-3:
-    <<: *minio-common
-    hostname: minio-3
-    volumes:
-      - ${APP_PATH}/minio/data-3-1:/data1
-      - ${APP_PATH}/minio/data-3-2:/data2
-
-  minio-4:
-    <<: *minio-common
-    hostname: minio-4
-    volumes:
-      - ${APP_PATH}/minio/data-4-1:/data1
-      - ${APP_PATH}/minio/data-4-2:/data2
-
-  nginx:
-    image: nginx:1.19.2-alpine
-    hostname: minio
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
     expose:
       - "9000"
       - "9001"
     volumes:
-      - ${APP_PATH}/minio/conf/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${APP_DATA}:/data
+      - ${APP_PATH}/minio/logs:/root/.minio/logs
     networks:
       - lan-${WORKSPACE}
+    secrets:
+      - PLATFORM_USERNAME
+      - PLATFORM_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      MINIO_USERNAME_FILE: /run/secrets/PLATFORM_USERNAME
+      MINIO_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
+    command: server /data --console-address ":9001"
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9000"]
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
       interval: 60s
       timeout: 15s
       retries: 5
       start_period: 120s
-    labels:
-      - traefik.enable=true
-      # MinIO UI Service
-      - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
-      - traefik.http.services.minio-ui.loadbalancer.server.port=9001
-      - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
-      - traefik.http.routers.minio-ui.entrypoints=websecure
-      - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_RESOLVER}
-      - traefik.http.routers.minio-ui.service=minio-ui
-      - traefik.http.routers.minio-ui.middlewares=${TRAEFIK_MIDDLEWARES}
-      # MinIO Data Service
-      - traefik.http.services.minio-data.loadbalancer.server.scheme=http
-      - traefik.http.services.minio-data.loadbalancer.server.port=9000
-      - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
-      - traefik.http.routers.minio-data.entrypoints=websecure
-      - traefik.http.routers.minio-data.service=minio-data
-      - traefik.http.routers.minio-data.tls.certresolver=${TRAEFIK_RESOLVER}
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra==true
+          - node.labels.minio==true
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      labels:
+        - traefik.enable=true
+        # MinIO UI Service
+        - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
+        - traefik.http.services.minio-ui.loadbalancer.server.port=9001
+        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-ui.entrypoints=websecure
+        - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_TLS_DNS}
+        - traefik.http.routers.minio-ui.service=minio-ui
+        - traefik.http.routers.minio-ui.middlewares=${TRAEFIK_MIDDLEWARES}
+        # MinIO Data Service
+        - traefik.http.services.minio-data.loadbalancer.server.scheme=http
+        - traefik.http.services.minio-data.loadbalancer.server.port=9000
+        - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-data.entrypoints=websecure
+        - traefik.http.routers.minio-data.service=minio-data
+        - traefik.http.routers.minio-data.tls.certresolver=${TRAEFIK_TLS_DNS}
+
+  minio-init:
+    image: minio/mc
+    volumes:
+      - ${APP_PATH}/minio/conf/minio-init.sh:/etc/entrypoint.sh
+    networks:
+      - lan-${WORKSPACE}
+    secrets:
+      - PLATFORM_USERNAME
+      - PLATFORM_PASSWORD
+    environment:
+      MINIO_ROOT_USER_FILE: /run/secrets/PLATFORM_USERNAME
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
+    entrypoint: /bin/sh "/etc/entrypoint.sh"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra=true
+          - node.lables.minio=true
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: none # Ensure this runs only once
+      labels:
+        - traefik.enable=false
