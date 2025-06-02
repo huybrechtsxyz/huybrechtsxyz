@@ -19,9 +19,6 @@ networks:
 services:
   minio:
     image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
-    expose:
-      - "9000"
-      - "9001"
     volumes:
       - ${APP_DATA}:/data
       - ${APP_PATH}/minio/logs:/root/.minio/logs
