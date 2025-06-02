@@ -1,0 +1,118 @@
+# version: '3.9'
+
+secrets:
+  AUTHENTIK_SECRET:
+    external: true
+  PLATFORM_USERNAME:
+    external: true
+  PLATFORM_PASSWORD:
+    external: true
+
+# configs:
+# volumes:
+
+networks:
+  lan-develop:
+    external: true
+  lan-platform:
+    external: true
+
+services:
+
+  auth-server:
+    image: ghcr.io/goauthentik/server:2025.4.1
+    # ports:
+    #   - "${COMPOSE_PORT_HTTP:-9000}:9000"
+    #   - "${COMPOSE_PORT_HTTPS:-9443}:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APP_PATH}/authentik/certs:/certs
+      - ${APP_PATH}/authentik/media:/media
+      - ${APP_PATH}/authentik/tmpl:/templates
+    networks:
+      - lan-${WORKSPACE}
+    secrets:
+      - AUTHENTIK_SECRET
+      - PLATFORM_USERNAME
+      - PLATFORM_PASSWORD
+    environment:
+      AUTHENTIK_SECRET_KEY: file:///run/secrets/AUTHENTIK_SECRET
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgres
+      AUTHENTIK_POSTGRESQL__NAME: xyzdb
+      AUTHENTIK_POSTGRESQL__DEFAULT_SCHEMA: authentik
+      AUTHENTIK_POSTGRESQL__USER: file:///run/secrets/PLATFORM_USERNAME
+      AUTHENTIK_POSTGRESQL__PASSWORD: file:///run/secrets/PLATFORM_PASSWORD
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==manager
+          - node.labels.manager==true
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      labels:
+        - traefik.enable=true
+        - traefik.http.services.authentik.loadbalancer.server.scheme=http
+        - traefik.http.services.authentik.loadbalancer.server.port=9000
+        - traefik.http.routers.authentik.rule=Host(`auth.${DOMAIN_DEV}`)
+        - traefik.http.routers.authentik.entrypoints=websecure
+        - traefik.http.routers.authentik.tls.certresolver=${TRAEFIK_TLS_HTTP}
+        - traefik.http.routers.authentik.middlewares=${TRAEFIK_MIDDLEWARES}
+
+  auth-worker:
+    image: ghcr.io/goauthentik/server:2025.4.1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APP_PATH}/authentik/certs:/certs
+      - ${APP_PATH}/authentik/media:/media
+      - ${APP_PATH}/authentik/tmpl:/templates
+    networks:
+      - lan-${WORKSPACE}
+    secrets:
+      - AUTHENTIK_SECRET
+      - PLATFORM_USERNAME
+      - PLATFORM_PASSWORD
+    environment:
+      AUTHENTIK_SECRET_KEY: file:///run/secrets/AUTHENTIK_SECRET
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgres
+      AUTHENTIK_POSTGRESQL__NAME: xyzdb
+      AUTHENTIK_POSTGRESQL__DEFAULT_SCHEMA: authentik
+      AUTHENTIK_POSTGRESQL__USER: file:///run/secrets/PLATFORM_USERNAME
+      AUTHENTIK_POSTGRESQL__PASSWORD: file:///run/secrets/PLATFORM_PASSWORD
+    command: worker
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra==true
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      labels:
+        - traefik.enable=false

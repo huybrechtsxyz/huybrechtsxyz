@@ -366,6 +366,7 @@ jobs:
         with:
           access_token: ${{ secrets.BITWARDEN_TOKEN }}
           secrets: |
+            2133dcd5-ecc1-4481-aa21-b2f0015d1d74 > AUTHENTIK_SECRET
             357068b9-9f5f-4f79-940c-b2c8016cb88f > KAMATERA_API_KEY
             6c9295a8-9fa4-4d38-8929-b2c8016d9b43 > KAMATERA_API_SECRET
             6cc5b975-56a9-4d7a-80c7-b2c90151cce0 > KAMATERA_PUBLIC_KEY
@@ -430,6 +431,7 @@ jobs:
           # EOF
           {
             printf "APP_ROOT_PASSWORD=%s\n" "$APP_ROOT_PASSWORD"
+            printf "AUTHENTIK_SECRET=%s\n" "$AUTHENTIK_SECRET"
             printf "VERSIO_USERNAME=%s\n" "$VERSIO_USERNAME"
             printf "VERSIO_PASSWORD=%s\n" "$VERSIO_PASSWORD"
             printf "TRAEFIK_CLIENTID=%s\n" "$TRAEFIK_CLIENTID"

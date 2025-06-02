@@ -1,0 +1,20 @@
+{
+  "services": [
+    {
+      "id": "authentik-server",
+      "name": "authentik-server",
+      "address": "auth-server",
+      "port": 9000,
+      "checks": [
+        {
+          "id": "authentik-server-http-check",
+          "name": "Authentik Server TCP Health Check",
+          "http": "http://auth-server:9000/",
+          "interval": "60s",
+          "timeout": "15s"
+        }
+      ],
+      "tags":[ "redis","caching","docker-swarm","system" ]
+    }
+  ]
+}

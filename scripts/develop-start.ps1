@@ -141,6 +141,11 @@ Write-Host 'Configuring REDIS ... for DOCKER'
 Move-Item -Path "$AppPath/redis/conf/consul.redis.json" -Destination "$AppPath/consul/etc" -Force
 Write-Host 'Configuring REDIS ... Done'
 
+# Configure and run AUTHENTIK
+Write-Host 'Configuring AUTHENTIK ... for DOCKER'
+Move-Item -Path "$AppPath/authentik/conf/consul.authentik.json" -Destination "$AppPath/consul/etc" -Force
+Write-Host 'Configuring AUTHENTIK ... Done'
+
 # Configure and run KEYCLOAK
 # Write-Host 'Configuring KEYCLOAK ... for DOCKER'
 # if (Test-Path -Path "$AppPath/keycloak/conf/keycloak-realm.template.json") {
