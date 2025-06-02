@@ -1,0 +1,36 @@
+{
+  "services": [
+    {
+      "id": "redis",
+      "name": "redis",
+      "address": "redis",
+      "port": 6379,
+      "checks": [
+        {
+          "id": "redis-tcp-check",
+          "name": "Redis TCP Health Check",
+          "tcp": "redis:6379",
+          "interval": "60s",
+          "timeout": "15s"
+        }
+      ],
+      "tags":[ "redis","caching","docker-swarm","system" ]
+    },
+    {
+      "id": "redisinsight",
+      "name": "redisinsight",
+      "address": "redisinsight",
+      "port": 5540,
+      "checks": [
+        {
+          "id": "redisinsight-http-check",
+          "name": "Redis Insight HTTP Health Check",
+          "http": "http://redisinsight:5540/api/health/",
+          "interval": "60s",
+          "timeout": "15s"
+        }
+      ],
+      "tags":[ "redis", "admin", "caching","docker-swarm","system" ]
+    }
+  ]
+}

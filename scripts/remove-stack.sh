@@ -1,10 +1,10 @@
 #!/bin/bash
 
-log INFO "[*] Stopping services..."
-
-source /opt/app/.env
 source /opt/app/functions.sh
 
+log INFO "[*] Stopping services..."
+
+APP_PATH="/opt/app"
 parse_options "$@"
 
 cd "$APP_PATH" || exit 1
@@ -21,7 +21,7 @@ for dir in "$APP_PATH"/*/; do
   META_SERVICE=$(jq -r .service "$METADATA_FILE")
 
   if [[ -n "$GROUP" && "$GROUP" != "$META_GROUP" ]]; then
-    log INFO "[!] Skipping $META_SERVICE (group mismatch: $META_GROUP)"
+    log INFO "[-] Skipping $META_SERVICE (group mismatch: $META_GROUP)"
     continue
   fi
 
@@ -34,7 +34,7 @@ for dir in "$APP_PATH"/*/; do
       fi
     done
     if [[ "$MATCHED" == false ]]; then
-      log INFO "[!] Skipping $META_SERVICE (not in selected service list)"
+      log INFO "[-] Skipping $META_SERVICE (not in selected service list)"
       continue
     fi
   fi

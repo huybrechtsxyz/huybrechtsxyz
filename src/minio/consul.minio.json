@@ -3,7 +3,7 @@
     {
       "id": "minio-data",
       "name": "minio-data",
-      "address": "minio-data",
+      "address": "minio",
       "port": 9000,
       "meta": {
         "prometheus_path": "/minio/metrics"
@@ -13,8 +13,8 @@
           "id": "minio-http-check",
           "name": "MinIO Health Check",
           "http": "http://minio:9000/minio/health/live",
-          "interval": "30s",
-          "timeout": "5s"
+          "interval": "60s",
+          "timeout": "15s"
         }
       ],
       "tags": [ "minio","storage","object-store","data","docker-swarm","system" ]
@@ -22,16 +22,16 @@
     {
       "id": "minio-ui",
       "name": "minio-ui",
-      "address": "minio-ui",
+      "address": "minio",
       "port": 9001,
       "meta": {},
       "checks": [
         {
           "id": "minio-ui-http-check",
           "name": "MinIO UI Health Check",
-          "http": "http://minio:9000/minio/health/live",
-          "interval": "30s",
-          "timeout": "5s"
+          "http": "http://minio:9001",
+          "interval": "60s",
+          "timeout": "15s"
         }
       ],
       "tags": [ "minio","storage","object-store","data","docker-swarm","system" ]

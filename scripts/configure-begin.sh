@@ -65,8 +65,15 @@ createdockersecret() {
     docker secret rm "$name"
   fi
 
+  if [ -z "$value" ]; then
+    echo "[!] Secret value for '$name' is empty. Skipping."
+    return 0
+  fi
+
   if [ -n "$name" ]; then
-    echo "$value" | docker secret create "$name" -
+    #echo "$value" | docker secret create "$name" -
+    #echo has tendency to add newline at the end
+    printf "%s" "$value" | docker secret create "$name" -
     echo "[*] Secret '$name' created."
   else
     echo "[!] Secret name is not defined for $label."
@@ -113,8 +120,8 @@ createnodelabels() {
     for node in $(docker node ls --format '{{.Hostname}}'); do
       # Extract the role from each node's hostname
       role=$(echo "$node" | cut -d'-' -f3)
-      echo "    - Setting role=$role on $node"
-      docker node update --label-add role=$role "$node"
+      echo "    - Setting $role=true on $node"
+      docker node update --label-add $role=true "$node"
     done
   fi
 }

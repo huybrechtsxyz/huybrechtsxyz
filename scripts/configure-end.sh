@@ -13,5 +13,5 @@ cp -f /tmp/variables.env /opt/app/.env
 # chown -R 755 /opt/app
 
 # Remove temporary files
-rm -f /tmp/variables.env
-rm -f /tmp/secrets.env
+#rm -f /tmp/variables.env
+#rm -f /tmp/secrets.env

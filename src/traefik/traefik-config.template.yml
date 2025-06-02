@@ -3,7 +3,7 @@ providers:
   swarm:
     exposedByDefault: false
 
-# ENTRYPOINT
+## ENTRYPOINT
 entryPoints:
   web:
     address: ":80"
@@ -21,21 +21,21 @@ entryPoints:
 
 ## HTTPS & TLS
 certificatesResolvers:
-  testHttpResolver:
-    acme:
-      caserver: https://acme-staging-v02.api.letsencrypt.org/directory
-      email: webmaster@huybrechts.xyz
-      storage: "/app/data/acme-http-test.json"
-      httpChallenge:
-        entryPoint: "web"
-  testVersioResolver:
-    acme:
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-      email: webmaster@huybrechts.xyz
-      storage: "/app/data/acme-versio-test.json"
-      dnsChallenge:
-        provider: versio
-        delayBeforeCheck: 0
+  # testHttpResolver:
+  #   acme:
+  #     caserver: https://acme-staging-v02.api.letsencrypt.org/directory
+  #     email: webmaster@huybrechts.xyz
+  #     storage: "/app/data/acme-http-test.json"
+  #     httpChallenge:
+  #       entryPoint: "web"
+  # testVersioResolver:
+  #   acme:
+  #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+  #     email: webmaster@huybrechts.xyz
+  #     storage: "/app/data/acme-versio-test.json"
+  #     dnsChallenge:
+  #       provider: versio
+  #       delayBeforeCheck: 0
   httpResolver:
     acme:
       caserver: https://acme-v02.api.letsencrypt.org/directory
@@ -43,12 +43,12 @@ certificatesResolvers:
       storage: "/app/data/acme-http.json"
       httpChallenge:
         entryPoint: "web"
-  tlsResolver:
-    acme:
-      caServer: https://acme-v02.api.letsencrypt.org/directory
-      email: webmaster@huybrechts.xyz
-      storage: "/app/data/acme-tls.json"
-      tlsChallenge: true
+  # tlsResolver:
+  #   acme:
+  #     caServer: https://acme-v02.api.letsencrypt.org/directory
+  #     email: webmaster@huybrechts.xyz
+  #     storage: "/app/data/acme-tls.json"
+  #     tlsChallenge: true
   versioResolver:
     acme:
       caServer: https://acme-v02.api.letsencrypt.org/directory
@@ -56,15 +56,15 @@ certificatesResolvers:
       storage: "/app/data/acme-versio.json"
       dnsChallenge:
         provider: versio
-        delayBeforeCheck: 0
+        delayBeforeCheck: 60
 
 ## Traefik Plugins
-experimental:
-  #otlpLogs: true
-  plugins:
-    keycloakopenid:
-      moduleName: "github.com/Gwojda/keycloakopenid"
-      version: "v0.1.35"
+# experimental:
+#   #otlpLogs: true
+#   plugins:
+#     keycloakopenid:
+#       moduleName: "github.com/Gwojda/keycloakopenid"
+#       version: "v0.1.35"
 
 ## OPERATIONAL
 api:
@@ -93,22 +93,22 @@ accessLog:
   format: json
   bufferingSize: 100
 
-metrics:
-  prometheus:
-    buckets:
-      - 0.1
-      - 0.3
-      - 1.2
-      - 5.0
-    addEntryPointsLabels: true
-    addRoutersLabels: true
-    addServicesLabels: true
+# metrics:
+#   prometheus:
+#     buckets:
+#       - 0.1
+#       - 0.3
+#       - 1.2
+#       - 5.0
+#     addEntryPointsLabels: true
+#     addRoutersLabels: true
+#     addServicesLabels: true
 
-tracing:
-  addInternals: true
-  serviceName: traefik
-  sampleRate: 0.2
-  otlp:
-    grpc:
-      endpoint: telemetry:4317
-      insecure: true
+# tracing:
+#   addInternals: true
+#   serviceName: traefik
+#   sampleRate: 0.2
+#   otlp:
+#     grpc:
+#       endpoint: telemetry:4317
+#       insecure: true

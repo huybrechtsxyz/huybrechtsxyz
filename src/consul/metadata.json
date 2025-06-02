@@ -1,9 +1,11 @@
 {
   "group": "infra",
+  "name": "cfg",
   "service": "consul",
   "description": "Service discovery and configuration management tool",
   "servicepaths": [
     { "path":"conf", "chmod": 755 },
+    { "path":"etc", "chmod": 755 },
     { "path":"data", "chmod": 777 }
   ],
   "projectname": "",

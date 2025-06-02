@@ -1,8 +1,8 @@
 {
   "group": "infra",
-  "name": "s3",
-  "service": "minio",
-  "description": "High-performance object storage for unstructured data",
+  "name": "iam",
+  "service": "keycloak",
+  "description": "Identity and access management for applications and services",
   "servicepaths": [
     { "path":"conf", "chmod": 755 }
   ],

@@ -46,10 +46,13 @@ function Enable-Docker {
     Confirm-NetworkExistsAndValid -networkName "wan-$env:WORKSPACE"
     Confirm-NetworkExistsAndValid -networkName "lan-$env:WORKSPACE"
     Confirm-NetworkExistsAndValid -networkName "lan-develop"
-    docker node update --label-add postgres=true $POSTGRES_NODE
-    docker node update --label-add role=manager
-    docker node update --label-add role=worker
-    docker node update --label-add role=infra
+    Set-DockerSecrets
+    $NODE=docker node ls --format '{{.Hostname}}'
+    docker node update --label-add manager=true $NODE
+    docker node update --label-add worker=true $NODE
+    docker node update --label-add infra=true $NODE
+    docker node update --label-add postgres=true $NODE
+    docker node update --label-add minio=true $NODE
     Write-Host "Docker configuration completed successfully."
 }
 
@@ -95,4 +98,57 @@ function Confirm-NetworkExistsAndValid([string]$networkName) {
     }
 
     return $networkInfo
+}
+
+function Set-DockerSecrets {
+    if (-not (Test-Path -Path $SecretsPath)){
+        throw 'User secrets not found'
+    }
+
+    $Secrets = Get-Content -Path $SecretsPath | ConvertFrom-Json
+    foreach ($Key in $Secrets.PSObject.Properties.Name) {
+        $Value = $Secrets.$Key
+        Write-Host "Creating or updating secret: $Key"
+        
+        # Check if the secret exists before trying to remove it
+        if (docker secret ls --format '{{.Name}}' | Where-Object { $_ -eq $Key }) {
+            docker secret rm $Key | Out-Null
+            Write-Host "Removed secret: $Key"
+        } else {
+            Write-Host "Secret $Key does not exist. Skipping removal."
+        }
+
+        # Create the Docker secret
+        $TempSecretFile = [System.IO.Path]::GetTempFileName()
+        Set-Content -Path $TempSecretFile -Value $Value -NoNewLine
+        $WrittenValue = Get-Content -Path $TempSecretFile -Raw
+        if ($WrittenValue -ne $Value) {
+            throw "The written secret value for '$Key' does not match the original."
+        }
+        docker secret create $Key $TempSecretFile
+        Remove-Item -Path $TempSecretFile
+    }
+}
+
+# FUNCTION: Apply variable template
+function Merge-Template {
+    param (
+        [Parameter(Mandatory=$true)][string]$InputFile,
+        [Parameter(Mandatory=$true)][string]$OutputFile
+    )
+
+    if (-not (Test-Path $InputFile)) {
+        throw "Input file '$InputFile' not found."
+    }
+
+    $content = Get-Content -Path $InputFile -Raw
+
+    $processed = [regex]::Replace($content, '\$(\w+)|\$\{(\w+)\}', {
+        param($match)
+        $varName = if ($match.Groups[1].Success) { $match.Groups[1].Value } else { $match.Groups[2].Value }
+        $value = [System.Environment]::GetEnvironmentVariable($varName)
+        return $value
+    })
+
+    Set-Content -Path $OutputFile -Value $processed
 }

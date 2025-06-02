@@ -11,8 +11,8 @@
           "id": "postgres-tcp-check",
           "name": "PostgreSql TCP Health Check",
           "tcp": "postgres:5432",
-          "interval": "10s",
-          "timeout": "1s"
+          "interval": "60s",
+          "timeout": "15s"
         }
       ],
       "tags": [ "postgres","storage","data-store","data","docker-swarm","system" ]
@@ -28,8 +28,8 @@
           "id": "pgadmin-http-check",
           "name": "PGAdmin HTTP Health Check",
           "http": "http://pgadmin:9080/pgadmin",
-          "interval": "10s",
-          "timeout": "1s"
+          "interval": "60s",
+          "timeout": "15s"
         }
       ],
       "tags": [ "pgadmin","admin","data","docker-swarm","system" ]

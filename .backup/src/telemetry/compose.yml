@@ -56,7 +56,7 @@ services:
         - traefik.http.services.telemetry.loadbalancer.server.port=3000
         - traefik.http.routers.telemetry.rule=Host(`logs.${DOMAIN_DEV}`)
         - traefik.http.routers.telemetry.entrypoints=websecure
-        - traefik.http.routers.telemetry.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.telemetry.tls.certresolver=${TRAEFIK_TLS_DNS}
         - traefik.http.routers.telemetry.middlewares=${TRAEFIK_MIDDLEWARES}
 
   promtail:

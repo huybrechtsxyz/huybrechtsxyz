@@ -1,13 +1,13 @@
 {
   "group": "infra",
-  "name": "sql",
-  "service": "postgres",
-  "description": "PostgreSQL database service for data storage and retrieval",
+  "name": "authentik",
+  "service": "authentik",
+  "description": "Authentik is an self-hosted, open source identity provider.",
   "servicepaths": [
     { "path":"conf", "chmod": 755 },
-    { "path":"data", "chmod": 777 },
-    { "path":"admin", "chmod": 777 },
-    { "path":"backups", "chmod": 777 }
+    { "path":"certs", "chmod": 777 },
+    { "path":"media", "chmod": 777 },
+    { "path":"tmpl", "chmod": 777 }
   ],
   "projectname": "",
   "projectfile": "",

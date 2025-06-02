@@ -1,9 +1,11 @@
 {
   "group": "infra",
-  "service": "keycloak",
-  "description": "Identity and access management for applications and services",
+  "service": "bitWarden",
+  "description": "BitWarden password manager",
   "servicepaths": [
-    { "path":"conf", "chmod": 755 }
+    { "path":"conf", "chmod": 755 },
+    { "path":"data", "chmod": 777 },
+    { "path":"logs", "chmod": 777 }
   ],
   "projectname": "",
   "projectfile": "",

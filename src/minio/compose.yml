@@ -1,5 +1,6 @@
 # version: '3.9'
-
+# image with sso: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
+# based on: https://github.com/minio/minio/blob/master/docs/orchestration/docker-compose/docker-compose.yaml
 secrets:
   PLATFORM_USERNAME:
     external: true
@@ -10,16 +11,16 @@ secrets:
 # volumes:
 
 networks:
+  lan-develop:
+    external: true
   lan-platform:
     external: true
 
 services:
-
   minio:
-    image: minio/minio
+    image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
     volumes:
       - ${APP_DATA}:/data
-      - ${APP_PATH}/minio/logs:/root/.minio/logs
     networks:
       - lan-${WORKSPACE}
     secrets:
@@ -28,14 +29,13 @@ services:
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
-      MINIO_ROOT_USER: /run/secrets/PLATFORM_USERNAME
-      MINIO_ROOT_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
-      MINIO_PROMETHEUS_AUTH_TYPE: public
+      MINIO_USERNAME_FILE: /run/secrets/PLATFORM_USERNAME
+      MINIO_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
     command: server /data --console-address ":9001"
     healthcheck:
       test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
-      interval: 30s
-      timeout: 10s
+      interval: 60s
+      timeout: 15s
       retries: 5
       start_period: 120s
     deploy:
@@ -44,14 +44,13 @@ services:
       placement:
         constraints:
           - node.role==${DOCKER_WORKER}
-          - node.labels.role==infra
+          - node.labels.infra==true
+          - node.labels.minio==true
         preferences:
           - spread: node.id
       restart_policy:
         condition: on-failure
         delay: 5s
-        max_attempts: 3
-        window: 120s
       update_config:
         parallelism: 1
         delay: 15s
@@ -70,7 +69,7 @@ services:
         - traefik.http.services.minio-ui.loadbalancer.server.port=9001
         - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
         - traefik.http.routers.minio-ui.entrypoints=websecure
-        - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_TLS_DNS}
         - traefik.http.routers.minio-ui.service=minio-ui
         - traefik.http.routers.minio-ui.middlewares=${TRAEFIK_MIDDLEWARES}
         # MinIO Data Service
@@ -79,7 +78,7 @@ services:
         - traefik.http.routers.minio-data.rule=HostRegexp(`{bucket:[a-zA-Z0-9-]+}.s3.${DOMAIN_DEV}`)
         - traefik.http.routers.minio-data.entrypoints=websecure
         - traefik.http.routers.minio-data.service=minio-data
-        - traefik.http.routers.minio-data.tls.certresolver=${TRAEFIK_RESOLVER}
+        - traefik.http.routers.minio-data.tls.certresolver=${TRAEFIK_TLS_DNS}
 
   minio-init:
     image: minio/mc
@@ -100,7 +99,8 @@ services:
       placement:
         constraints:
           - node.role==${DOCKER_WORKER}
-          - node.labels.role==infra
+          - node.labels.infra==true
+          - node.lables.minio==true
         preferences:
           - spread: node.id
       restart_policy:

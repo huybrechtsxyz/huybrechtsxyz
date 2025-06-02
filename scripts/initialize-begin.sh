@@ -52,6 +52,9 @@ configure_firewall() {
     ufw allow out 80/tcp comment 'HTTP'
     ufw allow out 443/tcp comment 'HTTPS'
 
+    # SSH Outbound to internal nodes
+    ufw allow out proto tcp to 10.0.0.0/23 port 22 comment 'SSH Outbound to internal nodes'
+
     # Docker Swarm management traffic (TCP) over VLAN
     ufw allow proto tcp from 10.0.0.0/23 to any port 2377 comment 'Swarm Control IN'
     ufw allow out proto tcp to 10.0.0.0/23 port 2377 comment 'Swarm Control OUT'

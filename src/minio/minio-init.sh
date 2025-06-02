@@ -20,7 +20,7 @@ create_bucket_if_not_exists() {
 
 # Function to check if MinIO is available on port 9000
 check_minio_available() {
-  (echo > /dev/tcp/minio/9000) > /dev/null 2>&1
+  (echo > /dev/tcp/minio-1/9000) > /dev/null 2>&1
   return $?
 }
 
@@ -45,7 +45,7 @@ export MINIO_ROOT_USER=$(cat $MINIO_ROOT_USER_FILE)
 export MINIO_ROOT_PASSWORD=$(cat $MINIO_ROOT_PASSWORD_FILE)
 
 # Wait for MinIO to be ready, with a timeout of 60 seconds (adjustable)
-mc alias set myminio http://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
+mc alias set myminio http://minio-1:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
 
 # Create and configure buckets for telemetry
 #create_bucket_if_not_exists otel-metrics
