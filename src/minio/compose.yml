@@ -29,8 +29,8 @@ services:
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
-      MINIO_USERNAME_FILE: /run/secrets/PLATFORM_USERNAME
-      MINIO_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
+      MINIO_ROOT_USER_FILE: /run/secrets/PLATFORM_USERNAME
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
     command: server /data --console-address ":9001"
     healthcheck:
       test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
