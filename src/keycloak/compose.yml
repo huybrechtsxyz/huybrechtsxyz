@@ -10,6 +10,8 @@ secrets:
 # volumes:
 
 networks:
+  lan-develop:
+    external: true
   lan-platform:
     external: true
 
@@ -19,7 +21,6 @@ services:
     image: quay.io/keycloak/keycloak:26.0
     volumes:
       - ${APP_PATH}/keycloak/conf/keycloak-entry.sh:/usr/local/bin/entrypoint.sh
-      - ${APP_PATH}/keycloak/conf/keycloak-realm.json:/tmp/custom-realm.json
     networks:
       - lan-${WORKSPACE}
     secrets:
@@ -33,7 +34,7 @@ services:
       #KC_LOG_FILE: /home/keycloak.log
       KC_HTTP_ENABLED: "true"
       KC_HTTPS_ENABLED: "false"
-      KC_HOSTNAME: https://iam.${DOMAIN_DEV}
+      KC_HOSTNAME: https://auth.${DOMAIN_DEV}
       KC_HOSTNAME_STRICT: "false"
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
@@ -45,7 +46,7 @@ services:
       KC_TRACING_ENDPOINT: http://telemetry:4317
       KC_DB: postgres
       KC_DB_URL_HOST: postgres
-      KC_DB_URL_DATABASE: xyzdb
+      KC_DB_URL_DATABASE: ${PLATFORM_SQL_NAME}
       KC_DB_SCHEMA: keycloak
       KC_DB_USERNAME_FILE: /run/secrets/PLATFORM_USERNAME
       KC_DB_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
@@ -64,14 +65,12 @@ services:
       placement:
         constraints:
           - node.role==${DOCKER_WORKER}
-          - node.labels.role==infra
+          - node.labels.infra=true
         preferences:
           - spread: node.id
       restart_policy:
         condition: on-failure
         delay: 10s
-        # max_attempts: 5
-        # window: 60s
       update_config:
         parallelism: 1
         delay: 15s
@@ -87,7 +86,7 @@ services:
         - traefik.enable=true
         - traefik.http.services.keycloak.loadbalancer.server.scheme=http
         - traefik.http.services.keycloak.loadbalancer.server.port=8080
-        - traefik.http.routers.keycloak.rule=Host(`iam.${DOMAIN_DEV}`)
+        - traefik.http.routers.keycloak.rule=Host(`auth.${DOMAIN_DEV}`)
         - traefik.http.routers.keycloak.entrypoints=websecure
         - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_TLS_DNS}
         - traefik.http.routers.keycloak.middlewares=${TRAEFIK_MIDDLEWARES}
