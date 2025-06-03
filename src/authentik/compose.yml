@@ -19,11 +19,9 @@ networks:
 
 services:
 
+  # ports: HTTP:-9000 - HTTPS:-9443
   auth-server:
-    image: ghcr.io/goauthentik/server:2025.4.1
-    # ports:
-    #   - "${COMPOSE_PORT_HTTP:-9000}:9000"
-    #   - "${COMPOSE_PORT_HTTPS:-9443}:9443"
+    image: ghcr.io/goauthentik/server:2025.4.1  
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APP_PATH}/authentik/certs:/certs
@@ -39,10 +37,11 @@ services:
       AUTHENTIK_SECRET_KEY: file:///run/secrets/AUTHENTIK_SECRET
       AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgres
-      AUTHENTIK_POSTGRESQL__NAME: xyzdb
+      AUTHENTIK_POSTGRESQL__NAME: ${PLATFORM_SQL_NAME}
       AUTHENTIK_POSTGRESQL__DEFAULT_SCHEMA: authentik
       AUTHENTIK_POSTGRESQL__USER: file:///run/secrets/PLATFORM_USERNAME
       AUTHENTIK_POSTGRESQL__PASSWORD: file:///run/secrets/PLATFORM_PASSWORD
+    command: server
     deploy:
       replicas: 1
       placement:
@@ -89,7 +88,7 @@ services:
       AUTHENTIK_SECRET_KEY: file:///run/secrets/AUTHENTIK_SECRET
       AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgres
-      AUTHENTIK_POSTGRESQL__NAME: xyzdb
+      AUTHENTIK_POSTGRESQL__NAME: ${PLATFORM_SQL_NAME}
       AUTHENTIK_POSTGRESQL__DEFAULT_SCHEMA: authentik
       AUTHENTIK_POSTGRESQL__USER: file:///run/secrets/PLATFORM_USERNAME
       AUTHENTIK_POSTGRESQL__PASSWORD: file:///run/secrets/PLATFORM_PASSWORD

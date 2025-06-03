@@ -20,7 +20,7 @@ services:
   minio:
     image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
     volumes:
-      - ${APP_DATA}:/data
+      - ${APP_PATH_DATA}:/data
     networks:
       - lan-${WORKSPACE}
     secrets:
