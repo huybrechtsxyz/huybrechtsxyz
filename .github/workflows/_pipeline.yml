@@ -134,6 +134,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [terraform]
     environment: ${{ inputs.environment }}
+    if: always()
     outputs:
       matrix: ${{ steps.parse.outputs.matrix }}
     steps:
