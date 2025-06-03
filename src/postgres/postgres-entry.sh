@@ -10,8 +10,8 @@ set -e
 # fi
 POSTGRES_USER="root"
 
-if [ -f "/run/secrets/APP_ROOT_PASSWORD" ]; then
-  POSTGRES_PASSWORD=$(cat /run/secrets/APP_ROOT_PASSWORD)
+if [ -f "/run/secrets/PLATFORM_PASSWORD" ]; then
+  POSTGRES_PASSWORD=$(cat /run/secrets/PLATFORM_PASSWORD)
 else
   echo "Error: POSTGRES_PASSWORD secret file not found!" >&2
   exit 1

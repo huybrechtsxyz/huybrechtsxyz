@@ -21,7 +21,7 @@ services:
 
   # ports: HTTP:-9000 - HTTPS:-9443
   auth-server:
-    image: ghcr.io/goauthentik/server:2025.4.1  
+    image: ghcr.io/goauthentik/server:2024.8.2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APP_PATH}/authentik/certs:/certs
@@ -72,7 +72,7 @@ services:
         - traefik.http.routers.authentik.middlewares=${TRAEFIK_MIDDLEWARES}
 
   auth-worker:
-    image: ghcr.io/goauthentik/server:2025.4.1
+    image: ghcr.io/goauthentik/server:2024.8.2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APP_PATH}/authentik/certs:/certs
