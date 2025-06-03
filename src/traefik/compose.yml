@@ -83,7 +83,7 @@ services:
         # Traefik dashboard
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
-        - traefik.http.routers.traefik.rule=Host(`proxy.${DOMAIN_DEV}`)
+        - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_DEV}`)
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_TLS_HTTP}

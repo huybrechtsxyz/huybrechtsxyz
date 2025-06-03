@@ -141,9 +141,12 @@ services:
         monitor: 30s
       labels:
         - traefik.enable=true
+        - traefik.http.middlewares.pgadmin-redirect.redirectregex.regex=^https?://pgadmin\\.domain\\.dev/?$
+        - traefik.http.middlewares.pgadmin-redirect.redirectregex.replacement=https://pgadmin.domain.dev/pgadmin
+        - traefik.http.middlewares.pgadmin-redirect.redirectregex.permanent=true
         - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
         - traefik.http.services.pgadmin.loadbalancer.server.port=9080
-        - traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
+        - traefik.http.routers.pgadmin.rule=Host(`pgadmin.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
         - traefik.http.routers.pgadmin.entrypoints=websecure
         - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_TLS_DNS}
-        - traefik.http.routers.pgadmin.middlewares=${TRAEFIK_MIDDLEWARES}
+        - traefik.http.routers.pgadmin.middlewares=pgadmin-redirect,${TRAEFIK_MIDDLEWARES}

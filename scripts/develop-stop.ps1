@@ -31,4 +31,5 @@ Get-ChildItem "$AppPath" -Directory | ForEach-Object {
     docker stack rm $ServiceName
 }
 
+Stop-Process -Name 'msedge' -ErrorAction Ignore
 Write-Host "[*] Stopping DEVELOPMENT environment...DONE"

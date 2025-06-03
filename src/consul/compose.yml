@@ -67,7 +67,7 @@ services:
         - traefik.enable=true
         - traefik.http.services.consul.loadbalancer.server.scheme=http
         - traefik.http.services.consul.loadbalancer.server.port=8500
-        - traefik.http.routers.consul.rule=Host(`cfg.${DOMAIN_DEV}`)
+        - traefik.http.routers.consul.rule=Host(`consul.${DOMAIN_DEV}`)
         - traefik.http.routers.consul.entrypoints=websecure
         - traefik.http.routers.consul.tls.certresolver=${TRAEFIK_TLS_HTTP}
         - traefik.http.routers.consul.middlewares=${TRAEFIK_MIDDLEWARES}

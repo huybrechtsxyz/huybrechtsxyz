@@ -187,11 +187,11 @@ Get-ChildItem "$AppPath" -Directory | ForEach-Object {
 
 # DEBUG AND TEST
 Start-Process -FilePath "msedge.exe" `
-    "http://proxy.$env:DOMAIN_DEV/dashboard/",
-    "http://cfg.$env:DOMAIN_DEV/",
-    "http://s3.$env:DOMAIN_DEV",
-    "http://db.$env:DOMAIN_DEV/pgadmin",
+    "http://traefik.$env:DOMAIN_DEV/dashboard/",
+    "http://consul.$env:DOMAIN_DEV/",
+    "http://pgadmin.$env:DOMAIN_DEV/",
     "http://redis.$env:DOMAIN_DEV",
+    "http://minio.$env:DOMAIN_DEV",
     "--inprivate",
     "--ignore-certificate-errors",
     "--ignore-urlfetcher-cert-requests",
