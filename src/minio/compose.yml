@@ -67,7 +67,7 @@ services:
         # MinIO UI Service
         - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
         - traefik.http.services.minio-ui.loadbalancer.server.port=9001
-        - traefik.http.routers.minio-ui.rule=Host(`minio.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
         - traefik.http.routers.minio-ui.entrypoints=websecure
         - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_TLS_DNS}
         - traefik.http.routers.minio-ui.service=minio-ui
