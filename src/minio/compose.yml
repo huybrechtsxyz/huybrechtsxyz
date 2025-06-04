@@ -31,6 +31,8 @@ services:
       ENVIRONMENT: ${ENVIRONMENT}
       MINIO_ROOT_USER_FILE: /run/secrets/PLATFORM_USERNAME
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
+      MINIO_BROWSER_REDIRECT_URL: https://minio.${DOMAIN_DEV}
+      MINIO_SERVER_URL: https://s3.${DOMAIN_DEV}
     command: server /data --console-address ":9001"
     healthcheck:
       test: ["CMD", "curl", "--silent", "--fail", "http://localhost:9000/minio/health/live"]
@@ -67,7 +69,7 @@ services:
         # MinIO UI Service
         - traefik.http.services.minio-ui.loadbalancer.server.scheme=http
         - traefik.http.services.minio-ui.loadbalancer.server.port=9001
-        - traefik.http.routers.minio-ui.rule=Host(`s3.${DOMAIN_DEV}`)
+        - traefik.http.routers.minio-ui.rule=Host(`minio.${DOMAIN_DEV}`)
         - traefik.http.routers.minio-ui.entrypoints=websecure
         - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_TLS_DNS}
         - traefik.http.routers.minio-ui.service=minio-ui
