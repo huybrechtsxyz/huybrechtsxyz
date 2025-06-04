@@ -71,7 +71,7 @@ services:
         - traefik.http.routers.minio-ui.entrypoints=websecure
         - traefik.http.routers.minio-ui.tls.certresolver=${TRAEFIK_TLS_DNS}
         - traefik.http.routers.minio-ui.service=minio-ui
-        - traefik.http.routers.minio-ui.middlewares=${TRAEFIK_MIDDLEWARES}
+        #- traefik.http.routers.minio-ui.middlewares=${TRAEFIK_MIDDLEWARES}
         # MinIO API Service
         - traefik.http.services.minio-api.loadbalancer.server.scheme=http
         - traefik.http.services.minio-api.loadbalancer.server.port=9000
@@ -79,7 +79,7 @@ services:
         - traefik.http.routers.minio-api.entrypoints=websecure
         - traefik.http.routers.minio-api.tls.certresolver=${TRAEFIK_TLS_DNS}
         - traefik.http.routers.minio-api.service=minio-api
-        - traefik.http.routers.minio-api.middlewares=${TRAEFIK_MIDDLEWARES}
+        #- traefik.http.routers.minio-api.middlewares=${TRAEFIK_MIDDLEWARES}
         # MinIO Data Service
         - traefik.http.services.minio-data.loadbalancer.server.scheme=http
         - traefik.http.services.minio-data.loadbalancer.server.port=9000
