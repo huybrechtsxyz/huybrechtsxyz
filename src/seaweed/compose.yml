@@ -1,0 +1,160 @@
+# version: '3.9'
+
+# secrets:
+# configs:
+# volumes:
+
+networks:
+  lan-develop:
+    external: true
+  lan-platform:
+    external: true
+
+services:
+
+  # ports: 9333:9333 - 19333:19333 - 9324:9324
+  sw-master:
+    image: chrislusf/seaweedfs
+    networks:
+      - lan-${WORKSPACE}
+    command: "master -ip=sw-master -ip.bind=0.0.0.0 -metricsPort=9324"
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role==manager
+          - node.labels.manager==true
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+
+  # ports: 8080:8080 - 18080:18080 - 9325:9325
+  sw-volume:
+    image: chrislusf/seaweedfs
+    networks:
+      - lan-${WORKSPACE}
+    command: 'volume -mserver="sw-master:9333" -ip.bind=0.0.0.0 -port=8080  -metricsPort=9325'
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra==true
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+
+  # ports: 8888:8888 - 18888:18888 - 9326:9326
+  sw-filer:
+    image: chrislusf/seaweedfs
+    networks:
+      - lan-${WORKSPACE}
+    command: 'filer -master="sw-master:9333" -ip.bind=0.0.0.0 -metricsPort=9326'
+    tty: true
+    stdin_open: true
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra==true
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+
+  # ports: 8333:8333 - 9327:9327
+  sw-store:
+    image: chrislusf/seaweedfs # use a remote image
+    networks:
+      - lan-${WORKSPACE}
+    command: 's3 -filer="sw-filer:8888" -ip.bind=0.0.0.0 -metricsPort=9327'
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra==true
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+
+  # ports: 7333:7333
+  sw-webdav:
+    image: chrislusf/seaweedfs # use a remote image
+    networks:
+      - lan-${WORKSPACE}
+    command: 'webdav -filer="sw-filer:8888"'
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra==true
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+
+  # prometheus:
+  #   image: prom/prometheus:v2.21.0
+  #   ports:
+  #     - 9000:9090
+  #   volumes:
+  #     - ./prometheus:/etc/prometheus
+  #   command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+  #   depends_on:
+  #     - s3
