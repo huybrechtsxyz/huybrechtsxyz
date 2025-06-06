@@ -1,14 +1,14 @@
 {
   "service": {
-    "id": "traefik",
-    "priority": 1,
-    "groups": ["infra"],
-    "description": "Reverse proxy and load balancer for microservices",
-    "endpoint": "http://traefik.${DOMAIN_DEV}/dashboard/",
+    "id": "postgres",
+    "priority": 3,
+    "groups": ["infra","sqldb"],
+    "description": "PostgreSQL database service for data storage and retrieval",
+    "endpoint": "",
     "paths": [
       { "path":"conf", "chmod": 755 },
-      { "path":"data", "chmod": 600 },
-      { "path":"logs", "chmod": 777 }
+      { "path":"data", "chmod": 777 },
+      { "path":"backups", "chmod": 777 }
     ],
     "project": {
       "name": "",

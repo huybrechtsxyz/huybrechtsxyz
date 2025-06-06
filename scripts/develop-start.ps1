@@ -34,14 +34,14 @@ $env:HOSTNAMEID=$(hostname)
 $env:HOSTNAME=$env:COMPUTERNAME
 $env:DOCKER_MANAGERS=1
 $env:DOCKER_INFRAS=1
-Write-Host " -- HOSTNAME: $env:HOSTNAME" 
-Write-Host " -- DOCKER_PUBLIC_IP: $env:DOCKER_PUBLIC_IP" 
-Write-Host " -- DOCKER_MANGER_COUNT: $env:DOCKER_MANAGER_COUNT" 
+Write-Host "[*] ....HOSTNAME: $env:HOSTNAME" 
+Write-Host "[*] ....DOCKER_PUBLIC_IP: $env:DOCKER_PUBLIC_IP" 
+Write-Host "[*] ....DOCKER_MANGER_COUNT: $env:DOCKER_MANAGER_COUNT" 
 if (Test-Path $environmentFile) {
     Get-Content $environmentFile | ForEach-Object {
         $key, $value = $_ -split '='
         [System.Environment]::SetEnvironmentVariable($key.Trim(), $value.Trim(), [System.EnvironmentVariableTarget]::Process)
-        Write-Host " -- $key : $value" 
+        Write-Host "[*] ....$key : $value" 
     }
 }
 
@@ -56,11 +56,11 @@ if (Test-Path $SecretsPath) {
             continue
         }
         [System.Environment]::SetEnvironmentVariable($key, $value, "Process")
-        Write-Host "  - Set environment variable $key : ***"
+        Write-Host "[*] ....Set environment variable $key : ***"
     }
 }
 else {
-    Write-Host "  - Secrets file not found at $SecretsPath"
+    Write-Host "[!] ....Secrets file not found at $SecretsPath"
     return
 }
 
@@ -72,50 +72,51 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
     $ServiceName = $_.Name
     $ServicePath = $_.FullName
     $ServiceUpper = $ServiceName.ToUpper()
-    $ServiceFile = Join-Path -Path $ServicePath -ChildPath "service.json"
+    $ServiceFile = Join-Path -Path $ServicePath -ChildPath "service.$ServiceName.json"
     $ServiceData = {}
     $AppServicePath = Join-Path -Path $AppPath -ChildPath $ServiceName
 
-    Write-Host "Configuring $ServiceUpper ..."
+    Write-Host "[*] Configuring $ServiceUpper ..."
 
     if (Test-Path $ServiceFile) {
         try { 
             $ServiceData = Get-Content $ServiceFile | ConvertFrom-Json
         } catch {
-            Write-Host " - Error reading $ServiceFile" -ForegroundColor Red
+            Write-Host "[!] ....Error reading $ServiceFile" -ForegroundColor Red
             return
         }
     } else {
-        Write-Host "  - Skipping $ServiceName : No service.json found." -ForegroundColor Yellow
+        Write-Host "[!] ....Skipping $ServiceName : No service.json found." -ForegroundColor Yellow
         return
     }
 
     # Create the paths
-    if ($ServiceData.service.meta.paths) {
-        foreach ($Entry in $ServiceData.service.meta.paths) {
+    if ($ServiceData.service.paths) {
+        foreach ($Entry in $ServiceData.service.paths) {
             $TargetPath = Join-Path -Path $AppServicePath -ChildPath $Entry.path
 
             if (-Not (Test-Path $TargetPath)) {
-                Write-Host " - Creating directory: $TargetPath"
+                Write-Host "[*] ....Creating directory: $TargetPath"
                 New-Item -ItemType Directory -Path $TargetPath -Force | Out-Null
             }
 
             if($Entry.path -eq "conf") {
-                Write-Host " - Copying configuration files to $TargetPath"
-                Copy-Item -Path "$ServicePath/*" -Destination $targetPath -Recurse
+                Write-Host "[*] ....Copying configuration files to $TargetPath"
+                Copy-Item -Path "$ServicePath/*" -Destination $targetPath -Recurse -Force
             }
             
             if($Entry.path -eq "logs") {
-                Write-Host " - Clearing logs"
+                Write-Host "[*] ....Clearing logs"
                 Remove-Item -Path "$TargetPath/*" -Recurse -Force
             }
         }
     } else {
-        Write-Host "  - No servicepaths found in $ServiceData" -ForegroundColor DarkGray
+        Write-Host "[*] ....No servicepaths found in $ServiceData" -ForegroundColor DarkGray
     }
 
     # Convert Templates if needed
-    Get-ChildItem -Path $AppServicePath -Recurse -Filter "*.*.template.*" | ForEach-Object {
+    Get-ChildItem -Path "$AppServicePath/conf" -Recurse -Filter "*.template.*" | ForEach-Object {
+        Write-Host "[*] ....Merging template for $($_.FullName)"
         $TemplateFile = $_.FullName
         $OutputFile = $TemplateFile -replace '\.template\.', '.'
         if (Test-Path -Path $TemplateFile) {
@@ -124,7 +125,7 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
     }
 
     # Copy to the consul configuration directory
-    Copy-Item -Path "$AppServicePath/conf/service.json" -Destination "$AppPath/consul/etc/consul.$ServiceName.json" -Force
+    Copy-Item -Path "$AppServicePath/conf/consul.$ServiceName.json" -Destination "$AppPath/consul/etc/consul.$ServiceName.json" -Force
 
     # Execute extra development if needed
     $AppDevScript = "$AppServicePath/conf/develop.ps1"
@@ -133,29 +134,35 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
     }
 
     if ( 
-        ($ServiceData.service.meta.groups -contains $Group) -or 
-        ($Services -contains $ServiceData.id)
+        ($ServiceData.service.groups -contains $Group) -or 
+        ($Services -contains $ServiceData.id) -or
+        ($Group -eq "" -and $Services -eq @())
     ) {
-        $expanded = $ServiceData.service.meta.endpoint -replace '\$\{([a-z0-9_]+)\}', { $env[$args[0].Groups[1].Value.ToUpper()] }
+        $expanded = $ServiceData.service.endpoint
+        if ($ServiceData.service.endpoint -match '\$\{([^}]+)\}') {
+            $value = [System.Environment]::GetEnvironmentVariable($matches[1])
+            $expanded = $ServiceData.service.endpoint -replace [regex]::Escape($matches[0]), $value
+        }
         $Selection += [PSCustomObject]@{
             id       = $ServiceData.service.id
-            priority = $ServiceData.service.meta.priority
+            priority = $ServiceData.service.priority
             endpoint = $expanded
         }
+        Write-Host "[*] ....Service $ServiceName SELECTED"
     }
 
-    Write-Host "Configuring $ServiceUpper ... DONE"
+    Write-Host "[+] Configuring $ServiceUpper ... DONE"
 }
 
 $SortedServices = $Selection | Sort-Object Priority
 foreach ($service in $SortedServices) {
-    $servicePath = Join-Path -Path $AppPath -ChildPath $service.id 
-    $composeFile = "$servicePath/conf/compose.yml"
+    $ServicePath = Join-Path -Path $AppPath -ChildPath $service.id 
+    $ComposeFile = "$ServicePath/conf/compose.yml"
 
-    Write-Host "Validating Docker Compose for " + $service.id.ToUpper()
-    docker compose -f $composeFile --env-file $environmentFile config
-    Write-Host "Deploying $ServiceName stack..."
-    docker stack deploy -c $ComposeFile $ServiceName --detach=true
+    #Write-Host "[*] Validating Docker Compose for " + $service.id.ToUpper()
+    #docker compose -f $composeFile --env-file $environmentFile config
+    Write-Host "[*] Deploying $ServiceName stack..."
+    docker stack deploy -c $ComposeFile $service.id --detach=true
 }
 
 # DEBUG AND TEST
@@ -174,7 +181,7 @@ $BrowserArgs = @(
 
 # Combine URLs and browser arguments
 # Launch Microsoft Edge with the combined arguments
-$Arguments = $Urls + $BrowserArgs
+$Arguments = $Urls + $BrowserArgs | Where-Object { $_ -ne "" }
 Start-Process -FilePath "msedge.exe" -ArgumentList $Arguments
 
 Write-Host "[*] Starting DEVELOPMENT environment...DONE"

@@ -1,39 +1,23 @@
 {
   "service": {
     "id": "pgadmin",
-    "name": "pgadmin",
-    "address": "pgadmin",
-    "port": 9080,
-    "meta": {
-      "priority": 4,
-      "groups": ["infra","sqldb"],
-      "description": "PostgreSQL database administration service",
-      "endpoint": "http://pgadmin.${DOMAIN_DEV}/",
-      "paths": [
-        { "path":"conf", "chmod": 755 },
-        { "path":"data", "chmod": 777 }
-      ],
-      "project":{
-        "name": "",
-        "file": "",
-        "registry": "",
-        "imagename": "",
-        "dockerfile": "",
-        "buildconfig": "",
-        "runtime": "",
-        "runversion": ""
-      },
-      "pgadmin_path": "/pgadmin"
-    },
-    "checks": [
-      {
-        "id": "pgadmin-http-check",
-        "name": "PGAdmin HTTP Health Check",
-        "http": "http://pgadmin:9080/pgadmin",
-        "interval": "60s",
-        "timeout": "15s"
-      }
+    "priority": 4,
+    "groups": ["infra","sqldb"],
+    "description": "PostgreSQL database administration service",
+    "endpoint": "http://pgadmin.${DOMAIN_DEV}/",
+    "paths": [
+      { "path":"conf", "chmod": 755 },
+      { "path":"data", "chmod": 777 }
     ],
-    "tags": [ "pgadmin","admin","data","docker-swarm","system" ]
+    "project": {
+      "name": "",
+      "file": "",
+      "registry": "",
+      "imagename": "",
+      "dockerfile": "",
+      "buildconfig": "",
+      "runtime": "",
+      "runversion": ""
+    }
   }
 }

@@ -1,0 +1,21 @@
+{
+  "service": {
+    "id": "traefik",
+    "name": "Traefik",
+    "address": "traefik",
+    "port": 8080,
+    "meta": {
+      "traefik_path": "/ping"
+    },
+    "checks": [
+      {
+        "id": "traefik-http-check",
+        "name": "Traefik HTTP Health Check",
+        "http": "http://traefik:8080/ping",
+        "interval": "60s",
+        "timeout": "15s"
+      }
+    ],
+    "tags":[ "traefik","proxy","docker-swarm","system" ]
+  }
+}

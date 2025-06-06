@@ -1,40 +1,24 @@
 {
   "service": {
     "id": "consul",
-    "name": "consul",
-    "address": "127.0.0.1",
-    "port": 8500,
-    "meta": {
-      "priority": 2,
-      "groups": ["infra"],
-      "description": "Service discovery and configuration management tool",
-      "endpoint": "http://consul.${DOMAIN_DEV}/",
-      "paths": [
-        { "path":"conf", "chmod": 755 },
-        { "path":"etc", "chmod": 755 },
-        { "path":"data", "chmod": 777 }
-      ],
-      "project":{
-        "name": "",
-        "file": "",
-        "registry": "",
-        "imagename": "",
-        "dockerfile": "",
-        "buildconfig": "",
-        "runtime": "",
-        "runversion": ""
-      },
-      "consul_path": "/"
-    },
-    "checks": [
-      {
-        "id": "consul-http-check",
-        "name": "Consul HTTP Health Check",
-        "http": "http://localhost:8500/v1/status/leader",
-        "interval": "60s",
-        "timeout": "15s"
-      }
+    "priority": 2,
+    "groups": ["infra"],
+    "description": "Service discovery and configuration management tool",
+    "endpoint": "http://consul.${DOMAIN_DEV}/",
+    "paths": [
+      { "path":"conf", "chmod": 755 },
+      { "path":"etc", "chmod": 755 },
+      { "path":"data", "chmod": 777 }
     ],
-    "tags": ["consul", "dns", "discovery", "configuration", "docker-swarm", "system"]
+    "project": {
+      "name": "",
+      "file": "",
+      "registry": "",
+      "imagename": "",
+      "dockerfile": "",
+      "buildconfig": "",
+      "runtime": "",
+      "runversion": ""
+    }
   }
 }
