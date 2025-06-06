@@ -11,22 +11,7 @@ Write-Host "[*] Stopping DEVELOPMENT environment..."
 
 # Loop through all services
 Get-ChildItem "$AppPath" -Directory | ForEach-Object {
-    $ServicePath = $_.FullName
-    $MetadataFile = Join-Path $ServicePath "conf/metadata.json"
-    $ComposeFile = Join-Path $ServicePath "conf/compose.yml"
-
-    if (-not (Test-Path $MetadataFile) -or -not (Test-Path $ComposeFile)) {
-        return
-    }
-
-    $meta = Get-Content $MetadataFile | ConvertFrom-Json
-    $serviceName = $meta.service
-    $groupName = $meta.group
-
-    if ($Services.Count -gt 0 -and $Services -notcontains $serviceName -and $Group -ne $groupName) {
-        return
-    }
-
+    $ServiceName = $_.Name
     Write-Host "Removing $ServiceName stack..."
     docker stack rm $ServiceName
 }
