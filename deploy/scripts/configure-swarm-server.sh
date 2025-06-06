@@ -19,9 +19,9 @@ scp -o StrictHostKeyChecking=no /tmp/secrets.env root@"$REMOTE_IP":/tmp/secrets.
 echo "[+] Copying secrets to remote server...DONE"
 
 echo "[*] Copying environment files to remote server..."
-scp -o StrictHostKeyChecking=no ./src/test.env root@"$REMOTE_IP":/tmp/vars-test.env
-scp -o StrictHostKeyChecking=no ./src/staging.env root@"$REMOTE_IP":/tmp/vars-staging.env
-scp -o StrictHostKeyChecking=no ./src/production.env root@"$REMOTE_IP":/tmp/vars-production.env
+#scp -o StrictHostKeyChecking=no ./src/test.env root@"$REMOTE_IP":/tmp/vars-test.env
+#scp -o StrictHostKeyChecking=no ./src/staging.env root@"$REMOTE_IP":/tmp/vars-staging.env
+#scp -o StrictHostKeyChecking=no ./src/production.env root@"$REMOTE_IP":/tmp/vars-production.env
 scp -o StrictHostKeyChecking=no ./src/shared.env root@"$REMOTE_IP":/tmp/vars-shared.env
 scp -o StrictHostKeyChecking=no ./src/"$ENVIRONMENT".env root@"$REMOTE_IP":/tmp/variables.env
 echo "[+] Copying environment files to remote server...DONE"

@@ -16,6 +16,9 @@ on:
       rebuild:
         required: true
         type: boolean
+      appstack:
+        required: true
+        type: string
       services:
         required: true
         type: string
@@ -369,7 +372,7 @@ jobs:
       - name: Generate Matrix
         id: set-matrix
         run: |
-          chmod +x deploy/scripts/docker-generate-matrix.s
+          chmod +x deploy/scripts/docker-generate-matrix.sh
           ./deploy/scripts/docker-generate-matrix.sh "${{ inputs.services }}" "$GITHUB_OUTPUT"
 
   # Build and Push Docker Images
