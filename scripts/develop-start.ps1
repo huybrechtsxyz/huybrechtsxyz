@@ -73,7 +73,7 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
     $ServiceName = $_.Name
     $ServicePath = $_.FullName
     $ServiceUpper = $ServiceName.ToUpper()
-    $ServiceFile = Join-Path -Path $ServicePath -ChildPath "service.$ServiceName.json"
+    $ServiceFile = Join-Path -Path $ServicePath -ChildPath "service.json"
     $ServiceData = {}
     $AppServicePath = Join-Path -Path $AppPath -ChildPath $ServiceName
 
@@ -126,7 +126,7 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
     }
 
     # Copy to the consul configuration directory
-    Copy-Item -Path "$AppServicePath/conf/consul.$ServiceName.json" -Destination "$AppPath/consul/etc/consul.$ServiceName.json" -Force
+    Copy-Item -Path "$AppServicePath/conf/consul.json" -Destination "$AppPath/consul/etc/consul.$ServiceName.json" -Force
 
     # Execute extra development if needed
     $AppDevScript = "$AppServicePath/conf/develop.ps1"

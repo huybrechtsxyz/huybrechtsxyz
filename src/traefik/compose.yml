@@ -32,7 +32,7 @@ services:
       - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${APP_PATH}/traefik/conf/traefik-config.yml:/etc/traefik/traefik-config.yml
+      - ${APP_PATH}/traefik/conf/config.yml:/etc/traefik/traefik-config.yml
       - ${APP_PATH}/traefik/data:/app/data
       - ${APP_PATH}/traefik/logs:/app/logs
     networks:

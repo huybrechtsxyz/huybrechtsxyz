@@ -30,9 +30,9 @@ while ! pg_isready -h $POSTGRES_URL -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do
 done
 
 # Execute the SQL file
-if [ -f /usr/local/bin/postgres-init.sql ]; then
+if [ -f /usr/local/bin/initialize.sql ]; then
   echo "Executing initialization script..."
-  PGPASSWORD="$POSTGRES_PASSWORD" psql -h $POSTGRES_URL -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f /usr/local/bin/postgres-init.sql
+  PGPASSWORD="$POSTGRES_PASSWORD" psql -h $POSTGRES_URL -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f /usr/local/bin/initialize.sql
 else
   echo "Initialization script not found!"
 fi

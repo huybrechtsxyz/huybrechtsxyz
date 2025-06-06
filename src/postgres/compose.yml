@@ -65,8 +65,8 @@ services:
   postgres-init:
     image: postgres
     volumes:
-      - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
-      - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
+      - ${APP_PATH}/postgres/conf/entrypoint.sh:/usr/local/bin/entrypoint.sh:ro
+      - ${APP_PATH}/postgres/conf/initialize.sql:/usr/local/bin/postgres-init.sql:ro
     networks:
       - lan-${WORKSPACE}
     secrets:
