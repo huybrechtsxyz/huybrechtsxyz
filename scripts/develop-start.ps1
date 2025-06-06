@@ -183,5 +183,4 @@ $BrowserArgs = @(
 # Launch Microsoft Edge with the combined arguments
 $Arguments = $Urls + $BrowserArgs | Where-Object { $_ -ne "" }
 Start-Process -FilePath "msedge.exe" -ArgumentList $Arguments
-
 Write-Host "[*] Starting DEVELOPMENT environment...DONE"
