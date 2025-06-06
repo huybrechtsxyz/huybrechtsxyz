@@ -17,81 +17,6 @@ networks:
 
 services:
 
-  postgres:
-    image: postgres
-    volumes:
-      - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
-    networks:
-      - lan-${WORKSPACE}
-    secrets:
-      - PLATFORM_PASSWORD
-    environment:
-      ENVIRONMENT: ${ENVIRONMENT}
-      PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_DB: ${PLATFORM_SQL_NAME}
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d ${PLATFORM_SQL_NAME} -U root"]
-      interval: 60s
-      timeout: 15s
-      retries: 5
-      start_period: 120s
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-          - node.labels.infra==true
-          - node.labels.postgres==true
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        # max_attempts: 5
-        # window: 60s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      labels:
-        - traefik.enable=false
-
-  postgres-init:
-    image: postgres
-    volumes:
-      - ${APP_PATH}/postgres/conf/postgres-entry.sh:/usr/local/bin/entrypoint.sh:ro
-      - ${APP_PATH}/postgres/conf/postgres-init.sql:/usr/local/bin/postgres-init.sql:ro
-    networks:
-      - lan-${WORKSPACE}
-    secrets:
-      - PLATFORM_PASSWORD
-    environment:
-      POSTGRES_DB: ${PLATFORM_SQL_NAME}
-      POSTGRES_URL: postgres
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
-    entrypoint: /usr/local/bin/entrypoint.sh
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-          - node.labels.infra==true
-          - node.labels.postgres==true
-      restart_policy:
-        condition: none # Ensure this runs only once
-      labels:
-        - traefik.enable=false
-
   pgadmin:
     image: dpage/pgadmin4
     volumes:
@@ -126,8 +51,6 @@ services:
       restart_policy:
         condition: on-failure
         delay: 10s
-        # max_attempts: 5
-        # window: 60s
       update_config:
         parallelism: 1
         delay: 15s
@@ -155,4 +78,3 @@ services:
         - traefik.http.routers.pgadmin.rule=Host(`pgadmin.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
         - traefik.http.routers.pgadmin.entrypoints=websecure
         - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_TLS_DNS}
-        - traefik.http.routers.pgadmin.middlewares=
