@@ -136,7 +136,7 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
 
     if ( 
         ($ServiceData.service.groups -contains $Group) -or 
-        ($Services -contains $ServiceData.id) -or
+        ($Services -contains $ServiceData.service.id) -or
         ($Group -eq "" -and $Services -eq @())
     ) {
         $expanded = $ServiceData.service.endpoint

@@ -1,0 +1,28 @@
+{
+  "service": {
+    "id": "seaweed",
+    "priority": 8,
+    "groups": ["infra","storage"],
+    "description": "SeaweedFS is a distributed file system that is optimized for object storage with O disk seek, and a Filer for directories and files.",
+    "endpoint": "",
+    "paths": [
+      { "path":"conf", "chmod": 755 },
+      { "path":"data", "chmod": 755 },
+      { "path":"master", "chmod": 755 },
+      { "path":"filer", "chmod": 755 },
+      { "path":"volume-1", "chmod": 755 },
+      { "path":"volume-2", "chmod": 755 },
+      { "path":"volume-3", "chmod": 755 }      
+    ],
+    "project": {
+      "name": "",
+      "file": "",
+      "registry": "",
+      "imagename": "",
+      "dockerfile": "",
+      "buildconfig": "",
+      "runtime": "",
+      "runversion": ""
+    }
+  }
+}
