@@ -1,7 +1,7 @@
 {
   "service": {
     "id": "keycloak",
-    "name": "keycloak",
+    "name": "Keycloak",
     "address": "keycloak",
     "port": 8080,
     "meta": {},
