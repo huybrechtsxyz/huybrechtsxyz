@@ -1,6 +1,7 @@
 param (
-    [string]$Group,
-    [string[]]$Services
+    [string]$Stack = "app",
+    [string]$Group = "",
+    [string[]]$Services = @()
 )
 
 # Load the required modules
@@ -162,7 +163,7 @@ foreach ($service in $SortedServices) {
     #Write-Host "[*] Validating Docker Compose for " + $service.id.ToUpper()
     #docker compose -f $composeFile --env-file $environmentFile config
     Write-Host "[*] Deploying $ServiceName stack..."
-    docker stack deploy -c $ComposeFile $service.id --detach=true
+    docker stack deploy -c $ComposeFile $Stack --detach=true
 }
 
 # DEBUG AND TEST
