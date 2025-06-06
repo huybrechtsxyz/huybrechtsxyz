@@ -62,7 +62,7 @@ jobs:
         id: tfapply
         working-directory: ./deploy
         run: |
-          # Set the Terraform environment variables
+          chmod +x deploy/scripts/terraform-apply.sh
           export TF_TOKEN_app_terraform_io=$TERRAFORM_API_TOKEN
           export TF_VAR_api_key=$KAMATERA_API_KEY
           export TF_VAR_api_secret=$KAMATERA_API_SECRET
@@ -73,34 +73,7 @@ jobs:
           export TF_LOG=DEBUG
           export WORKSPACE=${{ inputs.workspace }}
           export ENVIRONMENT=${{ inputs.environment }}
-
-          # Generate main.tf from template
-          echo "Generating main.tf from template"
-          envsubst < main.template.tf > main.tf
-          rm -f main.template.tf
-          cat main.tf
-
-          # Initialize Terraform
-          echo "Running terraform...INIT"
-          terraform init
-
-          # Create the plan file
-          # Terraform Cloud does not support saving the generated execution plan locally at this time.
-          echo "Running terraform...PLAN"
-          terraform plan -var-file="vars-${{ inputs.workspace }}.tfvars" -input=false
-
-          # Apply the plan file
-          echo "Running terraform...APPLY"
-          terraform apply -auto-approve -var-file="vars-${{ inputs.workspace }}.tfvars" -input=false
-
-          # Get the output
-          echo "Reading Terraform output..."
-          echo $(terraform output -json serverdata)
-          terraform output -json serverdata | jq -c '.' > tf_output.json
-          cp tf_output.json /tmp/tf_output.json
-          echo "Reading Terraform output...CAT"
-          cat /tmp/tf_output.json
-          echo "Reading Terraform output...DONE"
+          ./deploy/scripts/run-terraform-apply.sh
 
       # Upload the Terraform output as an artifact
       - name: Upload Terraform Artifact
@@ -222,11 +195,11 @@ jobs:
         run: |
           # Copy the initialization scripts to the remote server
           echo "[*] Copying initialization script to remote server..."
-          scp -o StrictHostKeyChecking=no "./scripts/initialize-begin.sh" root@${{ matrix.ip }}:/tmp/initialize-begin.sh || {
+          scp -o StrictHostKeyChecking=no "./deploy/scripts/initialize-begin.sh" root@${{ matrix.ip }}:/tmp/initialize-begin.sh || {
             echo "[x] Failed to transfer before initialization script to remote server"
             exit 1
           }
-          scp -o StrictHostKeyChecking=no "./scripts/initialize-end.sh" root@${{ matrix.ip }}:/tmp/initialize-end.sh || {
+          scp -o StrictHostKeyChecking=no "./deploy/scripts/initialize-end.sh" root@${{ matrix.ip }}:/tmp/initialize-end.sh || {
             echo "[x] Failed to transfer after initialization script to remote server"
             exit 1
           }
@@ -244,84 +217,9 @@ jobs:
       # Initialize the server with initialization script
       - name: Initialize ${{ inputs.environment }} Server ${{ matrix.label }}
         run: |
-          echo "[*] Executing INTERNAL initializing remotely..."
-          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            echo "[*] Initializing server..."
-            set -euo pipefail
-            cd /
-
-            configure_swarm() {
-              local hostname
-              hostname=$(hostname)
-              echo "[*] Configuring Docker Swarm on $hostname..."
-
-              #if docker info 2>/dev/null | grep -q "Swarm: active"; then
-              if [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" = "active" ]; then
-                echo "[*] Node already part of a Swarm. Skipping initialization/joining."
-                if [[ "$hostname" == *"manager-1"* ]]; then
-                  docker swarm join-token manager -q > /tmp/manager_token.txt
-                  docker swarm join-token worker -q > /tmp/worker_token.txt
-                fi
-                return
-              fi
-
-              if [[ "$hostname" == *"manager-1"* ]]; then
-                echo "[*] Initializing new Swarm cluster..."
-                docker swarm init --advertise-addr ${{ matrix.private_ip }}
-
-                mkdir -p /tmp
-                chmod 1777 /tmp
-
-                docker swarm join-token manager -q > /tmp/manager_token.txt
-                docker swarm join-token worker -q > /tmp/worker_token.txt
-                echo "[*] Saved manager and worker join tokens."
-              else
-                echo "[*] Joining existing Swarm cluster on ${{ matrix.manager_ip }}..."
-
-                # SSH options for non-interactive CI (skip host key checking)
-                SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10"
-
-                # Wait for manager token to appear (max ~60s)
-                for i in {1..12}; do
-                  if ssh $SSH_OPTS root@${{ matrix.manager_ip }} 'test -f /tmp/manager_token.txt && test -f /tmp/worker_token.txt'; then
-                    echo "[*] Swarm tokens are available on ${{ matrix.manager_ip }}"
-                    break
-                  fi
-                  echo "[!] Attempt $i: Waiting for Swarm tokens on ${{ matrix.manager_ip }}..."
-                  sleep 5
-                done
-
-                # Final check before proceeding
-                if ! ssh $SSH_OPTS root@${{ matrix.manager_ip }} 'test -f /tmp/manager_token.txt && test -f /tmp/worker_token.txt'; then
-                  echo "[x] Timed out waiting for Swarm tokens. Exiting."
-                  exit 1
-                fi
-
-                # Retrieve tokens
-                MANAGER_JOIN_TOKEN=$(ssh $SSH_OPTS root@${{ matrix.manager_ip }} 'cat /tmp/manager_token.txt')
-                WORKER_JOIN_TOKEN=$(ssh $SSH_OPTS root@${{ matrix.manager_ip }} 'cat /tmp/worker_token.txt')
-
-                # Decide node role
-                if [[ "$hostname" == *"manager-"* ]]; then
-                  echo "[*] Joining as Swarm Manager..."
-                  docker swarm join --token "$MANAGER_JOIN_TOKEN" ${{ matrix.manager_ip }}:2377 --advertise-addr ${{ matrix.private_ip }}
-                else
-                  echo "[*] Joining as Swarm Worker..."
-                  docker swarm join --token "$WORKER_JOIN_TOKEN" ${{ matrix.manager_ip }}:2377 --advertise-addr ${{ matrix.private_ip }}
-                fi
-
-                echo "[*] Successfully joined Swarm cluster"
-
-              fi
-            }
-
-            main() {
-              configure_swarm
-            }
-            main
-          EOF
-          echo "[*] Executing INTERNAL initializing remotely...DONE"
-
+          chmod +x deploy/scripts/initialize-swarm-server.sh
+          ./deploy/scripts/initialize-swarm-server.sh "${{ matrix.ip }}" "${{ matrix.private_ip }}" "${{ matrix.manager_ip }}"
+          
       # Initialize the server with initialization script
       - name: Initialize AFTER ${{ inputs.environment }} Server ${{ matrix.label }}
         run: |
@@ -363,6 +261,7 @@ jobs:
 
       # Set up GitHub Secrets
       - name: Get General Secrets
+        id: get-secrets
         uses: bitwarden/sm-action@v2
         with:
           access_token: ${{ secrets.BITWARDEN_TOKEN }}
@@ -406,114 +305,30 @@ jobs:
           secrets: |
             6db5856c-3f7f-4b62-9846-b2c90144cb0b > APP_ROOT_PASSWORD
 
-      # Set up SSH connection
+      # Set up GitHub Secrets for Environment
       - name: Set up SSH connection
         run: |
-          mkdir -p ~/.ssh
-          echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          chmod +x deploy/scripts/setup-ssh.sh
+          ./deploy/scripts/setup-ssh.sh "$KAMATERA_PRIVATE_KEY"
 
       # Configure Swarm Server
       - name: Configure Server
         run: |
-          echo "[*] Copying variables to remote server..."
-
-          # Generating secrets for remote server
-          # Using printf to minimize the risk of variable expansion issues
-          # cat <<EOF > /tmp/secrets.env
-          # APP_ROOT_PASSWORD=$APP_ROOT_PASSWORD
-          # VERSIO_USERNAME=$VERSIO_USERNAME
-          # VERSIO_PASSWORD=$VERSIO_PASSWORD
-          # TRAEFIK_CLIENTID=$TRAEFIK_CLIENTID
-          # TRAEFIK_SECRET=$TRAEFIK_SECRET
-          # PLATFORM_USERNAME=$PLATFORM_USERNAME
-          # PLATFORM_PASSWORD=$PLATFORM_PASSWORD
-          # printf "APP_ROOT_PASSWORD=%s\n" "$APP_ROOT_PASSWORD"
-          # EOF
-          {
-            printf "PLATFORM_USERNAME=%s\n" "$PLATFORM_USERNAME"
-            printf "PLATFORM_PASSWORD=%s\n" "$PLATFORM_PASSWORD"
-            printf "TRAEFIK_CLIENTID=%s\n" "$TRAEFIK_CLIENTID"
-            printf "TRAEFIK_SECRET=%s\n" "$TRAEFIK_SECRET"
-            printf "VERSIO_USERNAME=%s\n" "$VERSIO_USERNAME"
-            printf "VERSIO_PASSWORD=%s\n" "$VERSIO_PASSWORD"
-          } > /tmp/secrets.env
-
-          # Copy secrets to remote server
-          scp -o StrictHostKeyChecking=no /tmp/secrets.env root@${{ matrix.ip }}:/tmp/secrets.env || {
-            echo "[x] Failed to transfer variables to remote server"
-            exit 1
-          }
-
-          # Copy environment variables to remote server
-          echo "[*] Copying environment variables to remote server..."
-          scp -o StrictHostKeyChecking=no ./src/test.env root@${{ matrix.ip }}:/tmp/vars-test.env
-          scp -o StrictHostKeyChecking=no ./src/staging.env root@${{ matrix.ip }}:/tmp/vars-staging.env
-          scp -o StrictHostKeyChecking=no ./src/production.env root@${{ matrix.ip }}:/tmp/vars-production.env
-          scp -o StrictHostKeyChecking=no ./src/shared.env root@${{ matrix.ip }}:/tmp/vars-shared.env
-          scp -o StrictHostKeyChecking=no ./src/${{ inputs.environment }}.env root@${{ matrix.ip }}:/tmp/variables.env || {
-            echo "[x] Failed to transfer variables to remote server"
-            exit 1
-          }
-
-          # Copy the configuration scripts to the remote server
-          echo "[*] Copying configuration script to remote server..."
-          scp -o StrictHostKeyChecking=no "./scripts/configure-begin.sh" root@${{ matrix.ip }}:/tmp/configure-begin.sh || {
-            echo "[x] Failed to transfer before configuration script to remote server"
-            exit 1
-          }
-          scp -o StrictHostKeyChecking=no "./scripts/configure-end.sh" root@${{ matrix.ip }}:/tmp/configure-end.sh || {
-            echo "[x] Failed to transfer after configuration script to remote server"
-            exit 1
-          }
-
-          # Execute the configuration script remotely
-          echo "[*] Executing configuration script remotely..."
-          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            chmod +x /tmp/configure-begin.sh
-            /tmp/configure-begin.sh
-            cp -f /tmp/variables.env /opt/app/.env
-            cp -f /tmp/vars-test.env /opt/app/test.env
-            cp -f /tmp/vars-staging.env /opt/app/staging.env
-            cp -f /tmp/vars-production.env /opt/app/production.env
-            cp -f /tmp/vars-shared.env /opt/app/shared.env
-          EOF
-
-          # Copy /src and /scripts to /opt/app
-          echo "[*] Copying source to remote server..."
-          scp -o StrictHostKeyChecking=no ./scripts/*.sh root@${{ matrix.ip }}:/opt/app
+          chmod +x deploy/scripts/configure-swarm-server.sh
+          ./deploy/scripts/configure-swarm-server.sh "${{ matrix.ip }}" "${{ inputs.environment }}"
+        env:
+          PLATFORM_USERNAME: ${{ steps.get-secrets.outputs.PLATFORM_USERNAME }}
+          PLATFORM_PASSWORD: ${{ steps.get-secrets.outputs.PLATFORM_PASSWORD }}
+          TRAEFIK_CLIENTID : ${{ steps.get-secrets.outputs.TRAEFIK_CLIENTID }}
+          TRAEFIK_SECRET : ${{ steps.get-secrets.outputs.TRAEFIK_SECRET }}
+          VERSIO_USERNAME : ${{ steps.get-secrets.outputs.VERSIO_USERNAME }}
+          VERSIO_PASSWORD : ${{ steps.get-secrets.outputs.VERSIO_PASSWORD }}
 
       # Configure Application Services
       - name: Configure App Services
         run: |
-          set -e
-          echo "[*] Configuring application services..."
-          for script in ./src/*/configure.sh; do
-            service=$(basename "$(dirname "$script")")
-            echo "[*] Configuring service '$service'..."
-
-            remote_conf_dir="/opt/app/$service/conf"
-            remote_script="/opt/app/$service/conf/configure.sh"
-            
-            # Ensure remote conf directory exists
-            ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} "mkdir -p '$remote_conf_dir'"
-
-            # Copy service config files
-            scp -o StrictHostKeyChecking=no ./src/$service/*.* root@${{ matrix.ip }}:"$remote_conf_dir/" || {
-              echo "[x] Failed to transfer $service configuration to remote server"
-              exit 1
-            }
-
-            # Run the config script remotely
-            ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} \
-              "chmod +x '$remote_script' && bash '$remote_script'" || {
-                echo "[x] Configuration for $service failed"
-                exit 1
-              }
-
-            echo "[V] Configured service '$service'"
-          done
-          echo "[*] Configuring application services...DONE"
+          chmod +x deploy/scripts/configure-app-services.sh
+          ./deploy/scripts/configure-app-services.sh "${{ matrix.ip }}"
 
       # Finish Configuration
       - name: Finish Configuration
@@ -541,40 +356,11 @@ jobs:
       - name: Check Out
         uses: actions/checkout@v4
 
-      # Find all metadata.json files and set them as a matrix
       - name: Generate Matrix
         id: set-matrix
         run: |
-          # Split the input list into an array
-          IFS=',' read -ra SELECTED_SERVICES <<< "${{ inputs.services }}"
-          # Function to check if an item is in the selected list
-          function is_selected {
-            local item="$1"
-            for selected in "${SELECTED_SERVICES[@]}"; do
-              if [[ "$selected" == "$item" ]]; then
-                return 0
-              fi
-            done
-            return 1
-          }
-          # Create the matrix filtered on services
-          matrix='['
-          for dir in ./src/*; do
-            service=$(basename "$dir")
-            json_file="$dir/metadata.json"
-            dockerfile="$(jq -r .dockerfile "$json_file" 2>/dev/null)"
-            # Only include services that are in the inputs.services (if provided)
-            if [[ -f "$json_file" && -n "$dockerfile" && -f "$dir/$dockerfile" ]]; then
-              if [[ -z "${{ inputs.services }}" ]] || is_selected "$service"; then
-                json=$(cat "$json_file")
-                merged=$(echo "$json" | jq --arg service "$service" '. + {service: $service}')
-                matrix+="$merged,"
-              fi
-            fi
-          done
-          # Return the created matrix
-          matrix="${matrix%,}]"
-          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          chmod +x deploy/scripts/docker-generate-matrix.s
+          ./deploy/scripts/docker-generate-matrix.sh "${{ inputs.services }}" "$GITHUB_OUTPUT"
 
   # Build and Push Docker Images
   # This job will run if the rebuild input is set to true
@@ -687,28 +473,11 @@ jobs:
       # Set up GitHub Secrets for Environment
       - name: Set up SSH connection
         run: |
-          mkdir -p ~/.ssh
-          echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          chmod +x deploy/scripts/setup-ssh.sh
+          ./deploy/scripts/setup-ssh.sh "$KAMATERA_PRIVATE_KEY"
 
       # Start the environment
       - name: Start Environment
         run: |
-          if [[ "${{ matrix.name }}" != *"manager-1"* ]]; then
-            echo "[*] Environments are only started on leader node."
-            exit 0
-          fi
-
-          if [[ "${{ inputs.services}}" == "" ]]; then
-            echo "[*] No services selected for startup."
-            exit 0
-          fi
-
-          echo "[*] Starting Environment..."
-          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            cd /opt/app
-            ./remove-stack.sh ${{ inputs.services }}
-            sleep 30
-            ./deploy-stack.sh ${{ inputs.services }}
-          EOF
-          echo "[*] Starting Environment...DONE"
+          chmod +x deploy/scripts/start-environment.sh
+          ./deploy/scripts/start-environment.sh "${{ matrix.name }}" "${{ matrix.ip }}" "${{ inputs.services }}"
