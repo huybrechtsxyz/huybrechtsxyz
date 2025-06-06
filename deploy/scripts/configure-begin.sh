@@ -131,6 +131,12 @@ main() {
   hostname=$(hostname)
   echo "[*] Configuring Swarn Node: $hostname..."
   
+  cp -f /tmp/variables.env /opt/app/.env
+  cp -f /tmp/vars-test.env /opt/app/test.env
+  cp -f /tmp/vars-staging.env /opt/app/staging.env
+  cp -f /tmp/vars-production.env /opt/app/production.env
+  cp -f /tmp/vars-shared.env /opt/app/shared.env
+  
   # Create the necessary directories
   createpath "/opt/app"
 

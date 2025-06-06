@@ -7,6 +7,7 @@ MANAGER_IP="$3"
 
 echo "[*] Copying swarm initialization script to remote server..."
 scp -o StrictHostKeyChecking=no deploy/scripts/initialize-remote-server.sh root@"$REMOTE_IP":/tmp/remote-swarm-init.sh
+echo "[+] Copying swarm initialization script to remote server...DONE"
 
 echo "[*] Executing swarm initialization on $REMOTE_IP..."
 ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" bash <<EOF
@@ -15,5 +16,4 @@ ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" bash <<EOF
   export MANAGER_IP="$MANAGER_IP"
   /tmp/remote-swarm-init.sh
 EOF
-
-echo "[*] Swarm initialization completed for $REMOTE_IP"
+echo "[+] Swarm initialization completed for $REMOTE_IP"

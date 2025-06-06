@@ -7,13 +7,13 @@ set -euo pipefail
 cd /
 
 enable_docker_service() {
-    echo "[*] Ensuring Docker is enabled and running..."
-    systemctl enable docker
-    systemctl restart docker
+  echo "[*] Ensuring Docker is enabled and running..."
+  systemctl enable docker
+  systemctl restart docker
 }
 
 main() {
-    enable_docker_service
+  enable_docker_service
 }
 
 main

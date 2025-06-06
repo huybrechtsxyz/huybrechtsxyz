@@ -39,13 +39,29 @@ fi
 export DOCKER_MANAGERS=$(docker node ls --filter "role=manager" --format '{{.Hostname}}' | wc -l)
 echo "[*] Number of Docker manager nodes: $DOCKER_MANAGERS"
 
+# Count infra nodes
 export DOCKER_INFRAS=$(docker node ls --filter "node.label=infra=true" --format '{{.Hostname}}' | wc -l)
 echo "[*] Number of Docker infra nodes: $DOCKER_INFRAS"
 
+# Clean lan interfaces
 log INFO "[*] Cleaning up VXLAN interfaces..."
 cleanup_vxlan_interfaces
 log INFO "[*] Cleaning up VXLAN interfaces...DONE"
 
+# Configure services
+for dir in $APP_PATH/*/; do
+done
+
+
+
+
+
+
+
+
+
+
+# Permission mess
 log INFO "[*] Setting permissions on relevant directories..."
 chmod -R 755 $APP_PATH
 chmod -R 600 $APP_PATH/traefik/data
@@ -62,12 +78,12 @@ log INFO "[*] Copying Consul discovery files...DONE"
 
 # Process services
 for dir in $APP_PATH/*/; do
-  METADATA_FILE="${dir}conf/metadata.json"
+  METADATA_FILE="${dir}conf/service.json"
   COMPOSE_FILE="${dir}conf/compose.yml"
   LOG_PATH="${dir}logs/"
 
   if [[ ! -f "$METADATA_FILE" || ! -f "$COMPOSE_FILE" ]]; then
-    log WARN "[!] Missing metadata or compose file in $dir. Skipping..."
+    log WARN "[!] Missing service or compose file in $dir. Skipping..."
     continue
   fi
 

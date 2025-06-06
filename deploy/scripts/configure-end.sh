@@ -5,7 +5,7 @@ source /tmp/variables.env
 source /tmp/secrets.env
 
 # Set environment file
-cp -f /tmp/variables.env /opt/app/.env
+# cp -f /tmp/variables.env /opt/app/.env
 
 # Set permissions for the app directory does not have to be done here
 # Correct permissions for the app directory are set in the startenv.sh script

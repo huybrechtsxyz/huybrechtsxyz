@@ -93,7 +93,7 @@ parse_options() {
     esac
   done
 
-  echo "[*] For services..."
+  echo "[*] Starting environment with ..."
   echo "    - Environment file: $ENV_FILE"
   echo "    - Group: $GROUP"
   echo "    - Services: ${SERVICES[*]}"
