@@ -28,7 +28,7 @@ cleanup_vxlan_interfaces() {
 # Create the paths defined in the metadata.json of the service/conf
 createpaths_from_metadata() {
   local service="$1"
-  local metadata_file="$APP_PATH/$service/conf/metadata.json"
+  local metadata_file="$APP_PATH/$service/conf/service.json"
 
   if [[ ! -f "$metadata_file" ]]; then
     log ERROR "[!] Metadata file '$metadata_file' not found."
@@ -36,7 +36,7 @@ createpaths_from_metadata() {
   fi
 
   local paths
-  paths=$(jq -c '.servicepaths[]?' "$metadata_file")
+  paths=$(jq -c '.service.meta.paths[]?' "$metadata_file")
 
   if [[ -z "$paths" ]]; then
     log WARN "[!] No servicepaths defined for service '$service'"
