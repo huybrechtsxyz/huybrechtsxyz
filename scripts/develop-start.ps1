@@ -85,7 +85,7 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
             Write-Host " - Error reading $ServiceFile" -ForegroundColor Red
             return
         }
-    } else {}
+    } else {
         Write-Host "  - Skipping $ServiceName : No service.json found." -ForegroundColor Yellow
         return
     }
@@ -159,17 +159,22 @@ foreach ($service in $SortedServices) {
 }
 
 # DEBUG AND TEST
-Start-Process -FilePath "msedge.exe" `
-    "http://traefik.$env:DOMAIN_DEV/dashboard/",
-    "http://consul.$env:DOMAIN_DEV/",
-    "http://pgadmin.$env:DOMAIN_DEV/",
-    "http://redis.$env:DOMAIN_DEV",
-    "http://minio.$env:DOMAIN_DEV",
+
+# Build a list of endpoint URLs based on $Selection
+# Add the additional fixed browser arguments
+$Urls = $SortedServices | ForEach-Object { $_.endpoint }
+$BrowserArgs = @(
     "--inprivate",
     "--ignore-certificate-errors",
     "--ignore-urlfetcher-cert-requests",
     "--start-maximized",
     #"--start-minimized",
     "--new-window"
+)
+
+# Combine URLs and browser arguments
+# Launch Microsoft Edge with the combined arguments
+$Arguments = $Urls + $BrowserArgs
+Start-Process -FilePath "msedge.exe" -ArgumentList $Arguments
 
 Write-Host "[*] Starting DEVELOPMENT environment...DONE"

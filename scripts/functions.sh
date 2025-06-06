@@ -108,11 +108,11 @@ copy_to_consul() {
     # Get the service name from the directory path
     service=$(basename "$dir")
     # Define expected consul file path
-    consul_file="$dir/conf/consul.${service}.json"
+    consul_file="$dir/conf/service.json"
     # If the consul file exists, copy it
     if [[ -f "$consul_file" ]]; then
       log INFO "    - Found $consul_file, copying to $CONSUL_CONF_PATH"
-      cp "$consul_file" "$CONSUL_CONF_PATH/"
+      cp "$consul_file" "$CONSUL_CONF_PATH/service.$service.json"
     fi
   done
 }

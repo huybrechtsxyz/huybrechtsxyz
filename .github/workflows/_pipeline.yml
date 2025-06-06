@@ -493,7 +493,6 @@ jobs:
             echo "[*] Configuring service '$service'..."
 
             remote_conf_dir="/opt/app/$service/conf"
-            remote_etc_dir="/opt/app/$service/etc"
             remote_script="/opt/app/$service/conf/configure.sh"
             
             # Ensure remote conf directory exists
@@ -504,15 +503,6 @@ jobs:
               echo "[x] Failed to transfer $service configuration to remote server"
               exit 1
             }
-
-            # If etc directory exists, copy its contents to remote /etc subdir
-            if [ -d "./src/$service/etc" ]; then
-              ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} "mkdir -p '$remote_etc_dir'"
-              scp -o StrictHostKeyChecking=no ./src/$service/etc/* root@${{ matrix.ip }}:"$remote_etc_dir/" || {
-                echo "[x] Failed to transfer $service etc config to remote server"
-                exit 1
-              }
-            fi
 
             # Run the config script remotely
             ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} \
