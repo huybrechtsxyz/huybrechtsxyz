@@ -9,8 +9,11 @@ APP_PATH="/opt/app"
 parse_options "$@"
 cd "$APP_PATH" || exit 1
 
+if [[ -z "$DEPLOY" ]]; then
+    DEPLOY="app"
+fi
+
 if [[ -z "$ENV_FILE" ]]; then
-    ENV_FILE="shared"
     log ERROR "[*] No -e specified."
     exit 1
 fi
@@ -49,7 +52,19 @@ cleanup_vxlan_interfaces
 log INFO "[*] Cleaning up VXLAN interfaces...DONE"
 
 # Configure services
+SELECTION=()
 for dir in $APP_PATH/*/; do
+  SERVICE_FILE="${dir}conf/service.json"
+  SERVICE_NAME=$(jq -r .service.id "$SERVICE_FILE" 2>/dev/null)
+  SERVICE_LOG_PATH="${dir}logs/"
+  log INFO "[*] Processing service $SERVICE_NAME..."
+
+  log INFO "[*] Processing service $SERVICE_NAME...Clearing logs"
+  rm -rf "${SERVICE_LOG_PATH}"
+
+
+  
+  log INFO "[*] Processing service $SERVICE_NAME...DONE"
 done
 
 

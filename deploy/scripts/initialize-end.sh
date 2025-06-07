@@ -1,9 +1,7 @@
 #!/bin/bash
-
 set -euo pipefail
 
 echo "[*] Initializing server..."
-set -euo pipefail
 cd /
 
 enable_docker_service() {

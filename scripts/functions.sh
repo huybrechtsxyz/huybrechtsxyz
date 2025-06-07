@@ -36,7 +36,7 @@ createpaths_from_metadata() {
   fi
 
   local paths
-  paths=$(jq -c '.service.meta.paths[]?' "$metadata_file")
+  paths=$(jq -c '.service.paths[]?' "$metadata_file")
 
   if [[ -z "$paths" ]]; then
     log WARN "[!] No servicepaths defined for service '$service'"
@@ -71,6 +71,10 @@ parse_options() {
   SERVICES=()
   while [[ $# -gt 0 ]]; do
     case "$1" in
+      -d)
+        DEPLOY="$2"
+        shift 2
+        ;;
       -e)
         ENV_FILE="$2"
         shift 2
@@ -87,7 +91,7 @@ parse_options() {
         done
         ;;
       *)
-        echo "Usage: $0 [-e envfile] [-r role] [-s service1 service2 ...]"
+        echo "Usage: $0 [-d appstack] [-e envfile] [-r role] [-s service1 service2 ...]"
         return 1
         ;;
     esac
@@ -95,8 +99,9 @@ parse_options() {
 
   echo "[*] Starting environment with ..."
   echo "    - Environment file: $ENV_FILE"
-  echo "    - Group: $GROUP"
   echo "    - Services: ${SERVICES[*]}"
+  echo "    - Group: $GROUP"
+  echo "    - Stack: $DEPLOY"
 }
 
 # Copy consul discovery files to consul/etc
