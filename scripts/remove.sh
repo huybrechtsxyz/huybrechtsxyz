@@ -2,12 +2,10 @@
 set -euo pipefail
 
 # Default stack name
-STACK="app"
+parse_options "$@"
 
-# Parse optional stack argument
-if [[ $# -ge 1 ]]; then
-    STACK="$1"
-fi
+# Default stack name if not set
+STACK="${STACK:-app}"
 
 # Define the root path
 APP_PATH="/opt/app"
