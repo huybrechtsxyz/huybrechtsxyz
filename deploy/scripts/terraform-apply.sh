@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
-cd "$(dirname "$0")/../deploy/terraform"
+#cd "$(dirname "$0")/../deploy/terraform"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR/../terraform"
 
 echo "[*] ...Generating main.tf from template"
 envsubst < main.template.tf > main.tf

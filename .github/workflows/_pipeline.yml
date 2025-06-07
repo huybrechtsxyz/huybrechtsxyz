@@ -79,7 +79,7 @@ jobs:
           export ENVIRONMENT=${{ inputs.environment }}
           echo "[*] Server deployment and configuration ... APPLY"
           chmod +x ../scripts/terraform-apply.sh
-          ./../scripts/terraform-apply.sh
+          ../scripts/terraform-apply.sh
           echo "[+] Server deployment and configuration ... DONE"
 
       # Upload the Terraform output as an artifact
