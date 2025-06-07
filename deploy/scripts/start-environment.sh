@@ -19,9 +19,9 @@ echo "[*] Starting Environment on $NODE_NAME ($NODE_IP)..."
 
 ssh -o StrictHostKeyChecking=no root@"$NODE_IP" << EOF
   cd /opt/app
-  ./remove-stack.sh $SERVICES
+  ./remove.sh $SERVICES
   sleep 30
-  ./deploy-stack.sh $SERVICES
+  ./deploy.sh $SERVICES
 EOF
 
 echo "[*] Starting Environment...DONE"

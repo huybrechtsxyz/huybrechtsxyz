@@ -6,6 +6,6 @@ source /tmp/variables.env
 source /tmp/secrets.env
 source $APP_PATH/functions.sh
 
-createpaths_from_metadata "redisinsight"
+createpaths "redisinsight"
 
 echo "[*] Deploying REDISINSIGHT to remote server...DONE"

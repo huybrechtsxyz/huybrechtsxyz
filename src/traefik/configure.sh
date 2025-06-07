@@ -6,7 +6,7 @@ source /tmp/variables.env
 source /tmp/secrets.env
 source $APP_PATH/functions.sh
 
-createpaths_from_metadata "traefik"
+createpaths "traefik"
 
 echo ENVIRONMENT: $ENVIRONMENT
 export ENVIRONMENT=$ENVIRONMENT

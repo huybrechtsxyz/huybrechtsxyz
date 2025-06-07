@@ -6,7 +6,7 @@ source /tmp/variables.env
 source /tmp/secrets.env
 source $APP_PATH/functions.sh
 
-createpaths_from_metadata "postgres"
+createpaths "postgres"
 
 # Update the worker-1 node with the postgres tag
 if [[ "$(hostname)" == *"manager-1"* ]]; then
