@@ -15,7 +15,7 @@ echo DOMAIN_DEV: $ENVIRONMENT
 export DOMAIN_DEV=$DOMAIN_DEV
 
 envsubst \
-  < /opt/app/traefik/conf/traefik-config.template.yml \
-  > /opt/app/traefik/conf/traefik-config.yml
+  < /opt/app/traefik/conf/config.template.yml \
+  > /opt/app/traefik/conf/config.yml
 
 echo "[*] Deploying TRAEFIK to remote server...DONE"
