@@ -62,7 +62,7 @@ SELECTION=()
 for dir in "$APP_PATH"/*/; do
   service_dir="${dir%/}"  # Remove trailing slash
   service_name=$(basename "$service_dir")
-  service_file="$service_dir/service.json"
+  service_file="$service_dir/conf/service.json"
 
   log INFO "[*] Configuring service: $service_name"
 

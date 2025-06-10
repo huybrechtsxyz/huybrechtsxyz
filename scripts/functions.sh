@@ -8,8 +8,8 @@
 # Docker Swarm deployment may fail with an error like: network sandbox join failed: subnet
 cleanup_vxlan_interfaces() {
   log INFO "[*] ... Checking for orphaned VXLAN interfaces..."
-  interfaces=$(ls /sys/class/net | grep '^vx-')
-
+  #interfaces=$(ls /sys/class/net | grep '^vx-')
+  interfaces=$(find /sys/class/net -maxdepth 1 -type l -name 'vx-*' -printf '%f\n' 2>/dev/null || true)
   if [ -z "$interfaces" ]; then
     log INFO "    - No orphaned VXLAN interfaces found."
     return 0
@@ -69,12 +69,6 @@ log() {
   local msg="$*"
   local timestamp
   timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-  # case "$level" in
-  #   INFO)    echo -e "[\033[1;34mINFO\033[0m]  $timestamp - $msg" ;;
-  #   WARN)    echo -e "[\033[1;33mWARN\033[0m]  $timestamp - $msg" ;;
-  #   ERROR)   echo -e "[\033[1;31mERROR\033[0m] $timestamp - $msg" >&2 ;;
-  #   *)       echo -e "[UNKNOWN] $timestamp - $msg" ;;
-  # esac
   case "$level" in
     INFO)    echo -e "[\033[1;34mINFO\033[0m]  - $msg" ;;
     WARN)    echo -e "[\033[1;33mWARN\033[0m]  - $msg" ;;
@@ -117,9 +111,9 @@ parse_options() {
     esac
   done
 
-  echo "[*] Starting environment with ..."
-  echo "[*] ... Environment file: $ENV_FILE"
-  echo "[*] ... Services: ${SERVICES[*]}"
-  echo "[*] ... Group: $GROUP"
-  echo "[*] ... Stack: $STACK"
+  log INFO "[*] Starting environment with ..."
+  log INFO "[*] ... Environment file: $ENV_FILE"
+  log INFO "[*] ... Services: ${SERVICES[*]}"
+  log INFO "[*] ... Group: $GROUP"
+  log INFO "[*] ... Stack: $STACK"
 }
