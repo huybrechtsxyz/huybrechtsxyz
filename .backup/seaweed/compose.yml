@@ -19,6 +19,12 @@ services:
     networks:
       - lan-${WORKSPACE}
     command: "-v=1 master -volumeSizeLimitMB 100 -resumeState=false -ip=seaweed-master -ip.bind=0.0.0.0 -port=9333 -mdir=/var/lib/seaweedfs/master -metricsPort=9324"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9333/cluster/status"]
+      interval: 60s
+      timeout: 15s
+      retries: 5
+      start_period: 120s
     deploy:
       mode: global
       placement:
@@ -52,13 +58,21 @@ services:
       - ${APP_PATH}/seaweed/volume-1:/var/lib/seaweedfs/volume1
     networks:
       - lan-${WORKSPACE}
-    command: 'volume -dataCenter=${DATACENTER} -rack=v1 -mserver="seaweed-master:9333" -port=8081 -preStopSeconds=1 -dir=/var/lib/seaweedfs/volume1 -metricsPort=9325'
+    environment:
+      DATACENTER: ${DATACENTER}
+    command: 'volume -dataCenter=$DATACENTER -rack=v1 -mserver="seaweed-master:9333" -port=8081 -preStopSeconds=1 -dir=/var/lib/seaweedfs/volume1 -metricsPort=9325'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/status"]
+      interval: 60s
+      timeout: 15s
+      retries: 5
+      start_period: 120s
     deploy:
       mode: global
       placement:
         constraints:
           - node.role==${DOCKER_WORKER}
-          - node.labels.infra==true
+          - node.labels.server==infra-1
       restart_policy:
         condition: on-failure
         delay: 10s
@@ -80,41 +94,21 @@ services:
       - ${APP_PATH}/seaweed/volume-2:/var/lib/seaweedfs/volume2
     networks:
       - lan-${WORKSPACE}
-    command: 'volume -dataCenter=${DATACENTER} -rack=v2 -mserver="seaweed-master:9333" -port=8081 -preStopSeconds=1 -dir=/var/lib/seaweedfs/volume2 -metricsPort=9325'
+    environment:
+      DATACENTER: ${DATACENTER}
+    command: 'volume -dataCenter=$DATACENTER -rack=v2 -mserver="seaweed-master:9333" -port=8081 -preStopSeconds=1 -dir=/var/lib/seaweedfs/volume2 -metricsPort=9325'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/status"]
+      interval: 60s
+      timeout: 15s
+      retries: 5
+      start_period: 120s
     deploy:
       mode: global
       placement:
         constraints:
           - node.role==${DOCKER_WORKER}
-          - node.labels.infra==true
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-
-  seaweed-volume-3:
-    image: chrislusf/seaweedfs
-    volumes:
-      - ${APP_PATH}/seaweed/volume-3:/var/lib/seaweedfs/volume3
-    networks:
-      - lan-${WORKSPACE}
-    command: 'volume -dataCenter=${DATACENTER} -rack=v3 -mserver="seaweed-master:9333" -port=8081 -preStopSeconds=1 -dir=/var/lib/seaweedfs/volume3 -metricsPort=9325'
-    deploy:
-      mode: global
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-          - node.labels.infra==true
+          - node.labels.server==infra-2
       restart_policy:
         condition: on-failure
         delay: 10s
@@ -139,6 +133,12 @@ services:
     command: 'filer -defaultReplicaPlacement=100 -iam -master="seaweed-master:9333" -metricsPort=9326'
     tty: true
     stdin_open: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888"]
+      interval: 60s
+      timeout: 15s
+      retries: 5
+      start_period: 120s
     deploy:
       mode: global
       placement:
@@ -171,6 +171,12 @@ services:
     networks:
       - lan-${WORKSPACE}
     command: '-v=9 s3 -filer="seaweed-filer:8888" -ip.bind=0.0.0.0 -metricsPort=9327'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8333"]
+      interval: 60s
+      timeout: 15s
+      retries: 5
+      start_period: 120s
     deploy:
       mode: global
       placement:
@@ -203,6 +209,12 @@ services:
     networks:
       - lan-${WORKSPACE}
     command: 'webdav -filer="seaweed-filer:8888"'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7333"]
+      interval: 60s
+      timeout: 15s
+      retries: 5
+      start_period: 120s
     deploy:
       mode: global
       placement:
