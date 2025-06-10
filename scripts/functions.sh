@@ -91,23 +91,19 @@ parse_options() {
   SERVICES=()
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      -d)
-      --stack)
+      -d|--stack)
         STACK="$2"
         shift 2
         ;;
-      -e)
-      --environment)
+      -e|--environment)
         ENV_FILE="$2"
         shift 2
         ;;
-      -g)
-      --group)
+      -g|--group)
         GROUP="$2"
         shift 2
         ;;
-      -s)
-      --services)
+      -s|--services)
         shift
         while [[ $# -gt 0 && "$1" != -* ]]; do
           SERVICES+=("$1")
