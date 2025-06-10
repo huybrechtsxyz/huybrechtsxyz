@@ -12,7 +12,7 @@ cleanup_vxlan_interfaces() {
 
   if [ -z "$interfaces" ]; then
     log INFO "    - No orphaned VXLAN interfaces found."
-    return
+    return 0
   fi
 
   for iface in $interfaces; do

@@ -18,7 +18,7 @@ fi
 STACK="${STACK:-app}"
 
 # Validate service selection input
-if [[ -z "${GROUP:-}" && ${#SERVICES[@]:-0} -eq 0 ]]; then
+if [[ -z "${GROUP:-}" && ${#SERVICES[@]} -eq 0 ]]; then
   log ERROR "[!] You must specify at least -g <group> or -s <service1 service2 ...>"
   log ERROR "Usage: $0 [-e envfile] [-g group] [-s service1 service2 ...]"
   exit 1
@@ -32,6 +32,10 @@ log INFO "[*] Number of Docker manager nodes: $DOCKER_MANAGERS"
 export DOCKER_INFRAS
 DOCKER_INFRAS=$(docker node ls --filter "node.label=infra=true" --format '{{.Hostname}}' | wc -l)
 log INFO "[*] Number of Docker infra nodes: $DOCKER_INFRAS"
+
+export DOCKER_WORKERS
+DOCKER_WORKERS=$(docker node ls --filter "node.label=worker=true" --format '{{.Hostname}}' | wc -l)
+log INFO "[*] Number of Docker worker nodes: $DOCKER_WORKERS"
 
 # Load environment variables
 HOSTNAMEID=$(hostname)
