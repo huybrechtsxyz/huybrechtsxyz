@@ -20,7 +20,7 @@ services:
   postgres:
     image: postgres
     volumes:
-      - ${APP_PATH}/postgres/data:/var/lib/postgresql/data/pgdata
+      - ${APP_PATH_DATA}/postgres/data:/var/lib/postgresql/data/pgdata
     networks:
       - lan-${WORKSPACE}
     secrets:

@@ -15,7 +15,7 @@ services:
   seaweed-master:
     image: chrislusf/seaweedfs
     volumes:
-      - ${APP_PATH}/seaweed/master:/var/lib/seaweedfs/master
+      - ${APP_PATH_DATA}/seaweed/master:/var/lib/seaweedfs/master
     networks:
       - lan-${WORKSPACE}
     command: "-v=1 master -volumeSizeLimitMB 100 -resumeState=false -ip=seaweed-master -ip.bind=0.0.0.0 -port=9333 -mdir=/var/lib/seaweedfs/master -metricsPort=9324"
@@ -55,7 +55,7 @@ services:
   seaweed-volume-1:
     image: chrislusf/seaweedfs
     volumes:
-      - ${APP_PATH}/seaweed/volume-1:/var/lib/seaweedfs/volume1
+      - ${APP_PATH_DATA}/seaweed/volume-1:/var/lib/seaweedfs/volume1
     networks:
       - lan-${WORKSPACE}
     environment:
@@ -91,7 +91,7 @@ services:
   seaweed-volume-2:
     image: chrislusf/seaweedfs
     volumes:
-      - ${APP_PATH}/seaweed/volume-2:/var/lib/seaweedfs/volume2
+      - ${APP_PATH_DATA}/seaweed/volume-2:/var/lib/seaweedfs/volume2
     networks:
       - lan-${WORKSPACE}
     environment:
@@ -127,7 +127,7 @@ services:
   seaweed-filer:
     image: chrislusf/seaweedfs
     volumes:
-      - ${APP_PATH}/seaweed/filer:/data
+      - ${APP_PATH_DATA}/seaweed/filer:/data
     networks:
       - lan-${WORKSPACE}
     command: 'filer -defaultReplicaPlacement=100 -iam -master="seaweed-master:9333" -metricsPort=9326'

@@ -6,9 +6,9 @@
     "description": "Reverse proxy and load balancer for microservices",
     "endpoint": "http://traefik.${DOMAIN_DEV}/dashboard/",
     "paths": [
-      { "path":"conf", "chmod": 755 },
-      { "path":"data", "chmod": 600 },
-      { "path":"logs", "chmod": 777 }
+      { "path":"conf", "type": "config", "chmod": 755 },
+      { "path":"data", "type": "data", "chmod": 600 },
+      { "path":"logs", "type": "logs", "chmod": 777 }
     ],
     "project": {
       "name": "",

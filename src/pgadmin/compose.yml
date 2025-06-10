@@ -20,7 +20,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     volumes:
-      - ${APP_PATH}/pgadmin/data:/var/lib/pgadmin
+      - ${APP_PATH_DATA}/pgadmin/data:/var/lib/pgadmin
     networks:
       - lan-${WORKSPACE}
     secrets:

@@ -6,13 +6,13 @@
     "description": "SeaweedFS is a distributed file system that is optimized for object storage with O disk seek, and a Filer for directories and files.",
     "endpoint": "",
     "paths": [
-      { "path":"conf", "chmod": 755 },
-      { "path":"data", "chmod": 755 },
-      { "path":"master", "chmod": 755 },
-      { "path":"filer", "chmod": 755 },
-      { "path":"volume-1", "chmod": 755 },
-      { "path":"volume-2", "chmod": 755 },
-      { "path":"volume-3", "chmod": 755 }      
+      { "path":"conf", "type": "config", "chmod": 755 },
+      { "path":"data", "type": "data", "chmod": 755 },
+      { "path":"master", "type": "data", "chmod": 755 },
+      { "path":"filer", "type": "data", "chmod": 755 },
+      { "path":"volume-1", "type": "data", "chmod": 755 },
+      { "path":"volume-2", "type": "data", "chmod": 755 },
+      { "path":"volume-3", "type": "data", "chmod": 755 }      
     ],
     "project": {
       "name": "",

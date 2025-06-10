@@ -6,9 +6,9 @@
     "description": "PostgreSQL database service for data storage and retrieval",
     "endpoint": "",
     "paths": [
-      { "path":"conf", "chmod": 755 },
-      { "path":"data", "chmod": 777 },
-      { "path":"backups", "chmod": 777 }
+      { "path":"conf", "type": "config", "chmod": 755 },
+      { "path":"data", "type": "data", "chmod": 777 },
+      { "path":"backups", "type": "data", "chmod": 777 }
     ],
     "project": {
       "name": "",

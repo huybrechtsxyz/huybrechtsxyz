@@ -6,7 +6,7 @@
     "description": "Redis allows flexible data structure stored for caching, AI workloads, and vector databases",
     "endpoint": "http://redis.${DOMAIN_DEV}/",
     "paths": [
-      { "path":"conf", "chmod": 755 }
+      { "path":"conf", "type": "config", "chmod": 755 }
     ],
     "project": {
       "name": "",

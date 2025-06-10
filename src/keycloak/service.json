@@ -6,7 +6,7 @@
     "description": "Identity and access management for applications and services",
     "endpoint": "http://auth.${DOMAIN_DEV}/",
     "paths": [
-      { "path":"conf", "chmod": 755 }
+      { "path":"conf", "type": "config", "chmod": 755 }
     ],
     "project": {
       "name": "",
