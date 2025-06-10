@@ -114,16 +114,34 @@ createnodelabels() {
   srvrole=$(echo "$hostname" | cut -d'-' -f3)
   echo "[*] Detected role: $srvrole"
   # Apply the label only if this is the manager node
-  if [[ "$hostname" == *"manager-1"* ]]; then
-    echo "[*] Applying role label to all nodes..."
-    # Get all node hostnames
-    for node in $(docker node ls --format '{{.Hostname}}'); do
-      # Extract the role from each node's hostname
-      role=$(echo "$node" | cut -d'-' -f3)
-      echo "    - Setting $role=true on $node"
-      docker node update --label-add $role=true "$node"
-    done
+  if [[ "$hostname" != *"manager-1"* ]]; then
+    echo "[+] Not on management node. No labels assigned."
+    return
   fi
+  
+  echo "[*] Applying role label to all nodes..."
+  # Get all node hostnames
+  # Hostnames are: srv-{workspace}-{role}-{instance}-{random})
+  for node in $(docker node ls --format '{{.Hostname}}'); do
+    # Extract the role from each node's hostname
+    role=$(echo "$node" | cut -d'-' -f3)
+    instance=$(echo "$node" | cut -d'-' -f4)
+    server="${role}-${instance}"
+    echo "    - Setting $role=true on $node"
+    echo "    - Setting role=$role on $node"
+    echo "    - Setting server=$server on $node"
+    echo "    - Setting instance=$instance on $node"
+    docker node update \
+      --label-add $role=true \
+      --label-add role=$role \
+      --label-add server=$server \
+      --label-add instance=$instance \
+      "$node"
+  done
+
+  echo "[*] Updating infra-1 node with postgres tag..."
+  INFRA1=$(docker node ls --format '{{.Hostname}}' | grep "infra-1")
+  docker node update --label-add postgres=true $INFRA1
 }
 
 main() {
