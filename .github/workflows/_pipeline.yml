@@ -206,12 +206,12 @@ jobs:
       - name: Create Environment File
         run: |
           cat <<EOF > ./deploy/scripts/initialize.env
-          APP_PATH_CONF=${{ env.APP_PATH_CONF }}
-          APP_PATH_DATA=${{ env.APP_PATH_DATA }}
-          APP_PATH_LOGS=${{ env.APP_PATH_LOGS }}
-          APP_PATH_SERV=${{ env.APP_PATH_SERV }}
-          ENVIRONMENT=${{ inputs.environment }}
-          WORKSPACE=${{ inputs.workspace }}
+          export APP_PATH_CONF=${{ env.APP_PATH_CONF }}
+          export APP_PATH_DATA=${{ env.APP_PATH_DATA }}
+          export APP_PATH_LOGS=${{ env.APP_PATH_LOGS }}
+          export APP_PATH_SERV=${{ env.APP_PATH_SERV }}
+          export ENVIRONMENT=${{ inputs.environment }}
+          export WORKSPACE=${{ inputs.workspace }}
           EOF
 
       # Initialize the server with initialization script
@@ -231,7 +231,9 @@ jobs:
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             chmod +x /tmp/initialize-begin.sh
             if [ -f /tmp/initialize.env ]; then
+              set -a
               source /tmp/initialize.env
+              set +a
             else
               echo "[!] Initialization environment file not found. Exiting."
               exit 1
