@@ -4,24 +4,6 @@ set -euo pipefail
 source /tmp/variables.env
 source /tmp/secrets.env
 
-# Function to create a path if it does not already exist
-createpath() {
-  local newpath="$1"
-
-  if [ ! -d "$newpath" ]; then
-    echo "[*] Creating directory: $newpath"
-    if ! mkdir -p "$newpath"; then
-      echo "[x] Error: Failed to create directory '$newpath'"
-      return 1
-    fi
-  fi
-
-  echo "[*] Setting permissions on $newpath"
-  sudo chmod -R 755 "$newpath"
-
-  return 0
-}
-
 # Function to check if a Docker secret is in use
 issecretinuse() {
   local secret_name="$1"
@@ -110,9 +92,11 @@ loaddockersecrets() {
 createnodelabels() {
   # Get the current hostname
   hostname=$(hostname)
+
   # Extract the role from hostname (3rd part in hyphen-separated string)
   srvrole=$(echo "$hostname" | cut -d'-' -f3)
   echo "[*] Detected role: $srvrole"
+
   # Apply the label only if this is the manager node
   if [[ "$hostname" != *"manager-1"* ]]; then
     echo "[+] Not on management node. No labels assigned."
@@ -122,8 +106,8 @@ createnodelabels() {
   echo "[*] Applying role label to all nodes..."
   # Get all node hostnames
   # Hostnames are: srv-{workspace}-{role}-{instance}-{random})
+  # Extract the role type instance from each node's hostname
   for node in $(docker node ls --format '{{.Hostname}}'); do
-    # Extract the role from each node's hostname
     role=$(echo "$node" | cut -d'-' -f3)
     instance=$(echo "$node" | cut -d'-' -f4)
     server="${role}-${instance}"
@@ -148,9 +132,6 @@ main() {
   local hostname
   hostname=$(hostname)
   echo "[*] Configuring Swarn Node: $hostname..."
-  
-  # Create the necessary directories
-  createpath "/opt/app"
 
   # Create docker networks and secrets only leader node
   if [[ "$hostname" == *"manager-1"* ]]; then
@@ -164,12 +145,11 @@ main() {
   fi
 
   echo "[*] Copying environment variables..."
-  cp -f /tmp/variables.env /opt/app/.env
-  cp -f /tmp/vars-test.env /opt/app/test.env
-  cp -f /tmp/vars-staging.env /opt/app/staging.env
-  cp -f /tmp/vars-production.env /opt/app/production.env
-  cp -f /tmp/vars-shared.env /opt/app/shared.env
-
+  cp -f /tmp/variables.env "$APP_PATH_CONF/.env"
+  shopt -s nullglob
+  cp -f /tmp/vars-*.env "$APP_PATH_CONF/"
+  shopt -u nullglob
+  
   echo "[*] Configuring Swarn Node: $hostname...DONE"
 }
 

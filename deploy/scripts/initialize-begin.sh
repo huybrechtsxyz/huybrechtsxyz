@@ -90,86 +90,94 @@ install_docker_if_needed() {
   fi
 }
 
-mount_data_volume() {
-  echo "[*] Mounting data volume..."
+mount_disks() {
+  echo "[*] Preparing and mounting disk volumes..."
+
   DISK="/dev/sdb"
   PART="${DISK}1"
-  MOUNTPOINT="/opt/appdata"
+  : "${APP_PATH_CONF:?Missing APP_PATH_CONF}"
+  : "${APP_PATH_DATA:?Missing APP_PATH_DATA}"
+  : "${APP_PATH_LOGS:?Missing APP_PATH_LOGS}"
+  : "${APP_PATH_SERV:?Missing APP_PATH_SERV}"
 
-  # Assumption: if it exists? mount it.
-  # if [[ "$HOSTNAME" != *infra* ]]; then
-  #     echo "[!] Skipping: This node ($HOSTNAME) is not a worker node."
-  #     echo "[!] Skipping: Only worker nodes contain blockstorage disks."
-  #     return 0
-  # fi
+  declare -A APP_PATHS=(
+    ["$APP_PATH_CONF"]="conf"
+    ["$APP_PATH_DATA"]="data"
+    ["$APP_PATH_LOGS"]="logs"
+    ["$APP_PATH_SERV"]="serv"
+  )
 
-  # 0. Wait for the disk to become available
+  # Wait for disk
   for i in {1..10}; do
-      if [ -b "$DISK" ]; then
-          echo "[+] Found disk ${DISK}."
-          break
-      fi
-      echo "[*] Waiting for ${DISK} to become available... ($i/10)"
-      sleep 1
+    if [ -b "$DISK" ]; then
+      echo "[+] ... Found disk ${DISK}"
+      break
+    fi
+    echo "[*] ... Waiting for ${DISK}... ($i/10)"
+    sleep 1
   done
 
   if [ ! -b "$DISK" ]; then
-      echo "[!] Disk ${DISK} not found after waiting."
-      return 0
+    echo "[!] Disk ${DISK} not found."
+    return 1
   fi
 
-  # 1. Check if partition exists
-  if ! lsblk -no NAME "${PART}" &>/dev/null; then
-      echo "[*] Creating partition on ${DISK}..."
-      echo ',,L,*' | sudo sfdisk "${DISK}"
-      sudo partprobe "${DISK}"
-      sleep 2
-  else
-      echo "[+] Partition ${PART} already exists."
+  # Partition if missing
+  if ! lsblk -no NAME "$PART" &>/dev/null; then
+    echo "[*] .. Creating partition..."
+    echo ',,L,*' | sudo sfdisk "$DISK"
+    sudo partprobe "$DISK"
+    sleep 2
   fi
 
-  # 2. Format as ext4 if necessary
-  FS_TYPE=$(sudo blkid -o value -s TYPE "${PART}" 2>/dev/null || echo "")
+  # Format if not ext4
+  FS_TYPE=$(sudo blkid -o value -s TYPE "$PART" 2>/dev/null || echo "")
   if [ "$FS_TYPE" != "ext4" ]; then
-      echo "[*] Formatting ${PART} as ext4..."
-      sudo mkfs.ext4 -F "${PART}"
+    echo "[*] ... Formatting $PART as ext4..."
+    sudo mkfs.ext4 -F "$PART"
   else
-      echo "[+] ${PART} is already formatted as ext4."
+    echo "[+] ... $PART already formatted as ext4."
   fi
 
-  # 3. Create mount point
-  sudo mkdir -p "${MOUNTPOINT}"
+  TMP_MOUNT="/mnt/appdisk"
+  sudo mkdir -p "$TMP_MOUNT"
+  sudo mount "$PART" "$TMP_MOUNT"
 
-  # 4. Get UUID
-  UUID=$(sudo blkid -s UUID -o value "${PART}")
+  echo "[*] ... Creating app subdirectories..."
+  for sub in "${APP_PATHS[@]}"; do
+    sudo mkdir -p "$TMP_MOUNT/$sub"
+  done
+
+  UUID=$(sudo blkid -s UUID -o value "$PART")
   if [ -z "$UUID" ]; then
-      echo "[!] Error: Could not retrieve UUID for ${PART}."
-      return 1
+    echo "[!] Failed to get UUID."
+    sudo umount "$TMP_MOUNT"
+    return 1
   fi
 
-  # 5. Add to /etc/fstab
-  if ! grep -q "UUID=${UUID}" /etc/fstab; then
-      echo "[*] Adding fstab entry..."
-      echo "UUID=${UUID} ${MOUNTPOINT} ext4 defaults 0 2" | sudo tee -a /etc/fstab
-  else
-      echo "[+] fstab entry already exists."
+  # Add base mount to fstab if missing
+  if ! grep -q "$TMP_MOUNT" /etc/fstab; then
+    echo "UUID=$UUID $TMP_MOUNT ext4 defaults 0 2" | sudo tee -a /etc/fstab
   fi
 
-  # 6. Mount if not already mounted
-  if ! mountpoint -q "${MOUNTPOINT}"; then
-      echo "[*] Mounting ${PART}..."
-      sudo mount "${MOUNTPOINT}"
-  else
-      echo "[+] ${MOUNTPOINT} is already mounted."
-  fi
+  # Mount again for binding
+  sudo umount "$TMP_MOUNT"
+  sudo mount "$TMP_MOUNT"  
+  echo "[*] ... Bind-mounting app paths..."
+  for target in "${!APP_PATHS[@]}"; do
+    sub="${APP_PATHS[$target]}"
+    sudo mkdir -p "$target"
+    echo "$TMP_MOUNT/$sub $target none bind 0 0" | sudo tee -a /etc/fstab
+    sudo mount "$target"
+  done
 
-  echo "[+] Disk setup complete."
+  echo "[+] Disk volume setup complete."
 }
 
 main() {
   update_system
   configure_firewall
-  mount_data_volume
+  mount_disks
   install_private_key
   install_docker_if_needed
 }

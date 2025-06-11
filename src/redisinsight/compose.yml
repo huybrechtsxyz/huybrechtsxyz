@@ -15,7 +15,7 @@ services:
   redisinsight:
     image: redis/redisinsight:latest
     volumes:
-      - ${APP_PATH_LOGS}/redis/logs:/data/logs
+      - ${APP_PATH_DATA}/redisinsight:/data
     networks:
       - lan-${WORKSPACE}
     healthcheck:

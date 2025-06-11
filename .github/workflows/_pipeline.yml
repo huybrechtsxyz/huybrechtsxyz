@@ -26,6 +26,12 @@ on:
       BITWARDEN_TOKEN:
         required: true
 
+env:
+  APP_PATH_CONF: /etc/app
+  APP_PATH_DATA: /var/lib/data
+  APP_PATH_LOGS: /var/lib/logs
+  APP_PATH_SERV: /srv/app
+
 jobs:
   # Terraform Plan and Apply
   # This job will run if the cache is not hit or if the initialize input is set to true
@@ -197,11 +203,23 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa root@${{ matrix.ip }}:/root/.ssh/id_rsa_temp || { echo "[x] Failed to transfer private key to remote server"; exit 1; }
 
+      - name: Create Environment File
+        run: |
+          cat <<EOF > ./deploy/scripts/.env
+          APP_PATH_CONF=${{ env.APP_PATH_CONF }}
+          APP_PATH_DATA=${{ env.APP_PATH_DATA }}
+          APP_PATH_LOGS=${{ env.APP_PATH_LOGS }}
+          APP_PATH_SERV=${{ env.APP_PATH_SERV }}
+          EOF
+
       # Initialize the server with initialization script
       - name: Initialize BEFORE ${{ inputs.environment }} Server ${{ matrix.label }}
         run: |
           echo "[*] Copying initialization script to remote server..."
-          scp -o StrictHostKeyChecking=no "./deploy/scripts/initialize-begin.sh" root@${{ matrix.ip }}:/tmp/initialize-begin.sh || {
+          scp -o StrictHostKeyChecking=no \
+            "./deploy/scripts/initialize-begin.sh" \
+            "./deploy/scripts/.env" \
+            root@${{ matrix.ip }}:/tmp/ || {
             echo "[x] Failed to transfer before initialization script to remote server"
             exit 1
           }
@@ -209,6 +227,9 @@ jobs:
           echo "[*] Executing BEFORE initializing remotely..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             chmod +x /tmp/initialize-begin.sh
+            if [ -f /tmp/.env ]; then
+              source /tmp/.env
+            fi
             /tmp/initialize-begin.sh
           EOF
           echo "[+] Executing BEFORE initializing remotely...DONE"

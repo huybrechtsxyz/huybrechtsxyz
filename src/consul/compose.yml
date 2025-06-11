@@ -17,7 +17,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${APP_PATH_CONF}/consul/etc:/consul/config
-      - ${APP_PATH_DATA}/consul/data:/consul/data
+      - ${APP_PATH_DATA}/consul:/consul/data
     networks:
       - lan-${WORKSPACE}
     environment:

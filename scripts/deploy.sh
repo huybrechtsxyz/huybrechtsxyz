@@ -49,10 +49,18 @@ log INFO "[+] Cleaning up VXLAN interfaces... DONE"
 # Prepare service selection list
 SELECTION=()
 
+# Make sure consul config if exists
+consul_target="$APP_PATH_CONF/consul/etc"
+if [[ ! -d "$consul_target" ]]; then
+  mkdir -p $consul_target
+  chmod 755 -R $consul_target
+fi
+
+# Loop each service
 for dir in "$APP_PATH_CONF"/*/; do
   service_dir="${dir%/}"  # Remove trailing slash
   service_name=$(basename "$service_dir")
-  service_file="$service_dir/conf/service.json"
+  service_file="$service_dir/service.json"
 
   log INFO "[*] Configuring service: $service_name"
 
@@ -61,10 +69,9 @@ for dir in "$APP_PATH_CONF"/*/; do
     continue
   fi
 
-  # Copy Consul config if exists
-  consul_conf="$service_dir/conf/consul.json"
+  consul_conf="$service_dir/consul.json"
   if [[ -f "$consul_conf" ]]; then
-    cp -f "$consul_conf" "$APP_PATH_CONF/consul/etc/consul.$service_name.json"
+    cp -f "$consul_conf" "$consul_target/consul.$service_name.json"
   fi
 
   # Load and parse service.json
@@ -92,7 +99,12 @@ for dir in "$APP_PATH_CONF"/*/; do
     esac
 
     # Build full target path
-    target_path="$base_path/$service_name/$entry_path"
+    # target_path="$base_path/$service_name/$entry_path"
+    if [ -n "$entry_path" ]; then
+      target_path="$base_path/$service_name/$entry_path"
+    else
+      target_path="$base_path/$service_name"
+    fi
 
     # Create and chmod the path
     [[ -d "$target_path" ]] || mkdir -p "$target_path"
@@ -129,7 +141,7 @@ IFS=$'\n' sorted_services=($(printf "%s\n" "${SELECTION[@]}" | sort -t'|' -k2))
 for svc in "${sorted_services[@]}"; do
   IFS='|' read -r id priority endpoint <<< "$svc"
   service_path="$APP_PATH_CONF/$id"
-  compose_file="$service_path/conf/compose.yml"
+  compose_file="$service_path/compose.yml"
 
   if [[ ! -f "$compose_file" ]]; then
     log ERROR "[!] Compose file not found for $id. Skipping deployment."

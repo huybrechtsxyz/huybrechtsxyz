@@ -22,7 +22,7 @@ function is_selected {
 matrix='['
 for dir in ./src/*; do
   service=$(basename "$dir")
-  json_file="$dir/metadata.json"
+  json_file="$dir/service.json"
   dockerfile="$(jq -r .dockerfile "$json_file" 2>/dev/null || echo "")"
 
   if [[ -f "$json_file" && -n "$dockerfile" && -f "$dir/$dockerfile" ]]; then
