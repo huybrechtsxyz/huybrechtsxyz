@@ -5,10 +5,10 @@ param (
 )
 
 # Load the required modules
-$RootPath = "C:/Users/vince/Sources/huybrechtsxyz"
-# $SourcePath = "$RootPath/src" - set in functions
-# $AppPath = "$RootPath/.app" - set in functions
-. "$RootPath/scripts/functions.ps1"
+. "$env:USERPROFILE/Sources/huybrechtsxyz/scripts/functions.ps1"
+# RootPath
+# AppPath
+# SourcePath
 
 Set-Location $AppPath
 
