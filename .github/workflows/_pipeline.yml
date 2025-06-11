@@ -205,7 +205,7 @@ jobs:
 
       - name: Create Environment File
         run: |
-          cat <<EOF > ./deploy/scripts/.env
+          cat <<EOF > ./deploy/scripts/initialize.env
           APP_PATH_CONF=${{ env.APP_PATH_CONF }}
           APP_PATH_DATA=${{ env.APP_PATH_DATA }}
           APP_PATH_LOGS=${{ env.APP_PATH_LOGS }}
@@ -220,7 +220,7 @@ jobs:
           echo "[*] Copying initialization script to remote server..."
           scp -o StrictHostKeyChecking=no \
             "./deploy/scripts/initialize-begin.sh" \
-            "./deploy/scripts/.env" \
+            "./deploy/scripts/initialize.env" \
             "./deploy/cluster.${{ inputs.workspace }}.json" \
             root@${{ matrix.ip }}:/tmp/ || {
             echo "[x] Failed to transfer before initialization script to remote server"
@@ -230,8 +230,11 @@ jobs:
           echo "[*] Executing BEFORE initializing remotely..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
             chmod +x /tmp/initialize-begin.sh
-            if [ -f /tmp/.env ]; then
-              source /tmp/.env
+            if [ -f /tmp/initialize.env ]; then
+              source /tmp/initialize.env
+            else
+              echo "[!] Initialization environment file not found. Exiting."
+              exit 1
             fi
             /tmp/initialize-begin.sh
           EOF
