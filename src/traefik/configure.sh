@@ -4,7 +4,7 @@ echo "[*] Deploying TRAEFIK to remote server..."
 
 source /tmp/variables.env
 source /tmp/secrets.env
-source $APP_PATH/functions.sh
+source $APP_PATH_CONF/functions.sh
 
 createpaths "traefik"
 
@@ -15,7 +15,7 @@ echo DOMAIN_DEV: $ENVIRONMENT
 export DOMAIN_DEV=$DOMAIN_DEV
 
 envsubst \
-  < /opt/app/traefik/conf/config.template.yml \
-  > /opt/app/traefik/conf/config.yml
+  < "$APP_PATH_CONF/traefik/conf/config.template.yml" \
+  > "$APP_PATH_CONF/traefik/conf/config.yml"
 
 echo "[*] Deploying TRAEFIK to remote server...DONE"
