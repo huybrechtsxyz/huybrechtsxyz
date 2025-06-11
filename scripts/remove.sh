@@ -1,21 +1,20 @@
 #!/bin/bash
 set -euo pipefail
 
-# Default stack name
+# Initialize script
+SCRIPT_PATH="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+source "$SCRIPT_PATH/functions.sh"
 parse_options "$@"
+load_envfile "$ENV_FILE.env"
 
 # Default stack name if not set
 STACK="${STACK:-app}"
 
-# Define the root path
-APP_PATH="/opt/app"
-source "$APP_PATH/scripts/functions.sh"
-
-log INFO "[*] Stopping DEVELOPMENT environment..."
+log INFO "[*] Stopping $STACK environment..."
 
 # Remove stack(s)
 if [[ -z "$STACK" ]]; then
-    for dir in "$APP_PATH"/*/; do
+    for dir in "$APP_PATH_CONF"/*/; do
         service_name=$(basename "$dir")
         log INFO "[*] Removing $service_name stack..."
         docker stack rm "$service_name"
@@ -25,4 +24,4 @@ else
     docker stack rm "$STACK"
 fi
 
-log INFO "[*] Stopping DEVELOPMENT environment...DONE"
+log INFO "[*] Stopping $STACK environment...DONE"

@@ -1,68 +1,5 @@
 #!/bin/bash
 
-# FUNCTION: Cleanup orphaned VXLAN interfaces
-# This function checks for orphaned VXLAN interfaces and deletes them if found.
-# Removes orphaned VXLAN interfaces that cause Docker Swarm deployment errors.
-# This is a workaround for the issue where Docker Swarm fails to deploy due to orphaned VXLAN interfaces.
-# Problem this solves:
-# Docker Swarm deployment may fail with an error like: network sandbox join failed: subnet
-cleanup_vxlan_interfaces() {
-  log INFO "[*] ... Checking for orphaned VXLAN interfaces..."
-  #interfaces=$(ls /sys/class/net | grep '^vx-')
-  interfaces=$(find /sys/class/net -maxdepth 1 -type l -name 'vx-*' -printf '%f\n' 2>/dev/null || true)
-  if [ -z "$interfaces" ]; then
-    log INFO "    - No orphaned VXLAN interfaces found."
-    return 0
-  fi
-
-  for iface in $interfaces; do
-    log INFO "[*] ...Found orphaned interface: $iface"
-    ip -d link show "$iface"
-    log INFO "[*] ...Deleting interface $iface..."
-    sudo ip link delete "$iface"
-  done
-
-  log INFO "[*] ...Checking for orphaned VXLAN interfaces...DONE"
-}
-
-# Create the paths defined in the service.json of the service/conf
-createpaths() {
-  local service="$1"
-  local service_file="$APP_PATH/$service/conf/service.json"
-
-  if [[ ! -f "$service_file" ]]; then
-    log ERROR "[!] Service file '$service_file' not found."
-    return 1
-  fi
-
-  local paths
-  paths=$(jq -c '.service.paths[]?' "$service_file")
-  if [[ -z "$paths" ]]; then
-    log WARN "[!] No servicepaths defined for service '$service'"
-    return 0
-  fi
-
-  while IFS= read -r path_entry; do
-    local subpath chmod dirpath
-    subpath=$(echo "$path_entry" | jq -r '.path')
-    chmod=$(echo "$path_entry" | jq -r '.chmod')
-    dirpath="$APP_PATH/$service/$subpath"
-
-    if [[ ! -d "$dirpath" ]]; then
-      log INFO "    - Creating directory: $dirpath"
-      if ! mkdir -p "$dirpath"; then
-        log ERROR "[!] Failed to create directory '$dirpath'"
-        continue
-      fi
-    fi
-
-    log INFO "    -Setting permissions on $dirpath to $chmod"
-    sudo chmod -R "$chmod" "$dirpath"
-  done <<< "$paths"
-
-  return 0
-}
-
 # Logging function
 log() {
   local level="$1"; shift
@@ -116,4 +53,44 @@ parse_options() {
   log INFO "[*] ... Services: ${SERVICES[*]}"
   log INFO "[*] ... Group: $GROUP"
   log INFO "[*] ... Stack: $STACK"
+}
+
+# Function to load environment variables from a given file
+load_envfile() {
+    local env_file="$1"
+
+    if [ -f "$env_file" ]; then
+        echo "Loading environment from: $env_file"
+        set -a                # Automatically export all variables
+        source "$env_file"
+        set +a
+    else
+        echo "Error: env file not found: $env_file" >&2
+        return 1
+    fi
+}
+
+# FUNCTION: Cleanup orphaned VXLAN interfaces
+# This function checks for orphaned VXLAN interfaces and deletes them if found.
+# Removes orphaned VXLAN interfaces that cause Docker Swarm deployment errors.
+# This is a workaround for the issue where Docker Swarm fails to deploy due to orphaned VXLAN interfaces.
+# Problem this solves:
+# Docker Swarm deployment may fail with an error like: network sandbox join failed: subnet
+cleanup_vxlan_interfaces() {
+  log INFO "[*] ... Checking for orphaned VXLAN interfaces..."
+  #interfaces=$(ls /sys/class/net | grep '^vx-')
+  interfaces=$(find /sys/class/net -maxdepth 1 -type l -name 'vx-*' -printf '%f\n' 2>/dev/null || true)
+  if [ -z "$interfaces" ]; then
+    log INFO "    - No orphaned VXLAN interfaces found."
+    return 0
+  fi
+
+  for iface in $interfaces; do
+    log INFO "[*] ...Found orphaned interface: $iface"
+    ip -d link show "$iface"
+    log INFO "[*] ...Deleting interface $iface..."
+    sudo ip link delete "$iface"
+  done
+
+  log INFO "[*] ...Checking for orphaned VXLAN interfaces...DONE"
 }

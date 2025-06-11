@@ -1,12 +1,16 @@
 #!/bin/bash
+
 set -euo pipefail
 
-APP_PATH="/opt/app"
-source "$APP_PATH/functions.sh"
+# Initialize script
+SCRIPT_PATH="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+source "$SCRIPT_PATH/functions.sh"
+parse_options "$@"
+load_envfile "$ENV_FILE.env"
 
 log INFO "[*] Starting services..."
 parse_options "$@"
-cd "$APP_PATH" || exit 1
+cd "$APP_PATH_CONF" || exit 1
 
 # Validate ENV_FILE input
 if [[ -z "${ENV_FILE:-}" ]]; then
@@ -37,20 +41,6 @@ export DOCKER_WORKERS
 DOCKER_WORKERS=$(docker node ls --filter "node.label=worker=true" --format '{{.Hostname}}' | wc -l)
 log INFO "[*] Number of Docker worker nodes: $DOCKER_WORKERS"
 
-# Load environment variables
-HOSTNAMEID=$(hostname)
-ENV_PATH="$APP_PATH/$ENV_FILE.env"
-
-if [[ -f "$ENV_PATH" ]]; then
-  export $(grep -v '^#' "$ENV_PATH" | xargs)
-  log INFO "[*] Loaded environment variables from $ENV_PATH"
-  cp -f "$ENV_PATH" "$APP_PATH/.env"
-  log INFO "[*] Copied environment variables to $APP_PATH/.env"
-else
-  log ERROR "[!] Environment file $ENV_PATH not found."
-  exit 1
-fi
-
 # Clean VXLAN interfaces
 log INFO "[*] Cleaning up VXLAN interfaces..."
 cleanup_vxlan_interfaces
@@ -59,7 +49,7 @@ log INFO "[+] Cleaning up VXLAN interfaces... DONE"
 # Prepare service selection list
 SELECTION=()
 
-for dir in "$APP_PATH"/*/; do
+for dir in "$APP_PATH_CONF"/*/; do
   service_dir="${dir%/}"  # Remove trailing slash
   service_name=$(basename "$service_dir")
   service_file="$service_dir/conf/service.json"
@@ -74,36 +64,53 @@ for dir in "$APP_PATH"/*/; do
   # Copy Consul config if exists
   consul_conf="$service_dir/conf/consul.json"
   if [[ -f "$consul_conf" ]]; then
-    cp -f "$consul_conf" "$APP_PATH/consul/etc/consul.$service_name.json"
+    cp -f "$consul_conf" "$APP_PATH_CONF/consul/etc/consul.$service_name.json"
   fi
 
   # Load and parse service.json
   service_data=$(< "$service_file")
-  service_paths=$(echo "$service_data" | jq -r '.service.paths[]?.path')
-
-  for entry_path in $service_paths; do
-    target_path="$service_dir/$entry_path"
-    chmod_value=$(echo "$service_data" | jq -r --arg p "$entry_path" '.service.paths[] | select(.path == $p) | .chmod')
-
-    [[ -d "$target_path" ]] || mkdir -p "$target_path"
-    chmod "$chmod_value" "$target_path"
-
-    if [[ "$entry_path" == "logs" ]]; then
-      log INFO "[*] Clearing logs in $target_path"
-      rm -rf "$target_path"/*
-    fi
-  done
-
   service_id=$(echo "$service_data" | jq -r '.service.id')
   service_group=$(echo "$service_data" | jq -r '.service.groups[]?')
   service_endpoint=$(echo "$service_data" | jq -r '.service.endpoint')
   service_priority=$(echo "$service_data" | jq -r '.service.priority')
 
+  # Iterate over each path entry
+  service_paths=$(echo "$service_data" | jq -c '.service.paths[]?')
+  for entry in $service_paths; do
+    # Extract fields
+    entry_path=$(echo "$entry" | jq -r '.path')
+    entry_type=$(echo "$entry" | jq -r '.type')
+    chmod_value=$(echo "$entry" | jq -r '.chmod')
+
+    # Map type to base path
+    case "$entry_type" in
+      config) base_path="$APP_PATH_CONF" ;;
+      data)   base_path="$APP_PATH_DATA" ;;
+      logs)   base_path="$APP_PATH_LOGS" ;;
+      serve)   base_path="$APP_PATH_SERV" ;;
+      *)      echo "Unknown type: $entry_type" >&2; continue ;;
+    esac
+
+    # Build full target path
+    target_path="$base_path/$service_name/$entry_path"
+
+    # Create and chmod the path
+    [[ -d "$target_path" ]] || mkdir -p "$target_path"
+    chmod "$chmod_value" "$target_path"
+
+    # Optional: clear logs if it's a logs path
+    if [[ "$entry_type" == "logs" ]]; then
+      log INFO "[*] Clearing logs in $target_path"
+      rm -rf "$target_path"/*
+    fi
+
+  done
+
   # Expand env variables in endpoint
   while [[ "$service_endpoint" =~ \${([^}]+)} ]]; do
-      var_name="${BASH_REMATCH[1]}"
-      var_value="${!var_name:-}"
-      service_endpoint="${service_endpoint//\${$var_name}/$var_value}"
+    var_name="${BASH_REMATCH[1]}"
+    var_value="${!var_name:-}"
+    service_endpoint="${service_endpoint//\${$var_name}/$var_value}"
   done
 
   # Match based on group or service list
@@ -121,7 +128,7 @@ IFS=$'\n' sorted_services=($(printf "%s\n" "${SELECTION[@]}" | sort -t'|' -k2))
 # Deploy selected services
 for svc in "${sorted_services[@]}"; do
   IFS='|' read -r id priority endpoint <<< "$svc"
-  service_path="$APP_PATH/$id"
+  service_path="$APP_PATH_CONF/$id"
   compose_file="$service_path/conf/compose.yml"
 
   if [[ ! -f "$compose_file" ]]; then
@@ -135,7 +142,7 @@ done
 
 # Cleanup
 log INFO "[*] Removing temporary environment file..."
-rm -f "$APP_PATH/.env"
+rm -f "$APP_PATH_CONF/.env"
 
 log INFO "[+] All services started successfully."
 log INFO "[+] Listing deployed services..."
