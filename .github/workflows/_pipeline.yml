@@ -210,6 +210,8 @@ jobs:
           APP_PATH_DATA=${{ env.APP_PATH_DATA }}
           APP_PATH_LOGS=${{ env.APP_PATH_LOGS }}
           APP_PATH_SERV=${{ env.APP_PATH_SERV }}
+          ENVIRONMENT=${{ inputs.environment }}
+          WORKSPACE=${{ inputs.workspace }}
           EOF
 
       # Initialize the server with initialization script
