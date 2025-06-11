@@ -93,6 +93,7 @@ install_docker_if_needed() {
 mount_disks() {
   echo "[*] Preparing and mounting disk volumes..."
   : "${ENVIRONMENT:?Missing ENVIRONMENT}"
+  : "${WORKSPACE:?Missing WORKSPACE}"
   : "${APP_PATH_CONF:?Missing APP_PATH_CONF}"
   : "${APP_PATH_DATA:?Missing APP_PATH_DATA}"
   : "${APP_PATH_LOGS:?Missing APP_PATH_LOGS}"
@@ -101,7 +102,7 @@ mount_disks() {
   # Get the current cluster definition
   echo "[*] ... Getting the cluster definition"
   HOSTNAME=$(hostname)
-  CLUSTER_FILE="/tmp/cluster.$ENVIRONMENT.json"
+  CLUSTER_FILE="/tmp/cluster.$WORKSPACE.json"
   echo "[*] ... Finding cluster metadata file $CLUSTER_FILE"
   if [ ! -f "$CLUSTER_FILE" ]; then
     echo "[!] Cluster metadata file not found: $CLUSTER_FILE"
