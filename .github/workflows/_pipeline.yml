@@ -219,6 +219,7 @@ jobs:
           scp -o StrictHostKeyChecking=no \
             "./deploy/scripts/initialize-begin.sh" \
             "./deploy/scripts/.env" \
+            "./deploy/cluster.${{ inputs.environment }}.json" \
             root@${{ matrix.ip }}:/tmp/ || {
             echo "[x] Failed to transfer before initialization script to remote server"
             exit 1

@@ -92,86 +92,115 @@ install_docker_if_needed() {
 
 mount_disks() {
   echo "[*] Preparing and mounting disk volumes..."
-
-  DISK="/dev/sdb"
-  PART="${DISK}1"
+  : "${ENVIRONMENT:?Missing ENVIRONMENT}"
   : "${APP_PATH_CONF:?Missing APP_PATH_CONF}"
   : "${APP_PATH_DATA:?Missing APP_PATH_DATA}"
   : "${APP_PATH_LOGS:?Missing APP_PATH_LOGS}"
   : "${APP_PATH_SERV:?Missing APP_PATH_SERV}"
 
-  declare -A APP_PATHS=(
-    ["$APP_PATH_CONF"]="conf"
+  # Get the current cluster definition
+  echo "[*] ... Getting the cluster definition"
+  HOSTNAME=$(hostname)
+  CLUSTER_FILE="/tmp/cluster.$ENVIRONMENT.json"
+  echo "[*] ... Finding cluster metadata file $CLUSTER_FILE"
+  if [ ! -f "$CLUSTER_FILE" ]; then
+    echo "[!] Cluster metadata file not found: $CLUSTER_FILE"
+    return 1
+  fi
+
+  # Get the disk sizes for this server
+  echo "[*] ... Getting disk sizes"
+  SERVER_ID=$(jq -r '.servers[].id' "$CLUSTER_FILE" | while read id; do
+    if [[ "$HOSTNAME" == *"$id"* ]]; then
+      echo "$id"
+      break
+    fi
+  done)
+
+  if [ -z "$SERVER_ID" ]; then
+    echo "[!] No matching server ID found for hostname $HOSTNAME"
+    return 1
+  fi
+
+  DISK_SIZES=($(jq -r --arg id "$SERVER_ID" '.servers[] | select(.id == $id) | .disks[]?' "$CLUSTER_FILE"))
+
+  # Map of path -> subdirectory
+  DISK_INDEX=0
+  DISK_LETTER_START="b"
+  TMP_MOUNT="/mnt/appdisk"
+  declare -A APP_PATHS_SECONDARY=(
     ["$APP_PATH_DATA"]="data"
     ["$APP_PATH_LOGS"]="logs"
     ["$APP_PATH_SERV"]="serv"
   )
 
-  # Wait for disk
-  for i in {1..10}; do
-    if [ -b "$DISK" ]; then
-      echo "[+] ... Found disk ${DISK}"
-      break
-    fi
-    echo "[*] ... Waiting for ${DISK}... ($i/10)"
-    sleep 1
-  done
-
-  if [ ! -b "$DISK" ]; then
-    echo "[!] Disk ${DISK} not found."
-    return 1
-  fi
-
-  # Partition if missing
-  if ! lsblk -no NAME "$PART" &>/dev/null; then
-    echo "[*] .. Creating partition..."
-    echo ',,L,*' | sudo sfdisk "$DISK"
-    sudo partprobe "$DISK"
-    sleep 2
-  fi
-
-  # Format if not ext4
-  FS_TYPE=$(sudo blkid -o value -s TYPE "$PART" 2>/dev/null || echo "")
-  if [ "$FS_TYPE" != "ext4" ]; then
-    echo "[*] ... Formatting $PART as ext4..."
-    sudo mkfs.ext4 -F "$PART"
-  else
-    echo "[+] ... $PART already formatted as ext4."
-  fi
-
-  TMP_MOUNT="/mnt/appdisk"
+  echo "[*] ... Mounting application disk"
   sudo mkdir -p "$TMP_MOUNT"
-  sudo mount "$PART" "$TMP_MOUNT"
 
-  echo "[*] ... Creating app subdirectories..."
-  for sub in "${APP_PATHS[@]}"; do
-    sudo mkdir -p "$TMP_MOUNT/$sub"
+  # Loop all disks for the current machine
+  echo "[*] ... Looping disks"
+  for SIZE in "${DISK_SIZES[@]}"; do
+    # Start from /dev/sdb (ASCII 98 = 'b')
+    DISK="/dev/sd$(echo "$DISK_INDEX" | awk '{printf("%c", 98 + $1)}')"
+    PART="${DISK}1"
+
+    echo "[*] Checking $DISK (size ${SIZE}GB)..."
+    if [ ! -b "$DISK" ]; then
+      echo "[!] Disk $DISK not found, skipping."
+      ((DISK_INDEX++))
+      continue
+    fi
+
+    if [ $DISK_INDEX -eq 0 ]; then
+      echo "[+] Using $DISK for APP_PATH_CONF (NO formatting)"
+      sudo mount "$PART" "$TMP_MOUNT" || return 1
+      sudo mkdir -p "$TMP_MOUNT/conf"
+      UUID=$(sudo blkid -s UUID -o value "$PART")
+      echo "UUID=$UUID $TMP_MOUNT ext4 defaults 0 2" | sudo tee -a /etc/fstab
+      echo "$TMP_MOUNT/conf $APP_PATH_CONF none bind 0 0" | sudo tee -a /etc/fstab
+      sudo mkdir -p "$APP_PATH_CONF"
+      sudo mount "$APP_PATH_CONF"
+    else
+      echo "[+] Preparing secondary disk $DISK for data/logs/serv"
+      # Partition if missing
+      if ! sudo blkid "$PART" &>/dev/null; then
+        echo ',,L,*' | sudo sfdisk "$DISK"
+        sudo partprobe "$DISK"
+        sleep 2
+      fi
+
+      # Format
+      FS_TYPE=$(sudo blkid -o value -s TYPE "$PART" 2>/dev/null || echo "")
+      if [ "$FS_TYPE" != "ext4" ]; then
+        echo "[*] Formatting $PART as ext4..."
+        sudo mkfs.ext4 -F "$PART"
+      fi
+
+      # Mount and create directories
+      sudo mount "$PART" "$TMP_MOUNT" || return 1
+      for sub in "${APP_PATHS_SECONDARY[@]}"; do
+        sudo mkdir -p "$TMP_MOUNT/$sub"
+      done
+
+      UUID=$(sudo blkid -s UUID -o value "$PART")
+      if ! grep -q "UUID=$UUID" /etc/fstab; then
+        echo "UUID=$UUID $TMP_MOUNT ext4 defaults 0 2" | sudo tee -a /etc/fstab
+      fi
+
+      for target in "${!APP_PATHS_SECONDARY[@]}"; do
+        sub="${APP_PATHS_SECONDARY[$target]}"
+        sudo mkdir -p "$target"
+        if ! grep -q "$TMP_MOUNT/$sub $target none bind" /etc/fstab; then
+          echo "$TMP_MOUNT/$sub $target none bind 0 0" | sudo tee -a /etc/fstab
+        fi
+        sudo mount "$target" || { echo "[!] Failed to mount $target"; return 1; }
+      done
+    fi
+
+    ((DISK_INDEX++))
   done
 
-  UUID=$(sudo blkid -s UUID -o value "$PART")
-  if [ -z "$UUID" ]; then
-    echo "[!] Failed to get UUID."
-    sudo umount "$TMP_MOUNT"
-    return 1
-  fi
-
-  # Add base mount to fstab if missing
-  if ! grep -q "$TMP_MOUNT" /etc/fstab; then
-    echo "UUID=$UUID $TMP_MOUNT ext4 defaults 0 2" | sudo tee -a /etc/fstab
-  fi
-
-  # Mount again for binding
-  sudo umount "$TMP_MOUNT"
-  sudo mount "$TMP_MOUNT"  
-  echo "[*] ... Bind-mounting app paths..."
-  for target in "${!APP_PATHS[@]}"; do
-    sub="${APP_PATHS[$target]}"
-    sudo mkdir -p "$target"
-    echo "$TMP_MOUNT/$sub $target none bind 0 0" | sudo tee -a /etc/fstab
-    sudo mount "$target"
-  done
-
-  echo "[+] Disk volume setup complete."
+  echo "[+] Preparing and mounting disk volumes...DONE"
 }
 
 main() {
