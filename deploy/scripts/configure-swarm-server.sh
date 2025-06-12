@@ -39,5 +39,5 @@ EOF
 echo "[+] Executing configuration script remotely...DONE"
 
 echo "[*] Copying scripts to $APP_PATH_CONF on remote server..."
-scp -o StrictHostKeyChecking=no ./scripts/*.sh root@"$REMOTE_IP":"${{ env.APP_PATH_CONF }}/"
+scp -o StrictHostKeyChecking=no ./scripts/*.sh root@"$REMOTE_IP":"$APP_PATH_CONF/"
 echo "[+] Copying scripts to $APP_PATH_CONF on remote server...DONE"
