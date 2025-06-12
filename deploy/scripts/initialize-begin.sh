@@ -154,6 +154,8 @@ mount_disks() {
 
     if [ $DISK_INDEX -eq 0 ]; then
       echo "[*] ... Using $DISK for configuration only (NO formatting / mounting)"
+      echo "[*] ... Creating $APP_PATH_CONF"
+      set -x
       sudo mkdir -p "$APP_PATH_CONF"
       ((DISK_INDEX++))
       continue
