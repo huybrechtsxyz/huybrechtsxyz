@@ -1,10 +1,8 @@
 #!/bin/bash
 
-#set -euo pipefail
-set -x
-
 echo "[*] Initializing server..."
 set -euo pipefail
+#set -x
 cd /
 
 install_private_key() {
