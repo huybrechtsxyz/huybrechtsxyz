@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
-echo "[*] Deploying CONSUL to remote server..."
-echo "[*] Deploying CONSUL to remote server...DONE"
+echo "[*] Deploying CONSUL to remote server $(hostname)..."
+echo "[*] Deploying CONSUL to remote server $(hostname)...DONE"
