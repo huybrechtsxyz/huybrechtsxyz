@@ -154,7 +154,7 @@ mount_disks() {
   )
 
   echo "[*] ... Mounting application disk"
-  sudo mkdir -p "$TMP_MOUNT"
+  mkdir -p "$TMP_MOUNT"
 
   # Loop all disks for the current machine
   echo "[*] ... Looping disks"
@@ -174,44 +174,44 @@ mount_disks() {
       echo "[*] ... Using $DISK for configuration only (NO formatting / mounting)"
       echo "[*] ... Creating $APP_PATH_CONF"
       set -x
-      sudo mkdir -p "$APP_PATH_CONF"
+      mkdir -p "$APP_PATH_CONF"
       ((DISK_INDEX++))
       continue
     fi
     
     echo "[*] ... Preparing secondary disk $DISK for data/logs/serv"
     # Partition if missing
-    if ! sudo blkid "$PART" &>/dev/null; then
-      echo ',,L,*' | sudo sfdisk "$DISK"
-      sudo partprobe "$DISK"
+    if ! blkid "$PART" &>/dev/null; then
+      echo ',,L,*' | sfdisk "$DISK"
+      partprobe "$DISK"
       sleep 2
     fi
 
     # Format
-    FS_TYPE=$(sudo blkid -o value -s TYPE "$PART" 2>/dev/null || echo "")
+    FS_TYPE=$(blkid -o value -s TYPE "$PART" 2>/dev/null || echo "")
     if [ "$FS_TYPE" != "ext4" ]; then
       echo "[*] Formatting $PART as ext4..."
-      sudo mkfs.ext4 -F "$PART"
+      mkfs.ext4 -F "$PART"
     fi
 
     # Mount and create directories
-    sudo mount "$PART" "$TMP_MOUNT" || return 1
+    mount "$PART" "$TMP_MOUNT" || return 1
     for sub in "${APP_PATHS_SECONDARY[@]}"; do
-      sudo mkdir -p "$TMP_MOUNT/$sub"
+      mkdir -p "$TMP_MOUNT/$sub"
     done
 
-    UUID=$(sudo blkid -s UUID -o value "$PART")
+    UUID=$(blkid -s UUID -o value "$PART")
     if ! grep -q "UUID=$UUID" /etc/fstab; then
-      echo "UUID=$UUID $TMP_MOUNT ext4 defaults 0 2" | sudo tee -a /etc/fstab
+      echo "UUID=$UUID $TMP_MOUNT ext4 defaults 0 2" | tee -a /etc/fstab
     fi
 
     for target in "${!APP_PATHS_SECONDARY[@]}"; do
       sub="${APP_PATHS_SECONDARY[$target]}"
-      sudo mkdir -p "$target"
+      mkdir -p "$target"
       if ! grep -q "$TMP_MOUNT/$sub $target none bind" /etc/fstab; then
-        echo "$TMP_MOUNT/$sub $target none bind 0 0" | sudo tee -a /etc/fstab
+        echo "$TMP_MOUNT/$sub $target none bind 0 0" | tee -a /etc/fstab
       fi
-      sudo mount "$target" || { echo "[!] Failed to mount $target"; return 1; }
+      mount "$target" || { echo "[!] Failed to mount $target"; return 1; }
     done
 
     ((DISK_INDEX++))
