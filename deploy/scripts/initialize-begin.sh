@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -euo pipefail
+#set -euo pipefail
+set -x
 
 echo "[*] Initializing server..."
 set -euo pipefail
@@ -98,6 +99,23 @@ mount_disks() {
   : "${APP_PATH_DATA:?Missing APP_PATH_DATA}"
   : "${APP_PATH_LOGS:?Missing APP_PATH_LOGS}"
   : "${APP_PATH_SERV:?Missing APP_PATH_SERV}"
+
+  if [ -z "$APP_PATH_CONF" ]; then
+    echo "[!] APP_PATH_CONF is not set"
+    return 1
+  fi
+  if [ -z "$APP_PATH_DATA" ]; then
+    echo "[!] APP_PATH_DATA is not set"
+    return 1
+  fi
+  if [ -z "$APP_PATH_LOGS" ]; then
+    echo "[!] APP_PATH_LOGS is not set"
+    return 1
+  fi
+  if [ -z "$APP_PATH_SERV" ]; then
+    echo "[!] APP_PATH_SERV is not set"
+    return 1
+  fi
 
   # Get the current cluster definition
   echo "[*] ... Getting the cluster definition"
