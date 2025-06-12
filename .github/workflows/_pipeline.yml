@@ -352,6 +352,7 @@ jobs:
       - name: Configure Server
         run: |
           echo "[*] Server configuration..."
+          export APP_PATH_CONF=${{ env.APP_PATH_CONF }}
           chmod +x deploy/scripts/configure-swarm-server.sh
           ./deploy/scripts/configure-swarm-server.sh "${{ matrix.ip }}" "${{ inputs.environment }}"
           echo "[+] Server configuration...DONE"
