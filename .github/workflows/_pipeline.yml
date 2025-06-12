@@ -526,5 +526,16 @@ jobs:
       # Start the environment
       - name: Start Environment
         run: |
+          echo "[*] Starting services..."
+          ROLE="${{ matrix.role }}"
+          INDEX="${{ matrix.index }}"
+          echo "[*] ... Node Role: $ROLE, Index: $INDEX"
           chmod +x deploy/scripts/start-environment.sh
-          ./deploy/scripts/start-environment.sh "${{ matrix.name }}" "${{ matrix.ip }}" "${{ inputs.services }}"
+          if [[ "$ROLE" == "manager" && "$INDEX" == "1" ]]; then
+            echo "[*] This is the first manager node. Starting the environment..."
+            ./deploy/scripts/start-environment.sh "${{ matrix.name }}" "${{ matrix.ip }}" "${{ inputs.services }}"
+          else
+            echo "[*] This is not the first manager node. Skipping environment start."
+            exit 0
+          fi
+          echo "[*] Starting services...DONE"
