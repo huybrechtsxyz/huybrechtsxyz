@@ -172,38 +172,46 @@ mount_disks() {
       echo "[*] ... Using $DISK for configuration only (NO formatting / mounting)"
       echo "[*] ... Creating $APP_PATH_CONF"
       mkdir -p "$APP_PATH_CONF"
-      echo "[*] ... Index 1 is $DISK_INDEX"
       DISK_INDEX=$((DISK_INDEX + 1))
-      echo "[*] ... Index 1 after $DISK_INDEX"
       continue
     fi
     
-    echo "[*] ... Preparing secondary disk $DISK for data/logs/serv"
+    echo "[*] ... Preparing secondary disk $DISK"
     # Partition if missing
     if ! blkid "$PART" &>/dev/null; then
+      echo "[*] ... Partitioning secondary disk $DISK"
       echo ',,L,*' | sfdisk "$DISK"
       partprobe "$DISK"
       sleep 2
     fi
 
     # Format
+    echo "[*] ... Validation format of disk $DISK"
     FS_TYPE=$(blkid -o value -s TYPE "$PART" 2>/dev/null || echo "")
     if [ "$FS_TYPE" != "ext4" ]; then
-      echo "[*] Formatting $PART as ext4..."
+      echo "[*] ... Formatting disk $DISK part $PART as ext4..."
       mkfs.ext4 -F "$PART"
     fi
 
     # Mount and create directories
-    mount "$PART" "$TMP_MOUNT" || return 1
-    for sub in "${APP_PATHS_SECONDARY[@]}"; do
-      mkdir -p "$TMP_MOUNT/$sub"
-    done
+    echo "[*] ... Mount validation disk $DISK"
+    if ! mountpoint -q "$TMP_MOUNT"; then
+      echo "[*] ... Mounting disk $DISK"
+      mount "$PART" "$TMP_MOUNT" || return 1
+      for sub in "${APP_PATHS_SECONDARY[@]}"; do
+        echo "[*] ... Creating subdirectory $TMP_MOUNT/$sub"
+        mkdir -p "$TMP_MOUNT/$sub"
+      done
+    fi
 
+    echo "[*] ... Validate disk $DISK to /etc/fstab"
     UUID=$(blkid -s UUID -o value "$PART")
     if ! grep -q "UUID=$UUID" /etc/fstab; then
+      echo "[*] ... Adding disk $DISK to /etc/fstab"
       echo "UUID=$UUID $TMP_MOUNT ext4 defaults 0 2" | tee -a /etc/fstab
     fi
 
+    echo "[*] ... Mounting subdirectories to $TMP_MOUNT"
     for target in "${!APP_PATHS_SECONDARY[@]}"; do
       sub="${APP_PATHS_SECONDARY[$target]}"
       mkdir -p "$target"
