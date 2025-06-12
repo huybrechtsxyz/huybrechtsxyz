@@ -142,7 +142,7 @@ mount_disks() {
   echo "[*] ... Looping disks"
   for SIZE in "${DISK_SIZES[@]}"; do
     # Start from /dev/sdb (ASCII 98 = 'b')
-    DISK="/dev/sd$(echo "$DISK_INDEX" | awk '{printf("%c", 98 + $1)}')"
+    DISK="/dev/sd$(echo "$DISK_INDEX" | awk '{printf("%c", 97 + $1)}')"
     PART="${DISK}1"
 
     echo "[*] ... Checking $DISK (size ${SIZE}GB)..."
