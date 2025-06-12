@@ -166,16 +166,17 @@ mount_disks() {
     echo "[*] ... Checking $DISK (size ${SIZE}GB)..."
     if [ ! -b "$DISK" ]; then
       echo "[!] Disk $DISK not found, skipping."
-      ((DISK_INDEX++))
+      DISK_INDEX=$((DISK_INDEX + 1))
       continue
     fi
 
     if [ $DISK_INDEX -eq 0 ]; then
       echo "[*] ... Using $DISK for configuration only (NO formatting / mounting)"
       echo "[*] ... Creating $APP_PATH_CONF"
-      set -x
       mkdir -p "$APP_PATH_CONF"
-      ((DISK_INDEX++))
+      echo "[*] ... Index 1 is $DISK_INDEX"
+      DISK_INDEX=$((DISK_INDEX + 1))
+      echo "[*] ... Index 1 after $DISK_INDEX"
       continue
     fi
     
@@ -214,7 +215,7 @@ mount_disks() {
       mount "$target" || { echo "[!] Failed to mount $target"; return 1; }
     done
 
-    ((DISK_INDEX++))
+    DISK_INDEX=$((DISK_INDEX + 1))
   done
 
   echo "[+] Preparing and mounting disk volumes...DONE"
