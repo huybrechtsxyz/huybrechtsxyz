@@ -51,11 +51,30 @@ process_file_env_vars() {
     done
 }
 
-# Example usage of the function
-process_file_env_vars 'KC_.*_FILE'
+substitute_env_vars() {
+  local input_file="$1"
+  local output_file="$2"
+
+  if [[ -z "$input_file" || -z "$output_file" ]]; then
+    echo "Usage: envsubst_simple input-file output-file"
+    return 1
+  fi
+
+  while IFS= read -r line; do
+    local escaped_line
+    escaped_line=$(printf '%s\n' "$line" | sed 's/\\/\\\\/g; s/"/\\"/g; s/`/\\`/g')
+    eval "echo \"$escaped_line\""
+  done < "$input_file" > "$output_file"
+}
+
+# Read all _FILE secret files to environment variables
+process_file_env_vars '*_FILE'
+
+# Substitute envvars for in the following files
+substitute_env_vars "/tmp/realm.template.json" "/tmp/realm.json"
 
 # Import the preprocessed realm JSON
-# /opt/keycloak/bin/kc.sh import --file /tmp/custom-realm.json --override false
+exec /opt/keycloak/bin/kc.sh import --file /tmp/realm.json --override false
 
 # Pass all command parameters
 exec /opt/keycloak/bin/kc.sh start "$@"
