@@ -119,11 +119,12 @@ for dir in "$APP_PATH_CONF"/*/; do
   done
 
   # Expand env variables in endpoint
-  while [[ "$service_endpoint" =~ \${([^}]+)} ]]; do
-    var_name="${BASH_REMATCH[1]}"
-    var_value="${!var_name:-}"
-    service_endpoint="${service_endpoint//\${$var_name}/$var_value}"
-  done
+  # while [[ "$service_endpoint" =~ \${([^}]+)} ]]; do
+  #   var_name="${BASH_REMATCH[1]}"
+  #   var_value="${!var_name:-}"
+  #   service_endpoint="${service_endpoint//\${$var_name}/$var_value}"
+  # done
+  service_endpoint=$(expand_env_vars "$service_endpoint")
 
   # Match based on group or service list
   if [[ "$GROUP" == "$service_group" || " ${SERVICES[*]} " == *" $service_id "* || ( -z "${GROUP:-}" && ${#SERVICES[@]:-0} -eq 0 ) ]]; then

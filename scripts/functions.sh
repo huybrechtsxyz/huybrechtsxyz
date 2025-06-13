@@ -94,3 +94,26 @@ cleanup_vxlan_interfaces() {
 
   log INFO "[*] ...Checking for orphaned VXLAN interfaces...DONE"
 }
+
+expand_env_vars() {
+  local input="$1"
+  local output="$input"
+  local var_name var_value full_match
+
+  # Loop while there are still ${VAR_NAME} patterns in the string
+  while [[ "$output" =~ (\${([^}]+)}) ]]; do
+    full_match="${BASH_REMATCH[1]}"
+    var_name="${BASH_REMATCH[2]}"
+    var_value="${!var_name:-}"
+
+    # Optionally warn if variable is not set
+    if [[ -z "${!var_name+x}" ]]; then
+      echo "Warning: Environment variable '$var_name' is not set." >&2
+    fi
+
+    # Replace the placeholder with its value
+    output="${output//$full_match/$var_value}"
+  done
+
+  echo "$output"
+}
