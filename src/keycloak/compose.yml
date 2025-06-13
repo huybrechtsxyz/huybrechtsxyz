@@ -5,7 +5,11 @@ secrets:
     external: true
   PLATFORM_PASSWORD:
     external: true
-
+  TRAEFIK_CLIENTID:
+    external: true
+  TRAEFIK_SECRET:           
+    external: true
+    
 # configs:
 # volumes:
 
