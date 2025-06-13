@@ -40,7 +40,9 @@ echo "[+] Executing configuration script remotely...DONE"
 
 echo "[*] Copying scripts to $APP_PATH_CONF on remote server..."
 scp -o StrictHostKeyChecking=no ./scripts/*.sh root@"$REMOTE_IP":"$APP_PATH_CONF/"
+
 ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" << 'EOF'
   chmod +x "$APP_PATH_CONF"/*.sh
-EOF  
+EOF
+
 echo "[+] Copying scripts to $APP_PATH_CONF on remote server...DONE"
