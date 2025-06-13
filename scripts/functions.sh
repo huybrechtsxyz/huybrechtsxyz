@@ -95,6 +95,7 @@ cleanup_vxlan_interfaces() {
   log INFO "[*] ...Checking for orphaned VXLAN interfaces...DONE"
 }
 
+# FUNCTION: Expands the environment variables with their value
 expand_env_vars() {
   local input="$1"
   local output="$input"

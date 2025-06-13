@@ -152,3 +152,32 @@ function Merge-Template {
 
     Set-Content -Path $OutputFile -Value $processed
 }
+
+function Merge-EnvironmentVariables {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$InputString
+    )
+
+    $output = $InputString
+
+    # Match all ${VAR_NAME} patterns in the string
+    $pattern = '\$\{([^}]+)\}'
+
+    # Loop until no more matches
+    while ($output -match $pattern) {
+        $varName = $matches[1]
+        $fullMatch = $matches[0]
+
+        $envValue = [System.Environment]::GetEnvironmentVariable($varName)
+
+        if ($null -ne $envValue) {
+            $output = $output -replace [regex]::Escape($fullMatch), $envValue
+        } else {
+            # Replace with empty string or keep original — your choice
+            $output = $output -replace [regex]::Escape($fullMatch), ''
+        }
+    }
+
+    return $output
+}

@@ -6,9 +6,9 @@ param (
 
 # Load the required modules
 . "$env:USERPROFILE/Sources/huybrechtsxyz/scripts/functions.ps1"
-# RootPath
-# AppPath
-# SourcePath
+# RootPath from functions
+# AppPath from functions
+# SourcePath from functions
 
 Set-Location $AppPath
 
@@ -128,6 +128,38 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
     # Copy to the consul configuration directory
     Copy-Item -Path "$AppServicePath/conf/consul.json" -Destination "$AppPath/consul/etc/consul.$ServiceName.json" -Force
 
+    # Check if traefik sso is used and create setting file
+    if( $ServiceData.service.auth.use_traefik -eq "true") {
+        $AUTHFILE = "$env:APP_PATH_CONF/traefik/etc/auth.$($ServiceData.service.id).yml"
+        $RedirectUri = Merge-EnvironmentVariables -InputString $ServiceData.service.auth.redirecturi
+        $AuthHost = Merge-EnvironmentVariables -InputString $ServiceData.service.auth.auth_host
+
+        $content = @"
+$($service.id)-auth:
+  plugin:
+    keycloakopenid:
+    ClientId: "$env:TRAEFIK_CLIENTID"
+    ClientSecret: "$env:TRAEFIK_SECRET"
+    KeycloakRealm: "$env:WORKSPACE"
+    DiscoveryUrl: "https://auth.$($env:DOMAIN_DEV)/realms/$($env:WORKSPACE)/.well-known/openid-configuration"
+    RedirectUri: "$RedirectUri"
+    AuthHost: "$AuthHost"
+    Scope: "openid,email,profile"
+    TokenCookieName: "AUTH_TOKEN"
+    UseAuthHeader: false
+    IgnorePathPrefixes: "/favicon.ico"
+"@
+
+        # Ensure the directory exists
+        $authDir = Split-Path -Parent $AUTHFILE
+        if (-not (Test-Path $authDir)) {
+            New-Item -ItemType Directory -Path $authDir -Force | Out-Null
+        }
+
+        # Write content to file
+        $content | Out-File -FilePath $AUTHFILE -Encoding UTF8
+    }
+    
     # Execute extra development if needed
     $AppDevScript = "$AppServicePath/conf/develop.ps1"
     if (Test-Path $AppDevScript){
@@ -139,11 +171,7 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
         ($Services -contains $ServiceData.service.id) -or
         ($Group -eq "" -and $Services -eq @())
     ) {
-        $expanded = $ServiceData.service.endpoint
-        if ($ServiceData.service.endpoint -match '\$\{([^}]+)\}') {
-            $value = [System.Environment]::GetEnvironmentVariable($matches[1])
-            $expanded = $ServiceData.service.endpoint -replace [regex]::Escape($matches[0]), $value
-        }
+        $expanded = Merge-EnvironmentVariables -InputString $ServiceData.service.endpoint
         $Selection += [PSCustomObject]@{
             id       = $ServiceData.service.id
             priority = $ServiceData.service.priority

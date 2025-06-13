@@ -80,6 +80,9 @@ for dir in "$APP_PATH_CONF"/*/; do
   service_group=$(echo "$service_data" | jq -r '.service.groups[]?')
   service_endpoint=$(echo "$service_data" | jq -r '.service.endpoint')
   service_priority=$(echo "$service_data" | jq -r '.service.priority')
+  service_traefiksso=$(echo "$service_data" | jq -r '.service.auth.use_traefik')
+  service_redirecturi=$(echo "$service_data" | jq -r '.service.auth.redirect_uri')
+  service_auth_host=$(echo "$service_data" | jq -r '.service.auth.auth_host')
 
   # Iterate over each path entry
   service_paths=$(echo "$service_data" | jq -c '.service.paths[]?')
@@ -119,12 +122,30 @@ for dir in "$APP_PATH_CONF"/*/; do
   done
 
   # Expand env variables in endpoint
-  # while [[ "$service_endpoint" =~ \${([^}]+)} ]]; do
-  #   var_name="${BASH_REMATCH[1]}"
-  #   var_value="${!var_name:-}"
-  #   service_endpoint="${service_endpoint//\${$var_name}/$var_value}"
-  # done
   service_endpoint=$(expand_env_vars "$service_endpoint")
+
+  # Services that use traefik sso
+  if [ "$service_traefiksso" == "true" ]; then 
+    AUTHFILE="$APP_PATH_CONF/traefik/etc/auth.$service_id.yml"
+    REDIRECT_URI=$(expand_env_vars "$service_redirecturi")
+    AUTH_HOST=$(expand_env_vars "$service_auth_host")
+    
+    cat <<EOF >> "$AUTHFILE"
+    ${service_id}-auth:
+      plugin:
+        keycloakopenid:
+          ClientId: "${TRAEFIK_CLIENTID}"
+          ClientSecret: "${TRAEFIK_SECRET}"
+          KeycloakRealm: "${WORKSPACE}"
+          DiscoveryUrl: "https://auth.${DOMAIN_DEV}/realms/${WORKSPACE}/.well-known/openid-configuration"
+          RedirectUri: "${REDIRECT_URI}"
+          AuthHost: "${AUTH_HOST}"
+          Scope: "openid,email,profile"
+          TokenCookieName: "AUTH_TOKEN"
+          UseAuthHeader: false
+          IgnorePathPrefixes: "/favicon.ico"
+EOF
+  fi
 
   # Match based on group or service list
   if [[ "$GROUP" == "$service_group" || " ${SERVICES[*]} " == *" $service_id "* || ( -z "${GROUP:-}" && ${#SERVICES[@]:-0} -eq 0 ) ]]; then
