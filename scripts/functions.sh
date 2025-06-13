@@ -60,12 +60,12 @@ load_envfile() {
     local env_file="$1"
 
     if [ -f "$env_file" ]; then
-        echo "Loading environment from: $env_file"
+        log INFO "[*] ... Loading environment from: $env_file"
         set -a                # Automatically export all variables
         source "$env_file"
         set +a
     else
-        echo "Error: env file not found: $env_file" >&2
+        log ERROR "[!] Error: env file not found: $env_file" >&2
         return 1
     fi
 }
@@ -81,7 +81,7 @@ cleanup_vxlan_interfaces() {
   #interfaces=$(ls /sys/class/net | grep '^vx-')
   interfaces=$(find /sys/class/net -maxdepth 1 -type l -name 'vx-*' -printf '%f\n' 2>/dev/null || true)
   if [ -z "$interfaces" ]; then
-    log INFO "    - No orphaned VXLAN interfaces found."
+    log INFO "[*] ... No orphaned VXLAN interfaces found."
     return 0
   fi
 

@@ -5,7 +5,7 @@ set -euo pipefail
 SCRIPT_PATH="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 source "$SCRIPT_PATH/functions.sh"
 parse_options "$@"
-load_envfile "$ENV_FILE.env"
+load_envfile "vars-$ENV_FILE.env"
 
 # Default stack name if not set
 STACK="${STACK:-app}"
