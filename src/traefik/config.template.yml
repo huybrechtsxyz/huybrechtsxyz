@@ -59,12 +59,12 @@ certificatesResolvers:
         delayBeforeCheck: 60
 
 ## Traefik Plugins
-# experimental:
-#   #otlpLogs: true
-#   plugins:
-#     keycloakopenid:
-#       moduleName: "github.com/Gwojda/keycloakopenid"
-#       version: "v0.1.35"
+experimental:
+  #otlpLogs: true
+  plugins:
+    keycloakopenid:
+      moduleName: "github.com/Gwojda/keycloakopenid"
+      version: "v0.1.35"
 
 ## OPERATIONAL
 api:
