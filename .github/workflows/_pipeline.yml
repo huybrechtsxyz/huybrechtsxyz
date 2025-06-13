@@ -505,6 +505,10 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:
+      # Check out the repo
+      - name: Check Out
+        uses: actions/checkout@v4
+
       # Set up GitHub Secrets
       - name: Get General Secrets
         uses: bitwarden/sm-action@v2
