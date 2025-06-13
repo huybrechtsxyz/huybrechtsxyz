@@ -130,6 +130,8 @@ for dir in "$APP_PATH_CONF"/*/; do
     REDIRECT_URI=$(expand_env_vars "$service_redirecturi")
     AUTH_HOST=$(expand_env_vars "$service_auth_host")
     
+DIT IS KAPOT > NO SECRETS AVAILABLE !
+
     cat <<EOF >> "$AUTHFILE"
     ${service_id}-auth:
       plugin:
