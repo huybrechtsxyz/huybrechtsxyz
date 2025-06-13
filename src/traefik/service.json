@@ -1,0 +1,24 @@
+{
+  "service": {
+    "id": "traefik",
+    "priority": 1,
+    "groups": ["infra"],
+    "description": "Reverse proxy and load balancer for microservices",
+    "endpoint": "http://traefik.${DOMAIN_DEV}/dashboard/",
+    "paths": [
+      { "type": "config", "path":"",     "chmod": 755 },
+      { "type": "data", "path":"", "chmod": 600 },
+      { "type": "logs",   "path":"",     "chmod": 777 }
+    ],
+    "project": {
+      "config": "",
+      "file": "",
+      "registry": "",
+      "imagename": "",
+      "dockerfile": "",
+      "buildconfig": "",
+      "runtime": "",
+      "runversion": ""
+    }
+  }
+}

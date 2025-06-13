@@ -1,0 +1,80 @@
+# version: '3.9'
+
+secrets:
+  PLATFORM_USERNAME:
+    external: true
+  PLATFORM_PASSWORD:
+    external: true
+
+# configs:
+# volumes:
+
+networks:
+  lan-develop:
+    external: true
+  lan-platform:
+    external: true
+
+services:
+
+  pgadmin:
+    image: dpage/pgadmin4
+    volumes:
+      - ${APP_PATH_DATA}/pgadmin:/var/lib/pgadmin
+    networks:
+      - lan-${WORKSPACE}
+    secrets:
+      - PLATFORM_PASSWORD
+    environment:
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      ENVIRONMENT: ${ENVIRONMENT}
+      PGADMIN_LISTEN_PORT: 9080
+      PGADMIN_DEFAULT_EMAIL: ${PLATFORM_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
+      SCRIPT_NAME: /pgadmin
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
+      interval: 60s
+      timeout: 15s
+      retries: 5
+      start_period: 120s
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra==true
+          - node.labels.postgres==true
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
+      labels:
+        - traefik.enable=true
+        # Redirect / → /pgadmin
+        - traefik.http.middlewares.pgadmin-redirect.redirectregex.regex=^https:\/\/pgadmin\.${DOMAIN_DEV}/$$
+        - traefik.http.middlewares.pgadmin-redirect.redirectregex.replacement=https://pgadmin.${DOMAIN_DEV}/pgadmin
+        - traefik.http.middlewares.pgadmin-redirect.redirectregex.permanent=true
+        - traefik.http.routers.pgadmin-redirect.rule=Host(`pgadmin.${DOMAIN_DEV}`) && Path(`/`)
+        - traefik.http.routers.pgadmin-redirect.entrypoints=websecure
+        - traefik.http.routers.pgadmin-redirect.tls.certresolver=${TRAEFIK_TLS_DNS}
+        - traefik.http.routers.pgadmin-redirect.middlewares=pgadmin-redirect
+        #  pgAdmin service at /pgadmin
+        - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
+        - traefik.http.services.pgadmin.loadbalancer.server.port=9080
+        - traefik.http.routers.pgadmin.rule=Host(`pgadmin.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
+        - traefik.http.routers.pgadmin.entrypoints=websecure
+        - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_TLS_DNS}

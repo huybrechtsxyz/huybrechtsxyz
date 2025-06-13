@@ -1,0 +1,89 @@
+{
+  "services": [
+    {
+      "id": "sw-master",
+      "name": "sw-master",
+      "address": "sw-master",
+      "port": 9333,
+      "meta": {},
+      "checks": [
+        {
+          "id": "sw-master-http-check",
+          "name": "SeaweedFS Master HTTP Health Check",
+          "http": "http://sw-master:9333/cluster/status",
+          "interval": "60s",
+          "timeout": "15s"
+        }
+      ],
+      "tags": ["seaweedfs", "master", "docker-swarm", "system"]
+    },
+    {
+      "id": "sw-volume",
+      "name": "sw-volume",
+      "address": "sw-volume",
+      "port": 8080,
+      "meta": {},
+      "checks": [
+        {
+          "id": "sw-volume-http-check",
+          "name": "SeaweedFS Volume HTTP Health Check",
+          "http": "http://sw-volume:8080/status",
+          "interval": "60s",
+          "timeout": "15s"
+        }
+      ],
+      "tags": ["seaweedfs", "volume", "docker-swarm", "system"]
+    },
+    {
+      "id": "sw-filer",
+      "name": "sw-filer",
+      "address": "sw-filer",
+      "port": 8888,
+      "meta": {},
+      "checks": [
+        {
+          "id": "sw-filer-http-check",
+          "name": "SeaweedFS Filer HTTP Health Check",
+          "http": "http://sw-filer:8888/?pretty=y",
+          "interval": "60s",
+          "timeout": "15s"
+        }
+      ],
+      "tags": ["seaweedfs", "filer", "docker-swarm", "system"]
+    },
+    {
+      "id": "sw-store",
+      "name": "sw-store",
+      "address": "sw-store",
+      "port": 8333,
+      "meta": {},
+      "checks": [
+        {
+          "id": "sw-store-http-check",
+          "name": "SeaweedFS Store HTTP Health Check",
+          "http": "http://sw-store:8333/",
+          "interval": "60s",
+          "timeout": "15s"
+        }
+      ],
+      "tags": ["seaweedfs", "s3", "docker-swarm", "system"]
+    },
+    {
+      "id": "sw-webdav",
+      "name": "sw-webdav",
+      "address": "sw-webdav",
+      "port": 7333,
+      "meta": {},
+      "checks": [
+        {
+          "id": "sw-webdav-http-check",
+          "name": "SeaweedFS WebDav HTTP Health Check",
+          "http": "http://sw-webdav:7333/",
+          "interval": "60s",
+          "timeout": "15s"
+        }
+      ],
+      "tags": ["seaweedfs", "webdav", "docker-swarm", "system"]
+    } 
+  ]
+}

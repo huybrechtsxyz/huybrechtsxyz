@@ -32,9 +32,9 @@ services:
       - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${APP_PATH}/traefik/conf/traefik-config.yml:/etc/traefik/traefik-config.yml
-      - ${APP_PATH}/traefik/data:/app/data
-      - ${APP_PATH}/traefik/logs:/app/logs
+      - ${APP_PATH_CONF}/traefik/config.yml:/etc/traefik/traefik-config.yml
+      - ${APP_PATH_DATA}/traefik:/app/data
+      - ${APP_PATH_LOGS}/traefik:/app/logs
     networks:
       - wan-${WORKSPACE}
       - lan-${WORKSPACE}
@@ -83,8 +83,8 @@ services:
         # Traefik dashboard
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
-        - traefik.http.routers.traefik.rule=Host(`proxy.${DOMAIN_DEV}`)
+        - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_DEV}`)
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_TLS_HTTP}
-        - traefik.http.routers.traefik.middlewares=${TRAEFIK_MIDDLEWARES}
+        - traefik.http.routers.traefik.middlewares=basic-auth

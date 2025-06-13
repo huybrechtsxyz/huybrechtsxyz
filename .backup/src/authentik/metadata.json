@@ -1,0 +1,20 @@
+{
+  "group": "infra",
+  "name": "authentik",
+  "service": "authentik",
+  "description": "Authentik is an self-hosted, open source identity provider.",
+  "servicepaths": [
+    { "path":"conf", "chmod": 755 },
+    { "path":"certs", "chmod": 755 },
+    { "path":"media", "chmod": 777 },
+    { "path":"tmpl", "chmod": 777 }
+  ],
+  "projectname": "",
+  "projectfile": "",
+  "registry": "",
+  "imagename": "",
+  "dockerfile": "",
+  "build_config": "",
+  "runtime": "",
+  "run_version": ""
+}

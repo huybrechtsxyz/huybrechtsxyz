@@ -15,7 +15,7 @@ services:
   redis:
     image: "redis:7-alpine"
     volumes:
-      - ${APP_PATH}/redis/data:/data
+      - ${APP_PATH_DATA}/redis:/data
     networks:
       - lan-${WORKSPACE}
     command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
@@ -50,48 +50,3 @@ services:
         monitor: 30s
       labels:
         - traefik.enable=false
-
-  redisinsight:
-    image: redis/redisinsight:latest
-    volumes:
-      - ${APP_PATH}/redis/logs:/data/logs
-    networks:
-      - lan-${WORKSPACE}
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "http://0.0.0.0:5540/api/health/"]
-      interval: 60s
-      timeout: 15s
-      retries: 5
-      start_period: 120s
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-          - node.labels.infra==true
-        preferences:
-          - spread: node.id
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      labels:
-        - traefik.enable=true
-        - traefik.http.services.redisinsight.loadbalancer.server.scheme=http
-        - traefik.http.services.redisinsight.loadbalancer.server.port=5540
-        - traefik.http.routers.redisinsight.rule=Host(`redis.${DOMAIN_DEV}`)
-        - traefik.http.routers.redisinsight.entrypoints=websecure
-        - traefik.http.routers.redisinsight.tls.certresolver=${TRAEFIK_TLS_DNS}
-        - traefik.http.routers.redisinsight.service=redisinsight
-        - traefik.http.routers.redisinsight.middlewares=${TRAEFIK_MIDDLEWARES}

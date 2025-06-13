@@ -13,6 +13,7 @@ jobs:
       environment: shared
       infrastructure: true
       rebuild: false
+      appstack: ''
       services: ''
     secrets:
       BITWARDEN_TOKEN: ${{ secrets.BITWARDEN_TOKEN }}

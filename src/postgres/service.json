@@ -1,0 +1,24 @@
+{
+  "service": {
+    "id": "postgres",
+    "priority": 3,
+    "groups": ["infra","sqldb"],
+    "description": "PostgreSQL database service for data storage and retrieval",
+    "endpoint": "",
+    "paths": [
+      { "type": "config", "path":"", "chmod": 755 },
+      { "type": "data", "path":"data", "chmod": 777 },
+      { "type": "data", "path":"backups", "chmod": 777 }
+    ],
+    "project": {
+      "name": "",
+      "file": "",
+      "registry": "",
+      "imagename": "",
+      "dockerfile": "",
+      "buildconfig": "",
+      "runtime": "",
+      "runversion": ""
+    }
+  }
+}

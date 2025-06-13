@@ -1,0 +1,17 @@
+{
+  "server": true,
+  "bind_addr": "0.0.0.0",
+  "client_addr": "0.0.0.0",
+  "retry_join": ["provider=docker"],
+  "ui_config": {
+    "enabled": true
+  },
+  "log_level": "INFO",
+  "ports": {
+    "http": 8500,
+    "dns": 8600
+  },
+  "telemetry": {
+    "prometheus_retention_time": "5m"
+  }
+}
