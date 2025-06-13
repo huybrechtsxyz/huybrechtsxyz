@@ -79,6 +79,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+        # Basic Authentication
         - traefik.http.middlewares.basic-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU.
         # Traefik dashboard
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
