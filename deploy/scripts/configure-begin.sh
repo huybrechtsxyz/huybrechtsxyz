@@ -111,10 +111,10 @@ createnodelabels() {
     role=$(echo "$node" | cut -d'-' -f3)
     instance=$(echo "$node" | cut -d'-' -f4)
     server="${role}-${instance}"
-    echo "    - Setting $role=true on $node"
-    echo "    - Setting role=$role on $node"
-    echo "    - Setting server=$server on $node"
-    echo "    - Setting instance=$instance on $node"
+    echo "[*]     - Setting $role=true on $node"
+    echo "[*]     - Setting role=$role on $node"
+    echo "[*]     - Setting server=$server on $node"
+    echo "[*]     - Setting instance=$instance on $node"
     docker node update \
       --label-add $role=true \
       --label-add role=$role \

@@ -54,6 +54,12 @@ consul_target="$APP_PATH_CONF/consul/etc"
 if [[ ! -d "$consul_target" ]]; then
   mkdir -p $consul_target
   chmod 755 -R $consul_target
+  if [[ -f "$APP_PATH_CONF/consul/config.json" ]]; then
+    log INFO "[+] Moved Consul config to $consul_config_target"
+    mv -f "$APP_PATH_CONF/consul/config.json" "$consul_target/consul.json"
+  else
+    log WARN "[!] consul/config.json not found in $APP_PATH_CONF. Skipping Consul configuration."
+  fi
 fi
 
 # Loop each service
@@ -80,9 +86,6 @@ for dir in "$APP_PATH_CONF"/*/; do
   service_group=$(echo "$service_data" | jq -r '.service.groups[]?')
   service_endpoint=$(echo "$service_data" | jq -r '.service.endpoint')
   service_priority=$(echo "$service_data" | jq -r '.service.priority')
-  service_traefiksso=$(echo "$service_data" | jq -r '.service.auth.use_traefik')
-  service_redirecturi=$(echo "$service_data" | jq -r '.service.auth.redirect_uri')
-  service_auth_host=$(echo "$service_data" | jq -r '.service.auth.auth_host')
 
   # Iterate over each path entry
   service_paths=$(echo "$service_data" | jq -c '.service.paths[]?')
@@ -90,7 +93,6 @@ for dir in "$APP_PATH_CONF"/*/; do
     # Extract fields
     entry_path=$(echo "$entry" | jq -r '.path')
     entry_type=$(echo "$entry" | jq -r '.type')
-    chmod_value=$(echo "$entry" | jq -r '.chmod')
 
     # Map type to base path
     case "$entry_type" in
@@ -101,24 +103,11 @@ for dir in "$APP_PATH_CONF"/*/; do
       *)      echo "Unknown type: $entry_type" >&2; continue ;;
     esac
 
-    # Build full target path
-    # target_path="$base_path/$service_name/$entry_path"
-    if [ -n "$entry_path" ]; then
-      target_path="$base_path/$service_name/$entry_path"
-    else
-      target_path="$base_path/$service_name"
-    fi
-
-    # Create and chmod the path
-    [[ -d "$target_path" ]] || mkdir -p "$target_path"
-    chmod "$chmod_value" "$target_path"
-
-    # Optional: clear logs if it's a logs path
+    # Clear logs if it's a logs path
     if [[ "$entry_type" == "logs" ]]; then
       log INFO "[*] Clearing logs in $target_path"
       rm -rf "$target_path"/*
     fi
-
   done
 
   # Expand env variables in endpoint

@@ -118,3 +118,46 @@ expand_env_vars() {
 
   echo "$output"
 }
+
+create_service_paths() {
+  local service="$1"
+  local service_file="$APP_PATH_CONF/$service/service.json"
+
+  if [[ ! -f "$service_file" ]]; then
+    log ERROR "[!] $service_file not found. Skipping..."
+    return 1
+  fi
+
+  local service_data=$(< "$service_file")
+
+  # Iterate over each path entry
+  service_paths=$(echo "$service_data" | jq -c '.service.paths[]?')
+  for entry in $service_paths; do
+    # Extract fields
+    entry_path=$(echo "$entry" | jq -r '.path')
+    entry_type=$(echo "$entry" | jq -r '.type')
+    chmod_value=$(echo "$entry" | jq -r '.chmod')
+
+    # Map type to base path
+    case "$entry_type" in
+      config) base_path="$APP_PATH_CONF" ;;
+      data)   base_path="$APP_PATH_DATA" ;;
+      logs)   base_path="$APP_PATH_LOGS" ;;
+      serve)  base_path="$APP_PATH_SERV" ;;
+      *)      log ERROR "[!] Unknown type: $entry_type" >&2; continue ;;
+    esac
+
+    # Build full target path
+    if [ -n "$entry_path" ]; then
+      target_path="$base_path/$service/$entry_path"
+    else
+      target_path="$base_path/$service"
+    fi
+
+    # Create and chmod the path
+    [[ -d "$target_path" ]] || mkdir -p "$target_path"
+    chmod "$chmod_value" "$target_path"
+  done
+
+  return 0
+}
