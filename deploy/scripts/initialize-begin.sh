@@ -172,6 +172,9 @@ mount_disks() {
       echo "[*] ... Using $DISK for configuration only (NO formatting / mounting)"
       echo "[*] ... Creating $APP_PATH_CONF"
       mkdir -p "$APP_PATH_CONF"
+      mkdir -p "$APP_PATH_DATA"
+      mkdir -p "$APP_PATH_LOGS"
+      mkdir -p "$APP_PATH_SERV"
       DISK_INDEX=$((DISK_INDEX + 1))
       continue
     fi
