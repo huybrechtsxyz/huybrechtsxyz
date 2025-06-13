@@ -6,7 +6,7 @@ set -euo pipefail
 SCRIPT_PATH="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 source "$SCRIPT_PATH/functions.sh"
 parse_options "$@"
-load_envfile "$ENV_FILE.env"
+load_envfile "vars-$ENV_FILE.env"
 
 log INFO "[*] Starting services..."
 parse_options "$@"
@@ -123,31 +123,6 @@ for dir in "$APP_PATH_CONF"/*/; do
 
   # Expand env variables in endpoint
   service_endpoint=$(expand_env_vars "$service_endpoint")
-
-  # Services that use traefik sso
-  if [ "$service_traefiksso" == "true" ]; then 
-    AUTHFILE="$APP_PATH_CONF/traefik/etc/auth.$service_id.yml"
-    REDIRECT_URI=$(expand_env_vars "$service_redirecturi")
-    AUTH_HOST=$(expand_env_vars "$service_auth_host")
-    
-DIT IS KAPOT > NO SECRETS AVAILABLE !
-
-    cat <<EOF >> "$AUTHFILE"
-    ${service_id}-auth:
-      plugin:
-        keycloakopenid:
-          ClientId: "${TRAEFIK_CLIENTID}"
-          ClientSecret: "${TRAEFIK_SECRET}"
-          KeycloakRealm: "${WORKSPACE}"
-          DiscoveryUrl: "https://auth.${DOMAIN_DEV}/realms/${WORKSPACE}/.well-known/openid-configuration"
-          RedirectUri: "${REDIRECT_URI}"
-          AuthHost: "${AUTH_HOST}"
-          Scope: "openid,email,profile"
-          TokenCookieName: "AUTH_TOKEN"
-          UseAuthHeader: false
-          IgnorePathPrefixes: "/favicon.ico"
-EOF
-  fi
 
   # Match based on group or service list
   if [[ "$GROUP" == "$service_group" || " ${SERVICES[*]} " == *" $service_id "* || ( -z "${GROUP:-}" && ${#SERVICES[@]:-0} -eq 0 ) ]]; then

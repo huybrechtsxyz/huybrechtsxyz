@@ -47,6 +47,9 @@ services:
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
+      WORKSPACE: ${WORKSPACE}
+      REALM_ID: ${REALM_ID}
+      REALM_NAME: ${REALM_NAME}
       VERSIO_ENDPOINT: ${VERSIO_ENDPOINT}
       VERSIO_USERNAME_FILE: /run/secrets/VERSIO_USERNAME
       VERSIO_PASSWORD_FILE: /run/secrets/VERSIO_PASSWORD
@@ -82,6 +85,18 @@ services:
         - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
         # Basic Authentication
         - traefik.http.middlewares.basic-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU.
+        # SSO Authentication
+        - traefik.http.middlewares.traefik-auth.plugin.keycloakopenid.ClientIdFile=/run/secrets/TRAEFIK_CLIENTID
+        - traefik.http.middlewares.traefik-auth.plugin.keycloakopenid.ClientSecretFile=/run/secrets/TRAEFIK_SECRET
+        - traefik.http.middlewares.traefik-auth.plugin.keycloakopenid.KeycloakURL=http://auth.${DOMAIN_DEV}:8080/
+        - traefik.http.middlewares.traefik-auth.plugin.keycloakopenid.KeycloakRealm=${REALM_ID}
+        - traefik.http.middlewares.traefik-auth.plugin.keycloakopenid.DiscoveryUrl=https://auth.${DOMAIN_DEV}/realms/${WORKSPACE}/.well-known/openid-configuration
+        - traefik.http.middlewares.traefik-auth.plugin.keycloakopenid.RedirectUri=https://traefik.${DOMAIN_DEV}/_oauth
+        - traefik.http.middlewares.traefik-auth.plugin.keycloakopenid.AuthHost=https://traefik.${DOMAIN_DEV}
+        - traefik.http.middlewares.traefik-auth.plugin.keycloakopenid.Scope=openid,profile,email
+        - traefik.http.middlewares.traefik-auth.plugin.keycloakopenid.TokenCookieName=AUTH_TOKEN
+        - traefik.http.middlewares.traefik-auth.plugin.keycloakopenid.UseAuthHeader=false
+        - traefik.http.middlewares.traefik-auth.plugin.keycloakopenid.IgnorePathPrefixes=/favicon.ico
         # Traefik dashboard
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080

@@ -127,38 +127,6 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
 
     # Copy to the consul configuration directory
     Copy-Item -Path "$AppServicePath/conf/consul.json" -Destination "$AppPath/consul/etc/consul.$ServiceName.json" -Force
-
-    # Check if traefik sso is used and create setting file
-    if( $ServiceData.service.auth.use_traefik -eq "true") {
-        $AUTHFILE = "$env:APP_PATH_CONF/traefik/etc/auth.$($ServiceData.service.id).yml"
-        $RedirectUri = Merge-EnvironmentVariables -InputString $ServiceData.service.auth.redirecturi
-        $AuthHost = Merge-EnvironmentVariables -InputString $ServiceData.service.auth.auth_host
-
-        $content = @"
-$($service.id)-auth:
-  plugin:
-    keycloakopenid:
-    ClientId: "$env:TRAEFIK_CLIENTID"
-    ClientSecret: "$env:TRAEFIK_SECRET"
-    KeycloakRealm: "$env:WORKSPACE"
-    DiscoveryUrl: "https://auth.$($env:DOMAIN_DEV)/realms/$($env:WORKSPACE)/.well-known/openid-configuration"
-    RedirectUri: "$RedirectUri"
-    AuthHost: "$AuthHost"
-    Scope: "openid,email,profile"
-    TokenCookieName: "AUTH_TOKEN"
-    UseAuthHeader: false
-    IgnorePathPrefixes: "/favicon.ico"
-"@
-
-        # Ensure the directory exists
-        $authDir = Split-Path -Parent $AUTHFILE
-        if (-not (Test-Path $authDir)) {
-            New-Item -ItemType Directory -Path $authDir -Force | Out-Null
-        }
-
-        # Write content to file
-        $content | Out-File -FilePath $AUTHFILE -Encoding UTF8
-    }
     
     # Execute extra development if needed
     $AppDevScript = "$AppServicePath/conf/develop.ps1"

@@ -3,10 +3,6 @@ providers:
   swarm:
     exposedByDefault: false
 
-  file:
-    directory: /etc/traefik/dynamic
-    watch: true
-
 ## ENTRYPOINT
 entryPoints:
   web:

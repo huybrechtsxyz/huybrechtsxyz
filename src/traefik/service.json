@@ -5,11 +5,6 @@
     "groups": ["infra"],
     "description": "Reverse proxy and load balancer for microservices",
     "endpoint": "http://traefik.${DOMAIN_DEV}/dashboard/",
-    "auth": {
-      "use_traefik": true,
-      "redirect_uri": "https://traefik.${DOMAIN_DEV}/_oauth",
-      "auth_host": "https://traefik.${DOMAIN_DEV}"
-    },
     "paths": [
       { "type": "config", "path":"", "chmod": 755 },
       { "type": "config", "path":"etc", "chmod": 755 },
