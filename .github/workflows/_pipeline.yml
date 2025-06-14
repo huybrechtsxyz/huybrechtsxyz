@@ -84,6 +84,7 @@ jobs:
           export TF_LOG=DEBUG
           export WORKSPACE=${{ inputs.workspace }}
           export ENVIRONMENT=${{ inputs.environment }}
+          export APP_PATH_TEMP=${{ env.APP_PATH_TEMP }}
           echo "[*] Server deployment and configuration ... APPLY"
           chmod +x ../scripts/terraform-apply.sh
           ../scripts/terraform-apply.sh
