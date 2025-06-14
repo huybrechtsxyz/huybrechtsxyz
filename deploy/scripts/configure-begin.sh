@@ -1,8 +1,8 @@
 #!/bin/bash
 
 set -euo pipefail
-source /tmp/variables.env
-source /tmp/secrets.env
+source /tmp/app/variables.env
+source /tmp/app/secrets.env
 
 # Function to check if a Docker secret is in use
 issecretinuse() {
@@ -73,8 +73,8 @@ createnetwork() {
 
 # Function that loads secrets as environment variables
 loaddockersecrets() {
-  # --- Load /tmp/secrets.env ---
-  echo "[*] Loading secrets from /tmp/secrets.env..."
+  # --- Load /tmp/app/secrets.env ---
+  echo "[*] Loading secrets from /tmp/app/secrets.env..."
 
   while IFS='=' read -r key value || [ -n "$key" ]; do
     # Skip blank lines or comments
@@ -85,7 +85,7 @@ loaddockersecrets() {
     value="${value#\"}"
 
     createdockersecret "$key" "$key" "$value"
-  done < /tmp/secrets.env
+  done < /tmp/app/secrets.env
 }
 
 # Create default nodelables
@@ -145,9 +145,9 @@ main() {
   fi
 
   echo "[*] Copying environment variables..."
-  cp -f /tmp/variables.env "$APP_PATH_CONF/.env"
+  cp -f /tmp/app/variables.env "$APP_PATH_CONF/.env"
   shopt -s nullglob
-  cp -f /tmp/vars-*.env "$APP_PATH_CONF/"
+  cp -f /tmp/app/vars-*.env "$APP_PATH_CONF/"
   shopt -u nullglob
   
   echo "[*] Configuring Swarn Node: $hostname...DONE"

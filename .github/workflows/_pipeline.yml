@@ -31,6 +31,7 @@ env:
   APP_PATH_DATA: /var/lib/data
   APP_PATH_LOGS: /var/lib/logs
   APP_PATH_SERV: /srv/app
+  APP_PATH_TEMP: /tmp/app
 
 jobs:
   # Terraform Plan and Apply
@@ -93,7 +94,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: terraform-output-${{ inputs.workspace }}
-          path: /tmp/tf_output.json
+          path: ${{ env.APP_PATH_TEMP }}/tf_output.json
           if-no-files-found: error
       
       # Check if Terraform cache exists
@@ -101,7 +102,7 @@ jobs:
         id: check-cache
         uses: actions/cache/restore@v4
         with:
-          path: /tmp/tf_output.json
+          path: ${{ env.APP_PATH_TEMP }}/tf_output.json
           key: terraform-output-${{ inputs.workspace }}
 
       # Upload the Terraform output as a job output
@@ -109,7 +110,7 @@ jobs:
         if: steps.check-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: /tmp/tf_output.json
+          path: ${{ env.APP_PATH_TEMP }}/tf_output.json
           key: terraform-output-${{ inputs.workspace }}
 
   # Download the Terraform output artifact and parse it to find Swarm servers
@@ -130,7 +131,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: terraform-output-${{ inputs.workspace }}
-          path: /tmp
+          path: ${{ env.APP_PATH_TEMP }}
 
       # Restore Terraform Cache
       - name: Restore Terraform Cache
@@ -138,13 +139,13 @@ jobs:
         if: inputs.infrastructure != true
         uses: actions/cache/restore@v4
         with:
-          path: /tmp/tf_output.json
+          path: ${{ env.APP_PATH_TEMP }}/tf_output.json
           key: terraform-output-${{ inputs.workspace }}
 
       # Check if the artifact exists
       - name: Validate Terraform Output
         run: |
-          if [ ! -f /tmp/tf_output.json ]; then
+          if [ ! -f ${{ env.APP_PATH_TEMP }}/tf_output.json ]; then
             echo "[!] Artifact terraform-output-${{ inputs.workspace }} not found or tf_output.json missing. Exiting."
             exit 1
           fi
@@ -153,7 +154,7 @@ jobs:
       - name: Parse Swarm Servers
         id: parse
         run: |
-          matrix=$(jq -c '.' /tmp/tf_output.json)
+          matrix=$(jq -c '.' ${{ env.APP_PATH_TEMP }}/tf_output.json)
           echo "================"
           echo "$matrix"
           echo "================"
@@ -203,6 +204,7 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa root@${{ matrix.ip }}:/root/.ssh/id_rsa_temp || { echo "[x] Failed to transfer private key to remote server"; exit 1; }
 
+      # Step: Create .env file for initialization
       - name: Create Environment File
         run: |
           cat <<EOF > ./deploy/scripts/initialize.env
@@ -218,27 +220,31 @@ jobs:
       - name: Initialize BEFORE ${{ inputs.environment }} Server ${{ matrix.label }}
         run: |
           echo "[*] Copying initialization script to remote server..."
+          ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
+            mkdir -p /tmp/app
+            chmod 777 /tmp/app
+          EOF
           scp -o StrictHostKeyChecking=no \
             "./deploy/scripts/initialize-begin.sh" \
             "./deploy/scripts/initialize.env" \
             "./deploy/cluster.${{ inputs.workspace }}.json" \
-            root@${{ matrix.ip }}:/tmp/ || {
+            root@${{ matrix.ip }}:/tmp/app/ || {
             echo "[x] Failed to transfer before initialization script to remote server"
             exit 1
           }
           echo "[+] Copying initialization script to remote server...DONE"
           echo "[*] Executing BEFORE initializing remotely..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            chmod +x /tmp/initialize-begin.sh
-            if [ -f /tmp/initialize.env ]; then
+            chmod +x /tmp/app/initialize-begin.sh
+            if [ -f /tmp/app/initialize.env ]; then
               set -a
-              source /tmp/initialize.env
+              source /tmp/app/initialize.env
               set +a
             else
               echo "[!] Initialization environment file not found. Exiting."
               exit 1
             fi
-            /tmp/initialize-begin.sh
+            /tmp/app/initialize-begin.sh
           EOF
           echo "[+] Executing BEFORE initializing remotely...DONE"
 
@@ -252,15 +258,15 @@ jobs:
       - name: Initialize AFTER ${{ inputs.environment }} Server ${{ matrix.label }}
         run: |
           echo "[*] Copying initialization script to remote server..."
-          scp -o StrictHostKeyChecking=no "./deploy/scripts/initialize-end.sh" root@${{ matrix.ip }}:/tmp/initialize-end.sh || {
+          scp -o StrictHostKeyChecking=no "./deploy/scripts/initialize-end.sh" root@${{ matrix.ip }}:/tmp/app/initialize-end.sh || {
             echo "[x] Failed to transfer after initialization script to remote server"
             exit 1
           }
           echo "[+] Copying initialization script to remote server...DONE"
           echo "[*] Executing AFTER initializing remotely..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            chmod +x /tmp/initialize-end.sh
-            /tmp/initialize-end.sh
+            chmod +x /tmp/app/initialize-end.sh
+            /tmp/app/initialize-end.sh
           EOF
           echo "[+] Executing AFTER initializing remotely...DONE"
 
@@ -377,8 +383,8 @@ jobs:
         run: |
           echo "[*] Finishing configuration..."
           ssh -o StrictHostKeyChecking=no root@${{ matrix.ip }} << 'EOF'
-            chmod +x /tmp/configure-end.sh
-            /tmp/configure-end.sh
+            chmod +x /tmp/app/configure-end.sh
+            /tmp/app/configure-end.sh
           EOF
           echo "[*] Finishing configuration...DONE"
 

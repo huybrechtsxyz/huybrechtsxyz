@@ -118,7 +118,7 @@ mount_disks() {
   # Get the current cluster definition
   echo "[*] ... Getting the cluster definition"
   HOSTNAME=$(hostname)
-  CLUSTER_FILE="/tmp/cluster.$WORKSPACE.json"
+  CLUSTER_FILE="/tmp/app/cluster.$WORKSPACE.json"
   echo "[*] ... Finding cluster metadata file $CLUSTER_FILE on $HOSTNAME"
   if [ ! -f "$CLUSTER_FILE" ]; then
     echo "[!] Cluster metadata file not found: $CLUSTER_FILE on $HOSTNAME"
