@@ -19,6 +19,6 @@ echo "[*] ...Running terraform...APPLY"
 terraform apply -auto-approve -var-file="vars-${WORKSPACE}.tfvars" -input=false
 
 echo "[*] ...Reading Terraform output..."
-terraform output -json serverdata | jq -c '.' | tee /tmp/tf_output.json
+terraform output -json serverdata | jq -c '.' | tee /tmp/app/tf_output.json
 
-echo "[*] ...Terraform output saved to tf_output.json and /tmp/tf_output.json"
+echo "[*] ...Terraform output saved to tf_output.json and /tmp/app/tf_output.json"
