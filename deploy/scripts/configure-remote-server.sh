@@ -191,7 +191,7 @@ createnodelabels() {
     echo "[*] ... Cleaning up obsolete labels..."
     for key in "${!existing_labels[@]}"; do
       if [[ -z "${desired_labels[$key]}" ]]; then
-        echo "[*]         - Removing $key"
+        echo "[*] ... Removing $key"
         docker node update --label-rm "$key" "$node" || echo "[!] Warning: Failed to remove $key"
       fi
     done
