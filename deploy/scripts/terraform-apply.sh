@@ -9,22 +9,19 @@ envsubst < main.template.tf > main.tf
 rm -f main.template.tf
 cat main.tf
 
+# Reason we do not save the plan
+# Error: Saving a generated plan is currently not supported
+# Terraform Cloud does not support saving the generated execution plan
+
 echo "[*] ...Running terraform...INIT"
-mkdir -p $APP_PATH_TEMP
-PLAN_OUTPUT=$(mktemp)
+mkdir -p "$APP_PATH_TEMP"
 terraform init
 
-# Use the plan output file to run apply instead of directly applying changes
-# terraform plan -var-file="vars-${WORKSPACE}.tfvars" -input=false
-# terraform apply -auto-approve -var-file="vars-${WORKSPACE}.tfvars" -input=false
 echo "[*] ...Running terraform...PLAN"
-terraform plan -var-file="vars-${WORKSPACE}.tfvars" -input=false -out="$PLAN_OUTPUT" > $APP_PATH_TEMP/plan.txt
-if grep -q "No changes. Your infrastructure matches the configuration." $APP_PATH_TEMP/plan.txt; then
-    echo "[*] ...Running terraform...No changes detected. Skipping apply."
-else
-    echo "[*] ...Running terraform...Changes detected. Running terraform APPLY..."
-    terraform apply -auto-approve "$PLAN_OUTPUT"  
-fi
+terraform plan -var-file="vars-${WORKSPACE}.tfvars" -input=false
+
+echo "[*] ...Running terraform...APPLY"
+terraform apply -auto-approve -var-file="vars-${WORKSPACE}.tfvars" -input=false
 
 echo "[*] ...Reading Terraform output..."
 terraform output -json serverdata | jq -c '.' | tee $APP_PATH_TEMP/tf_output.json
