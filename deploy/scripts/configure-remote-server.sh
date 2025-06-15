@@ -148,9 +148,12 @@ createnodelabels() {
 
     # Inspect current labels
     echo "[*] ... Inspecting labels on $node"
-    declare -A existing_labels
     while IFS='=' read -r k v; do
-      existing_labels["$k"]="$v"
+      if [[ "$k" =~ ^[a-zA-Z0-9_.-]+$ && -n "$v" ]]; then
+        existing_labels["$k"]="$v"
+      else
+        echo "[!] Skipping malformed label: $k=$v"
+      fi
     done < <(docker node inspect "$node" --format '{{range $k, $v := .Spec.Labels}}{{printf "%s=%s\n" $k $v}}{{end}}')
 
     # Standard labels
