@@ -115,6 +115,7 @@ issecretinuse() {
   return 1
 }
 
+# Function to create or update node labels based on hostname
 createnodelabels() {
   echo "[*] Applying role label to all nodes..."
   # Get the current hostname
@@ -205,6 +206,23 @@ createnodelabels() {
   return 0
 }
 
+configureservices() {
+  echo "[*] Configuring application services..."
+  for script in $APP_PATH_CONF/*/configure.sh; do
+    service=$(basename "$(dirname "$script")")
+    echo "[*] Configuring service '$service'..."
+
+    remote_conf_dir="$APP_PATH_CONF/$service"
+    remote_script="$remote_conf_dir/configure.sh"
+
+    chmod +x "$remote_script"
+    "$remote_script"
+
+    echo "[+] Configured service '$service'"
+  done
+  echo "[+] Configuring application services...DONE"
+}
+
 main() {
   local hostname
   hostname=$(hostname)
@@ -217,13 +235,14 @@ main() {
 
   # Create docker networks and secrets only leader node
   if [[ "$hostname" == *"manager-1"* ]]; then
-    createnetwork "wan-$WORKSPACE"
-    createnetwork "lan-$WORKSPACE"
-    createnetwork "lan-test"
-    createnetwork "lan-staging"
-    createnetwork "lan-production"
-    loaddockersecrets
-    createnodelabels
+    createnetwork "wan-$WORKSPACE" || exit 1
+    createnetwork "lan-$WORKSPACE" || exit 1
+    createnetwork "lan-test" || exit 1
+    createnetwork "lan-staging" || exit 1
+    createnetwork "lan-production" || exit 1
+    loaddockersecrets || exit 1
+    createnodelabels || exit 1
+    configureservices || exit 1
   fi
 
 }
