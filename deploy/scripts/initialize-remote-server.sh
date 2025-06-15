@@ -271,8 +271,22 @@ configure_swarm() {
 
 enable_docker_service() {
   echo "[*] Ensuring Docker is enabled and running..."
-  systemctl enable docker
-  systemctl restart docker
+
+  # Enable docker service only if it's not already enabled
+  if ! systemctl is-enabled --quiet docker; then
+    echo "[*] Enabling Docker service..."
+    systemctl enable docker
+  else
+    echo "[*] Docker service is already enabled."
+  fi
+
+  # Start docker service if not active
+  if ! systemctl is-active --quiet docker; then
+    echo "[*] Starting Docker service..."
+    systemctl start docker
+  else
+    echo "[*] Docker service is already running."
+  fi
 }
 
 main() {
