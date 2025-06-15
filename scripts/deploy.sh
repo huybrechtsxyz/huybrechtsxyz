@@ -99,9 +99,16 @@ for dir in "$APP_PATH_CONF"/*/; do
       config) base_path="$APP_PATH_CONF" ;;
       data)   base_path="$APP_PATH_DATA" ;;
       logs)   base_path="$APP_PATH_LOGS" ;;
-      serve)   base_path="$APP_PATH_SERV" ;;
+      serve)  base_path="$APP_PATH_SERV" ;;
       *)      echo "Unknown type: $entry_type" >&2; continue ;;
     esac
+
+    # Build full target path
+    if [ -n "$entry_path" ]; then
+      target_path="$base_path/$service_name/$entry_path"
+    else
+      target_path="$base_path/$service_name"
+    fi
 
     # Clear logs if it's a logs path
     if [[ "$entry_type" == "logs" ]]; then
