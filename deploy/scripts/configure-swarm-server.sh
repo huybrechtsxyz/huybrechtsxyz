@@ -31,7 +31,7 @@ copy_config_files() {
   scp -o StrictHostKeyChecking=no \
     ./deploy/scripts/* \
     ./deploy/cluster.$WORKSPACE.json \
-    ./src/* \
+    ./src/*.* \
     root@"$REMOTE_IP":"$APP_PATH_TEMP"/ || {
       echo "[x] Failed to transfer configuration scripts to remote server"
       exit 1
