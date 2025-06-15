@@ -39,7 +39,7 @@ EOF
 echo "[*] Copying initialization scripts and cluster config to remote server..."
 scp -o StrictHostKeyChecking=no \
   ./deploy/scripts/* \
-  ./deploy/cluster."$WORKSPACE".json \
+  ./deploy/workspace."$WORKSPACE".json \
   root@"$REMOTE_IP":"$APP_PATH_TEMP"/ || {
     echo "[x] Failed to transfer initialization scripts to remote server"
     exit 1

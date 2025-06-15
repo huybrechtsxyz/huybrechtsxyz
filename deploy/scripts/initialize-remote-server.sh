@@ -92,16 +92,16 @@ mount_disks() {
   # Get the current cluster definition
   echo "[*] ... Getting the cluster definition"
   HOSTNAME=$(hostname)
-  CLUSTER_FILE="/tmp/app/cluster.$WORKSPACE.json"
-  echo "[*] ... Finding cluster metadata file $CLUSTER_FILE on $HOSTNAME"
-  if [ ! -f "$CLUSTER_FILE" ]; then
-    echo "[!] Cluster metadata file not found: $CLUSTER_FILE on $HOSTNAME"
+  WORKSPACE_FILE="/tmp/app/workspace.$WORKSPACE.json"
+  echo "[*] ... Finding cluster metadata file $WORKSPACE_FILE on $HOSTNAME"
+  if [ ! -f "$WORKSPACE_FILE" ]; then
+    echo "[!] Cluster metadata file not found: $WORKSPACE_FILE on $HOSTNAME"
     return 1
   fi
 
   # Get the disk sizes for this server
   echo "[*] ... Getting disk sizes"
-  SERVER_ID=$(jq -r '.servers[].id' "$CLUSTER_FILE" | while read id; do
+  SERVER_ID=$(jq -r '.servers[].id' "$WORKSPACE_FILE" | while read id; do
     if [[ "$HOSTNAME" == *"$id"* ]]; then
       echo "$id"
       break
@@ -113,7 +113,7 @@ mount_disks() {
     return 1
   fi
 
-  DISK_SIZES=($(jq -r --arg id "$SERVER_ID" '.servers[] | select(.id == $id) | .disks[]?' "$CLUSTER_FILE"))
+  DISK_SIZES=($(jq -r --arg id "$SERVER_ID" '.servers[] | select(.id == $id) | .disks[]?' "$WORKSPACE_FILE"))
 
   # Map of path -> subdirectory
   DISK_INDEX=0
