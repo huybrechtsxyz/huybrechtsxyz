@@ -46,7 +46,7 @@ copy_service_files() {
       service_name=$(basename "$service")
       remote_conf_dir="$APP_PATH_CONF/$service_name"
       echo "[*] Copying service configuration files to remote server...$service_name"
-      ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" "mkdir -p '$remote_conf_dir' && rm -f '$remote_conf_dir'/*" || {
+      ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" "mkdir -p '$remote_conf_dir' && rm -f '$remote_conf_dir'/*.*" || {
         echo "[x] Failed to create or cleanup remote config directory for $service_name"
         exit 1
       }
