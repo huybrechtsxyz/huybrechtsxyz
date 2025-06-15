@@ -157,13 +157,16 @@ createnodelabels() {
     done < <(docker node inspect "$node" --format '{{range $k, $v := .Spec.Labels}}{{printf "%s=%s\n" $k $v}}{{end}}')
 
     # Standard labels
-    declare -A desired_labels=(
-      ["$role"]="true"
-      ["role"]="$role"
-      ["server"]="$server"
-      ["instance"]="$instance"
-    )
-
+    echo "[*] ... Declaring labels and values on $node"
+    : "${role:?role is unset}"
+    : "${server:?server is unset}"
+    : "${instance:?instance is unset}"
+    declare -A desired_labels
+    desired_labels["$role"]="true"
+    desired_labels["role"]="$role"
+    desired_labels["server"]="$server"
+    desired_labels["instance"]="$instance"
+    
     # Add standard labels if needed
     for key in "${!desired_labels[@]}"; do
       if [[ "${existing_labels[$key]}" != "${desired_labels[$key]}" ]]; then
