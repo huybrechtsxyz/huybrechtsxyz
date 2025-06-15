@@ -47,7 +47,7 @@ loaddockersecrets() {
     createdockersecret "$key" "$key" "$value"
   done < "$secrets_file"
 
-  echo "[✓] Finished loading secrets."
+  echo "[+] Finished loading secrets."
 }
 
 # Function to create or update a Docker secret
@@ -82,7 +82,7 @@ createdockersecret() {
 
   # Use printf to avoid trailing newline
   if printf "%s" "$value" | docker secret create "$name" -; then
-    echo "[✓] Secret '$name' created."
+    echo "[+] Secret '$name' created."
   else
     echo "[x] Failed to create secret '$name'."
     return 1
