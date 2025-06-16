@@ -48,7 +48,6 @@ parse_options() {
     esac
   done
 
-  log INFO "[*] Starting environment with ..."
   log INFO "[*] ... Environment file: $ENV_FILE"
   log INFO "[*] ... Services: ${SERVICES[*]}"
   log INFO "[*] ... Group: $GROUP"

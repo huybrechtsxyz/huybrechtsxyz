@@ -5,11 +5,9 @@ set -euo pipefail
 # Initialize script
 SCRIPT_PATH="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 source "$SCRIPT_PATH/functions.sh"
+log INFO "[*] Starting environment..."
 parse_options "$@"
 load_envfile "vars-$ENV_FILE.env"
-
-log INFO "[*] Starting services..."
-parse_options "$@"
 cd "$APP_PATH_CONF" || exit 1
 
 # Validate ENV_FILE input
@@ -104,10 +102,9 @@ for dir in "$APP_PATH_CONF"/*/; do
     esac
 
     # Build full target path
+    target_path="$base_path/$service_name"
     if [ -n "$entry_path" ]; then
-      target_path="$base_path/$service_name/$entry_path"
-    else
-      target_path="$base_path/$service_name"
+      target_path="$target_path/$entry_path"
     fi
 
     # Clear logs if it's a logs path
