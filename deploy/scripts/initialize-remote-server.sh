@@ -80,6 +80,23 @@ configure_firewall() {
   ufw status verbose
 }
 
+# Function to convert size string like "20G" or "1024M" to GB integer (approx)
+size_to_gb() {
+  local size=$1
+  if [[ "$size" =~ ^([0-9]+)([GMK])$ ]]; then
+    local val=${BASH_REMATCH[1]}
+    local unit=${BASH_REMATCH[2]}
+    case $unit in
+      G) echo "$val" ;;
+      M) echo $((val / 1024)) ;;
+      K) echo 0 ;;
+      *) echo 0 ;;
+    esac
+  else
+    echo 0
+  fi
+}
+
 mount_disks() {
   echo "[*] Preparing and mounting disk volumes..."
   : "${ENVIRONMENT:?Missing ENVIRONMENT}"
@@ -88,119 +105,141 @@ mount_disks() {
   : "${APP_PATH_DATA:?Missing APP_PATH_DATA}"
   : "${APP_PATH_LOGS:?Missing APP_PATH_LOGS}"
   : "${APP_PATH_SERV:?Missing APP_PATH_SERV}"
+  : "${APP_PATH_TEMP:?Missing APP_PATH_TEMP}"
 
-  # Get the current cluster definition
-  echo "[*] ... Getting the cluster definition"
   HOSTNAME=$(hostname)
-  WORKSPACE_FILE="/tmp/app/workspace.$WORKSPACE.json"
+  echo "[*] ... Getting the workspace definition for $HOSTNAME"
+  WORKSPACE_FILE="$APP_PATH_TEMP/workspace.$WORKSPACE.json"
   echo "[*] ... Finding cluster metadata file $WORKSPACE_FILE on $HOSTNAME"
   if [ ! -f "$WORKSPACE_FILE" ]; then
     echo "[!] Cluster metadata file not found: $WORKSPACE_FILE on $HOSTNAME"
     return 1
   fi
 
-  # Get the disk sizes for this server
-  echo "[*] ... Getting disk sizes"
-  SERVER_ID=$(jq -r '.servers[].id' "$WORKSPACE_FILE" | while read id; do
-    if [[ "$HOSTNAME" == *"$id"* ]]; then
-      echo "$id"
-      break
-    fi
-  done)
-
+  echo "[*] ... Identifying matching server config"
+  SERVER_ID=$(jq -r --arg hn "$HOSTNAME" '.servers[] | select($hn | contains(.id)) | .id' "$WORKSPACE_FILE")
   if [ -z "$SERVER_ID" ]; then
     echo "[!] No matching server ID found for hostname $HOSTNAME"
     return 1
   fi
 
   DISK_SIZES=($(jq -r --arg id "$SERVER_ID" '.servers[] | select(.id == $id) | .disks[]?' "$WORKSPACE_FILE"))
+  if [ ${#DISK_SIZES[@]} -le 1 ]; then
+    echo "[*] No additional disks found to mount."
+    echo "[*] Creating default paths on the OS disk."
+    mkdir -p "$APP_PATH_CONF" "$APP_PATH_DATA" "$APP_PATH_LOGS" "$APP_PATH_SERV"
+    return 0
+  fi
 
-  # Map of path -> subdirectory
-  DISK_INDEX=0
-  DISK_LETTER_START="b"
-  TMP_MOUNT="/mnt/appdisk"
-  declare -A APP_PATHS_SECONDARY=(
-    ["$APP_PATH_DATA"]="data"
-    ["$APP_PATH_LOGS"]="logs"
-    ["$APP_PATH_SERV"]="serv"
-  )
-
-  echo "[*] ... Mounting application disk"
-  mkdir -p "$TMP_MOUNT"
-
-  # Loop all disks for the current machine
-  echo "[*] ... Looping disks"
-  for SIZE in "${DISK_SIZES[@]}"; do
-    # Start from /dev/sdb (ASCII 98 = 'b')
-    DISK="/dev/sd$(echo "$DISK_INDEX" | awk '{printf("%c", 97 + $1)}')"
-    PART="${DISK}1"
-
-    echo "[*] ... Checking $DISK (size ${SIZE}GB)..."
-    if [ ! -b "$DISK" ]; then
-      echo "[!] Disk $DISK not found, skipping."
-      DISK_INDEX=$((DISK_INDEX + 1))
-      continue
-    fi
-
-    if [ $DISK_INDEX -eq 0 ]; then
-      echo "[*] ... Using $DISK for configuration only (NO formatting / mounting)"
-      echo "[*] ... Creating $APP_PATH_CONF"
-      mkdir -p "$APP_PATH_CONF"
-      mkdir -p "$APP_PATH_DATA"
-      mkdir -p "$APP_PATH_LOGS"
-      mkdir -p "$APP_PATH_SERV"
-      DISK_INDEX=$((DISK_INDEX + 1))
-      continue
-    fi
-    
-    echo "[*] ... Preparing secondary disk $DISK"
-    # Partition if missing
-    if ! blkid "$PART" &>/dev/null; then
-      echo "[*] ... Partitioning secondary disk $DISK"
-      echo ',,L,*' | sfdisk "$DISK"
-      partprobe "$DISK"
-      sleep 2
-    fi
-
-    # Format
-    echo "[*] ... Validation format of disk $DISK"
-    FS_TYPE=$(blkid -o value -s TYPE "$PART" 2>/dev/null || echo "")
-    if [ "$FS_TYPE" != "ext4" ]; then
-      echo "[*] ... Formatting disk $DISK part $PART as ext4..."
-      mkfs.ext4 -F "$PART"
-    fi
-
-    # Mount and create directories
-    echo "[*] ... Mount validation disk $DISK"
-    if ! mountpoint -q "$TMP_MOUNT"; then
-      echo "[*] ... Mounting disk $DISK"
-      mount "$PART" "$TMP_MOUNT" || return 1
-      for sub in "${APP_PATHS_SECONDARY[@]}"; do
-        echo "[*] ... Creating subdirectory $TMP_MOUNT/$sub"
-        mkdir -p "$TMP_MOUNT/$sub"
-      done
-    fi
-
-    echo "[*] ... Validate disk $DISK to /etc/fstab"
-    UUID=$(blkid -s UUID -o value "$PART")
-    if ! grep -q "UUID=$UUID" /etc/fstab; then
-      echo "[*] ... Adding disk $DISK to /etc/fstab"
-      echo "UUID=$UUID $TMP_MOUNT ext4 defaults 0 2" | tee -a /etc/fstab
-    fi
-
-    echo "[*] ... Mounting subdirectories to $TMP_MOUNT"
-    for target in "${!APP_PATHS_SECONDARY[@]}"; do
-      sub="${APP_PATHS_SECONDARY[$target]}"
-      mkdir -p "$target"
-      if ! grep -q "$TMP_MOUNT/$sub $target none bind" /etc/fstab; then
-        echo "$TMP_MOUNT/$sub $target none bind 0 0" | tee -a /etc/fstab
-      fi
-      mount "$target" || { echo "[!] Failed to mount $target"; return 1; }
-    done
-
-    DISK_INDEX=$((DISK_INDEX + 1))
+  # List all non-OS disks (sorted by size asc, stable order)
+  echo "[*] ... Getting real disks from server $HOSTNAME"
+  mapfile -t DISKS < <(lsblk -dn -o NAME,SIZE -b | sort -k2,2n -k1,1)
+  declare -a DISK_NAMES
+  for line in "${DISKS[@]}"; do
+    NAME=$(echo "$line" | awk '{print $1}')
+    DISK_NAMES+=("$NAME")
   done
 
+  if [ "${#DISK_SIZES[@]}" -gt "${#DISK_NAMES[@]}" ]; then
+    echo "[!] Not enough disks found on host to match expected workspace config"
+    return 1
+  fi
+
+  echo "[*] ... Updating profile"
+  mkdir -p /mnt
+  profile_file="/etc/profile.d/app_paths.sh"
+  echo "[*] ... Auto-generated application paths" > "$profile_file"
+
+  for idex in "${!DISK_SIZES[@]}"; do
+    SIZE_EXPECTED=${DISK_SIZES[$idex]}
+    if [ "$idex" -eq 0 ]; then
+      echo "[*] ... Validating disk $idex as OS disk (assumed mounted on /)"
+      mkdir -p "$APP_PATH_CONF"
+      echo "[*] ... Skipping disk $idex as OS disk (assumed mounted on /)"
+      continue
+    fi
+
+    jdex=$idex #$((idex - 1)) -> no counter reset
+    DISK="/dev/${DISK_NAMES[$idex]}"
+    LABEL="${SERVER_ID}-data${jdex}"
+    PART=$(lsblk -nro NAME "$DISK" | tail -n +2 | head -n1)
+    PART="/dev/$PART"
+
+    echo "[*] ... Preparing disk $DISK (label=$LABEL)"
+    if ! blkid "$PART" &>/dev/null; then
+      echo "[*] ... Partitioning $DISK"
+      parted -s "$DISK" mklabel gpt
+      parted -s -a optimal "$DISK" mkpart primary ext4 0% 100%
+      sleep 2
+      PART=$(lsblk -nro NAME "$DISK" | tail -n +2 | head -n1)
+      PART="/dev/$PART"
+    else
+      echo "[*] ... Skipping partitioning $DISK. Already partitioned."
+    fi
+
+    FS_TYPE=$(blkid -s TYPE -o value "$PART" || echo "")
+    CURRENT_LABEL=$(blkid -s LABEL -o value "$PART" || echo "")
+
+    if [ -z "$FS_TYPE" ]; then
+      echo "[*] Formatting $PART as ext4 with label $LABEL"
+      mkfs.ext4 -L "$LABEL" "$PART"
+      sync
+    elif [ "$FS_TYPE" != "ext4" ]; then
+      echo "[!] $PART has unexpected FS type ($FS_TYPE), skipping."
+      continue
+    elif [ "$CURRENT_LABEL" != "$LABEL" ]; then
+      echo "[*] Relabeling $PART from $CURRENT_LABEL to $LABEL"
+      e2label "$PART" "$LABEL"
+    else
+      echo "[*] $PART already formatted and labeled $LABEL"
+    fi
+    
+    UUID=$(blkid -s UUID -o value "$PART")
+    MOUNT_POINT="/mnt/data$jdex"
+    mkdir -p "$MOUNT_POINT"
+
+    if ! grep -q "^UUID=$UUID " /etc/fstab; then
+      echo "UUID=$UUID $MOUNT_POINT ext4 defaults,noatime,nofail 0 2" >> /etc/fstab
+    fi
+
+    if ! mountpoint -q "$MOUNT_POINT"; then
+      mount "$MOUNT_POINT"
+      sync
+    fi
+
+    # Bind directories
+    DATA_PATH="${APP_PATH_DATA}${jdex}"
+    LOGS_PATH="${APP_PATH_LOGS}${jdex}"
+    SERV_PATH="${APP_PATH_SERV}${jdex}"
+
+    mkdir -p "$MOUNT_POINT/data" "$MOUNT_POINT/logs" "$MOUNT_POINT/serv"
+    mkdir -p "$DATA_PATH" "$LOGS_PATH" "$SERV_PATH"
+
+    for src in data logs serv; do
+      SRC_PATH="$MOUNT_POINT/$src"
+      case "$src" in
+        data) DST_PATH="/var/lib/data$jdex" ;;
+        logs) DST_PATH="/var/lib/logs$jdex" ;;
+        serv) DST_PATH="/srv/app$jdex" ;;
+      esac
+      if ! grep -q "^$SRC_PATH $DST_PATH " /etc/fstab; then
+        echo "$SRC_PATH $DST_PATH none bind 0 0" >> /etc/fstab
+      fi
+      mount --bind "$SRC_PATH" "$DST_PATH"
+    done
+
+    for var in DATA LOGS SERV; do
+      VAR_NAME="APP_PATH_${var}${jdex}"
+      VAR_VALUE="/var/lib/$(echo "$var" | tr '[:upper:]' '[:lower:]')$jdex"
+      if ! grep -q "export $VAR_NAME=" "$profile_file"; then
+        echo "export $VAR_NAME=$VAR_VALUE" >> "$profile_file"
+      fi
+    done
+  done
+
+  chmod +x "$profile_file"
+
+  echo "[*] Disk setup complete. Paths exported to $profile_file"
   echo "[+] Preparing and mounting disk volumes...DONE"
 }
 
@@ -245,7 +284,7 @@ configure_swarm() {
         echo "[*] Swarm tokens are available on $MANAGER_IP"
         break
       fi
-      echo "[!] Attempt $i: Waiting for Swarm tokens..."
+      echo "[!] Attempt $idex: Waiting for Swarm tokens..."
       sleep 5
     done
 
