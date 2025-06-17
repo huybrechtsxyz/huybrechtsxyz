@@ -3,9 +3,10 @@ param (
 )
 
 # Load the required modules
-$RootPath = "C:/Users/vince/Sources/huybrechtsxyz"
-$AppPath = Join-Path -Path $RootPath -Childpath ".app"
-. "$RootPath/scripts/functions.ps1"
+. "$env:USERPROFILE/Sources/huybrechtsxyz/scripts/functions.ps1"
+# RootPath from functions
+# AppPath from functions
+# SourcePath from functions
 
 Write-Host "[*] Stopping DEVELOPMENT environment..."
 

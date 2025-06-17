@@ -95,15 +95,25 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
     if ($ServiceData.service.paths) {
         foreach ($Entry in $ServiceData.service.paths) {
             $TargetPath = Join-Path -Path $AppServicePath -ChildPath $Entry.path
+            if ($Entry.path -eq "") {
+                $TargetPath = Join-Path -Path $TargetPath -ChildPath $Entry.type
+            }
 
             if (-Not (Test-Path $TargetPath)) {
                 Write-Host "[*] ....Creating directory: $TargetPath"
                 New-Item -ItemType Directory -Path $TargetPath -Force | Out-Null
             }
 
-            if($Entry.path -eq "conf") {
+            if($Entry.type -eq "config" -and $Entry.path -eq "") {
                 Write-Host "[*] ....Copying configuration files to $TargetPath"
                 Copy-Item -Path "$ServicePath/*" -Destination $targetPath -Recurse -Force
+            }
+
+            $var_name = $ServiceName.ToUpper()
+            $var_name += "_PATH_"
+            $var_name += $Entry.type.ToUpper()
+            if ( $Entry.path -eq "") {
+                [System.Environment]::SetEnvironmentVariable($var_name, $TargetPath, [System.EnvironmentVariableTarget]::Process)
             }
             
             if($Entry.path -eq "logs") {

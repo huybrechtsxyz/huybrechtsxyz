@@ -16,6 +16,9 @@ if [[ -z "${ENV_FILE:-}" ]]; then
   exit 1
 fi
 
+# Use the specified environment file for docker stack deploy
+cp -f "$APP_PATH_CONF/vars-$ENV_FILE.env" $APP_PATH_CONF/.env
+
 # Default stack name if not set
 STACK="${STACK:-app}"
 
@@ -118,7 +121,15 @@ for dir in "$APP_PATH_CONF"/*/; do
     if [ "$entry_disk" -gt 0 ]; then
       var_name="${var_name}${entry_disk}"
     fi
-    export "$var_name"="$target_path"
+    if [ -n "$entry_path" ]; then
+      export "$var_name"="$target_path"
+      # Add to /etc/app/.env (overwrite existing entry if present)
+      if grep -q "^${var_name}=" /etc/app/.env 2>/dev/null; then
+        sed -i "s|^${var_name}=.*|${var_name}=${target_path}|" /etc/app/.env
+      else
+        echo "${var_name}=${target_path}" >> /etc/app/.env
+      fi
+    fi    
 
     # Clear logs if it's a logs path
     if [[ "$entry_type" == "logs" ]]; then
