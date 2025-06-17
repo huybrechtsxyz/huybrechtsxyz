@@ -117,7 +117,13 @@ mount_disks() {
   fi
 
   echo "[*] ... Identifying matching server config"
-  SERVER_ID=$(jq -r --arg hn "$HOSTNAME" '.servers[] | select($hn | contains(.id)) | .id' "$WORKSPACE_FILE")
+  SERVER_ID=$(jq -r '.servers[].id' "$WORKSPACE_FILE" | while read id; do
+    if [[ "$HOSTNAME" == *"$id"* ]]; then
+      echo "$id"
+      break
+    fi
+  done)
+
   if [ -z "$SERVER_ID" ]; then
     echo "[!] No matching server ID found for hostname $HOSTNAME"
     return 1
