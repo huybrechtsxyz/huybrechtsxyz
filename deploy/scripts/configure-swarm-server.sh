@@ -68,6 +68,7 @@ set -a
 source "$APP_PATH_TEMP/$ENVIRONMENT.env"
 source "$APP_PATH_TEMP/secrets.env"
 set +a
+cp -f "$APP_PATH_TEMP/workspace.$WORKSPACE.json" "$APP_PATH_CONF/workspace.$WORKSPACE.json"
 chmod +x "$APP_PATH_TEMP/configure-remote-server.sh"
 "$APP_PATH_TEMP/configure-remote-server.sh"
 echo "[*] Executing on REMOTE server...DONE"

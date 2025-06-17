@@ -91,6 +91,7 @@ for dir in "$APP_PATH_CONF"/*/; do
     # Extract fields
     entry_path=$(echo "$entry" | jq -r '.path')
     entry_type=$(echo "$entry" | jq -r '.type')
+    entry_disk=$(echo "$entry" | jq -r '.disk // 0')
 
     # Map type to base path
     case "$entry_type" in
@@ -102,10 +103,22 @@ for dir in "$APP_PATH_CONF"/*/; do
     esac
 
     # Build full target path
-    target_path="$base_path/$service_name"
+    if [ "$entry_disk" -gt 0 ]; then
+      target_path="$base_path$entry_disk/$service_name"
+    else
+      target_path="$base_path/$service_name"
+    fi
+
     if [ -n "$entry_path" ]; then
       target_path="$target_path/$entry_path"
     fi
+
+    # Build variable name: SERVICEID_PATH_TYPE[disk]
+    var_name="$(echo "${service_name^^}_PATH_${entry_type^^}")"
+    if [ "$entry_disk" -gt 0 ]; then
+      var_name="${var_name}${entry_disk}"
+    fi
+    export "$var_name"="$target_path"
 
     # Clear logs if it's a logs path
     if [[ "$entry_type" == "logs" ]]; then

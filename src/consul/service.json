@@ -8,7 +8,7 @@
     "paths": [
       { "type": "config", "path":"", "chmod": 755 },
       { "type": "config", "path":"etc", "chmod": 755 },
-      { "type": "data", "path":"", "chmod": 777 }
+      { "type": "data", "path":"", "chmod": 777, "disk": 1 }
     ],
     "project": {
       "name": "",

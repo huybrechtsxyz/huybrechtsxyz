@@ -15,7 +15,7 @@ services:
   redis:
     image: "redis:7-alpine"
     volumes:
-      - ${APP_PATH_DATA}/redis:/data
+      - ${REDIS_PATH_DATA}/redis:/data
     networks:
       - lan-${WORKSPACE}
     command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]

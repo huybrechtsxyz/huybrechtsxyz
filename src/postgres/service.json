@@ -7,8 +7,8 @@
     "endpoint": "",
     "paths": [
       { "type": "config", "path":"", "chmod": 755 },
-      { "type": "data", "path":"data", "chmod": 777 },
-      { "type": "data", "path":"backups", "chmod": 777 }
+      { "type": "data", "path":"data", "chmod": 777, "disk": 1 },
+      { "type": "data", "path":"backups", "chmod": 777, "disk": 1 }
     ],
     "project": {
       "name": "",
