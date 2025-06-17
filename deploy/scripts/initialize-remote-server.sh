@@ -208,9 +208,9 @@ mount_disks() {
     fi
 
     # Bind directories
-    DATA_PATH="${APP_PATH_DATA}${jdex}"
-    LOGS_PATH="${APP_PATH_LOGS}${jdex}"
-    SERV_PATH="${APP_PATH_SERV}${jdex}"
+    DATA_PATH="${APP_PATH_DATA}${jdex}/"
+    LOGS_PATH="${APP_PATH_LOGS}${jdex}/"
+    SERV_PATH="${APP_PATH_SERV}${jdex}/"
 
     mkdir -p "$MOUNT_POINT/data" "$MOUNT_POINT/logs" "$MOUNT_POINT/serv"
     mkdir -p "$DATA_PATH" "$LOGS_PATH" "$SERV_PATH"
