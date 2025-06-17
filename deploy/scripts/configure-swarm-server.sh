@@ -28,9 +28,11 @@ echo "[+] Copying secrets for remote environment...DONE"
 
 copy_config_files() {
   echo "[*] Copying environment files to remote server..."
+  shopt -s nullglob
   scp -o StrictHostKeyChecking=no \
-    ./deploy/scripts/* \
+    ./deploy/scripts/*.sh \
     ./deploy/workspace.$WORKSPACE.json \
+    ./scripts/*.sh \
     ./src/*.* \
     root@"$REMOTE_IP":"$APP_PATH_TEMP"/ || {
       echo "[x] Failed to transfer configuration scripts to remote server"
@@ -68,7 +70,9 @@ set -a
 source "$APP_PATH_TEMP/$ENVIRONMENT.env"
 source "$APP_PATH_TEMP/secrets.env"
 set +a
+shopt -s nullglob
 cp -f "$APP_PATH_TEMP/workspace.$WORKSPACE.json" "$APP_PATH_CONF/workspace.$WORKSPACE.json"
+cp -f "$APP_PATH_TEMP"/*.sh "$APP_PATH_CONF"/
 chmod +x "$APP_PATH_TEMP/configure-remote-server.sh"
 "$APP_PATH_TEMP/configure-remote-server.sh"
 echo "[*] Executing on REMOTE server...DONE"
