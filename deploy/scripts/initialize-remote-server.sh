@@ -222,14 +222,6 @@ mount_disks() {
       fi
       mount --bind "$SRC_PATH" "$DST_PATH"
     done
-
-    for var in DATA LOGS SERV; do
-      VAR_NAME="APP_PATH_${var}${jdex}"
-      VAR_VALUE="/var/lib/$(echo "$var" | tr '[:upper:]' '[:lower:]')$jdex"
-      if ! grep -q "export $VAR_NAME=" "$profile_file"; then
-        echo "export $VAR_NAME=$VAR_VALUE" >> "$profile_file"
-      fi
-    done
   done
 
   chmod +x "$profile_file"
