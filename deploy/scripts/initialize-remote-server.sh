@@ -160,7 +160,7 @@ mount_disks() {
     SIZE_EXPECTED=${DISK_SIZES[$idex]}
     if [ "$idex" -eq 0 ]; then
       echo "[*] ... Validating disk $idex as OS disk (assumed mounted on /)"
-      mkdir -p "$APP_PATH_CONF"
+      mkdir -p "$APP_PATH_CONF" "$APP_PATH_DATA" "$APP_PATH_LOGS" "$APP_PATH_SERV"
       echo "[*] ... Skipping disk $idex as OS disk (assumed mounted on /)"
       continue
     fi
@@ -214,16 +214,18 @@ mount_disks() {
     fi
 
     # Bind directories
+    CONF_PATH="${APP_PATH_CONF}${jdex}/"
     DATA_PATH="${APP_PATH_DATA}${jdex}/"
     LOGS_PATH="${APP_PATH_LOGS}${jdex}/"
     SERV_PATH="${APP_PATH_SERV}${jdex}/"
 
-    mkdir -p "$MOUNT_POINT/data" "$MOUNT_POINT/logs" "$MOUNT_POINT/serv"
-    mkdir -p "$DATA_PATH" "$LOGS_PATH" "$SERV_PATH"
+    mkdir -p "$MOUNT_POINT/conf" "$MOUNT_POINT/data" "$MOUNT_POINT/logs" "$MOUNT_POINT/serv"
+    mkdir -p "$CONF_PATH" "$DATA_PATH" "$LOGS_PATH" "$SERV_PATH"
 
-    for src in data logs serv; do
+    for src in conf data logs serv; do
       SRC_PATH="$MOUNT_POINT/$src"
       case "$src" in
+        conf) DST_PATH="/etc/conf$jdex" ;;
         data) DST_PATH="/var/lib/data$jdex" ;;
         logs) DST_PATH="/var/lib/logs$jdex" ;;
         serv) DST_PATH="/srv/app$jdex" ;;
