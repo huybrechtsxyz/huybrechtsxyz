@@ -90,51 +90,51 @@ for dir in "$APP_PATH_CONF"/*/; do
 
   # Iterate over each path entry
   service_paths=$(echo "$service_data" | jq -c '.service.paths[]?')
-  for entry in $service_paths; do
+  IFS=$'\n' && for entry in $service_paths; do
     # Extract fields
     entry_path=$(echo "$entry" | jq -r '.path')
     entry_type=$(echo "$entry" | jq -r '.type')
     entry_disk=$(echo "$entry" | jq -r '.disk // 0')
 
-    # Map type to base path
+    # Build the path variable for this service path
     case "$entry_type" in
-      config) base_path="$APP_PATH_CONF" ;;
-      data)   base_path="$APP_PATH_DATA" ;;
-      logs)   base_path="$APP_PATH_LOGS" ;;
-      serve)  base_path="$APP_PATH_SERV" ;;
-      *)      echo "Unknown type: $entry_type" >&2; continue ;;
+      config) base_var="APP_PATH_CONF" ;;   # /etc/app
+      data)   base_var="APP_PATH_DATA" ;;   # /var/lib/data or /var/lib/data1
+      logs)   base_var="APP_PATH_LOGS" ;;   # /var/lib/logs or /var/lib/logs1
+      serve)  base_var="APP_PATH_SERV" ;;   # /srv or /srv1
+      *) echo "Unknown type: $entry_type" >&2; continue ;;
     esac
 
-    # Build full target path
+    # Append disk suffix if entry_disk > 0
     if [ "$entry_disk" -gt 0 ]; then
-      target_path="$base_path$entry_disk/$service_name"
-    else
-      target_path="$base_path/$service_name"
+      base_var="${base_var}${entry_disk}"
     fi
 
+    # Get the actual base path from the environment variable
+    # and build the target path
+    target_path="${!base_var}/$service_name"
+
+    # Append entry_path if present
+    # Build variable name: SERVICEID_PATH_TYPE[disk] or SERVICEID_PATH_ENTRY
     if [ -n "$entry_path" ]; then
       target_path="$target_path/$entry_path"
+      var_name="$(echo "${service_name^^}_PATH_${entry_path^^}")"
+    else
+      var_name="$(echo "${service_name^^}_PATH_${entry_type^^}")"
     fi
 
-    # Build variable name: SERVICEID_PATH_TYPE[disk]
-    var_name="$(echo "${service_name^^}_PATH_${entry_type^^}")"
-    if [ "$entry_disk" -gt 0 ]; then
-      var_name="${var_name}${entry_disk}"
+    export "$var_name"="$target_path"
+    # Add to /etc/app/.env (overwrite existing entry if present)
+    if grep -q "^${var_name}=" "$APP_PATH_CONF/.env" 2>/dev/null; then
+      sed -i "s|^${var_name}=.*|${var_name}=${target_path}|" $APP_PATH_CONF/.env
+    else
+      echo "${var_name}=${target_path}" >> $APP_PATH_CONF/.env
     fi
-    if [ -n "$entry_path" ]; then
-      export "$var_name"="$target_path"
-      # Add to /etc/app/.env (overwrite existing entry if present)
-      if grep -q "^${var_name}=" /etc/app/.env 2>/dev/null; then
-        sed -i "s|^${var_name}=.*|${var_name}=${target_path}|" /etc/app/.env
-      else
-        echo "${var_name}=${target_path}" >> /etc/app/.env
-      fi
-    fi    
-
+    
     # Clear logs if it's a logs path
     if [[ "$entry_type" == "logs" ]]; then
       log INFO "[*] Clearing logs in $target_path"
-      rm -rf "$target_path"/*
+      rm -rf "${target_path:?}"/*
     fi
   done
 

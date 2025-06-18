@@ -16,8 +16,8 @@ services:
     image: hashicorp/consul:1.20
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${CONSUL_PATH_CONF}/consul/etc:/consul/config
-      - ${CONSUL_PATH_DATA}/consul:/consul/data
+      - ${CONSUL_PATH_ETC}:/consul/config
+      - ${CONSUL_PATH_DATA}:/consul/data
     networks:
       - lan-${WORKSPACE}
     environment:

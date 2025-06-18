@@ -6,7 +6,7 @@
     "description": "PostgreSQL database administration service",
     "endpoint": "http://pgadmin.${DOMAIN_DEV}/",
     "paths": [
-      { "type": "config", "path":"", "chmod": 755 },
+      { "type": "config", "path":"", "chmod": 755, "disk": 0 },
       { "type": "data", "path":"", "chmod": 777, "disk": 1 }
     ],
     "project": {

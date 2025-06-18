@@ -33,7 +33,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${TRAEFIK_PATH_CONF}/traefik/config.yml:/etc/traefik/traefik-config.yml
-      - ${TRAEFIK_PATH_CONF}/traefik/etc:/etc/traefik/dynamic
+      - ${TRAEFIK_PATH_ETC}/traefik/etc:/etc/traefik/dynamic
       - ${TRAEFIK_PATH_DATA}/traefik:/app/data
       - ${TRAEFIK_PATH_LOGS}/traefik:/app/logs
     networks:
