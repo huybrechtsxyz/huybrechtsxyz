@@ -15,8 +15,9 @@ if [[ -z "${ENV_FILE:-}" ]]; then
 fi
 
 # Load the environment file
-load_envfile "$ENV_FILE.env"
+load_envfile "$SCRIPT_PATH/$ENV_FILE.env"
 cd "$APP_PATH_CONF" || exit 1
+cp -f "$APP_PATH_CONF/$ENV_FILE.env" "$APP_PATH_CONF/.env"
 
 # Default stack name if not set
 STACK="${STACK:-app}"
@@ -29,17 +30,9 @@ if [[ -z "${GROUP:-}" && ${#SERVICES[@]} -eq 0 ]]; then
 fi
 
 # Count Docker manager and infra nodes
-export DOCKER_MANAGERS
-DOCKER_MANAGERS=$(docker node ls --filter "role=manager" --format '{{.Hostname}}' | wc -l)
-log INFO "[*] Number of Docker manager nodes: $DOCKER_MANAGERS"
-
-export DOCKER_INFRAS
-DOCKER_INFRAS=$(docker node ls --filter "node.label=infra=true" --format '{{.Hostname}}' | wc -l)
-log INFO "[*] Number of Docker infra nodes: $DOCKER_INFRAS"
-
-export DOCKER_WORKERS
-DOCKER_WORKERS=$(docker node ls --filter "node.label=worker=true" --format '{{.Hostname}}' | wc -l)
-log INFO "[*] Number of Docker worker nodes: $DOCKER_WORKERS"
+update_docker_variables "DOCKER_MANAGERS" "role=manager" "$APP_PATH_CONF/.env" "Docker Manager Nodes"
+update_docker_variables "DOCKER_INFRAS" "node.label=infra=true" "$APP_PATH_CONF/.env" "Docker Infra Nodes"
+update_docker_variables "DOCKER_WORKERS" "node.label=worker=true" "$APP_PATH_CONF/.env" "Docker Worker Nodes"
 
 # Clean VXLAN interfaces
 log INFO "[*] Cleaning up VXLAN interfaces..."
