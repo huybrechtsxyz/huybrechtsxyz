@@ -136,24 +136,28 @@ create_service_paths() {
     entry_path=$(echo "$entry" | jq -r '.path')
     entry_type=$(echo "$entry" | jq -r '.type')
     chmod_value=$(echo "$entry" | jq -r '.chmod')
+    entry_disk=$(echo "$entry" | jq -r '.disk // 0')
 
-    # Map type to base path
+    # Build the path variable for this service path
     case "$entry_type" in
-      config) base_path="$APP_PATH_CONF" ;;
-      data)   base_path="$APP_PATH_DATA" ;;
-      logs)   base_path="$APP_PATH_LOGS" ;;
-      serve)  base_path="$APP_PATH_SERV" ;;
-      *)      log ERROR "[!] Unknown type: $entry_type" >&2; continue ;;
+      config) base_var="APP_PATH_CONF" ;;   # /etc/app
+      data)   base_var="APP_PATH_DATA" ;;   # /var/lib/data or /var/lib/data1
+      logs)   base_var="APP_PATH_LOGS" ;;   # /var/lib/logs or /var/lib/logs1
+      serve)  base_var="APP_PATH_SERV" ;;   # /srv or /srv1
+      *) echo "Unknown type: $entry_type" >&2; continue ;;
     esac
 
-    # Build full target path
-    if [ -n "$entry_path" ]; then
-      target_path="$base_path/$service/$entry_path"
-    else
-      target_path="$base_path/$service"
+    # Append disk suffix if entry_disk > 0
+    if [ "$entry_disk" -gt 0 ]; then
+      base_var="$base_var$entry_disk"
     fi
 
-    # Create and chmod the path
+    # Get the actual base path from the environment variable
+    # and build the target path
+    target_path="${!base_var:-}/$service_name"
+    if [ -n "$entry_path" ]; then target_path="$target_path/$service/$entry_path"; fi
+
+     # Create and chmod the path
     [[ -d "$target_path" ]] || mkdir -p "$target_path"
     chmod "$chmod_value" "$target_path"
   done
