@@ -183,3 +183,20 @@ update_docker_variables() {
     echo "${var_name}=${count}" >> "$env_file"
   fi
 }
+
+# Function to convert size string like "20G" or "1024M" to GB integer (approx)
+size_to_gb() {
+  local size=$1
+  if [[ "$size" =~ ^([0-9]+)([GMK])$ ]]; then
+    local val=${BASH_REMATCH[1]}
+    local unit=${BASH_REMATCH[2]}
+    case $unit in
+      G) echo "$val" ;;
+      M) echo $((val / 1024)) ;;
+      K) echo 0 ;;
+      *) echo 0 ;;
+    esac
+  else
+    echo 0
+  fi
+}

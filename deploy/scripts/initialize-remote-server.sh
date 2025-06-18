@@ -1,31 +1,34 @@
 #!/bin/bash
 set -euo pipefail
 
-#source /tmp/app/initialize.env (set in pipeline)
+# source /tmp/app/initialize.env (set in pipeline)
 export PRIVATE_IP="$PRIVATE_IP"
 export MANAGER_IP="$MANAGER_IP"
 
 cd /
 
 update_system() {
-  echo "[*] Updating system packages..."
+  log INFO "[*] Updating system packages..."
   apt-get update -y
   DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+  log INFO "[+] Updating system packages...DONE"
 }
 
 install_private_key() {
-  echo "[*] Installing uploaded private key..."
+  log INFO "[*] Installing uploaded private key..."
   mkdir -p ~/.ssh
   mv /root/.ssh/id_rsa_temp ~/.ssh/id_rsa
   chmod 600 ~/.ssh/id_rsa
   echo -e "Host *\n  StrictHostKeyChecking no\n" > ~/.ssh/config
+  log INFO "[+] Installing uploaded private key...DONE"
 }
 
 configure_firewall() {
-  echo "[*] Configuring firewall..."
+  log INFO "[*] Configuring firewall..."
   if ! command -v ufw &> /dev/null; then
-  echo "[*] Installing UFW..."
+  log INFO "[*] ... Installing UFW ..."
   apt-get install -y ufw
+  log INFO "[*] ... Installing UFW ...DONE"
   fi
 
   # Deny all traffic by default
@@ -72,29 +75,13 @@ configure_firewall() {
 
   # Enable firewall only if not active
   if ! ufw status | grep -q "Status: active"; then
-  echo "[*] Enabling UFW..."
+  log INFO "[*] Enabling UFW..."
   echo "y" | ufw enable
   fi
 
   ufw reload
   ufw status verbose
-}
-
-# Function to convert size string like "20G" or "1024M" to GB integer (approx)
-size_to_gb() {
-  local size=$1
-  if [[ "$size" =~ ^([0-9]+)([GMK])$ ]]; then
-    local val=${BASH_REMATCH[1]}
-    local unit=${BASH_REMATCH[2]}
-    case $unit in
-      G) echo "$val" ;;
-      M) echo $((val / 1024)) ;;
-      K) echo 0 ;;
-      *) echo 0 ;;
-    esac
-  else
-    echo 0
-  fi
+  log INFO "[+] Configuring firewall...DONE"
 }
 
 mount_disks() {
@@ -108,15 +95,15 @@ mount_disks() {
   : "${APP_PATH_TEMP:?Missing APP_PATH_TEMP}"
 
   HOSTNAME=$(hostname)
-  echo "[*] ... Getting the workspace definition for $HOSTNAME"
+  log INFO "[*] ... Getting the workspace definition for $HOSTNAME"
   WORKSPACE_FILE="$APP_PATH_TEMP/workspace.$WORKSPACE.json"
-  echo "[*] ... Finding cluster metadata file $WORKSPACE_FILE on $HOSTNAME"
+  log INFO "[*] ... Finding cluster metadata file $WORKSPACE_FILE on $HOSTNAME"
   if [ ! -f "$WORKSPACE_FILE" ]; then
-    echo "[!] Cluster metadata file not found: $WORKSPACE_FILE on $HOSTNAME"
+    log ERROR "[!] Cluster metadata file not found: $WORKSPACE_FILE on $HOSTNAME"
     return 1
   fi
 
-  echo "[*] ... Identifying matching server config"
+  log INFO "[*] ... Identifying matching server config"
   SERVER_ID=$(jq -r '.servers[].id' "$WORKSPACE_FILE" | while read id; do
     if [[ "$HOSTNAME" == *"$id"* ]]; then
       echo "$id"
@@ -125,20 +112,20 @@ mount_disks() {
   done)
 
   if [ -z "$SERVER_ID" ]; then
-    echo "[!] No matching server ID found for hostname $HOSTNAME"
+    log ERROR "[!] No matching server ID found for hostname $HOSTNAME"
     return 1
   fi
 
   DISK_SIZES=($(jq -r --arg id "$SERVER_ID" '.servers[] | select(.id == $id) | .disks[]?' "$WORKSPACE_FILE"))
   if [ ${#DISK_SIZES[@]} -le 1 ]; then
-    echo "[*] No additional disks found to mount."
-    echo "[*] Creating default paths on the OS disk."
+    log INFO "[*] ... No additional disks found to mount."
+    log INFO "[*] ... Creating default paths on the OS disk."
     mkdir -p "$APP_PATH_CONF" "$APP_PATH_DATA" "$APP_PATH_LOGS" "$APP_PATH_SERV"
     return 0
   fi
 
   # List all non-OS disks (sorted by size asc, stable order)
-  echo "[*] ... Getting real disks from server $HOSTNAME"
+  log INFO "[*] ... Getting real disks from server $HOSTNAME"
   mapfile -t DISKS < <(lsblk -dn -o NAME,SIZE -b | sort -k2,2n -k1,1)
   declare -a DISK_NAMES
   for line in "${DISKS[@]}"; do
@@ -147,21 +134,21 @@ mount_disks() {
   done
 
   if [ "${#DISK_SIZES[@]}" -gt "${#DISK_NAMES[@]}" ]; then
-    echo "[!] Not enough disks found on host to match expected workspace config"
+    log ERROR "[!] Not enough disks found on host to match expected workspace config"
     return 1
   fi
 
-  echo "[*] ... Updating profile"
+  log INFO "[*] ... Updating profile"
   mkdir -p /mnt
   profile_file="/etc/profile.d/app_paths.sh"
-  echo "[*] ... Auto-generated application paths" > "$profile_file"
+  log INFO "[*] ... Auto-generated application paths" > "$profile_file"
 
   for idex in "${!DISK_SIZES[@]}"; do
     SIZE_EXPECTED=${DISK_SIZES[$idex]}
     if [ "$idex" -eq 0 ]; then
-      echo "[*] ... Validating disk $idex as OS disk (assumed mounted on /)"
+      log INFO "[*] ... Validating disk $idex as OS disk (assumed mounted on /)"
       mkdir -p "$APP_PATH_CONF" "$APP_PATH_DATA" "$APP_PATH_LOGS" "$APP_PATH_SERV"
-      echo "[*] ... Skipping disk $idex as OS disk (assumed mounted on /)"
+      log INFO "[*] ... Skipping disk $idex as OS disk (assumed mounted on /)"
       continue
     fi
 
@@ -171,33 +158,33 @@ mount_disks() {
     PART=$(lsblk -nro NAME "$DISK" | tail -n +2 | head -n1)
     PART="/dev/$PART"
 
-    echo "[*] ... Preparing disk $DISK (label=$LABEL)"
+    log INFO "[*] ... Preparing disk $DISK (label=$LABEL)"
     if ! blkid "$PART" &>/dev/null; then
-      echo "[*] ... Partitioning $DISK"
+      log INFO "[*] ... Partitioning $DISK"
       parted -s "$DISK" mklabel gpt
       parted -s -a optimal "$DISK" mkpart primary ext4 0% 100%
       sleep 2
       PART=$(lsblk -nro NAME "$DISK" | tail -n +2 | head -n1)
       PART="/dev/$PART"
     else
-      echo "[*] ... Skipping partitioning $DISK. Already partitioned."
+      log INFO "[*] ... Skipping partitioning $DISK. Already partitioned."
     fi
 
     FS_TYPE=$(blkid -s TYPE -o value "$PART" || echo "")
     CURRENT_LABEL=$(blkid -s LABEL -o value "$PART" || echo "")
 
     if [ -z "$FS_TYPE" ]; then
-      echo "[*] Formatting $PART as ext4 with label $LABEL"
+      log INFO "[*] ... Formatting $PART as ext4 with label $LABEL"
       mkfs.ext4 -L "$LABEL" "$PART"
       sync
     elif [ "$FS_TYPE" != "ext4" ]; then
-      echo "[!] $PART has unexpected FS type ($FS_TYPE), skipping."
+      log WARN "[!] ... $PART has unexpected FS type ($FS_TYPE), skipping."
       continue
     elif [ "$CURRENT_LABEL" != "$LABEL" ]; then
-      echo "[*] Relabeling $PART from $CURRENT_LABEL to $LABEL"
+      log INFO "[*] ... Relabeling $PART from $CURRENT_LABEL to $LABEL"
       e2label "$PART" "$LABEL"
     else
-      echo "[*] $PART already formatted and labeled $LABEL"
+      log INFO "[*] ... $PART already formatted and labeled $LABEL"
     fi
     
     UUID=$(blkid -s UUID -o value "$PART")
@@ -247,25 +234,26 @@ mount_disks() {
 
   chmod +x "$profile_file"
 
-  echo "[*] Disk setup complete. Paths exported to $profile_file"
-  echo "[+] Preparing and mounting disk volumes...DONE"
+  log INFO "[*] ... Disk setup complete. Paths exported to $profile_file"
+  log INFO "[+] Preparing and mounting disk volumes...DONE"
 }
 
 install_docker_if_needed() {
   if ! command -v docker &> /dev/null; then
-    echo "[*] Installing Docker..."
+    log INFO "[*] Installing Docker..."
     apt-get update
     apt-get install -y ca-certificates curl gnupg lsb-release
     curl -fsSL https://get.docker.com | bash
+    log INFO "[+] Installing Docker...DONE"
   else
-    echo "[*] Docker is already installed."
+    log INFO "[*] Docker is already installed."
   fi
 }
 
 configure_swarm() {
   local hostname
   hostname=$(hostname)
-  echo "[*] Configuring Docker Swarm on $hostname..."
+  log INFO "[*] Configuring Docker Swarm on $hostname..."
 
   if [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" = "active" ]; then
     echo "[*] Node already part of a Swarm. Skipping initialization/joining."
@@ -277,27 +265,27 @@ configure_swarm() {
   fi
 
   if [[ "$hostname" == *"manager-1"* ]]; then
-    echo "[*] Initializing new Swarm cluster..."
+    log INFO "[*] ... Initializing new Swarm cluster..."
     docker swarm init --advertise-addr "$PRIVATE_IP"
     mkdir -p /tmp/app
     chmod 1777 /tmp/app
     docker swarm join-token manager -q > /tmp/app/manager_token.txt
     docker swarm join-token worker -q > /tmp/app/worker_token.txt
-    echo "[*] Saved manager and worker join tokens."
+    log INFO "[*] ... Saved manager and worker join tokens."
   else
-    echo "[*] Joining existing Swarm cluster on $MANAGER_IP..."
+    log INFO "[*] ... Joining existing Swarm cluster on $MANAGER_IP..."
     SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10"
     for i in {1..12}; do
       if ssh $SSH_OPTS root@$MANAGER_IP 'test -f /tmp/app/manager_token.txt && test -f /tmp/app/worker_token.txt'; then
-        echo "[*] Swarm tokens are available on $MANAGER_IP"
+        log INFO "[*] ... Swarm tokens are available on $MANAGER_IP"
         break
       fi
-      echo "[!] Attempt $idex: Waiting for Swarm tokens..."
+      log WARN "[!] ... Attempt $idex: Waiting for Swarm tokens..."
       sleep 5
     done
 
     if ! ssh $SSH_OPTS root@$MANAGER_IP 'test -f /tmp/app/manager_token.txt && test -f /tmp/app/worker_token.txt'; then
-      echo "[x] Timed out waiting for Swarm tokens. Exiting."
+      log ERROR "[x] Timed out waiting for Swarm tokens. Exiting."
       exit 1
     fi
 
@@ -305,40 +293,43 @@ configure_swarm() {
     WORKER_JOIN_TOKEN=$(ssh $SSH_OPTS root@$MANAGER_IP 'cat /tmp/app/worker_token.txt')
 
     if [[ "$hostname" == *"manager-"* ]]; then
-      echo "[*] Joining as Swarm Manager..."
+      log INFO "[*] ... Joining as Swarm Manager..."
       docker swarm join --token "$MANAGER_JOIN_TOKEN" $MANAGER_IP:2377 --advertise-addr "$PRIVATE_IP"
     else
-      echo "[*] Joining as Swarm Worker..."
+      log INFO "[*] ... Joining as Swarm Worker..."
       docker swarm join --token "$WORKER_JOIN_TOKEN" $MANAGER_IP:2377 --advertise-addr "$PRIVATE_IP"
     fi
 
-    echo "[*] Successfully joined Swarm cluster"
+    log INFO "[+] Successfully joined Swarm cluster"
   fi
+
+  log INFO "[+] Configuring Docker Swarm on $hostname...DONE"
 }
 
 enable_docker_service() {
-  echo "[*] Ensuring Docker is enabled and running..."
+  log INFO "[*] Ensuring Docker is enabled and running..."
 
   # Enable docker service only if it's not already enabled
   if ! systemctl is-enabled --quiet docker; then
-    echo "[*] Enabling Docker service..."
+    log INFO "[*] ... Enabling Docker service..."
     systemctl enable docker
   else
-    echo "[*] Docker service is already enabled."
+    log INFO "[*] ... Docker service is already enabled."
   fi
 
   # Start docker service if not active
   if ! systemctl is-active --quiet docker; then
-    echo "[*] Starting Docker service..."
+    log INFO "[*] ... Starting Docker service..."
     systemctl start docker
   else
-    echo "[*] Docker service is already running."
+    log INFO "[*] ... Docker service is already running."
   fi
+
+  log INFO "[*] Ensuring Docker is enabled and running...DONE"
 }
 
 main() {
     echo "[*] Initializing remote server..."
-    
     update_system || exit 1
     install_private_key || exit 1
     configure_firewall || exit 1
@@ -346,10 +337,8 @@ main() {
     install_docker_if_needed || exit 1
     configure_swarm || exit 1
     enable_docker_service || exit 1
-
     echo "[*] Remote server cleanup..."
     rm -rf /tmp/app/*
-
     echo "[+] Remote server initialization completed."
 }
 

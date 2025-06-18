@@ -211,8 +211,11 @@ jobs:
           ENVIRONMENT: ${{ inputs.environment }}
           WORKSPACE: ${{ inputs.workspace }}
         run: |
+          echo "[*] Initializing swarm cluster on ${matrix.ip} ..."
+          source "./scripts/functions.sh"
           chmod +x deploy/scripts/initialize-swarm-server.sh
           ./deploy/scripts/initialize-swarm-server.sh "${{ matrix.ip }}" "${{ matrix.private_ip }}" "${{ matrix.manager_ip }}"
+          echo "[*] Initializing swarm cluster on ${matrix.ip} ...DONE"
 
   # Configure the Swarm Cluster
   # This job will run if the cache is not hit or if the initialize input is set to true
@@ -303,8 +306,11 @@ jobs:
           VERSIO_USERNAME : ${{ steps.get-secrets.outputs.VERSIO_USERNAME }}
           VERSIO_PASSWORD : ${{ steps.get-secrets.outputs.VERSIO_PASSWORD }}
         run: |
+          echo "[*] Configuring swarm server ${matrix.ip} ..."
+          source "./scripts/functions.sh"
           chmod +x deploy/scripts/configure-swarm-server.sh
           ./deploy/scripts/configure-swarm-server.sh "${{ matrix.ip }}"
+          echo "[*] Configuring swarm server ${matrix.ip} ...DONE"
 
   # Get all metadata.json files and set them as a matrix
   # This job will run if the rebuild input is set to true
