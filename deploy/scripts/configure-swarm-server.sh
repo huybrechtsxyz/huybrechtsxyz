@@ -99,6 +99,7 @@ echo "[*] Executing on REMOTE server...Copy scripts"
 cp -f "$APP_PATH_TEMP"/scripts/* "$APP_PATH_CONF"
 echo "[*] Executing on REMOTE server...Copy source files"
 cp -f "$APP_PATH_TEMP"/src/*.env "$APP_PATH_CONF"
+chmod +x "$APP_PATH_CONF"/*.sh
 set -a
 source "$APP_PATH_CONF/$ENVIRONMENT.env"
 source "$APP_PATH_TEMP/deploy/secrets.env"

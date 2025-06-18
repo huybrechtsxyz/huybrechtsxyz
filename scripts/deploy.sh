@@ -48,7 +48,7 @@ if [[ ! -d "$consul_target" ]]; then
   mkdir -p $consul_target
   chmod 755 -R $consul_target
   if [[ -f "$APP_PATH_CONF/consul/config.json" ]]; then
-    log INFO "[+] Moved Consul config to $consul_config_target"
+    log INFO "[+] Moved Consul config to $consul_target"
     mv -f "$APP_PATH_CONF/consul/config.json" "$consul_target/consul.json"
   else
     log WARN "[!] consul/config.json not found in $APP_PATH_CONF. Skipping Consul configuration."
