@@ -15,7 +15,7 @@ load_variables() {
 
 load_secrets() {
 echo "[*] Loading secrets for remote environment..."
-cat <<EOF > ./deploy/scripts/secrets.env
+cat <<EOF > ./deploy/secrets.env
 PLATFORM_USERNAME=${PLATFORM_USERNAME}
 PLATFORM_PASSWORD=${PLATFORM_PASSWORD}
 TRAEFIK_CLIENTID=${TRAEFIK_CLIENTID}
@@ -45,7 +45,7 @@ copy_config_files() {
   echo "[*] Copying environment files to remote server...Deploy"
   scp -o StrictHostKeyChecking=no \
     ./deploy/scripts/*.sh \
-    ./deploy/workspace.$WORKSPACE.json \
+    ./deploy/* \
     root@"$REMOTE_IP":"$APP_PATH_TEMP"/deploy || {
       echo "[x] Failed to transfer configuration scripts to remote server"
       exit 1
