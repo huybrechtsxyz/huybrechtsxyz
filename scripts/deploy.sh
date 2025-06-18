@@ -7,8 +7,6 @@ SCRIPT_PATH="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 source "$SCRIPT_PATH/functions.sh"
 log INFO "[*] Starting environment..."
 parse_options "$@"
-load_envfile "vars-$ENV_FILE.env"
-cd "$APP_PATH_CONF" || exit 1
 
 # Validate ENV_FILE input
 if [[ -z "${ENV_FILE:-}" ]]; then
@@ -16,8 +14,9 @@ if [[ -z "${ENV_FILE:-}" ]]; then
   exit 1
 fi
 
-# Use the specified environment file for docker stack deploy
-cp -f "$APP_PATH_CONF/vars-$ENV_FILE.env" $APP_PATH_CONF/.env
+# Load the environment file
+load_envfile "$ENV_FILE.env"
+cd "$APP_PATH_CONF" || exit 1
 
 # Default stack name if not set
 STACK="${STACK:-app}"
@@ -107,12 +106,12 @@ for dir in "$APP_PATH_CONF"/*/; do
 
     # Append disk suffix if entry_disk > 0
     if [ "$entry_disk" -gt 0 ]; then
-      base_var="${base_var}${entry_disk}"
+      base_var="$base_var$entry_disk"
     fi
 
     # Get the actual base path from the environment variable
     # and build the target path
-    target_path="${!base_var}/$service_name"
+    target_path="${!base_var:-}/$service_name"
 
     # Append entry_path if present
     # Build variable name: SERVICEID_PATH_TYPE[disk] or SERVICEID_PATH_ENTRY
@@ -169,8 +168,8 @@ for svc in "${sorted_services[@]}"; do
 done
 
 # Cleanup
-log INFO "[*] Removing temporary environment file..."
-rm -f "$APP_PATH_CONF/.env"
+#log INFO "[*] Removing temporary environment file..."
+#rm -f "$APP_PATH_CONF/.env"
 
 log INFO "[+] All services started successfully."
 log INFO "[+] Listing deployed services..."

@@ -26,13 +26,39 @@ EOF
 echo "[+] Copying secrets for remote environment...DONE"
 }
 
+init_copy_files() {
+echo "[*] Initializing REMOTE configuration..."
+echo "[*] Initializing REMOTE server..."
+if ! ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" << EOF
+mkdir -p "$APP_PATH_TEMP" "$APP_PATH_TEMP"/deploy "$APP_PATH_TEMP"/scripts "$APP_PATH_TEMP"/src
+echo "[*] Initializing REMOTE server...DONE"
+EOF
+then
+echo "[!] Initializing configuration failed on $REMOTE_IP"
+exit 1
+fi
+}
+
 copy_config_files() {
   echo "[*] Copying environment files to remote server..."
   shopt -s nullglob
+  echo "[*] Copying environment files to remote server...Deploy"
   scp -o StrictHostKeyChecking=no \
     ./deploy/scripts/*.sh \
     ./deploy/workspace.$WORKSPACE.json \
+    root@"$REMOTE_IP":"$APP_PATH_TEMP"/deploy || {
+      echo "[x] Failed to transfer configuration scripts to remote server"
+      exit 1
+    }
+  echo "[*] Copying environment files to remote server...Scripts"
+  scp -o StrictHostKeyChecking=no \
     ./scripts/*.sh \
+    root@"$REMOTE_IP":"$APP_PATH_TEMP"/scripts || {
+      echo "[x] Failed to transfer configuration scripts to remote server"
+      exit 1
+    }
+  echo "[*] Copying environment files to remote server...Source"
+  scp -o StrictHostKeyChecking=no \
     ./src/*.* \
     root@"$REMOTE_IP":"$APP_PATH_TEMP"/ || {
       echo "[x] Failed to transfer configuration scripts to remote server"
@@ -66,15 +92,16 @@ echo "[*] Executing REMOTE configuration..."
 if ! ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" << EOF
 set -e
 echo "[*] Executing on REMOTE server..."
-set -a
-source "$APP_PATH_TEMP/$ENVIRONMENT.env"
-source "$APP_PATH_TEMP/secrets.env"
-set +a
 shopt -s nullglob
-cp -f "$APP_PATH_TEMP/workspace.$WORKSPACE.json" "$APP_PATH_CONF/workspace.$WORKSPACE.json"
-cp -f "$APP_PATH_TEMP"/*.sh "$APP_PATH_CONF"/
-chmod +x "$APP_PATH_TEMP/configure-remote-server.sh"
-"$APP_PATH_TEMP/configure-remote-server.sh"
+cp -f "$APP_PATH_TEMP/deploy/workspace.$WORKSPACE.json" "$APP_PATH_CONF/workspace.$WORKSPACE.json"
+cp -f "$APP_PATH_TEMP"/scripts/* "$APP_PATH_CONF"/
+cp -f "$APP_PATH_TEMP"/src/*.env "$APP_PATH_CONF"/
+set -a
+source "$APP_PATH_CONF/$ENVIRONMENT.env"
+source "$APP_PATH_TEMP/deploy/secrets.env"
+set +a
+chmod +x "$APP_PATH_TEMP/deploy/configure-remote-server.sh"
+"$APP_PATH_TEMP/deploy/configure-remote-server.sh"
 echo "[*] Executing on REMOTE server...DONE"
 EOF
 then
@@ -88,6 +115,7 @@ main() {
 
   load_variables || exit 1
   load_secrets || exit 1
+  init_copy_files || exit 1
   copy_config_files || exit 1
   copy_service_files || exit 1
   configure_server || exit 1

@@ -22,7 +22,7 @@ createnetwork() {
 
 # Function that loads secrets as Docker secrets from a .env-style file
 loaddockersecrets() {
-  local secrets_file="/tmp/app/secrets.env"
+  local secrets_file="/tmp/app/deploy/secrets.env"
 
   echo "[*] Loading secrets from $secrets_file..."
 
@@ -129,7 +129,7 @@ createnodelabels() {
 
   # Get the workspace information from the environment variable
   echo "[*] ... Getting workspace information"
-  local workspace_file="$APP_PATH_TEMP/workspace.$WORKSPACE.json"
+  local workspace_file="$APP_PATH_TEMP/deploy/workspace.$WORKSPACE.json"
 
   # Fetch all node hostnames once
   echo "[*] ... Getting node hostnames"
@@ -245,6 +245,10 @@ main() {
     configureservices || exit 1
   fi
 
+  echo "[*] Remote server cleanup..."
+  rm -rf /tmp/app/*
+
+  echo "[*] Configuring Swarn Node: $hostname...DONE"
 }
 
 main
