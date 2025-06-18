@@ -45,7 +45,7 @@ copy_config_files() {
   echo "[*] Copying environment files to remote server...Deploy"
   scp -o StrictHostKeyChecking=no \
     ./deploy/scripts/*.sh \
-    ./deploy/* \
+    ./deploy/*.* \
     root@"$REMOTE_IP":"$APP_PATH_TEMP"/deploy || {
       echo "[x] Failed to transfer configuration scripts to remote server"
       exit 1
