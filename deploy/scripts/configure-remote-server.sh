@@ -242,8 +242,10 @@ main() {
     createnetwork "lan-production" || exit 1
     loaddockersecrets || exit 1
     createnodelabels || exit 1
-    configureservices || exit 1
   fi
+
+  echo "[*] Service configuration ..."
+  configureservices || exit 1
 
   echo "[*] Remote server cleanup..."
   rm -rf /tmp/app/*
