@@ -1,3 +1,5 @@
+# Available Secrets
+
 BITWARDEN_TOKEN=xyz_github_actions_token
 PLATFORM_USERNAME=app_platform_username
 PLATFORM_PASSWORD==app_platform_password
