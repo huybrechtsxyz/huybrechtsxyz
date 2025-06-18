@@ -93,9 +93,12 @@ if ! ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" << EOF
 set -e
 echo "[*] Executing on REMOTE server..."
 shopt -s nullglob
+echo "[*] Executing on REMOTE server...Copy workspace configuration"
 cp -f "$APP_PATH_TEMP/deploy/workspace.$WORKSPACE.json" "$APP_PATH_CONF/workspace.$WORKSPACE.json"
-cp -f "$APP_PATH_TEMP"/scripts/* "$APP_PATH_CONF"/
-cp -f "$APP_PATH_TEMP"/src/*.env "$APP_PATH_CONF"/
+echo "[*] Executing on REMOTE server...Copy scripts"
+cp -f "$APP_PATH_TEMP"/scripts/* "$APP_PATH_CONF"
+echo "[*] Executing on REMOTE server...Copy source files"
+cp -f "$APP_PATH_TEMP"/src/*.env "$APP_PATH_CONF"
 set -a
 source "$APP_PATH_CONF/$ENVIRONMENT.env"
 source "$APP_PATH_TEMP/deploy/secrets.env"
