@@ -18,10 +18,10 @@ fi
 echo "[*] Starting Environment on $NODE_NAME ($NODE_IP)..."
 
 ssh -o StrictHostKeyChecking=no root@"$NODE_IP" << EOF
-  cd /opt/app
-  ./remove.sh $SERVICES
-  sleep 30
-  ./deploy.sh $SERVICES
+  # cd /opt/app
+  # ./remove.sh $SERVICES
+  # sleep 30
+  # ./deploy.sh $SERVICES
 EOF
 
 echo "[*] Starting Environment...DONE"
