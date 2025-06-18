@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # source /tmp/app/initialize.env (set in pipeline)
-export PRIVATE_IP="$PRIVATE_IP"
-export MANAGER_IP="$MANAGER_IP"
+export PRIVATE_IP="$APP_PRIVATE_IP"
+export MANAGER_IP="$APP_MANAGER_IP"
 
 cd /
 
@@ -85,9 +85,51 @@ configure_firewall() {
 }
 
 mount_disks() {
+  log INFO "[*] Preparing and mounting disk volumes..."
+  : "${APP_WORKSPACE:?Missing APP_WORKSPACE}"
+  local hostname=$(hostname)
+
+  log INFO "[*] ... Getting the workspace definition for $APP_WORKSPACE"
+  local workspace_file="$APP_PATH_TEMP/workspace.$APP_WORKSPACE.json"
+  if [ ! -f "$workspace_file" ]; then
+    log ERROR "[!] Cluster metadata file not found: $workspace_file on $hostname"
+    return 1
+  fi
+
+  log INFO "[*] ... Getting the workspace definition for $hostname"
+  local server_id
+  server_id=$(jq -r '.servers[].id' "$workspace_file" | while read id; do
+    if [[ "$hostname" == *"$id"* ]]; then
+      echo "$id"
+      break
+    fi
+  done)
+  if [[ -z "$server_id" ]]; then
+    log ERROR "[!] No matching server ID found for hostname: $hostname"
+    return 1
+  fi
+
+  # Get list of disks (skip OS disk = first one)
+  mapfile -t disks < <(lsblk -dn -o NAME,SIZE -b | sort -k2,2n -k1,1)
+  declare -a disk_names
+  for line in "${disks[@]}"; do
+    disk_names+=("$(echo "$line" | awk '{print $1}')")
+  done
+
+  
+
+
+
+
+  
+
+
+  log INFO "[+] Preparing and mounting disk volumes...DONE"
+}
+
+mount_disks2() {
   echo "[*] Preparing and mounting disk volumes..."
-  : "${ENVIRONMENT:?Missing ENVIRONMENT}"
-  : "${WORKSPACE:?Missing WORKSPACE}"
+  : "${APP_WORKSPACE:?Missing APP_WORKSPACE}"
   : "${APP_PATH_CONF:?Missing APP_PATH_CONF}"
   : "${APP_PATH_DATA:?Missing APP_PATH_DATA}"
   : "${APP_PATH_LOGS:?Missing APP_PATH_LOGS}"
@@ -96,15 +138,15 @@ mount_disks() {
 
   HOSTNAME=$(hostname)
   log INFO "[*] ... Getting the workspace definition for $HOSTNAME"
-  WORKSPACE_FILE="$APP_PATH_TEMP/workspace.$WORKSPACE.json"
-  log INFO "[*] ... Finding cluster metadata file $WORKSPACE_FILE on $HOSTNAME"
-  if [ ! -f "$WORKSPACE_FILE" ]; then
-    log ERROR "[!] Cluster metadata file not found: $WORKSPACE_FILE on $HOSTNAME"
+  APP_WORKSPACE_FILE="$APP_PATH_TEMP/workspace.$APP_WORKSPACE.json"
+  log INFO "[*] ... Finding cluster metadata file $APP_WORKSPACE_FILE on $HOSTNAME"
+  if [ ! -f "$APP_WORKSPACE_FILE" ]; then
+    log ERROR "[!] Cluster metadata file not found: $APP_WORKSPACE_FILE on $HOSTNAME"
     return 1
   fi
 
   log INFO "[*] ... Identifying matching server config"
-  SERVER_ID=$(jq -r '.servers[].id' "$WORKSPACE_FILE" | while read id; do
+  SERVER_ID=$(jq -r '.servers[].id' "$APP_WORKSPACE_FILE" | while read id; do
     if [[ "$HOSTNAME" == *"$id"* ]]; then
       echo "$id"
       break
@@ -116,7 +158,7 @@ mount_disks() {
     return 1
   fi
 
-  DISK_SIZES=($(jq -r --arg id "$SERVER_ID" '.servers[] | select(.id == $id) | .disks[]?' "$WORKSPACE_FILE"))
+  DISK_SIZES=($(jq -r --arg id "$SERVER_ID" '.servers[] | select(.id == $id) | .disks[]?' "$APP_WORKSPACE_FILE"))
   if [ ${#DISK_SIZES[@]} -le 1 ]; then
     log INFO "[*] ... No additional disks found to mount."
     log INFO "[*] ... Creating default paths on the OS disk."
@@ -248,7 +290,7 @@ configure_swarm() {
   log INFO "[*] Configuring Docker Swarm on $hostname..."
 
   if [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" = "active" ]; then
-    echo "[*] Node already part of a Swarm. Skipping initialization/joining."
+    log INFO "[*] Node already part of a Swarm. Skipping initialization/joining."
     if [[ "$hostname" == *"manager-1"* ]]; then
       docker swarm join-token manager -q > /tmp/app/manager_token.txt
       docker swarm join-token worker -q > /tmp/app/worker_token.txt

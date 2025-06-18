@@ -203,13 +203,7 @@ jobs:
       # Step: Initialize the Swarm cluster
       - name: Initialize Swarm Cluster
         env:
-          APP_PATH_CONF: ${{ env.APP_PATH_CONF }}
-          APP_PATH_DATA: ${{ env.APP_PATH_DATA }}
-          APP_PATH_LOGS: ${{ env.APP_PATH_LOGS }}
-          APP_PATH_SERV: ${{ env.APP_PATH_SERV }}
-          APP_PATH_TEMP: ${{ env.APP_PATH_TEMP }}
-          ENVIRONMENT: ${{ inputs.environment }}
-          WORKSPACE: ${{ inputs.workspace }}
+          APP_WORKSPACE: ${{ inputs.workspace }}
         run: |
           echo "[*] Initializing swarm cluster on ${{ matrix.ip }} ..."
           source "./scripts/functions.sh"

@@ -1,29 +1,70 @@
 {
+  "deploy": {
+    "name": "Platform Workspace",
+    "version": "1.0.0",
+    "description": "Workspace deployment configuration for the shared Platform."
+  },
+  "paths": [
+    { "type": "config", "path": "/etc/app" },
+    { "type": "data", "path": "/var/lib/app" },
+    { "type": "logs", "path": "/var/log/app" },
+    { "type": "serve", "path": "/srv/app" }
+  ],
   "servers": [
     {
       "id": "manager-1",
       "disks": [20],
-      "labels": []
+      "labels": [],
+      "mounts": [
+        { "type": "conf", "disk": 0 },
+        { "type": "data", "disk": 0 },
+        { "type": "logs", "disk": 0 },
+        { "type": "serve", "disk": 0 }
+      ]
     },
     {
       "id": "infra-1",
       "disks": [20,40],
-      "labels": [ "postgres=true" ]
+      "labels": [ "postgres=true" ],
+      "mounts": [
+        { "type": "conf", "disk": 1 },
+        { "type": "data", "disk": 1 },
+        { "type": "logs", "disk": 1 },
+        { "type": "serve", "disk": 1 }
+      ]
     },
     {
       "id": "infra-2",
       "disks": [20,40],
-      "labels": []
+      "labels": [],
+      "mounts": [
+        { "type": "conf", "disk": 1 },
+        { "type": "data", "disk": 1 },
+        { "type": "logs", "disk": 1 },
+        { "type": "serve", "disk": 1 }
+      ]
     },
     {
       "id": "worker-1",
       "disks": [20],
-      "labels": []
+      "labels": [],
+      "mounts": [
+        { "type": "conf", "disk": 0 },
+        { "type": "data", "disk": 0 },
+        { "type": "logs", "disk": 0 },
+        { "type": "serve", "disk": 0 }
+      ]
     },
     {
       "id": "worker-2",
       "disks": [20],
-      "labels": []
+      "labels": [],
+      "mounts": [
+        { "type": "conf", "disk": 0 },
+        { "type": "data", "disk": 0 },
+        { "type": "logs", "disk": 0 },
+        { "type": "serve", "disk": 0 }
+      ]
     }
   ]
 }
