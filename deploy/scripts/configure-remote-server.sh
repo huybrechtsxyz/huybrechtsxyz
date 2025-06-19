@@ -394,6 +394,9 @@ configure_services() {
 main() {
   log INFO "[*] Configuring Swarn Node: $hostname..."
 
+  echo "APP_PATH_TEMP: $PATH_TEMP"
+  ls -lra $PATH_TEMP
+
   docker info --format '{{.Swarm.LocalNodeState}}' | grep -q "active" || {
     log ERROR "[x] Docker Swarm is not active. Run 'docker swarm init' first."
     exit 1
