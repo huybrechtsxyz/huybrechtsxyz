@@ -13,8 +13,10 @@
   "servers": [
     {
       "id": "manager-1",
-      "disks": [20],
       "labels": [],
+      "disks": [
+        { "size": 20, "label": "manager-1-os" }
+      ],
       "mounts": [
         { "type": "conf", "disk": 0 },
         { "type": "data", "disk": 0 },
@@ -24,8 +26,11 @@
     },
     {
       "id": "infra-1",
-      "disks": [20,40],
       "labels": [ "postgres=true" ],
+      "disks": [
+        { "size": 20, "label": "infra-1-os" },
+        { "size": 40, "label": "infra-1-data" }
+      ],
       "mounts": [
         { "type": "conf", "disk": 1 },
         { "type": "data", "disk": 1 },
@@ -35,8 +40,11 @@
     },
     {
       "id": "infra-2",
-      "disks": [20,40],
       "labels": [],
+      "disks": [
+        { "size": 20, "label": "infra-2-os" },
+        { "size": 40, "label": "infra-2-data" }
+      ],
       "mounts": [
         { "type": "conf", "disk": 1 },
         { "type": "data", "disk": 1 },
@@ -46,8 +54,11 @@
     },
     {
       "id": "worker-1",
-      "disks": [20],
       "labels": [],
+      "disks": [
+        { "size": 20, "label": "worker-1-os" },
+        { "size": 40, "label": "worker-1-data" }
+      ],      
       "mounts": [
         { "type": "conf", "disk": 0 },
         { "type": "data", "disk": 0 },
@@ -57,8 +68,11 @@
     },
     {
       "id": "worker-2",
-      "disks": [20],
       "labels": [],
+      "disks": [
+        { "size": 20, "label": "worker-2-os" },
+        { "size": 40, "label": "worker-2-data" }
+      ],
       "mounts": [
         { "type": "conf", "disk": 0 },
         { "type": "data", "disk": 0 },

@@ -86,189 +86,87 @@ configure_firewall() {
 
 mount_disks() {
   log INFO "[*] Preparing and mounting disk volumes..."
+
   : "${APP_WORKSPACE:?Missing APP_WORKSPACE}"
   local hostname=$(hostname)
-
-  log INFO "[*] ... Getting the workspace definition for $APP_WORKSPACE"
   local workspace_file="$APP_PATH_TEMP/workspace.$APP_WORKSPACE.json"
-  if [ ! -f "$workspace_file" ]; then
+
+  if [[ ! -f "$workspace_file" ]]; then
     log ERROR "[!] Cluster metadata file not found: $workspace_file on $hostname"
     return 1
   fi
 
-  log INFO "[*] ... Getting the workspace definition for $hostname"
   local server_id
-  server_id=$(jq -r '.servers[].id' "$workspace_file" | while read id; do
-    if [[ "$hostname" == *"$id"* ]]; then
-      echo "$id"
-      break
-    fi
+  server_id=$(jq -r '.servers[].id' "$workspace_file" | while read -r id; do
+    [[ "$hostname" == *"$id"* ]] && echo "$id" && break
   done)
+
   if [[ -z "$server_id" ]]; then
     log ERROR "[!] No matching server ID found for hostname: $hostname"
     return 1
   fi
 
-  # Get list of disks (skip OS disk = first one)
+  # Get disks sorted by size (skipping the OS disk manually)
   mapfile -t disks < <(lsblk -dn -o NAME,SIZE -b | sort -k2,2n -k1,1)
   declare -a disk_names
   for line in "${disks[@]}"; do
     disk_names+=("$(echo "$line" | awk '{print $1}')")
   done
 
-  
+  local disk_count
+  disk_count=$(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .disks | length' "$workspace_file")
+  log INFO "[*] ... Found $disk_count disks for $hostname"
 
+  for i in $(seq 0 $((disk_count - 1))); do
+    log INFO "[*] ... Mounting disk $i for $hostname"
 
+    local disk="/dev/${disk_names[$i]}"
+    local label
+    label=$(jq -r --arg id "$server_id" --argjson i "$i" \
+      '.servers[] | select(.id == $id) | .disks[$i].label' "$workspace_file")
 
+    local part="${disk}1"
+    local fs_type=$(blkid -s TYPE -o value "$part" 2>/dev/null || echo "")
+    local current_label=$(blkid -s LABEL -o value "$part" 2>/dev/null || echo "")
+    local mnt="/mnt/data${i}"
 
-  
+    log INFO "[*] ... Preparing disk $disk (label=$label)"
 
-
-  log INFO "[+] Preparing and mounting disk volumes...DONE"
-}
-
-mount_disks2() {
-  echo "[*] Preparing and mounting disk volumes..."
-  : "${APP_WORKSPACE:?Missing APP_WORKSPACE}"
-  : "${APP_PATH_CONF:?Missing APP_PATH_CONF}"
-  : "${APP_PATH_DATA:?Missing APP_PATH_DATA}"
-  : "${APP_PATH_LOGS:?Missing APP_PATH_LOGS}"
-  : "${APP_PATH_SERV:?Missing APP_PATH_SERV}"
-  : "${APP_PATH_TEMP:?Missing APP_PATH_TEMP}"
-
-  HOSTNAME=$(hostname)
-  log INFO "[*] ... Getting the workspace definition for $HOSTNAME"
-  APP_WORKSPACE_FILE="$APP_PATH_TEMP/workspace.$APP_WORKSPACE.json"
-  log INFO "[*] ... Finding cluster metadata file $APP_WORKSPACE_FILE on $HOSTNAME"
-  if [ ! -f "$APP_WORKSPACE_FILE" ]; then
-    log ERROR "[!] Cluster metadata file not found: $APP_WORKSPACE_FILE on $HOSTNAME"
-    return 1
-  fi
-
-  log INFO "[*] ... Identifying matching server config"
-  SERVER_ID=$(jq -r '.servers[].id' "$APP_WORKSPACE_FILE" | while read id; do
-    if [[ "$HOSTNAME" == *"$id"* ]]; then
-      echo "$id"
-      break
-    fi
-  done)
-
-  if [ -z "$SERVER_ID" ]; then
-    log ERROR "[!] No matching server ID found for hostname $HOSTNAME"
-    return 1
-  fi
-
-  DISK_SIZES=($(jq -r --arg id "$SERVER_ID" '.servers[] | select(.id == $id) | .disks[]?' "$APP_WORKSPACE_FILE"))
-  if [ ${#DISK_SIZES[@]} -le 1 ]; then
-    log INFO "[*] ... No additional disks found to mount."
-    log INFO "[*] ... Creating default paths on the OS disk."
-    mkdir -p "$APP_PATH_CONF" "$APP_PATH_DATA" "$APP_PATH_LOGS" "$APP_PATH_SERV"
-    return 0
-  fi
-
-  # List all non-OS disks (sorted by size asc, stable order)
-  log INFO "[*] ... Getting real disks from server $HOSTNAME"
-  mapfile -t DISKS < <(lsblk -dn -o NAME,SIZE -b | sort -k2,2n -k1,1)
-  declare -a DISK_NAMES
-  for line in "${DISKS[@]}"; do
-    NAME=$(echo "$line" | awk '{print $1}')
-    DISK_NAMES+=("$NAME")
-  done
-
-  if [ "${#DISK_SIZES[@]}" -gt "${#DISK_NAMES[@]}" ]; then
-    log ERROR "[!] Not enough disks found on host to match expected workspace config"
-    return 1
-  fi
-
-  log INFO "[*] ... Updating profile"
-  mkdir -p /mnt
-  profile_file="/etc/profile.d/app_paths.sh"
-  log INFO "[*] ... Auto-generated application paths" > "$profile_file"
-
-  for idex in "${!DISK_SIZES[@]}"; do
-    SIZE_EXPECTED=${DISK_SIZES[$idex]}
-    if [ "$idex" -eq 0 ]; then
-      log INFO "[*] ... Validating disk $idex as OS disk (assumed mounted on /)"
-      mkdir -p "$APP_PATH_CONF" "$APP_PATH_DATA" "$APP_PATH_LOGS" "$APP_PATH_SERV"
-      log INFO "[*] ... Skipping disk $idex as OS disk (assumed mounted on /)"
-      continue
-    fi
-
-    jdex=$idex #$((idex - 1)) -> no counter reset
-    DISK="/dev/${DISK_NAMES[$idex]}"
-    LABEL="${SERVER_ID}-data${jdex}"
-    PART=$(lsblk -nro NAME "$DISK" | tail -n +2 | head -n1)
-    PART="/dev/$PART"
-
-    log INFO "[*] ... Preparing disk $DISK (label=$LABEL)"
-    if ! blkid "$PART" &>/dev/null; then
-      log INFO "[*] ... Partitioning $DISK"
-      parted -s "$DISK" mklabel gpt
-      parted -s -a optimal "$DISK" mkpart primary ext4 0% 100%
+    if ! lsblk "$part" &>/dev/null; then
+      log INFO "[*] ... Partitioning $disk"
+      parted -s "$disk" mklabel gpt
+      parted -s -a optimal "$disk" mkpart primary ext4 0% 100%
+      sync
       sleep 2
-      PART=$(lsblk -nro NAME "$DISK" | tail -n +2 | head -n1)
-      PART="/dev/$PART"
+      part="/dev/$(lsblk -nro NAME "$disk" | sed -n '2p')"
     else
-      log INFO "[*] ... Skipping partitioning $DISK. Already partitioned."
+      log INFO "[*] ... Skipping partitioning: $disk already partitioned"
     fi
 
-    FS_TYPE=$(blkid -s TYPE -o value "$PART" || echo "")
-    CURRENT_LABEL=$(blkid -s LABEL -o value "$PART" || echo "")
-
-    if [ -z "$FS_TYPE" ]; then
-      log INFO "[*] ... Formatting $PART as ext4 with label $LABEL"
-      mkfs.ext4 -L "$LABEL" "$PART"
-      sync
-    elif [ "$FS_TYPE" != "ext4" ]; then
-      log WARN "[!] ... $PART has unexpected FS type ($FS_TYPE), skipping."
+    if [[ -z "$fs_type" ]]; then
+      log INFO "[*] ... Formatting $part as ext4 with label $label"
+      mkfs.ext4 -L "$label" "$part"
+    elif [[ "$fs_type" != "ext4" ]]; then
+      log WARN "[!] $part has unexpected FS type ($fs_type), skipping"
       continue
-    elif [ "$CURRENT_LABEL" != "$LABEL" ]; then
-      log INFO "[*] ... Relabeling $PART from $CURRENT_LABEL to $LABEL"
-      e2label "$PART" "$LABEL"
+    elif [[ "$current_label" != "$label" ]]; then
+      log INFO "[*] ... Relabeling $part from $current_label to $label"
+      e2label "$part" "$label"
     else
-      log INFO "[*] ... $PART already formatted and labeled $LABEL"
-    fi
-    
-    UUID=$(blkid -s UUID -o value "$PART")
-    MOUNT_POINT="/mnt/data$jdex"
-    mkdir -p "$MOUNT_POINT"
-
-    if ! grep -q "^UUID=$UUID " /etc/fstab; then
-      echo "UUID=$UUID $MOUNT_POINT ext4 defaults,noatime,nofail 0 2" >> /etc/fstab
+      log INFO "[*] ... $part already formatted and labeled $label"
     fi
 
-    if ! mountpoint -q "$MOUNT_POINT"; then
-      mount "$MOUNT_POINT"
-      sync
+    mkdir -p "$mnt"
+    if ! mountpoint -q "$mnt"; then
+      log INFO "[*] Mounting $label to $mnt"
+      mount "/dev/disk/by-label/$label" "$mnt"
+    else
+      log INFO "[+] Already mounted: $mnt"
     fi
 
-    # Bind directories
-    CONF_PATH="${APP_PATH_CONF}${jdex}/"
-    DATA_PATH="${APP_PATH_DATA}${jdex}/"
-    LOGS_PATH="${APP_PATH_LOGS}${jdex}/"
-    SERV_PATH="${APP_PATH_SERV}${jdex}/"
-
-    mkdir -p "$MOUNT_POINT/conf" "$MOUNT_POINT/data" "$MOUNT_POINT/logs" "$MOUNT_POINT/serv"
-    mkdir -p "$CONF_PATH" "$DATA_PATH" "$LOGS_PATH" "$SERV_PATH"
-
-    for src in conf data logs serv; do
-      SRC_PATH="$MOUNT_POINT/$src"
-      case "$src" in
-        conf) DST_PATH="/etc/conf$jdex" ;;
-        data) DST_PATH="/var/lib/data$jdex" ;;
-        logs) DST_PATH="/var/lib/logs$jdex" ;;
-        serv) DST_PATH="/srv/app$jdex" ;;
-      esac
-      if ! grep -q "^$SRC_PATH $DST_PATH " /etc/fstab; then
-        echo "$SRC_PATH $DST_PATH none bind 0 0" >> /etc/fstab
-      fi
-      mount --bind "$SRC_PATH" "$DST_PATH"
-    done
+    log INFO "[*] ... Mounting disk $i for $hostname DONE"
   done
 
-  chmod +x "$profile_file"
-
-  log INFO "[*] ... Disk setup complete. Paths exported to $profile_file"
   log INFO "[+] Preparing and mounting disk volumes...DONE"
 }
 
