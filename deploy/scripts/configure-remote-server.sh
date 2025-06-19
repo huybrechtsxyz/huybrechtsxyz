@@ -349,7 +349,9 @@ create_service_paths() {
 
 configure_server() {
   log INFO "[*] Configuring server..."
-  ls -lra
+  echo "TEMP : $PATH_TEMP"
+  ls -lra $PATH_TEMP
+  ls -lra $PATH_TEMP/src
   log INFO "[*] Installing configuration files..."
   cp -f "$PATH_TEMP/src/*.*" "$PATH_CONF/" || {
     log ERROR "[x] Failed to copy configuration file to $PATH_CONF"
