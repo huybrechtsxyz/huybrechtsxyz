@@ -72,7 +72,7 @@ shopt -s nullglob
 echo "[*] Executing on REMOTE server...Copy source files"
 set -a
 source "$APP_PATH_TEMP/src/pipeline.env"
-source "$APP_PATH_TEMP/src/$ENVIRONMENT.env"
+source "$APP_PATH_TEMP/src/$APP_ENVIRONMENT.env"
 source "$APP_PATH_TEMP/src/secrets.env"
 source "$APP_PATH_TEMP/src/functions.sh"
 set +a
