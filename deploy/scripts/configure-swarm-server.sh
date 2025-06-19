@@ -71,14 +71,14 @@ echo "[*] Executing on REMOTE server..."
 shopt -s nullglob
 echo "[*] Executing on REMOTE server...Copy source files"
 set -a
-source "$PATH_TEMP/src/pipeline.env"
-source "$PATH_TEMP/src/$ENVIRONMENT.env"
-source "$PATH_TEMP/src/secrets.env"
-source "$PATH_TEMP/src/functions.sh"
+source "$APP_PATH_TEMP/src/pipeline.env"
+source "$APP_PATH_TEMP/src/$ENVIRONMENT.env"
+source "$APP_PATH_TEMP/src/secrets.env"
+source "$APP_PATH_TEMP/src/functions.sh"
 set +a
-chmod +x "$PATH_TEMP/deploy/configure-remote-server.sh"
-"$PATH_TEMP/deploy/configure-remote-server.sh"
-rm -f "$PATH_CONF"/secrets.env
+chmod +x "$APP_PATH_TEMP/deploy/configure-remote-server.sh"
+"$APP_PATH_TEMP/deploy/configure-remote-server.sh"
+rm -f "$APP_PATH_CONF"/secrets.env
 echo "[*] Executing on REMOTE server...DONE"
 EOF
 then
