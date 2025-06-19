@@ -15,7 +15,7 @@ create_secret_file() {
 init_copy_files() {
 log INFO "[*] Initializing REMOTE configuration..."
 if ! ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" << EOF
-mkdir -p "$PATH_TEMP" "$PATH_TEMP"/deploy "$PATH_TEMP"/src
+mkdir -p "$APP_PATH_TEMP" "$APP_PATH_TEMP"/deploy "$APP_PATH_TEMP"/src
 echo "[*] Initializing REMOTE server...DONE"
 EOF
 then
@@ -30,7 +30,7 @@ copy_config_files() {
   log INFO "[*] Copying environment files to remote server...Deploy"
   scp -o StrictHostKeyChecking=no \
     ./deploy/scripts/*.sh \
-    root@"$REMOTE_IP":"$PATH_TEMP"/deploy || {
+    root@"$REMOTE_IP":"$APP_PATH_TEMP"/deploy || {
       log ERROR "[x] Failed to transfer configuration scripts to remote server"
       exit 1
     }
@@ -39,7 +39,7 @@ copy_config_files() {
     ./deploy/*.* \
     ./scripts/*.sh \
     ./src/*.* \
-    root@"$REMOTE_IP":"$PATH_TEMP"/src || {
+    root@"$REMOTE_IP":"$APP_PATH_TEMP"/src || {
       log ERROR "[x] Failed to transfer configuration scripts to remote server"
       exit 1
     }
@@ -51,7 +51,7 @@ copy_service_files() {
   for service in ./src/*; do
     if [ -d "$service" ]; then
       service_name=$(basename "$service")
-      remote_conf_dir="$PATH_TEMP/src/$service_name"
+      remote_conf_dir="$APP_PATH_TEMP/src/$service_name"
       log INFO "[*] Copying service configuration files to remote server...$service_name"
       ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" "mkdir -p '$remote_conf_dir' && rm -f '$remote_conf_dir'/*.*" || {
         log ERROR "[!] Failed to create or cleanup remote config directory for $service_name"
