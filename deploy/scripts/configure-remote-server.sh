@@ -206,10 +206,10 @@ createnodelabels() {
 create_workspace_paths() {
   log INFO "[*] Creating workspace directories on mounted disks..."
 
-  : "${APP_WORKSPACE:?Missing APP_WORKSPACE}"
+  : "${WORKSPACE:?Missing WORKSPACE}"
   local hostname
   hostname=$(hostname)
-  local workspace_file="$PATH_TEMP/src/workspace.$APP_WORKSPACE.json"
+  local workspace_file="$PATH_TEMP/src/workspace.$WORKSPACE.json"
 
   if [[ ! -f "$workspace_file" ]]; then
     log ERROR "[!] Workspace file not found: $workspace_file"
@@ -261,7 +261,7 @@ create_service_paths() {
   : "${WORKSPACE:?Missing WORKSPACE}"
   local hostname
   hostname=$(hostname)
-  local workspace_file="$PATH_TEMP/src/workspace.$APP_WORKSPACE.json"
+  local workspace_file="$PATH_TEMP/src/workspace.$WORKSPACE.json"
 
   if [[ ! -f "$workspace_file" ]]; then
     log ERROR "[!] Workspace file not found: $workspace_file"
