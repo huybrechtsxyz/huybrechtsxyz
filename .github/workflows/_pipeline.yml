@@ -234,44 +234,44 @@ jobs:
         with:
           access_token: ${{ secrets.BITWARDEN_TOKEN }}
           secrets: |
-            357068b9-9f5f-4f79-940c-b2c8016cb88f > SECRET_KAMATERA_API_KEY
-            6c9295a8-9fa4-4d38-8929-b2c8016d9b43 > SECRET_KAMATERA_API_SECRET
-            6cc5b975-56a9-4d7a-80c7-b2c90151cce0 > SECRET_KAMATERA_PUBLIC_KEY
-            f16fffe2-77b7-4d20-bf6c-b2c9015c71d3 > SECRET_KAMATERA_PRIVATE_KEY
-            5083ae32-429d-428b-b7df-b2c901441bbb > SECRET_KAMATERA_ROOT_PASSWORD
-            09171644-23c8-4b7f-9015-b2e5015a4572 > SECRET_PLATFORM_USERNAME
-            ffa5e6f9-de6a-47fa-887e-b2e5015ae1a4 > SECRET_PLATFORM_PASSWORD
-            5db70d74-c5db-459a-b916-b2d80126d8a3 > SECRET_TRAEFIK_CLIENTID
-            f5eaa406-b7cb-4ea8-b260-b2d80127303d > SECRET_TRAEFIK_SECRET
-            f53a76ab-b87f-4af0-9aa4-b2d1016aba2b > SECRET_VERSIO_USERNAME
-            3d7bbfcd-18a5-4762-9064-b2d1016aef63 > SECRET_VERSIO_PASSWORD
+            357068b9-9f5f-4f79-940c-b2c8016cb88f > KAMATERA_API_KEY
+            6c9295a8-9fa4-4d38-8929-b2c8016d9b43 > KAMATERA_API_SECRET
+            6cc5b975-56a9-4d7a-80c7-b2c90151cce0 > KAMATERA_PUBLIC_KEY
+            f16fffe2-77b7-4d20-bf6c-b2c9015c71d3 > KAMATERA_PRIVATE_KEY
+            5083ae32-429d-428b-b7df-b2c901441bbb > KAMATERA_ROOT_PASSWORD
+            09171644-23c8-4b7f-9015-b2e5015a4572 > PLATFORM_USERNAME
+            ffa5e6f9-de6a-47fa-887e-b2e5015ae1a4 > PLATFORM_PASSWORD
+            5db70d74-c5db-459a-b916-b2d80126d8a3 > TRAEFIK_CLIENTID
+            f5eaa406-b7cb-4ea8-b260-b2d80127303d > TRAEFIK_SECRET
+            f53a76ab-b87f-4af0-9aa4-b2d1016aba2b > VERSIO_USERNAME
+            3d7bbfcd-18a5-4762-9064-b2d1016aef63 > VERSIO_PASSWORD
 
       # Set up GitHub Secrets for Test Environment
-      - name: Get Test Secrets
-        if: inputs.environment == 'test'
-        uses: bitwarden/sm-action@v2
-        with:  
-          access_token: ${{ secrets.BITWARDEN_TOKEN }}
-          secrets: |
-            5083ae32-429d-428b-b7df-b2c901441bbb > APP_ROOT_PASSWORD
+      # - name: Get Test Secrets
+      #   if: inputs.environment == 'test'
+      #   uses: bitwarden/sm-action@v2
+      #   with:  
+      #     access_token: ${{ secrets.BITWARDEN_TOKEN }}
+      #     secrets: |
+      #       5083ae32-429d-428b-b7df-b2c901441bbb > ROOT_PASSWORD
 
       # Set up GitHub Secrets for Staging Environment
-      - name: Get Staging Secrets
-        if: inputs.environment == 'staging'
-        uses: bitwarden/sm-action@v2
-        with:  
-          access_token: ${{ secrets.BITWARDEN_TOKEN }}
-          secrets: |
-            924b9526-a6cf-43c1-93a9-b2c9014494ae > APP_ROOT_PASSWORD
+      # - name: Get Staging Secrets
+      #   if: inputs.environment == 'staging'
+      #   uses: bitwarden/sm-action@v2
+      #   with:  
+      #     access_token: ${{ secrets.BITWARDEN_TOKEN }}
+      #     secrets: |
+      #       924b9526-a6cf-43c1-93a9-b2c9014494ae > ROOT_PASSWORD
 
       # Set up GitHub Secrets for Production Environment
-      - name: Get Production Secrets
-        if: inputs.environment == 'production'
-        uses: bitwarden/sm-action@v2
-        with:  
-          access_token: ${{ secrets.BITWARDEN_TOKEN }}
-          secrets: |
-            6db5856c-3f7f-4b62-9846-b2c90144cb0b > APP_ROOT_PASSWORD
+      # - name: Get Production Secrets
+      #   if: inputs.environment == 'production'
+      #   uses: bitwarden/sm-action@v2
+      #   with:  
+      #     access_token: ${{ secrets.BITWARDEN_TOKEN }}
+      #     secrets: |
+      #       6db5856c-3f7f-4b62-9846-b2c90144cb0b > ROOT_PASSWORD
 
       # Set up SSH connection
       - name: Set up SSH connection

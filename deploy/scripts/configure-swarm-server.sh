@@ -5,7 +5,7 @@ REMOTE_IP="$1"
 source "$(dirname "${BASH_SOURCE[0]}")/../../scripts/functions.sh"
 
 create_secret_file() {
-  generate_env_file "SECRET_" "./src/pipeline.env"
+  generate_env_file "APP_" "./src/pipeline.env"
   generate_env_file "SECRET_" "./src/secrets.env"
 }
 
