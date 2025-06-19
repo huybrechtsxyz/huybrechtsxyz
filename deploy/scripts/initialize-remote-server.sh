@@ -212,7 +212,7 @@ configure_swarm() {
         log INFO "[*] ... Swarm tokens are available on $MANAGER_IP"
         break
       fi
-      log WARN "[!] ... Attempt $idex: Waiting for Swarm tokens..."
+      log WARN "[!] ... Attempt $i: Waiting for Swarm tokens..."
       sleep 5
     done
 
