@@ -349,9 +349,7 @@ create_service_paths() {
 
 configure_server() {
   log INFO "[*] Configuring server..."
-  echo "TEMP : $PATH_TEMP"
-  ls -lra $PATH_TEMP
-  ls -lra $PATH_TEMP/src
+
   log INFO "[*] Installing configuration files..."
   cp -f "$PATH_TEMP"/src/*.* "$PATH_CONF/" || {
     log ERROR "[x] Failed to copy configuration file to $PATH_CONF"
@@ -392,9 +390,6 @@ configure_services() {
 main() {
   log INFO "[*] Configuring Swarm Node: $hostname..."
 
-  echo "> APP_PATH_TEMP: $PATH_TEMP"
-  ls -lra $PATH_TEMP
-
   docker info --format '{{.Swarm.LocalNodeState}}' | grep -q "active" || {
     log ERROR "[x] Docker Swarm is not active. Run 'docker swarm init' first."
     exit 1
@@ -429,8 +424,8 @@ main() {
   configure_services || exit 1
 
   log INFO "[*] Remote server cleanup..."
-  rm -f "$PATH_CONF/secret.env"
-  rm -rf $PATH_TMP/*
+  rm -f "$PATH_CONF"/secret.env
+  rm -rf "/tmp/app/"*
 
   log INFO "[+] Configuring Swarm Node: $hostname...DONE"
 }

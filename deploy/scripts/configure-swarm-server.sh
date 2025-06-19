@@ -68,8 +68,7 @@ log INFO "[*] Executing REMOTE configuration..."
 if ! ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" << EOF
 set -e
 echo "[*] Executing on REMOTE server..."
-echo "APP_PATH_TEMP: $APP_PATH_TEMP"
-ls -lra $APP_PATH_TEMP
+echo "[*] Using temporary path: $APP_PATH_TEMP"
 shopt -s nullglob
 echo "[*] Executing on REMOTE server...Copy source files"
 set -a
