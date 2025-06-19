@@ -296,7 +296,6 @@ jobs:
           SECRET_VERSIO_PASSWORD : ${{ steps.get-secrets.outputs.VERSIO_PASSWORD }}
         run: |
           echo "[*] Configuring swarm server ${{ matrix.ip }} ..."
-          source "./scripts/functions.sh"
           chmod +x deploy/scripts/configure-swarm-server.sh
           ./deploy/scripts/configure-swarm-server.sh "${{ matrix.ip }}"
           echo "[*] Configuring swarm server ${{ matrix.ip }} ...DONE"
