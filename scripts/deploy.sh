@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -euo pipefail
 
 # Initialize script
@@ -15,9 +14,12 @@ if [[ -z "${ENV_FILE:-}" ]]; then
 fi
 
 # Load the environment file
+# Save all the variables in the .env file
+load_envfile "$SCRIPT_PATH/pipeline.env"
+load_envfile "$SCRIPT_PATH/variables.env"
 load_envfile "$SCRIPT_PATH/$ENV_FILE.env"
-cd "$APP_PATH_CONF" || exit 1
-cp -f "$APP_PATH_CONF/$ENV_FILE.env" "$APP_PATH_CONF/.env"
+generate_env_file "" "$SCRIPT_PATH/.env"
+cd "$PATH_CONF" || exit 1
 
 # Default stack name if not set
 STACK="${STACK:-app}"
@@ -30,9 +32,9 @@ if [[ -z "${GROUP:-}" && ${#SERVICES[@]} -eq 0 ]]; then
 fi
 
 # Count Docker manager and infra nodes
-update_docker_variables "DOCKER_MANAGERS" "role=manager" "$APP_PATH_CONF/.env" "Docker Manager Nodes"
-update_docker_variables "DOCKER_INFRAS" "node.label=infra=true" "$APP_PATH_CONF/.env" "Docker Infra Nodes"
-update_docker_variables "DOCKER_WORKERS" "node.label=worker=true" "$APP_PATH_CONF/.env" "Docker Worker Nodes"
+update_docker_variables "DOCKER_MANAGERS" "role=manager" "$PATH_CONF/.env" "Docker Manager Nodes"
+update_docker_variables "DOCKER_INFRAS" "node.label=infra=true" "$PATH_CONF/.env" "Docker Infra Nodes"
+update_docker_variables "DOCKER_WORKERS" "node.label=worker=true" "$PATH_CONF/.env" "Docker Worker Nodes"
 
 # Clean VXLAN interfaces
 log INFO "[*] Cleaning up VXLAN interfaces..."
@@ -43,20 +45,20 @@ log INFO "[+] Cleaning up VXLAN interfaces... DONE"
 SELECTION=()
 
 # Make sure consul config if exists
-consul_target="$APP_PATH_CONF/consul/etc"
+consul_target="$PATH_CONF/consul/etc"
 if [[ ! -d "$consul_target" ]]; then
   mkdir -p $consul_target
   chmod 755 -R $consul_target
-  if [[ -f "$APP_PATH_CONF/consul/config.json" ]]; then
+  if [[ -f "$PATH_CONF/consul/config.json" ]]; then
     log INFO "[+] Moved Consul config to $consul_target"
-    mv -f "$APP_PATH_CONF/consul/config.json" "$consul_target/consul.json"
+    mv -f "$PATH_CONF/consul/config.json" "$consul_target/consul.json"
   else
-    log WARN "[!] consul/config.json not found in $APP_PATH_CONF. Skipping Consul configuration."
+    log WARN "[!] consul/config.json not found in $PATH_CONF. Skipping Consul configuration."
   fi
 fi
 
 # Loop each service
-for dir in "$APP_PATH_CONF"/*/; do
+for dir in "$PATH_CONF"/*/; do
   service_dir="${dir%/}"  # Remove trailing slash
   service_name=$(basename "$service_dir")
   service_file="$service_dir/service.json"
@@ -79,59 +81,6 @@ for dir in "$APP_PATH_CONF"/*/; do
   service_group=$(echo "$service_data" | jq -r '.service.groups[]?')
   service_endpoint=$(echo "$service_data" | jq -r '.service.endpoint')
   service_priority=$(echo "$service_data" | jq -r '.service.priority')
-
-  # Iterate over each path entry
-  service_paths=$(echo "$service_data" | jq -c '.service.paths[]?')
-  IFS=$'\n' && for entry in $service_paths; do
-    # Extract fields
-    entry_path=$(echo "$entry" | jq -r '.path')
-    entry_type=$(echo "$entry" | jq -r '.type')
-    entry_disk=$(echo "$entry" | jq -r '.disk // 0')
-
-    # Build the path variable for this service path
-    case "$entry_type" in
-      config) base_var="APP_PATH_CONF" ;;   # /etc/app
-      data)   base_var="APP_PATH_DATA" ;;   # /var/lib/data or /var/lib/data1
-      logs)   base_var="APP_PATH_LOGS" ;;   # /var/lib/logs or /var/lib/logs1
-      serve)  base_var="APP_PATH_SERV" ;;   # /srv or /srv1
-      *) echo "Unknown type: $entry_type" >&2; continue ;;
-    esac
-
-    # Append disk suffix if entry_disk > 0
-    if [ "$entry_disk" -gt 0 ]; then
-      base_var="$base_var$entry_disk"
-    fi
-
-    # Get the actual base path from the environment variable
-    # and build the target path
-    target_path="${!base_var:-}/$service_name"
-
-    # Append entry_path if present
-    # Build variable name: SERVICEID_PATH_TYPE[disk] or SERVICEID_PATH_ENTRY
-    if [ -n "$entry_path" ]; then
-      target_path="$target_path/$entry_path"
-      var_name="$(echo "${service_name^^}_PATH_${entry_path^^}")"
-    else
-      var_name="$(echo "${service_name^^}_PATH_${entry_type^^}")"
-    fi
-
-    export "$var_name"="$target_path"
-    # Add to /etc/app/.env (overwrite existing entry if present)
-    if grep -q "^${var_name}=" "$APP_PATH_CONF/.env" 2>/dev/null; then
-      sed -i "s|^${var_name}=.*|${var_name}=${target_path}|" $APP_PATH_CONF/.env
-    else
-      echo "${var_name}=${target_path}" >> $APP_PATH_CONF/.env
-    fi
-    
-    # Clear logs if it's a logs path
-    if [[ "$entry_type" == "logs" ]]; then
-      log INFO "[*] Clearing logs in $target_path"
-      rm -rf "${target_path:?}"/*
-    fi
-  done
-
-  # Expand env variables in endpoint
-  service_endpoint=$(expand_env_vars "$service_endpoint")
 
   # Match based on group or service list
   if [[ "$GROUP" == "$service_group" || " ${SERVICES[*]} " == *" $service_id "* || ( -z "$GROUP" && "${#SERVICES[@]}" -eq 0 ) ]]; then

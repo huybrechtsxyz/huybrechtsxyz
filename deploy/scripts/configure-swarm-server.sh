@@ -2,34 +2,15 @@
 set -euo pipefail
 REMOTE_IP="$1"
 
-load_variables() {
-  log INFO "[*] Loading variables from ./src/$ENVIRONMENT.env file..."
-  while IFS='=' read -r key value || [ -n "$key" ]; do
-    [[ -z "$key" || "$key" == \#* ]] && continue
-    value="${value%\"}"
-    value="${value#\"}"
-    echo "$key=$value" >> "$GITHUB_ENV"
-  done < ./src/$ENVIRONMENT.env
-  log INFO "[+] Loading variables from ./src/$ENVIRONMENT.env file...DONE"
-}
-
-load_secrets() {
-log INFO "[*] Loading secrets for remote environment..."
-cat <<EOF > ./src/secrets.env
-PLATFORM_USERNAME=${PLATFORM_USERNAME}
-PLATFORM_PASSWORD=${PLATFORM_PASSWORD}
-TRAEFIK_CLIENTID=${TRAEFIK_CLIENTID}
-TRAEFIK_SECRET=${TRAEFIK_SECRET}
-VERSIO_USERNAME=${VERSIO_USERNAME}
-VERSIO_PASSWORD=${VERSIO_PASSWORD}
-EOF
-log INFO "[+] Copying secrets for remote environment...DONE"
+create_secret_file() {
+  generate_env_file "SECRET_" "./src/pipeline.env"
+  generate_env_file "SECRET_" "./src/secrets.env"
 }
 
 init_copy_files() {
 log INFO "[*] Initializing REMOTE configuration..."
 if ! ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" << EOF
-mkdir -p "$APP_PATH_TEMP" "$APP_PATH_TEMP"/deploy "$APP_PATH_TEMP"/src
+mkdir -p "$PATH_TEMP" "$PATH_TEMP"/deploy "$PATH_TEMP"/src
 echo "[*] Initializing REMOTE server...DONE"
 EOF
 then
@@ -44,7 +25,7 @@ copy_config_files() {
   log INFO "[*] Copying environment files to remote server...Deploy"
   scp -o StrictHostKeyChecking=no \
     ./deploy/scripts/*.sh \
-    root@"$REMOTE_IP":"$APP_PATH_TEMP"/deploy || {
+    root@"$REMOTE_IP":"$PATH_TEMP"/deploy || {
       log ERROR "[x] Failed to transfer configuration scripts to remote server"
       exit 1
     }
@@ -53,7 +34,7 @@ copy_config_files() {
     ./deploy/*.* \
     ./scripts/*.sh \
     ./src/*.* \
-    root@"$REMOTE_IP":"$APP_PATH_TEMP"/src || {
+    root@"$REMOTE_IP":"$PATH_TEMP"/src || {
       log ERROR "[x] Failed to transfer configuration scripts to remote server"
       exit 1
     }
@@ -65,7 +46,7 @@ copy_service_files() {
   for service in ./src/*; do
     if [ -d "$service" ]; then
       service_name=$(basename "$service")
-      remote_conf_dir="$APP_PATH_TEMP/src/$service_name"
+      remote_conf_dir="$PATH_TEMP/src/$service_name"
       log INFO "[*] Copying service configuration files to remote server...$service_name"
       ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" "mkdir -p '$remote_conf_dir' && rm -f '$remote_conf_dir'/*.*" || {
         log ERROR "[!] Failed to create or cleanup remote config directory for $service_name"
@@ -87,16 +68,15 @@ set -e
 echo "[*] Executing on REMOTE server..."
 shopt -s nullglob
 echo "[*] Executing on REMOTE server...Copy source files"
-cp -f "$APP_PATH_TEMP"/src/*.* "$APP_PATH_CONF"
-chmod +x "$APP_PATH_CONF"/*.sh
 set -a
-source "$APP_PATH_CONF/$ENVIRONMENT.env"
-source "$APP_PATH_CONF/secrets.env"
-source "$APP_PATH_CONF/function.sh"
+source "$PATH_TEMP/src/pipeline.env"
+source "$PATH_TEMP/src/$ENVIRONMENT.env"
+source "$PATH_TEMP/src/secrets.env"
+source "$PATH_TEMP/src/functions.sh"
 set +a
-chmod +x "$APP_PATH_TEMP/deploy/configure-remote-server.sh"
-"$APP_PATH_TEMP/deploy/configure-remote-server.sh"
-rm -f "$APP_PATH_CONF"/secrets.env
+chmod +x "$PATH_TEMP/deploy/configure-remote-server.sh"
+"$PATH_TEMP/deploy/configure-remote-server.sh"
+rm -f "$PATH_CONF"/secrets.env
 echo "[*] Executing on REMOTE server...DONE"
 EOF
 then
@@ -108,13 +88,8 @@ fi
 main() {
   log INFO "[*] Configuring remote server at $REMOTE_IP..."
 
-  if ! load_variables; then
-    log ERROR "[x] Failed to load environment variables from ./src/$ENVIRONMENT.env"
-    exit 1
-  fi
-
-  if ! load_secrets; then
-    log ERROR "[x] Failed to load secrets for remote environment"
+  if ! create_secret_file; then
+    log ERROR "[x] Failed to create environment file."
     exit 1
   fi
 
@@ -136,7 +111,7 @@ main() {
   if ! configure_server; then
     log ERROR "[x] Failed to configure remote server"
     exit 1
-  fi  
+  fi
 
   log INFO "[+] Configuring remote server at $REMOTE_IP...DONE"
 }

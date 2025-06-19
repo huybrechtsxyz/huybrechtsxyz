@@ -286,19 +286,14 @@ jobs:
       # Step: Configure Server
       - name: Configure Server
         env:
-          APP_PATH_CONF: ${{ env.APP_PATH_CONF }}
-          APP_PATH_DATA: ${{ env.APP_PATH_DATA }}
-          APP_PATH_LOGS: ${{ env.APP_PATH_LOGS }}
-          APP_PATH_SERV: ${{ env.APP_PATH_SERV }}
-          APP_PATH_TEMP: ${{ env.APP_PATH_TEMP }}
-          ENVIRONMENT: ${{ inputs.environment }}
-          WORKSPACE: ${{ inputs.workspace }}
-          PLATFORM_USERNAME: ${{ steps.get-secrets.outputs.PLATFORM_USERNAME }}
-          PLATFORM_PASSWORD: ${{ steps.get-secrets.outputs.PLATFORM_PASSWORD }}
-          TRAEFIK_CLIENTID : ${{ steps.get-secrets.outputs.TRAEFIK_CLIENTID }}
-          TRAEFIK_SECRET : ${{ steps.get-secrets.outputs.TRAEFIK_SECRET }}
-          VERSIO_USERNAME : ${{ steps.get-secrets.outputs.VERSIO_USERNAME }}
-          VERSIO_PASSWORD : ${{ steps.get-secrets.outputs.VERSIO_PASSWORD }}
+          APP_ENVIRONMENT: ${{ inputs.environment }}
+          APP_WORKSPACE: ${{ inputs.workspace }}
+          SECRET_PLATFORM_USERNAME: ${{ steps.get-secrets.outputs.PLATFORM_USERNAME }}
+          SECRET_PLATFORM_PASSWORD: ${{ steps.get-secrets.outputs.PLATFORM_PASSWORD }}
+          SECRET_TRAEFIK_CLIENTID : ${{ steps.get-secrets.outputs.TRAEFIK_CLIENTID }}
+          SECRET_TRAEFIK_SECRET : ${{ steps.get-secrets.outputs.TRAEFIK_SECRET }}
+          SECRET_VERSIO_USERNAME : ${{ steps.get-secrets.outputs.VERSIO_USERNAME }}
+          SECRET_VERSIO_PASSWORD : ${{ steps.get-secrets.outputs.VERSIO_PASSWORD }}
         run: |
           echo "[*] Configuring swarm server ${{ matrix.ip }} ..."
           source "./scripts/functions.sh"

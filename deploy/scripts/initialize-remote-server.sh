@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # source /tmp/app/initialize.env (set in pipeline)
-export PRIVATE_IP="$APP_PRIVATE_IP"
-export MANAGER_IP="$APP_MANAGER_IP"
+export PRIVATE_IP="$PRIVATE_IP"
+export MANAGER_IP="$MANAGER_IP"
 
 cd /
 
@@ -87,9 +87,9 @@ configure_firewall() {
 mount_disks() {
   log INFO "[*] Preparing and mounting disk volumes..."
 
-  : "${APP_WORKSPACE:?Missing APP_WORKSPACE}"
+  : "${WORKSPACE:?Missing WORKSPACE}"
   local hostname=$(hostname)
-  local workspace_file="$APP_PATH_TEMP/workspace.$APP_WORKSPACE.json"
+  local workspace_file="$PATH_TEMP/workspace.$WORKSPACE.json"
 
   if [[ ! -f "$workspace_file" ]]; then
     log ERROR "[!] Cluster metadata file not found: $workspace_file on $hostname"

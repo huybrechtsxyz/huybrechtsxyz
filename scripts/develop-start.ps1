@@ -10,6 +10,12 @@ param (
 # AppPath from functions
 # SourcePath from functions
 
+# APP_PATH_CONF=C:/Users/vince/Sources/huybrechtsxyz/.app
+# APP_PATH_DATA=C:/Users/vince/Sources/huybrechtsxyz/.app
+# APP_PATH_LOGS=C:/Users/vince/Sources/huybrechtsxyz/.app
+# APP_PATH_SERV=C:/Users/vince/Sources/huybrechtsxyz/.app
+# APP_PATH_TEMP=%TEMP%
+
 Set-Location $AppPath
 
 Write-Host "[*] Starting DEVELOPMENT environment..."

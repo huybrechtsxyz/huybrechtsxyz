@@ -10,27 +10,8 @@ APP_REMOTE_IP="$1"
 APP_PRIVATE_IP="$2"
 APP_MANAGER_IP="$3"
 
-generate_env_file() {
-  log INFO "[*] Generating environment file with all APP_ variables..."
-
-  # Find all environment variable names starting with APP_
-  mapfile -t app_vars < <(compgen -v | grep '^APP_')
-
-  # Check that each APP_ var is set and non-empty
-  for var in "${app_vars[@]}"; do
-    [[ -z "${!var}" ]] && { echo "[!] Error: Missing required variable '$var'" >&2; exit 1; }
-  done
-
-  # Generate the env file with all APP_ vars
-  {
-    echo "# Auto-generated environment file (all APP_ variables)"
-    for var in "${app_vars[@]}"; do
-      # Escape values to avoid issues (optional)
-      printf 'export %s=%q\n' "$var" "${!var}"
-    done
-  } > ./deploy/scripts/initialize.env
-
-  log INFO "[+] Generating environment file with all APP_ variables...DONE"
+create_env_file() {
+  generate_env_file "APP_" "./deploy/scripts/initialize.env"
 }
 
 copy_config_files() {
@@ -72,11 +53,6 @@ fi
 
 main() {
   log INFO "[*] Initializing swarm cluster ..."
-
-  if ! check_variables; then
-    log ERROR "[x] Missing required environment variables."
-    exit 1
-  fi
 
   if ! create_env_file; then
     log ERROR "[x] Failed to create environment file."
