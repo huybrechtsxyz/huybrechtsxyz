@@ -367,10 +367,6 @@ configure_server() {
     fi
   done
 
-  log INFO "[*] Remote server cleanup..."
-  rm -f "$PATH_CONF/secret.env"
-  rm -rf /tmp/app/*
-
   log INFO "[*] Configuring server...DONE"
 }
 
@@ -392,9 +388,9 @@ configure_services() {
 }
 
 main() {
-  log INFO "[*] Configuring Swarn Node: $hostname..."
+  log INFO "[*] Configuring Swarm Node: $hostname..."
 
-  echo "APP_PATH_TEMP: $PATH_TEMP"
+  echo "> APP_PATH_TEMP: $PATH_TEMP"
   ls -lra $PATH_TEMP
 
   docker info --format '{{.Swarm.LocalNodeState}}' | grep -q "active" || {
@@ -430,7 +426,11 @@ main() {
   echo "[*] Configure services ..."
   configure_services || exit 1
 
-  log INFO "[+] Configuring Swarn Node: $hostname...DONE"
+  log INFO "[*] Remote server cleanup..."
+  rm -f "$PATH_CONF/secret.env"
+  rm -rf $PATH_TMP/*
+
+  log INFO "[+] Configuring Swarm Node: $hostname...DONE"
 }
 
 main
