@@ -60,7 +60,7 @@
         { "size": 40, "label": "worker-1-data" }
       ],      
       "mounts": [
-        { "type": "conf", "disk": 0 },
+        { "type": "config", "disk": 0 },
         { "type": "data", "disk": 0 },
         { "type": "logs", "disk": 0 },
         { "type": "serve", "disk": 0 }
@@ -74,7 +74,7 @@
         { "size": 40, "label": "worker-2-data" }
       ],
       "mounts": [
-        { "type": "conf", "disk": 0 },
+        { "type": "config", "disk": 0 },
         { "type": "data", "disk": 0 },
         { "type": "logs", "disk": 0 },
         { "type": "serve", "disk": 0 }
