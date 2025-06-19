@@ -10,6 +10,8 @@ APP_REMOTE_IP="$1"
 APP_PRIVATE_IP="$2"
 APP_MANAGER_IP="$3"
 
+source "$(dirname "${BASH_SOURCE[0]}")/../../scripts/functions.sh"
+
 create_env_file() {
   generate_env_file "APP_" "./deploy/scripts/initialize.env"
 }

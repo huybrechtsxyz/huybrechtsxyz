@@ -1,8 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-source "$(dirname "${BASH_SOURCE[0]}")/../../scripts/functions.sh"
-
 # source /tmp/app/initialize.env (set in pipeline)
 export PRIVATE_IP="$PRIVATE_IP"
 export MANAGER_IP="$MANAGER_IP"
