@@ -208,7 +208,7 @@ jobs:
           echo "[*] Initializing swarm cluster on ${{ matrix.ip }} ..."
           chmod +x deploy/scripts/initialize-swarm-server.sh
           ./deploy/scripts/initialize-swarm-server.sh "${{ matrix.ip }}" "${{ matrix.private_ip }}" "${{ matrix.manager_ip }}"
-          echo "[*] Initializing swarm cluster on ${matrix.ip} ...DONE"
+          echo "[*] Initializing swarm cluster on ${{ matrix.ip }} ...DONE"
 
   # Configure the Swarm Cluster
   # This job will run if the cache is not hit or if the initialize input is set to true
