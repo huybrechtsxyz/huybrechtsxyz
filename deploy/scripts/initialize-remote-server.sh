@@ -107,7 +107,13 @@ mount_disks() {
   fi
 
   # Get disks sorted by size (skipping the OS disk manually)
-  mapfile -t disks < <(lsblk -dn -o NAME,SIZE -b | sort -k2,2n -k1,1)
+  os_disk=$(findmnt -n -o SOURCE / | sed 's/[0-9]*$//')
+  mapfile -t disks < <(
+    lsblk -dn -o NAME,TYPE,SIZE -b |
+    awk -v osdisk="$(basename "$os_disk")" '$2 == "disk" && $1 != osdisk && $1 !~ /^sr[0-9]+$/ {print $1, $3}' |
+    sort -k2,2n -k1,1
+  )
+
   declare -a disk_names
   for line in "${disks[@]}"; do
     disk_names+=("$(echo "$line" | awk '{print $1}')")
