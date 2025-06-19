@@ -18,7 +18,7 @@
         { "size": 20, "label": "manager-1-os" }
       ],
       "mounts": [
-        { "type": "conf", "disk": 0 },
+        { "type": "config", "disk": 0 },
         { "type": "data", "disk": 0 },
         { "type": "logs", "disk": 0 },
         { "type": "serve", "disk": 0 }
@@ -32,7 +32,7 @@
         { "size": 40, "label": "infra-1-data" }
       ],
       "mounts": [
-        { "type": "conf", "disk": 1 },
+        { "type": "config", "disk": 1 },
         { "type": "data", "disk": 1 },
         { "type": "logs", "disk": 1 },
         { "type": "serve", "disk": 1 }
@@ -46,7 +46,7 @@
         { "size": 40, "label": "infra-2-data" }
       ],
       "mounts": [
-        { "type": "conf", "disk": 1 },
+        { "type": "config", "disk": 1 },
         { "type": "data", "disk": 1 },
         { "type": "logs", "disk": 1 },
         { "type": "serve", "disk": 1 }
