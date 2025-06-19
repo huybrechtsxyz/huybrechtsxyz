@@ -276,7 +276,7 @@ jobs:
       # Set up SSH connection
       - name: Set up SSH connection
         env:
-          KAMATERA_PRIVATE_KEY: ${{ steps.get-secrets.outputs.SECRET_KAMATERA_PRIVATE_KEY }}
+          KAMATERA_PRIVATE_KEY: ${{ steps.get-secrets.outputs.KAMATERA_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
           echo "$KAMATERA_PRIVATE_KEY" > ~/.ssh/id_rsa
