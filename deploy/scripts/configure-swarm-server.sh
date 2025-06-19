@@ -5,9 +5,6 @@ REMOTE_IP="$1"
 source "$(dirname "${BASH_SOURCE[0]}")/../../scripts/functions.sh"
 
 create_secret_file() {
-  env | while IFS='=' read -r key value; do
-    log INFO "$key=$value"
-  done
   generate_env_file "APP_" "./src/pipeline.env"
   generate_env_file "SECRET_" "./src/secrets.env"
 }
