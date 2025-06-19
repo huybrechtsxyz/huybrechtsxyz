@@ -126,6 +126,7 @@ generate_env_file() {
     for var in "${vars[@]}"; do
       short_var="${var#$prefix}"
       printf '%s=%q\n' "$short_var" "${!var}"
+      log INFO "[+] $short_var = $var"
     done
   } > "$output_file"
 
