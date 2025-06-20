@@ -233,10 +233,12 @@ configure_swarm() {
   log INFO "[*] Configuring Docker Swarm on $hostname..."
 
   if [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" = "active" ]; then
-    log INFO "[*] Node already part of a Swarm. Skipping initialization/joining."
     if [[ "$hostname" == *"manager-1"* ]]; then
+      log INFO "[*] Manager node already part of a Swarm. Creating join-tokens."
       docker swarm join-token manager -q > /tmp/app/manager_token.txt
       docker swarm join-token worker -q > /tmp/app/worker_token.txt
+    else
+      log INFO "[*] Node already part of a Swarm. Skipping initialization/joining."
     fi
     return
   fi
