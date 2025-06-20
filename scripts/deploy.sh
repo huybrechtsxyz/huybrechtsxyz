@@ -30,7 +30,7 @@ if [[ -z "${GROUP:-}" && ${#SERVICES[@]} -eq 0 ]]; then
   exit 1
 fi
 
-local workspace_file="$SCRIPT_PATH/workspace.$WORKSPACE.json"
+workspace_file="$SCRIPT_PATH/workspace.$WORKSPACE.json"
 if [[ ! -f "$workspace_file" ]]; then
   log ERROR "[!] Workspace file not found: $workspace_file"
   return 1

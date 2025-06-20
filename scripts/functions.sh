@@ -150,7 +150,7 @@ generate_env_file_all() {
   # Filter out empty variables
   local non_empty_vars=()
   for var in "${vars[@]}"; do
-    if [[ -n "${!var}" ]]; then
+    if [[ -n "${!var-}" ]]; then
       non_empty_vars+=("$var")
     fi
   done
@@ -172,4 +172,23 @@ generate_env_file_all() {
   } > "$output_file"
 
   log INFO "[+] Environment file generated at '$output_file'"
+}
+
+update_docker_variables() {
+  local var_name="$1"
+  local filter="$2"
+  local env_file="${3:-$APP_PATH_CONF/.env}"
+  local description="$4"
+  local count
+
+  count=$(docker node ls --filter "$filter" --format '{{.Hostname}}' | wc -l)
+  export "$var_name"="$count"
+
+  log INFO "[*] Number of Docker nodes matching '$description': $count for $filter"
+
+  if grep -q "^${var_name}=" "$env_file" 2>/dev/null; then
+    sed -i "s|^${var_name}=.*|${var_name}=${count}|" "$env_file"
+  else
+    echo "${var_name}=${count}" >> "$env_file"
+  fi
 }
