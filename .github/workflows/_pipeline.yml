@@ -411,6 +411,19 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  # Validation of the environment
+  validate:
+    name: Validate Swarm Cluster
+    needs: [restore, configuration]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    strategy:
+      matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
+    steps:
+       # Check out the repo
+      - name: Check Out
+        uses: actions/checkout@v4
+
   # Start the Environment
   # This job will run only for the first manager node in the matrix
   start:
@@ -449,14 +462,11 @@ jobs:
       # Start the environment
       - name: Start Environment
         run: |
-          echo "[*] Starting services..."
-          ROLE="${{ matrix.role }}"
-          INDEX="${{ matrix.index }}"
-          echo "[*] ... Node Role: $ROLE, Index: $INDEX"
+          echo "[*] Starting services... for ROLE="${{ matrix.role }} INDEX="${{ matrix.index }}"
           if [[ "$ROLE" == "manager" && "$INDEX" == "1" ]]; then
             echo "[*] This is the first manager node. Starting the environment..."
-            chmod +x ./deploy/scripts/start-environment.sh
-            ./deploy/scripts/start-environment.sh "${{ matrix.name }}" "${{ matrix.ip }}" "${{ inputs.services }}"
+            #chmod +x ./deploy/scripts/start-environment.sh
+            #./deploy/scripts/start-environment.sh "${{ matrix.name }}" "${{ matrix.ip }}" "${{ inputs.services }}"
           else
             echo "[*] This is not the first manager node. Skipping environment start."
             exit 0
