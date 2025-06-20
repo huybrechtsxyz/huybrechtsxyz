@@ -209,6 +209,21 @@ mount_disks() {
       log INFO "[+]  ...Already mounted: $mnt"
     fi
 
+    # Ensure persistence in fstab (idempotent)
+    fstab_line="LABEL=$label $mnt ext4 defaults 0 2"
+    if grep -qE "^\s*LABEL=$label\s" /etc/fstab; then
+      # Update the existing line if it differs
+      if ! grep -Fxq "$fstab_line" /etc/fstab; then
+        log INFO "[*] ... Updating existing fstab entry for $label"
+        sed -i.bak "/^\s*LABEL=$label\s/c\\$fstab_line" /etc/fstab
+      else
+        log INFO "[*] ... fstab entry for $label is already correct"
+      fi
+    else
+      log INFO "[*] ... Adding fstab entry for $label"
+      echo "$fstab_line" >> /etc/fstab
+    fi
+
     log INFO "[*] ... Mounting disk $i for $hostname DONE"
   done
 
