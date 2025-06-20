@@ -192,7 +192,7 @@ jobs:
     needs: [restore]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: inputs.infrastructure == true
+    if: ${{ inputs.infrastructure == true }}
     strategy:
       matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:
@@ -237,7 +237,7 @@ jobs:
     name: Debug Initialization Context
     needs: [restore, initialization]
     runs-on: ubuntu-latest
-    if: always()  # ensures it runs even if initialization fails
+    if: always()
     steps:
       - name: Print Job Context
         run: echo "${{ toJson(job) }}"
@@ -262,7 +262,7 @@ jobs:
     needs: [restore, initialization]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: needs.initialization.result == 'success' || needs.initialization.result == 'skipped'
+    if: ${{ needs.initialization.result == 'success' || inputs.infrastructure == false }}
     strategy:
       matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:
@@ -350,7 +350,7 @@ jobs:
     name: Get Docker Matrix
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: inputs.rebuild == true
+    if: ${{ inputs.rebuild == true }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -371,7 +371,7 @@ jobs:
   docker-build:
     name: Build Docker Services
     needs: [docker-matrix]
-    if: inputs.rebuild == true
+    if: ${{ inputs.rebuild == true }}
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.docker-matrix.outputs.matrix) }}
@@ -461,9 +461,7 @@ jobs:
     needs: [restore, configuration, docker-build]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: >
-      (needs.configuration.result == 'success' || needs.configuration.result == 'skipped') &&
-      (needs['docker-build'].result == 'success' || needs['docker-build'].result == 'skipped')
+    if: ${{ (needs['docker-build'].result == 'success' || needs['docker-build'].result == 'skipped') }}
     strategy:
       matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:
