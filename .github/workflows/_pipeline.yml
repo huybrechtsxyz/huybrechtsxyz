@@ -219,7 +219,7 @@ jobs:
     needs: [restore, initialization]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: always() 
+    if: needs.initialization.result == 'success' || needs.initialization.result == 'skipped'
     strategy:
       matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:
@@ -418,7 +418,9 @@ jobs:
     needs: [restore, configuration, docker-build]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: always()
+    if: >
+      (needs.configuration.result == 'success' || needs.configuration.result == 'skipped') &&
+      (needs['docker-build'].result == 'success' || needs['docker-build'].result == 'skipped')
     strategy:
       matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:
