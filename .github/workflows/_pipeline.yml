@@ -262,7 +262,7 @@ jobs:
     needs: [restore, initialization]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: ${{ inputs.infrastructure == false || (contains(needs, 'initialization') && needs.initialization.result == 'success') }}
+    if: ${{ always() && !contains(needs.*.result, 'failure') }}
     strategy:
       matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:
