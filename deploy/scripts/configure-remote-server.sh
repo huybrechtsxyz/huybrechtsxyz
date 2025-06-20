@@ -116,25 +116,27 @@ loaddockersecrets() {
 createnodelabels() {
   log INFO "[*] Applying role label to all nodes..."
   # Get the current hostname
-  local hostname
+  local hostname srvrole workspace_file nodes
   hostname=$(hostname)
 
-  # Extract the role from hostname (3rd part in hyphen-separated string)
-  local srvrole
+  # Get current hostname and parse role (3rd part of hyphen-separated hostname)
+  hostname=$(hostname)
   srvrole=$(echo "$hostname" | cut -d'-' -f3)
   log INFO "[*] ... Detected role: $srvrole"
 
-  # Get the workspace information from the environment variable
-  log INFO "[*] ... Getting workspace information"
-  local workspace_file="$PATH_TEMP/src/workspace.$WORKSPACE.json"
+  # Workspace JSON file path (environment variables assumed set)
+  workspace_file="$PATH_TEMP/src/workspace.$WORKSPACE.json"
+  log INFO "[*] ... Using workspace file: $workspace_file"
 
-  # Fetch all node hostnames once
+  # Get list of all Docker Swarm node hostnames
   log INFO "[*] ... Getting node hostnames"
-  local nodes
   mapfile -t nodes < <(docker node ls --format '{{.Hostname}}')
+  log INFO "[*] ... Found ${#nodes[@]} nodes"
 
   for node in "${nodes[@]}"; do
     log INFO "[*] ... Applying role label to $node..."
+
+    # Parse role, instance from node name (3rd and 4th hyphen-separated parts)
     local role instance server
     role=$(echo "$node" | cut -d'-' -f3)
     instance=$(echo "$node" | cut -d'-' -f4)
@@ -144,8 +146,11 @@ createnodelabels() {
     log INFO "[*] ... Setting server=$server on $node"
     log INFO "[*] ... Setting instance=$instance on $node"
 
-    # Inspect current labels
-    log INFO "[*] ... Inspecting labels on $node"
+    # Initialize associative arrays
+    declare -A existing_labels
+    declare -A desired_labels
+
+    # Read existing labels into associative array
     while IFS='=' read -r k v; do
       if [[ "$k" =~ ^[a-zA-Z0-9_.-]+$ && -n "$v" ]]; then
         existing_labels["$k"]="$v"
@@ -154,49 +159,49 @@ createnodelabels() {
       fi
     done < <(docker node inspect "$node" --format '{{range $k, $v := .Spec.Labels}}{{printf "%s=%s\n" $k $v}}{{end}}')
 
-    # Standard labels
-    log INFO "[*] ... Declaring labels and values on $node"
-    : "${role:?role is unset}"
-    : "${server:?server is unset}"
-    : "${instance:?instance is unset}"
-    declare -A desired_labels
+    # Define desired standard labels
     desired_labels["$role"]="true"
     desired_labels["role"]="$role"
     desired_labels["server"]="$server"
     desired_labels["instance"]="$instance"
-    
-    # Add standard labels if needed
+
+    # Update/add standard labels if they differ or are missing
     for key in "${!desired_labels[@]}"; do
       if [[ "${existing_labels[$key]}" != "${desired_labels[$key]}" ]]; then
         log INFO "[*] ... Setting $key=${desired_labels[$key]}"
-        docker node update --label-add "$key=${desired_labels[$key]}" "$node" || echo "[!] Warning: Failed to set $key"
+        docker node update --label-add "$key=${desired_labels[$key]}" "$node" || echo "[!] Warning: Failed to set $key on $node"
       fi
     done
 
-    # Add custom labels from JSON if needed
+    # Add custom labels from workspace JSON (jq filters by node id)
     mapfile -t ws_labels < <(jq -r --arg id "$node" '.servers[] | select(.id == $id) | .labels[]?' "$workspace_file")
     for label in "${ws_labels[@]}"; do
-      key="${label%%=*}"
-      val="${label#*=}"
+      # Split label key and value
+      local key="${label%%=*}"
+      local val="${label#*=}"
+
+      # Add or update label if needed
       if [[ "${existing_labels[$key]}" != "$val" ]]; then
         log INFO "[*] ... Adding custom label $label"
-        docker node update --label-add "$label" "$node" || echo "[!] Warning: Failed to add $label"
+        docker node update --label-add "$label" "$node" || echo "[!] Warning: Failed to add $label on $node"
       fi
-      desired_labels["$key"]="$val"  # Mark as desired to avoid removal
+
+      # Mark as desired to avoid removal
+      desired_labels["$key"]="$val"
     done
 
-    # Delete undesired labels at the end
+    # Remove any labels that exist but are not desired
     log INFO "[*] ... Cleaning up obsolete labels..."
     for key in "${!existing_labels[@]}"; do
       if [[ -z "${desired_labels[$key]}" ]]; then
         log INFO "[*] ... Removing $key"
-        docker node update --label-rm "$key" "$node" || echo "[!] Warning: Failed to remove $key"
+        docker node update --label-rm "$key" "$node" || echo "[!] Warning: Failed to remove $key on $node"
       fi
     done
 
+    # Clean up arrays before next iteration
     unset existing_labels
     unset desired_labels
-
   done
 
   log INFO "[+] Applying role label to all nodes...DONE"
