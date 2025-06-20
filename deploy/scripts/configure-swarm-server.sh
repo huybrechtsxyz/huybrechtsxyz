@@ -79,7 +79,6 @@ source "$APP_PATH_TEMP/src/functions.sh"
 set +a
 chmod +x "$APP_PATH_TEMP/deploy/configure-remote-server.sh"
 "$APP_PATH_TEMP/deploy/configure-remote-server.sh"
-rm -f "$APP_PATH_CONF"/secrets.env
 echo "[*] Executing on REMOTE server...DONE"
 EOF
 then
