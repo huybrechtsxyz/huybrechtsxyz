@@ -461,7 +461,7 @@ jobs:
     needs: [restore, configuration, docker-build]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: ${{ (needs['docker-build'].result == 'success' || needs['docker-build'].result == 'skipped') }}
+    if: ${{ always() && !contains(needs.*.result, 'failure') }}
     strategy:
       matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:
