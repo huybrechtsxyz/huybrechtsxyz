@@ -252,6 +252,33 @@ create_workspace_paths() {
     fi
   done
 
+  log INFO "[*] Bind mounting workspace directories to system paths..."
+  type_list=$(jq -r '.paths[].type' "$workspace_file")
+  for type in $type_list; do
+    # Get the relative path for this type
+    dir_path=$(jq -r --arg t "$type" '.paths[] | select(.type == $t) | .path' "$workspace_file")
+    # Find the disk number for this type mount
+    disk_num=$(jq -r --arg t "$type" '.servers[] | select(.id == "'$server_id'") | .mounts[] | select(.type == $t) | .disk' "$workspace_file")
+
+    mountpoint="/mnt/data$disk_num"
+    source_dir="$mountpoint$dir_path"
+    target_dir="$dir_path"
+
+    if mountpoint -q "$target_dir"; then
+      log INFO "[+] $target_dir is already a mountpoint."
+    else
+      # Ensure target directory exists
+      if [[ ! -d "$target_dir" ]]; then
+        log INFO "[+] Creating target directory $target_dir"
+        mkdir -p "$target_dir"
+      fi
+
+      log INFO "[+] Bind mounting $source_dir to $target_dir"
+      mount --bind "$source_dir" "$target_dir"
+    fi
+  done
+  log INFO "[+] Bind mounts completed."
+
   log INFO "[+] All workspace directories created."
 }
 
