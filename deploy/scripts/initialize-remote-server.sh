@@ -235,8 +235,8 @@ configure_swarm() {
   if [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" = "active" ]; then
     if [[ "$hostname" == *"manager-1"* ]]; then
       log INFO "[*] Manager node already part of a Swarm. Creating join-tokens."
-      docker swarm join-token manager -q > /tmp/app/manager_token.txt
-      docker swarm join-token worker -q > /tmp/app/worker_token.txt
+      docker swarm join-token manager -q > /tmp/manager_token.txt
+      docker swarm join-token worker -q > /tmp/worker_token.txt
     else
       log INFO "[*] Node already part of a Swarm. Skipping initialization/joining."
     fi
@@ -248,14 +248,14 @@ configure_swarm() {
     docker swarm init --advertise-addr "$PRIVATE_IP"
     mkdir -p /tmp/app
     chmod 1777 /tmp/app
-    docker swarm join-token manager -q > /tmp/app/manager_token.txt
-    docker swarm join-token worker -q > /tmp/app/worker_token.txt
+    docker swarm join-token manager -q > /tmp/manager_token.txt
+    docker swarm join-token worker -q > /tmp/worker_token.txt
     log INFO "[*] ... Saved manager and worker join tokens."
   else
     log INFO "[*] ... Joining existing Swarm cluster on $MANAGER_IP..."
     SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10"
     for i in {1..12}; do
-      if ssh $SSH_OPTS root@$MANAGER_IP 'test -f /tmp/app/manager_token.txt && test -f /tmp/app/worker_token.txt'; then
+      if ssh $SSH_OPTS root@$MANAGER_IP 'test -f /tmp/manager_token.txt && test -f /tmp/worker_token.txt'; then
         log INFO "[*] ... Swarm tokens are available on $MANAGER_IP"
         break
       fi
@@ -263,13 +263,13 @@ configure_swarm() {
       sleep 5
     done
 
-    if ! ssh $SSH_OPTS root@$MANAGER_IP 'test -f /tmp/app/manager_token.txt && test -f /tmp/app/worker_token.txt'; then
+    if ! ssh $SSH_OPTS root@$MANAGER_IP 'test -f /tmp/manager_token.txt && test -f /tmp/worker_token.txt'; then
       log ERROR "[x] Timed out waiting for Swarm tokens. Exiting."
       exit 1
     fi
 
-    MANAGER_JOIN_TOKEN=$(ssh $SSH_OPTS root@$MANAGER_IP 'cat /tmp/app/manager_token.txt')
-    WORKER_JOIN_TOKEN=$(ssh $SSH_OPTS root@$MANAGER_IP 'cat /tmp/app/worker_token.txt')
+    MANAGER_JOIN_TOKEN=$(ssh $SSH_OPTS root@$MANAGER_IP 'cat /tmp/manager_token.txt')
+    WORKER_JOIN_TOKEN=$(ssh $SSH_OPTS root@$MANAGER_IP 'cat /tmp/worker_token.txt')
 
     if [[ "$hostname" == *"manager-"* ]]; then
       log INFO "[*] ... Joining as Swarm Manager..."
