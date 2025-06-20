@@ -153,12 +153,17 @@ createnodelabels() {
     # Read existing labels into associative array
     log INFO "[*] ... Reading existing labels on $node"
     while IFS='=' read -r k v; do
+      [[ -z "$k" && -z "$v" ]] && continue  # Skip empty lines or pure "="
       if [[ "$k" =~ ^[a-zA-Z0-9_.-]+$ && -n "$v" ]]; then
         existing_labels["$k"]="$v"
       else
         log WARN "[!] Skipping malformed label: $k=$v"
       fi
-    done < <(docker node inspect "$node" --format '{{range $k, $v := .Spec.Labels}}{{printf "%s=%s\n" $k $v}}{{end}}')
+    done < <(
+      docker node inspect "$node" \
+        --format '{{range $k, $v := .Spec.Labels}}{{printf "%s=%s\n" $k $v}}{{end}}' \
+        | grep -E '^[^=]+=[^=]+$'  # Optional extra guard
+    )
 
     # Define desired standard labels
     desired_labels["$role"]="true"
