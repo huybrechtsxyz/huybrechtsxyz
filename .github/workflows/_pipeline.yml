@@ -233,8 +233,8 @@ jobs:
           ./deploy/scripts/initialize-swarm-server.sh "${{ matrix.ip }}" "${{ matrix.private_ip }}" "${{ matrix.manager_ip }}"
           echo "[*] Initializing swarm cluster on ${{ matrix.ip }} ...DONE"
 
-  debug:
-    name: Debug Workflow Context
+  init-debug:
+    name: Debug Initialization Context
     needs: [restore, initialization]
     runs-on: ubuntu-latest
     if: always()  # ensures it runs even if initialization fails
@@ -262,7 +262,7 @@ jobs:
     needs: [restore, initialization]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: needs.initialization.result == 'success' || inputs.infrastructure == false
+    if: needs.initialization.result == 'success' || needs.initialization.result == 'skipped'
     strategy:
       matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
     steps:
