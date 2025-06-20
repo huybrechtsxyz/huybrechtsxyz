@@ -227,6 +227,9 @@ install_docker_if_needed() {
   fi
 }
 
+# Function that configures swarm servers
+# Stores its tokens in /tmp and NOT /tmp/app
+# Reason: /tmp/app gets cleaned !
 configure_swarm() {
   local hostname
   hostname=$(hostname)
