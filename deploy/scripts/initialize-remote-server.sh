@@ -145,15 +145,15 @@ mount_disks() {
     fi
 
     if [[ $i -eq 0 ]]; then
-      log INFO "[*] Checking OS disk label on $part (expected label=$label)"
+      log INFO "[*] ... Checking OS disk label on $part (expected label=$label)"
       if [[ "$fs_type" != "ext4" ]]; then
         log WARN "[!] OS disk has unexpected FS type ($fs_type), skipping label check"
         continue
       elif [[ "$current_label" != "$label" ]]; then
-        log INFO "[*] Relabeling OS disk from $current_label to $label"
+        log INFO "[*] ... Relabeling OS disk from $current_label to $label"
         e2label "$part" "$label"
       else
-        log INFO "[*] OS disk label is already correct: $label"
+        log INFO "[*] ... OS disk label is already correct: $label"
       fi
       continue
     fi
@@ -187,10 +187,10 @@ mount_disks() {
 
     mkdir -p "$mnt"
     if ! mountpoint -q "$mnt"; then
-      log INFO "[*] Mounting $label to $mnt"
+      log INFO "[*]  ...Mounting $label to $mnt"
       mount "/dev/disk/by-label/$label" "$mnt"
     else
-      log INFO "[+] Already mounted: $mnt"
+      log INFO "[+]  ...Already mounted: $mnt"
     fi
 
     log INFO "[*] ... Mounting disk $i for $hostname DONE"
