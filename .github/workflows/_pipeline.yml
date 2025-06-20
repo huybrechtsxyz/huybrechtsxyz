@@ -233,26 +233,6 @@ jobs:
           ./deploy/scripts/initialize-swarm-server.sh "${{ matrix.ip }}" "${{ matrix.private_ip }}" "${{ matrix.manager_ip }}"
           echo "[*] Initializing swarm cluster on ${{ matrix.ip }} ...DONE"
 
-  init-debug:
-    name: Debug Initialization Context
-    needs: [restore, initialization]
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Print Job Context
-        run: echo "${{ toJson(job) }}"
-
-      - name: Print Needs Context
-        run: echo '${{ toJson(needs) }}'
-
-      - name: Print Inputs
-        run: |
-          echo "Environment: ${{ inputs.ENVIRONMENT }}"
-          echo "Infrastructure: ${{ inputs.INFRASTRUCTURE }}"
-
-      - name: Print Matrix Output from Restore
-        run: echo '${{ needs.restore.outputs.matrix }}'
-
   # Configure the Swarm Cluster
   # This job will run if the cache is not hit or if the initialize input is set to true
   # Configures the Swarm cluster with the provided environment variables and secrets
