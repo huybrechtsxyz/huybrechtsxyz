@@ -56,8 +56,7 @@
       "id": "worker-1",
       "labels": [],
       "disks": [
-        { "size": 20, "label": "worker-1-os" },
-        { "size": 40, "label": "worker-1-data" }
+        { "size": 20, "label": "worker-1-os" }
       ],      
       "mounts": [
         { "type": "config", "disk": 0 },
@@ -70,8 +69,7 @@
       "id": "worker-2",
       "labels": [],
       "disks": [
-        { "size": 20, "label": "worker-2-os" },
-        { "size": 40, "label": "worker-2-data" }
+        { "size": 20, "label": "worker-2-os" }
       ],
       "mounts": [
         { "type": "config", "disk": 0 },

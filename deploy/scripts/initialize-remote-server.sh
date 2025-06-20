@@ -88,48 +88,77 @@ mount_disks() {
   log INFO "[*] Preparing and mounting disk volumes..."
 
   : "${WORKSPACE:?Missing WORKSPACE}"
+  log INFO "[*] ... Getting workspace information from $PATH_TEMP/workspace.$WORKSPACE.json"
   local hostname=$(hostname)
   local workspace_file="$PATH_TEMP/workspace.$WORKSPACE.json"
-
   if [[ ! -f "$workspace_file" ]]; then
     log ERROR "[!] Cluster metadata file not found: $workspace_file on $hostname"
     return 1
   fi
 
-  local server_id
-  server_id=$(jq -r '.servers[].id' "$workspace_file" | while read -r id; do
+  log INFO "[*] ... Getting server information for $hostname"
+  local server_id=$(jq -r '.servers[].id' "$workspace_file" | while read -r id; do
     [[ "$hostname" == *"$id"* ]] && echo "$id" && break
   done)
-
   if [[ -z "$server_id" ]]; then
     log ERROR "[!] No matching server ID found for hostname: $hostname"
     return 1
   fi
 
-  # Get disks sorted by size (skipping the OS disk manually)
-  mapfile -t disks < <(lsblk -dn -o NAME,SIZE -b | sort -k2,2n -k1,1)
+  # Identify the OS disk by root mountpoint (e.g., /dev/sda)
+  log INFO "[*] ... Identify the OS disk by root mountpoint"
+  local os_disk=$(findmnt -n -o SOURCE / | sed 's/[0-9]*$//')   # /dev/sda1 → /dev/sda
+  local os_disk_base=$(basename "$os_disk")
+
+  # Get non-OS disks sorted by size
+  log INFO "[*] ... Getting non-os disks"
+  mapfile -t disks < <(lsblk -dn -o NAME,SIZE -b | grep -v "^$os_disk_base" | sort -k2,2n -k1,1)
+  # Insert OS disk as the first element
+  os_size=$(lsblk -bn -o SIZE -d "/dev/$os_disk_base")
+  disks=("$os_disk_base $os_size" "${disks[@]}")
+  # Create disk name array
   declare -a disk_names
   for line in "${disks[@]}"; do
     disk_names+=("$(echo "$line" | awk '{print $1}')")
   done
 
-  local disk_count
-  disk_count=$(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .disks | length' "$workspace_file")
-  log INFO "[*] ... Found $disk_count disks for $hostname"
+  local disk_count=$(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .disks | length' "$workspace_file")
+  log INFO "[*] ... Found $disk_count disks for $hostname (including OS disk)"
+  if (( ${#disk_names[@]} < disk_count )); then
+    log ERROR "[!] Only found ${#disk_names[@]} disks but expected $disk_count"
+    return 1
+  fi
 
+  log INFO "[*] ... Looping over all disks"
   for i in $(seq 0 $((disk_count - 1))); do
     log INFO "[*] ... Mounting disk $i for $hostname"
 
     local disk="/dev/${disk_names[$i]}"
-    local label
-    label=$(jq -r --arg id "$server_id" --argjson i "$i" \
+    local label=$(jq -r --arg id "$server_id" --argjson i "$i" \
       '.servers[] | select(.id == $id) | .disks[$i].label' "$workspace_file")
-
-    local part="${disk}1"
+    local part=$(lsblk -nr -o NAME "$disk" | awk 'NR==2 {print "/dev/" $1}')
     local fs_type=$(blkid -s TYPE -o value "$part" 2>/dev/null || echo "")
     local current_label=$(blkid -s LABEL -o value "$part" 2>/dev/null || echo "")
-    local mnt="/mnt/data${i}"
+    local mnt=""
+    if (( i > 0 )); then
+      mnt="/mnt/data$((i - 1))"
+    fi
 
+    if [[ $i -eq 0 ]]; then
+      log INFO "[*] Checking OS disk label on $part (expected label=$label)"
+      if [[ "$fs_type" != "ext4" ]]; then
+        log WARN "[!] OS disk has unexpected FS type ($fs_type), skipping label check"
+        continue
+      elif [[ "$current_label" != "$label" ]]; then
+        log INFO "[*] Relabeling OS disk from $current_label to $label"
+        e2label "$part" "$label"
+      else
+        log INFO "[*] OS disk label is already correct: $label"
+      fi
+      continue
+    fi
+
+    log INFO "[*] ... Mounting data disk $((i - 1)) for $hostname"
     log INFO "[*] ... Preparing disk $disk (label=$label)"
 
     if ! lsblk "$part" &>/dev/null; then
