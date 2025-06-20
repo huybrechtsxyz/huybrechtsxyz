@@ -151,6 +151,7 @@ createnodelabels() {
     declare -A desired_labels
 
     # Read existing labels into associative array
+    log INFO "[*] ... Reading existing labels on $node"
     while IFS='=' read -r k v; do
       if [[ "$k" =~ ^[a-zA-Z0-9_.-]+$ && -n "$v" ]]; then
         existing_labels["$k"]="$v"
@@ -166,6 +167,7 @@ createnodelabels() {
     desired_labels["instance"]="$instance"
 
     # Update/add standard labels if they differ or are missing
+    log INFO "[*] ... Update/add standard labels $node"
     for key in "${!desired_labels[@]}"; do
       if [[ "${existing_labels[$key]}" != "${desired_labels[$key]}" ]]; then
         log INFO "[*] ... Setting $key=${desired_labels[$key]}"
@@ -174,6 +176,7 @@ createnodelabels() {
     done
 
     # Add custom labels from workspace JSON (jq filters by node id)
+    log INFO "[*] ... Add custom labels from workspace on $node"
     mapfile -t ws_labels < <(jq -r --arg id "$node" '.servers[] | select(.id == $id) | .labels[]?' "$workspace_file")
     for label in "${ws_labels[@]}"; do
       # Split label key and value
@@ -191,7 +194,7 @@ createnodelabels() {
     done
 
     # Remove any labels that exist but are not desired
-    log INFO "[*] ... Cleaning up obsolete labels..."
+    log INFO "[*] ... Cleaning up obsolete labels on $node"
     for key in "${!existing_labels[@]}"; do
       if [[ -z "${desired_labels[$key]}" ]]; then
         log INFO "[*] ... Removing $key"
