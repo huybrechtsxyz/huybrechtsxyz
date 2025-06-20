@@ -328,8 +328,7 @@ create_service_paths() {
   # Process each service
   for svc_file in "$PATH_TEMP"/*/service.json; do
     [[ -f "$svc_file" ]] || continue
-    local svc_name
-    svc_name=$(basename "$(dirname "$svc_file")")
+    local svc_name=$(basename "$(dirname "$svc_file")")
 
     log INFO "[*] Processing service: $svc_name"
 
@@ -374,6 +373,8 @@ create_service_paths() {
       export "$var_name=$full_path"
 
     done
+
+
   done
 
   log INFO "[✓] All service paths created."
@@ -389,24 +390,21 @@ configure_server() {
   }
 
   log INFO "[*] Installing services..."
-  for dir in "$PATH_TEMP"/*/; do
-    service_json="$dir/service.json"
-    if [[ -f "$service_json" ]]; then
-      log INFO "[*] Installing service...$dir"
-      service_name=$(basename "$dir")
-      mkdir -p "$PATH_CONF/$service_name"
-      cp -fr "$dir/config/"* "$PATH_CONF/$service_name/" 2>/dev/null || true
-    fi
+  for svc_file in "$PATH_TEMP"/src/*/service.json; do
+    local svc_name=$(basename "$(dirname "$svc_file")")
+    log INFO "[*] Installing service...$svc_name"
+    mkdir -p "$PATH_CONF/$svc_name"
+    cp -fr "$PATH_TEMP"/src/"$svc_name"/* "$PATH_CONF/$svc_name/"
   done
 
   log INFO "[*] Configuring server...DONE"
 }
 
 configure_services() {
-  echo "[*] Configuring application services..."
+  log INFO "[*] Configuring application services..."
   for script in $PATH_CONF/*/configure.sh; do
     service=$(basename "$(dirname "$script")")
-    echo "[*] Configuring service '$service'..."
+    log INFO "[*] Configuring service '$service'..."
 
     remote_conf_dir="$PATH_CONF/$service"
     remote_script="$remote_conf_dir/configure.sh"
@@ -414,9 +412,9 @@ configure_services() {
     chmod +x "$remote_script"
     "$remote_script"
 
-    echo "[+] Configured service '$service'"
+    log INFO "[+] Configured service '$service'"
   done
-  echo "[+] Configuring application services...DONE"
+  log INFO "[+] Configuring application services...DONE"
 }
 
 main() {
@@ -452,7 +450,7 @@ main() {
   log INFO "[*] Creating service paths ...DONE"
   configure_server || exit 1
 
-  echo "[*] Configure services ..."
+  log INFO "[*] Configure services ..."
   configure_services || exit 1
 
   log INFO "[*] Remote server cleanup..."
