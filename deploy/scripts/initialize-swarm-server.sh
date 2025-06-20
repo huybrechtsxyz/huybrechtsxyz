@@ -1,19 +1,77 @@
 #!/bin/bash
 set -euo pipefail
 
-REMOTE_IP="$1"
-PRIVATE_IP="$2"
-MANAGER_IP="$3"
+if [ "$#" -ne 3 ]; then
+  log ERROR "Usage: $0 <APP_REMOTE_IP> <APP_PRIVATE_IP> <APP_MANAGER_IP>"
+  exit 1
+fi
 
-echo "[*] Copying swarm initialization script to remote server..."
-scp -o StrictHostKeyChecking=no deploy/scripts/initialize-remote-server.sh root@"$REMOTE_IP":/tmp/remote-swarm-init.sh
-echo "[+] Copying swarm initialization script to remote server...DONE"
+APP_REMOTE_IP="$1"
+APP_PRIVATE_IP="$2"
+APP_MANAGER_IP="$3"
 
-echo "[*] Executing swarm initialization on $REMOTE_IP..."
-ssh -o StrictHostKeyChecking=no root@"$REMOTE_IP" bash <<EOF
-  chmod +x /tmp/remote-swarm-init.sh
-  export PRIVATE_IP="$PRIVATE_IP"
-  export MANAGER_IP="$MANAGER_IP"
-  /tmp/remote-swarm-init.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../../scripts/functions.sh"
+
+create_env_file() {
+  generate_env_file "APP_" "./deploy/scripts/initialize.env"
+}
+
+copy_config_files() {
+log INFO "[*] Copying initialization script to remote server..."
+ssh -o StrictHostKeyChecking=no root@$APP_REMOTE_IP << EOF
+  mkdir -p "$APP_PATH_TEMP"
+  chmod 777 "$APP_PATH_TEMP"
 EOF
-echo "[+] Swarm initialization completed for $REMOTE_IP"
+
+log INFO "[*] Copying initialization scripts and cluster config to remote server..."
+scp -o StrictHostKeyChecking=no \
+  ./deploy/scripts/* \
+  ./deploy/*.* \
+  ./scripts/functions.sh \
+  root@"$APP_REMOTE_IP":"$APP_PATH_TEMP"/ || {
+    echo "[x] Failed to transfer initialization scripts to remote server"
+    exit 1
+  }
+}
+
+execute_initialization() {
+log INFO "[*] Executing REMOTE initialization..."
+if ! ssh -o StrictHostKeyChecking=no root@"$APP_REMOTE_IP" << EOF
+  set -e
+  echo "[*] Executing on REMOTE server..."
+  set -a
+  source "$APP_PATH_TEMP/initialize.env"
+  source "$APP_PATH_TEMP/functions.sh"
+  set +a
+  chmod +x "$APP_PATH_TEMP/initialize-remote-server.sh"
+  "$APP_PATH_TEMP/initialize-remote-server.sh"
+  echo "[*] Executing on REMOTE server...DONE"
+EOF
+then
+  log ERROR "[!] Remote initialization failed on $APP_REMOTE_IP"
+  exit 1
+fi
+}
+
+main() {
+  log INFO "[*] Initializing swarm cluster ..."
+
+  if ! create_env_file; then
+    log ERROR "[x] Failed to create environment file."
+    exit 1
+  fi
+
+  if ! copy_config_files; then
+    log ERROR "[x] Failed to copy configuration files to remote server."
+    exit 1
+  fi
+
+  if ! execute_initialization; then
+    log ERROR "[x] Remote initialization failed."
+    exit 1
+  fi
+
+  log INFO "[+] Initializing swarm cluster ...DONE"
+}
+
+main

@@ -5,7 +5,11 @@ secrets:
     external: true
   PLATFORM_PASSWORD:
     external: true
-
+  TRAEFIK_CLIENTID:
+    external: true
+  TRAEFIK_SECRET:           
+    external: true
+    
 # configs:
 # volumes:
 
@@ -20,15 +24,20 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
     volumes:
-      - ${APP_PATH_CONF}/keycloak/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ${KEYCLOAK_PATH_CONF}/keycloak/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ${KEYCLOAK_PATH_CONF}/keycloak/real.${WORKSPACE}.json:/tmp/realm.template.json
     networks:
       - lan-${WORKSPACE}
     secrets:
       - PLATFORM_USERNAME
       - PLATFORM_PASSWORD
+      - TRAEFIK_CLIENTID
+      - TRAEFIK_SECRET
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
+      REALM_ID: ${REALM_ID}
+      REALM_NAME: ${REALM_NAME}
       KC_LOG: console #,file
       KC_LOG_LEVEL: INFO
       #KC_LOG_FILE: /home/keycloak.log
@@ -52,6 +61,8 @@ services:
       KC_DB_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
       KC_BOOTSTRAP_ADMIN_USERNAME_FILE: /run/secrets/PLATFORM_USERNAME
       KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
+      TRAEFIK_CLIENTID_FILE: /run/secrets/TRAEFIK_CLIENTID
+      TRAEFIK_SECRET: /run/secrets/TRAEFIK_SECRET
     entrypoint: /usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true --features=opentelemetry
     healthcheck:
       test: ["CMD", "bash", "-c", "[ $$(/opt/keycloak/bin/kcadm.sh get serverinfo --realm Keycloak --fields '*' --server http://localhost:8080/admin/serverinfo 2>&1 | grep Unauthorized | wc -l ) -eq 1 ]"]

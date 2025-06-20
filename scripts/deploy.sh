@@ -1,22 +1,24 @@
 #!/bin/bash
-
 set -euo pipefail
 
 # Initialize script
 SCRIPT_PATH="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 source "$SCRIPT_PATH/functions.sh"
+log INFO "[*] Starting environment..."
 parse_options "$@"
-load_envfile "$ENV_FILE.env"
-
-log INFO "[*] Starting services..."
-parse_options "$@"
-cd "$APP_PATH_CONF" || exit 1
 
 # Validate ENV_FILE input
 if [[ -z "${ENV_FILE:-}" ]]; then
   log ERROR "[*] No -e specified. Environment file is required."
   exit 1
 fi
+
+# Load the environment file
+# Save all the variables in the .env file
+load_envfile "$SCRIPT_PATH/pipeline.env"
+load_envfile "$SCRIPT_PATH/$ENV_FILE.env"
+generate_env_file_all "$SCRIPT_PATH/.env"
+cd "$SCRIPT_PATH" || exit 1
 
 # Default stack name if not set
 STACK="${STACK:-app}"
@@ -28,18 +30,16 @@ if [[ -z "${GROUP:-}" && ${#SERVICES[@]} -eq 0 ]]; then
   exit 1
 fi
 
+workspace_file="$SCRIPT_PATH/workspace.$WORKSPACE.json"
+if [[ ! -f "$workspace_file" ]]; then
+  log ERROR "[!] Workspace file not found: $workspace_file"
+  return 1
+fi
+
 # Count Docker manager and infra nodes
-export DOCKER_MANAGERS
-DOCKER_MANAGERS=$(docker node ls --filter "role=manager" --format '{{.Hostname}}' | wc -l)
-log INFO "[*] Number of Docker manager nodes: $DOCKER_MANAGERS"
-
-export DOCKER_INFRAS
-DOCKER_INFRAS=$(docker node ls --filter "node.label=infra=true" --format '{{.Hostname}}' | wc -l)
-log INFO "[*] Number of Docker infra nodes: $DOCKER_INFRAS"
-
-export DOCKER_WORKERS
-DOCKER_WORKERS=$(docker node ls --filter "node.label=worker=true" --format '{{.Hostname}}' | wc -l)
-log INFO "[*] Number of Docker worker nodes: $DOCKER_WORKERS"
+update_docker_variables "DOCKER_MANAGERS" "role=manager" "$SCRIPT_PATH/.env" "Docker Manager Nodes"
+update_docker_variables "DOCKER_INFRAS" "node.label=infra=true" "$SCRIPT_PATH/.env" "Docker Infra Nodes"
+update_docker_variables "DOCKER_WORKERS" "node.label=worker=true" "$SCRIPT_PATH/.env" "Docker Worker Nodes"
 
 # Clean VXLAN interfaces
 log INFO "[*] Cleaning up VXLAN interfaces..."
@@ -50,14 +50,20 @@ log INFO "[+] Cleaning up VXLAN interfaces... DONE"
 SELECTION=()
 
 # Make sure consul config if exists
-consul_target="$APP_PATH_CONF/consul/etc"
+consul_target="$SCRIPT_PATH/consul/etc"
 if [[ ! -d "$consul_target" ]]; then
   mkdir -p $consul_target
   chmod 755 -R $consul_target
+  if [[ -f "$SCRIPT_PATH/consul/config.json" ]]; then
+    log INFO "[+] Moved Consul config to $consul_target"
+    mv -f "$SCRIPT_PATH/consul/config.json" "$consul_target/consul.json"
+  else
+    log WARN "[!] consul/config.json not found in $SCRIPT_PATH. Skipping Consul configuration."
+  fi
 fi
 
 # Loop each service
-for dir in "$APP_PATH_CONF"/*/; do
+for dir in "$SCRIPT_PATH"/*/; do
   service_dir="${dir%/}"  # Remove trailing slash
   service_name=$(basename "$service_dir")
   service_file="$service_dir/service.json"
@@ -81,54 +87,46 @@ for dir in "$APP_PATH_CONF"/*/; do
   service_endpoint=$(echo "$service_data" | jq -r '.service.endpoint')
   service_priority=$(echo "$service_data" | jq -r '.service.priority')
 
-  # Iterate over each path entry
-  service_paths=$(echo "$service_data" | jq -c '.service.paths[]?')
-  for entry in $service_paths; do
-    # Extract fields
-    entry_path=$(echo "$entry" | jq -r '.path')
-    entry_type=$(echo "$entry" | jq -r '.type')
-    chmod_value=$(echo "$entry" | jq -r '.chmod')
-
-    # Map type to base path
-    case "$entry_type" in
-      config) base_path="$APP_PATH_CONF" ;;
-      data)   base_path="$APP_PATH_DATA" ;;
-      logs)   base_path="$APP_PATH_LOGS" ;;
-      serve)   base_path="$APP_PATH_SERV" ;;
-      *)      echo "Unknown type: $entry_type" >&2; continue ;;
-    esac
-
-    # Build full target path
-    # target_path="$base_path/$service_name/$entry_path"
-    if [ -n "$entry_path" ]; then
-      target_path="$base_path/$service_name/$entry_path"
-    else
-      target_path="$base_path/$service_name"
-    fi
-
-    # Create and chmod the path
-    [[ -d "$target_path" ]] || mkdir -p "$target_path"
-    chmod "$chmod_value" "$target_path"
-
-    # Optional: clear logs if it's a logs path
-    if [[ "$entry_type" == "logs" ]]; then
-      log INFO "[*] Clearing logs in $target_path"
-      rm -rf "$target_path"/*
-    fi
-
-  done
-
-  # Expand env variables in endpoint
-  while [[ "$service_endpoint" =~ \${([^}]+)} ]]; do
-    var_name="${BASH_REMATCH[1]}"
-    var_value="${!var_name:-}"
-    service_endpoint="${service_endpoint//\${$var_name}/$var_value}"
-  done
-
   # Match based on group or service list
-  if [[ "$GROUP" == "$service_group" || " ${SERVICES[*]} " == *" $service_id "* || ( -z "${GROUP:-}" && ${#SERVICES[@]:-0} -eq 0 ) ]]; then
+  if [[ "$GROUP" == "$service_group" || " ${SERVICES[*]} " == *" $service_id "* || ( -z "$GROUP" && "${#SERVICES[@]}" -eq 0 ) ]]; then
       SELECTION+=("$service_id|$service_priority|$service_endpoint")
       log INFO "[+] Service $service_name SELECTED"
+
+      # Iterate over each path entry
+      service_paths=$(echo "$service_data" | jq -c '.service.paths[]?')
+      IFS=$'\n' && for entry in $service_paths; do
+        # Extract fields
+        entry_path=$(echo "$entry" | jq -r '.path')
+        entry_type=$(echo "$entry" | jq -r '.type')
+
+        # Get the relative path for this type
+        server_path=$(jq -r --arg t "$entry_type" '.paths[] | select(.type == $t) | .path' "$workspace_file")
+        
+        # Build variable name: SERVICEID_PATH_TYPE[disk] or SERVICEID_PATH_ENTRY
+        target_path="$server_path/$service_name"
+        if [ -n "$entry_path" ]; then
+          target_path="$target_path/$entry_path"
+          var_name="$(echo "${service_name^^}_PATH_${entry_path^^}")"
+        else
+          target_path="$target_path/$entry_type"
+          var_name="$(echo "${service_name^^}_PATH_${entry_type^^}")"
+        fi
+        
+        # Add to /etc/app/.env (overwrite existing entry if present)
+        export "$var_name"="$target_path"
+        if grep -q "^${var_name}=" "$SCRIPT_PATH/.env" 2>/dev/null; then
+          sed -i "s|^${var_name}=.*|${var_name}=${target_path}|" $SCRIPT_PATH/.env
+        else
+          echo "${var_name}=${target_path}" >> $SCRIPT_PATH/.env
+        fi
+
+        # Clear logs if it's a logs path
+        if [[ "$entry_type" == "logs" ]]; then
+          log INFO "[*] Clearing logs in $target_path"
+          rm -rf "${target_path:?}"/*
+        fi
+
+      done
   fi
 
   log INFO "[+] Configuration complete for $service_name"
@@ -140,7 +138,7 @@ IFS=$'\n' sorted_services=($(printf "%s\n" "${SELECTION[@]}" | sort -t'|' -k2))
 # Deploy selected services
 for svc in "${sorted_services[@]}"; do
   IFS='|' read -r id priority endpoint <<< "$svc"
-  service_path="$APP_PATH_CONF/$id"
+  service_path="$SCRIPT_PATH/$id"
   compose_file="$service_path/compose.yml"
 
   if [[ ! -f "$compose_file" ]]; then
@@ -151,10 +149,6 @@ for svc in "${sorted_services[@]}"; do
   log INFO "[*] Deploying stack for $id (priority $priority)"
   docker stack deploy -c "$compose_file" "$STACK" --with-registry-auth --detach
 done
-
-# Cleanup
-log INFO "[*] Removing temporary environment file..."
-rm -f "$APP_PATH_CONF/.env"
 
 log INFO "[+] All services started successfully."
 log INFO "[+] Listing deployed services..."

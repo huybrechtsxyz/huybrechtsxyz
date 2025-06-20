@@ -2,15 +2,16 @@
 set -e
 echo "[*] Deploying TRAEFIK to remote server $(hostname)..."
 
-source /tmp/variables.env
-source /tmp/secrets.env
-source $APP_PATH_CONF/functions.sh
+echo PATH_CONF: $PATH_CONF
+
 echo ENVIRONMENT: $ENVIRONMENT
 export ENVIRONMENT=$ENVIRONMENT
-echo DOMAIN_DEV: $ENVIRONMENT
+
+echo DOMAIN_DEV: $DOMAIN_DEV
 export DOMAIN_DEV=$DOMAIN_DEV
+
 envsubst \
-  < "$APP_PATH_CONF/traefik/config.template.yml" \
-  > "$APP_PATH_CONF/traefik/config.yml"
+  < "$PATH_CONF/traefik/config.template.yml" \
+  > "$PATH_CONF/traefik/config.yml"
 
 echo "[*] Deploying TRAEFIK to remote server $(hostname)...DONE"

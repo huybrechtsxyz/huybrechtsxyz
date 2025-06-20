@@ -6,9 +6,15 @@ param (
 
 # Load the required modules
 . "$env:USERPROFILE/Sources/huybrechtsxyz/scripts/functions.ps1"
-# RootPath
-# AppPath
-# SourcePath
+# RootPath from functions
+# AppPath from functions
+# SourcePath from functions
+
+# APP_PATH_CONF=C:/Users/vince/Sources/huybrechtsxyz/.app
+# APP_PATH_DATA=C:/Users/vince/Sources/huybrechtsxyz/.app
+# APP_PATH_LOGS=C:/Users/vince/Sources/huybrechtsxyz/.app
+# APP_PATH_SERV=C:/Users/vince/Sources/huybrechtsxyz/.app
+# APP_PATH_TEMP=%TEMP%
 
 Set-Location $AppPath
 
@@ -95,15 +101,25 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
     if ($ServiceData.service.paths) {
         foreach ($Entry in $ServiceData.service.paths) {
             $TargetPath = Join-Path -Path $AppServicePath -ChildPath $Entry.path
+            if ($Entry.path -eq "") {
+                $TargetPath = Join-Path -Path $TargetPath -ChildPath $Entry.type
+            }
 
             if (-Not (Test-Path $TargetPath)) {
                 Write-Host "[*] ....Creating directory: $TargetPath"
                 New-Item -ItemType Directory -Path $TargetPath -Force | Out-Null
             }
 
-            if($Entry.path -eq "conf") {
+            if($Entry.type -eq "config" -and $Entry.path -eq "") {
                 Write-Host "[*] ....Copying configuration files to $TargetPath"
                 Copy-Item -Path "$ServicePath/*" -Destination $targetPath -Recurse -Force
+            }
+
+            $var_name = $ServiceName.ToUpper()
+            $var_name += "_PATH_"
+            $var_name += $Entry.type.ToUpper()
+            if ( $Entry.path -eq "") {
+                [System.Environment]::SetEnvironmentVariable($var_name, $TargetPath, [System.EnvironmentVariableTarget]::Process)
             }
             
             if($Entry.path -eq "logs") {
@@ -127,7 +143,7 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
 
     # Copy to the consul configuration directory
     Copy-Item -Path "$AppServicePath/conf/consul.json" -Destination "$AppPath/consul/etc/consul.$ServiceName.json" -Force
-
+    
     # Execute extra development if needed
     $AppDevScript = "$AppServicePath/conf/develop.ps1"
     if (Test-Path $AppDevScript){
@@ -139,11 +155,7 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
         ($Services -contains $ServiceData.service.id) -or
         ($Group -eq "" -and $Services -eq @())
     ) {
-        $expanded = $ServiceData.service.endpoint
-        if ($ServiceData.service.endpoint -match '\$\{([^}]+)\}') {
-            $value = [System.Environment]::GetEnvironmentVariable($matches[1])
-            $expanded = $ServiceData.service.endpoint -replace [regex]::Escape($matches[0]), $value
-        }
+        $expanded = Merge-EnvironmentVariables -InputString $ServiceData.service.endpoint
         $Selection += [PSCustomObject]@{
             id       = $ServiceData.service.id
             priority = $ServiceData.service.priority

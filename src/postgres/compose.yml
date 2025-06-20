@@ -20,7 +20,7 @@ services:
   postgres:
     image: postgres
     volumes:
-      - ${APP_PATH_DATA}/postgres/data:/var/lib/postgresql/data/pgdata
+      - ${POSTGRES_PATH_DATA}/postgres/data:/var/lib/postgresql/data/pgdata
     networks:
       - lan-${WORKSPACE}
     secrets:
@@ -44,7 +44,7 @@ services:
         constraints:
           - node.role==${DOCKER_WORKER}
           - node.labels.infra==true
-          - node.labels.postgres==true
+          - node.labels.server==infra-1
       restart_policy:
         condition: on-failure
         delay: 10s

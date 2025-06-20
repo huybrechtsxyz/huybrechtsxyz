@@ -48,26 +48,25 @@ parse_options() {
     esac
   done
 
-  log INFO "[*] Starting environment with ..."
   log INFO "[*] ... Environment file: $ENV_FILE"
   log INFO "[*] ... Services: ${SERVICES[*]}"
   log INFO "[*] ... Group: $GROUP"
   log INFO "[*] ... Stack: $STACK"
 }
 
-# Function to load environment variables from a given file
+# Load environment file if it exists
 load_envfile() {
-    local env_file="$1"
+  local env_file="$1"
 
-    if [ -f "$env_file" ]; then
-        echo "Loading environment from: $env_file"
-        set -a                # Automatically export all variables
-        source "$env_file"
-        set +a
-    else
-        echo "Error: env file not found: $env_file" >&2
-        return 1
-    fi
+  if [ -f "$env_file" ]; then
+    log INFO "[*] ... Loading environment from: $env_file"
+    set -a                # Automatically export all variables
+    source "$env_file"
+    set +a
+  else
+    log ERROR "[!] Error: env file not found: $env_file" >&2
+    return 1
+  fi
 }
 
 # FUNCTION: Cleanup orphaned VXLAN interfaces
@@ -81,7 +80,7 @@ cleanup_vxlan_interfaces() {
   #interfaces=$(ls /sys/class/net | grep '^vx-')
   interfaces=$(find /sys/class/net -maxdepth 1 -type l -name 'vx-*' -printf '%f\n' 2>/dev/null || true)
   if [ -z "$interfaces" ]; then
-    log INFO "    - No orphaned VXLAN interfaces found."
+    log INFO "[*] ... No orphaned VXLAN interfaces found."
     return 0
   fi
 
@@ -93,4 +92,103 @@ cleanup_vxlan_interfaces() {
   done
 
   log INFO "[*] ...Checking for orphaned VXLAN interfaces...DONE"
+}
+
+# Generate an environment file only taking env vars with specific prefix
+generate_env_file() {
+  local prefix="$1"
+  local output_file="$2"
+
+  if [[ -z "$prefix" || -z "$output_file" ]]; then
+    echo "[!] Usage: generate_env_file <PREFIX> <OUTPUT_FILE>" >&2
+    return 1
+  fi
+
+  log INFO "[*] Generating environment file for variables with prefix '$prefix'..."
+
+  # Get all variables starting with the prefix
+  mapfile -t vars < <(compgen -v | grep "^${prefix}")
+
+  if [[ "${#vars[@]}" -eq 0 ]]; then
+    echo "[!] Error: No environment variables found with prefix '$prefix'" >&2
+    return 1
+  fi
+
+  # Validate all are non-empty
+  for var in "${vars[@]}"; do
+    [[ -z "${!var}" ]] && { echo "[!] Error: Missing required variable '$var'" >&2; return 1; }
+  done
+
+  # Ensure output directory exists
+  mkdir -p "$(dirname "$output_file")"
+
+  # Generate the env file with the prefix stripped
+  {
+    echo "# Auto-generated environment file (prefix '$prefix' stripped)"
+    for var in "${vars[@]}"; do
+      short_var="${var#$prefix}"
+      printf '%s=%q\n' "$short_var" "${!var}"
+    done
+  } > "$output_file"
+
+  log INFO "[+] Environment file generated at '$output_file'"
+}
+
+generate_env_file_all() {
+  local output_file="$1"
+
+  if [[ -z "$output_file" ]]; then
+    echo "[!] Usage: generate_env_file_all <OUTPUT_FILE>" >&2
+    return 1
+  fi
+
+  log INFO "[*] Generating environment file with all non-empty exported variables..."
+
+  # Get all environment variable names
+  mapfile -t vars < <(compgen -v)
+
+  # Filter out empty variables
+  local non_empty_vars=()
+  for var in "${vars[@]}"; do
+    if [[ -n "${!var-}" ]]; then
+      non_empty_vars+=("$var")
+    fi
+  done
+
+  if [[ "${#non_empty_vars[@]}" -eq 0 ]]; then
+    echo "[!] Error: No non-empty environment variables found" >&2
+    return 1
+  fi
+
+  # Ensure output directory exists
+  mkdir -p "$(dirname "$output_file")"
+
+  # Write the env file
+  {
+    echo "# Auto-generated environment file (all non-empty variables)"
+    for var in "${non_empty_vars[@]}"; do
+      printf '%s=%q\n' "$var" "${!var}"
+    done
+  } > "$output_file"
+
+  log INFO "[+] Environment file generated at '$output_file'"
+}
+
+update_docker_variables() {
+  local var_name="$1"
+  local filter="$2"
+  local env_file="${3:-$APP_PATH_CONF/.env}"
+  local description="$4"
+  local count
+
+  count=$(docker node ls --filter "$filter" --format '{{.Hostname}}' | wc -l)
+  export "$var_name"="$count"
+
+  log INFO "[*] Number of Docker nodes matching '$description': $count for $filter"
+
+  if grep -q "^${var_name}=" "$env_file" 2>/dev/null; then
+    sed -i "s|^${var_name}=.*|${var_name}=${count}|" "$env_file"
+  else
+    echo "${var_name}=${count}" >> "$env_file"
+  fi
 }
