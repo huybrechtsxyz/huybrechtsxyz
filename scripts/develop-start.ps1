@@ -11,8 +11,6 @@ $ScriptPath = Split-Path $($MyInvocation.MyCommand.Path)
 # AppPath from functions
 # SourcePath from functions
 
-Set-Location $AppPath
-
 Write-Host "[*] Starting DEVELOPMENT environment..."
 
 # Check if Docker is available by running the `docker` command
@@ -28,6 +26,7 @@ Write-Host '[*] Creating APP directories...'
 New-Item -ItemType Directory -Path $AppPath -Force
 Copy-Item -Path "$SourcePath/develop.env" -Destination "$AppPath/.env" -Force
 New-Item -ItemType Directory -Path "$AppPath/consul/etc" -Force
+Set-Location $AppPath
 
 # Importing the .env file and exporting the variables
 $environmentFile = "$SourcePath/develop.env"
@@ -107,7 +106,7 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
 
             $var_name = $ServiceName.ToUpper()
             $var_name += "_PATH_"
-            if ( $Entry.path -eq "") {
+            if ( $Entry.path -ne "") {
                 $var_name += $Entry.path.ToUpper()
             }
             else {
@@ -126,7 +125,7 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
     }
 
     # Convert Templates if needed
-    Get-ChildItem -Path "$AppServicePath/conf" -Recurse -Filter "*.template.*" | ForEach-Object {
+    Get-ChildItem -Path "$AppServicePath/config" -Recurse -Filter "*.template.*" | ForEach-Object {
         Write-Host "[*] ....Merging template for $($_.FullName)"
         $TemplateFile = $_.FullName
         $OutputFile = $TemplateFile -replace '\.template\.', '.'
@@ -136,7 +135,7 @@ Get-ChildItem -Path $SourcePath -Directory | ForEach-Object {
     }
 
     # Copy to the consul configuration directory
-    Copy-Item -Path "$AppServicePath/conf/consul.json" -Destination "$AppPath/consul/etc/consul.$ServiceName.json" -Force
+    Copy-Item -Path "$AppServicePath/config/consul.json" -Destination "$AppPath/consul/etc/$ServiceName.json" -Force
     
     # Execute extra development if needed
     $AppDevScript = "$AppServicePath/conf/develop.ps1"
