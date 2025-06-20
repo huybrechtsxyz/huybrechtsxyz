@@ -1,3 +1,26 @@
+# [Workspace Setup Guide]
+# To add a new path:
+#  - Update env vars in the pipeline accordingly
+#  - Add the new path under "paths" in workspace.json
+#  - Add a corresponding mount entry under "mounts" for the target server
+#  - Check service.json if the service uses this path
+#
+# To add a new disk:
+#  - Add disk details to the "disks" array for the target server in workspace.json
+#  - Update or add matching "mounts" entries for relevant path types
+#
+# To add environment variables:
+#  - Use the APP_ prefix for application config (e.g., APP_PORT, APP_ENV)
+#  - Add them under the "env:" block of the relevant pipeline step
+#
+# To add secrets:
+#  - Use the SECRET_ prefix (e.g., SECRET_API_KEY)
+#  - Add them under the "env:" block, referencing the secret store as needed
+#
+# Note:
+#  - The APP_/SECRET_ prefix is dropped when exporting variables to the remote server.
+#    For example, APP_CONFIG_PATH becomes CONFIG_PATH, and SECRET_API_KEY becomes API_KEY.
+
 # Build and Deploy Jobs
 name: _InfraBuildDeploy
 
