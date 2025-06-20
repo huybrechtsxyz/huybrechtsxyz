@@ -104,15 +104,20 @@ mount_disks() {
     log ERROR "[!] No matching server ID found for hostname: $hostname"
     return 1
   fi
-
-  # Identify the OS disk by root mountpoint (e.g., /dev/sda)
+  
+  # Identify the OS disk by partition mounted at root '/'
   log INFO "[*] ... Identify the OS disk by root mountpoint"
-  local os_disk=$(findmnt -n -o SOURCE / | sed 's/[0-9]*$//')   # /dev/sda1 → /dev/sda
-  local os_disk_base=$(basename "$os_disk")
+  local os_part=$(findmnt -n -o SOURCE /)   # e.g., /dev/sda2
+  local os_disk=$(lsblk -no PKNAME "$os_part")   # e.g., sda
+  local os_disk_base="$os_disk"
+  log INFO "[*] OS disk identified: /dev/$os_disk_base (root partition: $os_part)"
 
   # Get non-OS disks sorted by size
   log INFO "[*] ... Getting non-os disks"
-  mapfile -t disks < <(lsblk -dn -o NAME,SIZE -b | grep -v "^$os_disk_base" | sort -k2,2n -k1,1)
+  mapfile -t disks < <(lsblk -dn -o NAME,SIZE -b | \
+    grep -v "^$os_disk_base$" | \
+    grep -E '^sd[b-z]' | \
+    sort -k2,2n -k1,1)
   # Insert OS disk as the first element
   os_size=$(lsblk -bn -o SIZE -d "/dev/$os_disk_base")
   disks=("$os_disk_base $os_size" "${disks[@]}")
@@ -136,15 +141,16 @@ mount_disks() {
     local disk="/dev/${disk_names[$i]}"
     local label=$(jq -r --arg id "$server_id" --argjson i "$i" \
       '.servers[] | select(.id == $id) | .disks[$i].label' "$workspace_file")
-    local part=$(lsblk -nr -o NAME "$disk" | awk 'NR==2 {print "/dev/" $1}')
-    local fs_type=$(blkid -s TYPE -o value "$part" 2>/dev/null || echo "")
-    local current_label=$(blkid -s LABEL -o value "$part" 2>/dev/null || echo "")
+    local part=""
+    local fs_type=""
+    local current_label=""
     local mnt=""
-    if (( i > 0 )); then
-      mnt="/mnt/data$((i - 1))"
-    fi
 
     if [[ $i -eq 0 ]]; then
+      # OS disk — use the actual root partition, not just first partition
+      part="$os_part"
+      fs_type=$(blkid -s TYPE -o value "$part" 2>/dev/null || echo "")
+      current_label=$(blkid -s LABEL -o value "$part" 2>/dev/null || echo "")
       log INFO "[*] ... Checking OS disk label on $part (expected label=$label)"
       if [[ "$fs_type" != "ext4" ]]; then
         log WARN "[!] OS disk has unexpected FS type ($fs_type), skipping label check"
@@ -156,11 +162,18 @@ mount_disks() {
         log INFO "[*] ... OS disk label is already correct: $label"
       fi
       continue
+    else
+      # Data disks — expect partition 1 on the disk (e.g., /dev/sdb1)
+      part=$(lsblk -nr -o NAME "$disk" | awk 'NR==2 {print "/dev/" $1}')
+      fs_type=$(blkid -s TYPE -o value "$part" 2>/dev/null || echo "")
+      current_label=$(blkid -s LABEL -o value "$part" 2>/dev/null || echo "")
+      mnt="/mnt/data$((i - 1))"
     fi
 
     log INFO "[*] ... Mounting data disk $((i - 1)) for $hostname"
     log INFO "[*] ... Preparing disk $disk (label=$label)"
 
+    # Check if partition exists (lsblk part)
     if ! lsblk "$part" &>/dev/null; then
       log INFO "[*] ... Partitioning $disk"
       parted -s "$disk" mklabel gpt
@@ -168,6 +181,9 @@ mount_disks() {
       sync
       sleep 2
       part="/dev/$(lsblk -nro NAME "$disk" | sed -n '2p')"
+      # refresh fs_type and current_label after new partition creation
+      fs_type=$(blkid -s TYPE -o value "$part" 2>/dev/null || echo "")
+      current_label=$(blkid -s LABEL -o value "$part" 2>/dev/null || echo "")
     else
       log INFO "[*] ... Skipping partitioning: $disk already partitioned"
     fi
