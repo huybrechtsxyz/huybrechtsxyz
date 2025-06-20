@@ -451,6 +451,8 @@ main() {
   configure_services || exit 1
 
   log INFO "[*] Remote server cleanup..."
+  chmod 755 *
+  rm -f "$PATH_CONF"/develop.env
   rm -f "$PATH_CONF"/secret.env
   rm -rf "/tmp/app/"*
 
