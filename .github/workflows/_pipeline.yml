@@ -411,19 +411,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  # Validation of the environment
-  validate:
-    name: Validate Swarm Cluster
-    needs: [restore, configuration]
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    strategy:
-      matrix: ${{ fromJson(needs.restore.outputs.matrix) }}
-    steps:
-       # Check out the repo
-      - name: Check Out
-        uses: actions/checkout@v4
-
   # Start the Environment
   # This job will run only for the first manager node in the matrix
   start:
