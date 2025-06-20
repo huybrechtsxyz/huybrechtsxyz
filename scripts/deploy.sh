@@ -17,7 +17,7 @@ fi
 # Save all the variables in the .env file
 load_envfile "$SCRIPT_PATH/pipeline.env"
 load_envfile "$SCRIPT_PATH/$ENV_FILE.env"
-generate_env_file "" "$SCRIPT_PATH/.env"
+generate_env_file_all "$SCRIPT_PATH/.env"
 cd "$SCRIPT_PATH" || exit 1
 
 # Default stack name if not set
