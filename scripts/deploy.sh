@@ -16,10 +16,9 @@ fi
 # Load the environment file
 # Save all the variables in the .env file
 load_envfile "$SCRIPT_PATH/pipeline.env"
-load_envfile "$SCRIPT_PATH/variables.env"
 load_envfile "$SCRIPT_PATH/$ENV_FILE.env"
 generate_env_file "" "$SCRIPT_PATH/.env"
-cd "$PATH_CONF" || exit 1
+cd "$SCRIPT_PATH" || exit 1
 
 # Default stack name if not set
 STACK="${STACK:-app}"
@@ -31,10 +30,16 @@ if [[ -z "${GROUP:-}" && ${#SERVICES[@]} -eq 0 ]]; then
   exit 1
 fi
 
+local workspace_file="$SCRIPT_PATH/workspace.$WORKSPACE.json"
+if [[ ! -f "$workspace_file" ]]; then
+  log ERROR "[!] Workspace file not found: $workspace_file"
+  return 1
+fi
+
 # Count Docker manager and infra nodes
-update_docker_variables "DOCKER_MANAGERS" "role=manager" "$PATH_CONF/.env" "Docker Manager Nodes"
-update_docker_variables "DOCKER_INFRAS" "node.label=infra=true" "$PATH_CONF/.env" "Docker Infra Nodes"
-update_docker_variables "DOCKER_WORKERS" "node.label=worker=true" "$PATH_CONF/.env" "Docker Worker Nodes"
+update_docker_variables "DOCKER_MANAGERS" "role=manager" "$SCRIPT_PATH/.env" "Docker Manager Nodes"
+update_docker_variables "DOCKER_INFRAS" "node.label=infra=true" "$SCRIPT_PATH/.env" "Docker Infra Nodes"
+update_docker_variables "DOCKER_WORKERS" "node.label=worker=true" "$SCRIPT_PATH/.env" "Docker Worker Nodes"
 
 # Clean VXLAN interfaces
 log INFO "[*] Cleaning up VXLAN interfaces..."
@@ -45,20 +50,20 @@ log INFO "[+] Cleaning up VXLAN interfaces... DONE"
 SELECTION=()
 
 # Make sure consul config if exists
-consul_target="$PATH_CONF/consul/etc"
+consul_target="$SCRIPT_PATH/consul/etc"
 if [[ ! -d "$consul_target" ]]; then
   mkdir -p $consul_target
   chmod 755 -R $consul_target
-  if [[ -f "$PATH_CONF/consul/config.json" ]]; then
+  if [[ -f "$SCRIPT_PATH/consul/config.json" ]]; then
     log INFO "[+] Moved Consul config to $consul_target"
-    mv -f "$PATH_CONF/consul/config.json" "$consul_target/consul.json"
+    mv -f "$SCRIPT_PATH/consul/config.json" "$consul_target/consul.json"
   else
-    log WARN "[!] consul/config.json not found in $PATH_CONF. Skipping Consul configuration."
+    log WARN "[!] consul/config.json not found in $SCRIPT_PATH. Skipping Consul configuration."
   fi
 fi
 
 # Loop each service
-for dir in "$PATH_CONF"/*/; do
+for dir in "$SCRIPT_PATH"/*/; do
   service_dir="${dir%/}"  # Remove trailing slash
   service_name=$(basename "$service_dir")
   service_file="$service_dir/service.json"
@@ -86,6 +91,42 @@ for dir in "$PATH_CONF"/*/; do
   if [[ "$GROUP" == "$service_group" || " ${SERVICES[*]} " == *" $service_id "* || ( -z "$GROUP" && "${#SERVICES[@]}" -eq 0 ) ]]; then
       SELECTION+=("$service_id|$service_priority|$service_endpoint")
       log INFO "[+] Service $service_name SELECTED"
+
+      # Iterate over each path entry
+      service_paths=$(echo "$service_data" | jq -c '.service.paths[]?')
+      IFS=$'\n' && for entry in $service_paths; do
+        # Extract fields
+        entry_path=$(echo "$entry" | jq -r '.path')
+        entry_type=$(echo "$entry" | jq -r '.type')
+
+        # Get the relative path for this type
+        server_path=$(jq -r --arg t "$entry_type" '.paths[] | select(.type == $t) | .path' "$workspace_file")
+        
+        # Build variable name: SERVICEID_PATH_TYPE[disk] or SERVICEID_PATH_ENTRY
+        target_path="$server_path/$service_name"
+        if [ -n "$entry_path" ]; then
+          target_path="$target_path/$entry_path"
+          var_name="$(echo "${service_name^^}_PATH_${entry_path^^}")"
+        else
+          target_path="$target_path/$entry_type"
+          var_name="$(echo "${service_name^^}_PATH_${entry_type^^}")"
+        fi
+        
+        # Add to /etc/app/.env (overwrite existing entry if present)
+        export "$var_name"="$target_path"
+        if grep -q "^${var_name}=" "$SCRIPT_PATH/.env" 2>/dev/null; then
+          sed -i "s|^${var_name}=.*|${var_name}=${target_path}|" $SCRIPT_PATH/.env
+        else
+          echo "${var_name}=${target_path}" >> $SCRIPT_PATH/.env
+        fi
+
+        # Clear logs if it's a logs path
+        if [[ "$entry_type" == "logs" ]]; then
+          log INFO "[*] Clearing logs in $target_path"
+          rm -rf "${target_path:?}"/*
+        fi
+
+      done
   fi
 
   log INFO "[+] Configuration complete for $service_name"
@@ -97,7 +138,7 @@ IFS=$'\n' sorted_services=($(printf "%s\n" "${SELECTION[@]}" | sort -t'|' -k2))
 # Deploy selected services
 for svc in "${sorted_services[@]}"; do
   IFS='|' read -r id priority endpoint <<< "$svc"
-  service_path="$APP_PATH_CONF/$id"
+  service_path="$SCRIPT_PATH/$id"
   compose_file="$service_path/compose.yml"
 
   if [[ ! -f "$compose_file" ]]; then
@@ -108,10 +149,6 @@ for svc in "${sorted_services[@]}"; do
   log INFO "[*] Deploying stack for $id (priority $priority)"
   docker stack deploy -c "$compose_file" "$STACK" --with-registry-auth --detach
 done
-
-# Cleanup
-#log INFO "[*] Removing temporary environment file..."
-#rm -f "$APP_PATH_CONF/.env"
 
 log INFO "[+] All services started successfully."
 log INFO "[+] Listing deployed services..."

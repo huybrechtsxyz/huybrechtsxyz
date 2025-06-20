@@ -54,6 +54,7 @@ parse_options() {
   log INFO "[*] ... Stack: $STACK"
 }
 
+# Load environment file if it exists
 load_envfile() {
   local env_file="$1"
 
@@ -93,6 +94,7 @@ cleanup_vxlan_interfaces() {
   log INFO "[*] ...Checking for orphaned VXLAN interfaces...DONE"
 }
 
+# Generate an environment file only taking env vars with specific prefix
 generate_env_file() {
   local prefix="$1"
   local output_file="$2"
