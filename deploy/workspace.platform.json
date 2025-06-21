@@ -6,8 +6,8 @@
   },
   "paths": [
     { "type": "config", "path": "/etc/app" },
-    { "type": "data", "path": "/var/lib/app" },
-    { "type": "logs", "path": "/var/log/app" },
+    { "type": "data", "path": "/var/lib/data" },
+    { "type": "logs", "path": "/var/lib/logs" },
     { "type": "serve", "path": "/srv/app" }
   ],
   "servers": [

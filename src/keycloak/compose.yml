@@ -24,8 +24,8 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
     volumes:
-      - ${KEYCLOAK_PATH_CONF}/keycloak/entrypoint.sh:/usr/local/bin/entrypoint.sh
-      - ${KEYCLOAK_PATH_CONF}/keycloak/real.${WORKSPACE}.json:/tmp/realm.template.json
+      - ${KEYCLOAK_PATH_CONF}/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ${KEYCLOAK_PATH_CONF}/real.${WORKSPACE}.json:/tmp/realm.template.json
     networks:
       - lan-${WORKSPACE}
     secrets:
