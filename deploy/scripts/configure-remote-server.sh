@@ -464,7 +464,7 @@ main() {
   log INFO "[*] Remote server cleanup..."
   chmod 755 "$PATH_CONF"/*
   rm -f "$PATH_CONF"/develop.env
-  rm -f "$PATH_CONF"/secret.env
+  rm -f "$PATH_CONF"/secrets.env
   rm -rf "/tmp/app/"*
 
   log INFO "[+] Configuring Swarm Node: $hostname...DONE"
