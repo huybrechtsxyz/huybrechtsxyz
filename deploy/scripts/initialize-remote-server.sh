@@ -104,11 +104,11 @@ mount_disks() {
     log ERROR "[!] No matching server ID found for hostname: $hostname"
     return 1
   fi
-  
+
   # Identify the OS disk by partition mounted at root '/'
   log INFO "[*] ... Identify the OS disk by root mountpoint"
-  local os_part=$(findmnt -n -o SOURCE /)   # e.g., /dev/sda2
-  local os_disk=$(lsblk -no PKNAME "$os_part")   # e.g., sda
+  local os_part=$(findmnt -n -o SOURCE /)
+  local os_disk=$(lsblk -no PKNAME "$os_part")
   local os_disk_base="$os_disk"
   log INFO "[*] OS disk identified: /dev/$os_disk_base (root partition: $os_part)"
 
@@ -134,6 +134,8 @@ mount_disks() {
     return 1
   fi
 
+  local mount_template=$(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .mountpoint' "$workspace_file")
+
   log INFO "[*] ... Looping over all disks"
   for i in $(seq 0 $((disk_count - 1))); do
     log INFO "[*] ... Mounting disk $i for $hostname"
@@ -144,7 +146,7 @@ mount_disks() {
     local part=""
     local fs_type=""
     local current_label=""
-    local mnt=""
+    local mnt="${mount_template//\$\{disk\}/$((i + 1))}"
 
     if [[ $i -eq 0 ]]; then
       # OS disk — use the actual root partition, not just first partition
@@ -161,27 +163,28 @@ mount_disks() {
       else
         log INFO "[*] ... OS disk label is already correct: $label"
       fi
+      # Make sure the mountpoint exist
+      mkdir -p "$mnt"
       continue
     else
       # Data disks — expect partition 1 on the disk (e.g., /dev/sdb1)
       part=$(lsblk -nr -o NAME "$disk" | awk 'NR==2 {print "/dev/" $1}')
       fs_type=$(blkid -s TYPE -o value "$part" 2>/dev/null || echo "")
       current_label=$(blkid -s LABEL -o value "$part" 2>/dev/null || echo "")
-      mnt="/mnt/data$((i - 1))"
     fi
 
-    log INFO "[*] ... Mounting data disk $((i - 1)) for $hostname"
+    log INFO "[*] ... Mounting data disk $i for $hostname"
     log INFO "[*] ... Preparing disk $disk (label=$label)"
 
-    # Check if partition exists (lsblk part)
+     # Check if partition exists (lsblk part)
     if ! lsblk "$part" &>/dev/null; then
       log INFO "[*] ... Partitioning $disk"
       parted -s "$disk" mklabel gpt
       parted -s -a optimal "$disk" mkpart primary ext4 0% 100%
       sync
-      sleep 2
-      part="/dev/$(lsblk -nro NAME "$disk" | sed -n '2p')"
+      sleep 5
       # refresh fs_type and current_label after new partition creation
+      part="/dev/$(lsblk -nro NAME "$disk" | sed -n '2p')"
       fs_type=$(blkid -s TYPE -o value "$part" 2>/dev/null || echo "")
       current_label=$(blkid -s LABEL -o value "$part" 2>/dev/null || echo "")
     else
@@ -212,7 +215,6 @@ mount_disks() {
     # Ensure persistence in fstab (idempotent)
     fstab_line="LABEL=$label $mnt ext4 defaults 0 2"
     if grep -qE "^\s*LABEL=$label\s" /etc/fstab; then
-      # Update the existing line if it differs
       if ! grep -Fxq "$fstab_line" /etc/fstab; then
         log INFO "[*] ... Updating existing fstab entry for $label"
         sed -i.bak "/^\s*LABEL=$label\s/c\\$fstab_line" /etc/fstab
@@ -224,10 +226,10 @@ mount_disks() {
       echo "$fstab_line" >> /etc/fstab
     fi
 
-    log INFO "[*] ... Mounting disk $i for $hostname DONE"
+    log INFO "[*] ... Disk $i mounted successfully at $mnt"
   done
 
-  log INFO "[+] Preparing and mounting disk volumes...DONE"
+  log INFO "[+] All disks prepared and mounted."
 }
 
 install_docker_if_needed() {

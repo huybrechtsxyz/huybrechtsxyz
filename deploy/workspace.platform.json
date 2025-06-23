@@ -17,11 +17,12 @@
       "disks": [
         { "size": 20, "label": "manager-1-os" }
       ],
+      "mountpoint": "/mnt/data${disk}",
       "mounts": [
-        { "type": "config", "disk": 0 },
-        { "type": "data", "disk": 0 },
-        { "type": "logs", "disk": 0 },
-        { "type": "serve", "disk": 0 }
+        { "type": "config", "disk": 1 },
+        { "type": "data", "disk": 1 },
+        { "type": "logs", "disk": 1 },
+        { "type": "serve", "disk": 1 }
       ]
     },
     {
@@ -31,11 +32,12 @@
         { "size": 20, "label": "infra-1-os" },
         { "size": 40, "label": "infra-1-data" }
       ],
+      "mountpoint": "/mnt/data${disk}",
       "mounts": [
-        { "type": "config", "disk": 1 },
-        { "type": "data", "disk": 1 },
-        { "type": "logs", "disk": 1 },
-        { "type": "serve", "disk": 1 }
+        { "type": "config", "disk": 2 },
+        { "type": "data", "disk": 2 },
+        { "type": "logs", "disk": 2 },
+        { "type": "serve", "disk": 2 }
       ]
     },
     {
@@ -45,6 +47,21 @@
         { "size": 20, "label": "infra-2-os" },
         { "size": 40, "label": "infra-2-data" }
       ],
+      "mountpoint": "/mnt/data${disk}",
+      "mounts": [
+        { "type": "config", "disk": 2 },
+        { "type": "data", "disk": 2 },
+        { "type": "logs", "disk": 2 },
+        { "type": "serve", "disk": 2 }
+      ]
+    },
+    {
+      "id": "worker-1",
+      "labels": [],
+      "disks": [
+        { "size": 20, "label": "worker-1-os" }
+      ],
+      "mountpoint": "/mnt/data${disk}",
       "mounts": [
         { "type": "config", "disk": 1 },
         { "type": "data", "disk": 1 },
@@ -53,29 +70,17 @@
       ]
     },
     {
-      "id": "worker-1",
-      "labels": [],
-      "disks": [
-        { "size": 20, "label": "worker-1-os" }
-      ],      
-      "mounts": [
-        { "type": "config", "disk": 0 },
-        { "type": "data", "disk": 0 },
-        { "type": "logs", "disk": 0 },
-        { "type": "serve", "disk": 0 }
-      ]
-    },
-    {
       "id": "worker-2",
       "labels": [],
       "disks": [
         { "size": 20, "label": "worker-2-os" }
       ],
+      "mountpoint": "/mnt/data${disk}",
       "mounts": [
-        { "type": "config", "disk": 0 },
-        { "type": "data", "disk": 0 },
-        { "type": "logs", "disk": 0 },
-        { "type": "serve", "disk": 0 }
+        { "type": "config", "disk": 1 },
+        { "type": "data", "disk": 1 },
+        { "type": "logs", "disk": 1 },
+        { "type": "serve", "disk": 1 }
       ]
     }
   ]
