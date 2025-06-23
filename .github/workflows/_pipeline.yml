@@ -58,10 +58,6 @@ on:
         required: true
 
 env:
-  APP_PATH_CONF: /etc/app
-  APP_PATH_DATA: /var/lib/data
-  APP_PATH_LOGS: /var/lib/logs
-  APP_PATH_SERV: /srv/app
   APP_PATH_TEMP: /tmp/app
 
 jobs:

@@ -5,10 +5,10 @@
     "description": "Workspace deployment configuration for the shared Platform."
   },
   "paths": [
-    { "type": "config", "path": "/etc/app" },
-    { "type": "data", "path": "/var/lib/data" },
-    { "type": "logs", "path": "/var/lib/logs" },
-    { "type": "serve", "path": "/srv/app" }
+    { "type": "config", "path": "/${service}/config" },
+    { "type": "data",   "path": "/${service}/data" },
+    { "type": "logs",   "path": "/${service}/logs" },
+    { "type": "serve",  "path": "/${service}/serve" }
   ],
   "servers": [
     {
