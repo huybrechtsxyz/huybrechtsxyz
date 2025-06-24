@@ -88,6 +88,7 @@ mount_disks() {
   log INFO "[*] Preparing and mounting disk volumes..."
 
   : "${WORKSPACE:?Missing WORKSPACE}"
+  : "${PATH_TEMP:?Missing PATH_TEMP}"
   log INFO "[*] ... Getting workspace information from $PATH_TEMP/workspace.$WORKSPACE.json"
   local hostname=$(hostname)
   local workspace_file="$PATH_TEMP/workspace.$WORKSPACE.json"
