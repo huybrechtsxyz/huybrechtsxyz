@@ -179,7 +179,7 @@ createnodelabels() {
     done
 
     # Add custom labels from workspace JSON (jq filters by node id)
-    log INFO "[*] ....... Add custom labels from workspace on $node"
+    log INFO "[*] ...... Add custom labels from workspace on $node"
     mapfile -t ws_labels < <(jq -r --arg id "$node" '.servers[] | select(.id == $id) | .labels[]?' "$workspace_file")
     for label in "${ws_labels[@]}"; do
       # Split label key and value
@@ -197,7 +197,7 @@ createnodelabels() {
     done
 
     # Remove any labels that exist but are not desired
-    log INFO "[*] ... Cleaning up obsolete labels on $node"
+    log INFO "[*] ...... Cleaning up obsolete labels on $node"
     for key in "${!existing_labels[@]}"; do
       if [[ -z "${desired_labels[$key]}" ]]; then
         log INFO "[*] ...... Removing $key"
@@ -243,7 +243,8 @@ create_workspace() {
   local config_template=$(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .mountpoint' "$workspace_file")
   local config_disk=$(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .mounts[] | select(.type == "config") | .disk' "$workspace_file")
   local config_path="${config_template//\$\{disk\}/$config_disk}"
-
+  export PATH_CONFIG=$config_path
+  
   log INFO "[*] ... Using configuration mount point: $config_path"
   mkdir -p "$config_path"
   : > "$config_path/services.env"

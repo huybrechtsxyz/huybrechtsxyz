@@ -21,8 +21,8 @@ fi
 # -------------------------------------------------------------------
 # Load and merge environment configurations
 # -------------------------------------------------------------------
-source "$SCRIPT_PATH/services.env"
-source "$SCRIPT_PATH/$ENV_FILE.env"
+load_envfile "$SCRIPT_PATH/services.env"
+load_envfile "$SCRIPT_PATH/$ENV_FILE.env"
 
 # Prioritize ENV_FILE.env values by reversing the order in awk
 cat "$SCRIPT_PATH/$ENV_FILE.env" "$SCRIPT_PATH/services.env" | awk -F= '!seen[$1]++' > "$SCRIPT_PATH/.env"
