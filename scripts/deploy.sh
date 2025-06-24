@@ -1,144 +1,126 @@
 #!/bin/bash
 set -euo pipefail
 
-# Initialize script
+# -------------------------------------------------------------------
+# Initialize script paths and source dependencies
+# -------------------------------------------------------------------
 SCRIPT_PATH="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 source "$SCRIPT_PATH/functions.sh"
-log INFO "[*] Starting environment..."
+
+log INFO "[*] Starting deployment process..."
 parse_options "$@"
 
-# Validate ENV_FILE input
+# -------------------------------------------------------------------
+# Validate environment selection
+# -------------------------------------------------------------------
 if [[ -z "${ENV_FILE:-}" ]]; then
-  log ERROR "[*] No -e specified. Environment file is required."
+  log ERROR "[!] No environment (-e) specified. Exiting."
   exit 1
 fi
 
-# Load the environment file
-# Save all the variables in the .env file
-load_envfile "$SCRIPT_PATH/services.env"
-load_envfile "$SCRIPT_PATH/$ENV_FILE.env"
-generate_env_file_all "$SCRIPT_PATH/.env"
+# -------------------------------------------------------------------
+# Load and merge environment configurations
+# -------------------------------------------------------------------
+source "$SCRIPT_PATH/services.env"
+source "$SCRIPT_PATH/$ENV_FILE.env"
+
+# Prioritize ENV_FILE.env values by reversing the order in awk
+cat "$SCRIPT_PATH/$ENV_FILE.env" "$SCRIPT_PATH/services.env" | awk -F= '!seen[$1]++' > "$SCRIPT_PATH/.env"
+
+log INFO "[*] Combined environment written to .env"
 cd "$SCRIPT_PATH" || exit 1
 
-# Default stack name if not set
-STACK="${STACK:-app}"
+STACK="${STACK:-app}"  # Default stack name
 
-# Validate service selection input
+# -------------------------------------------------------------------
+# Validate input options
+# -------------------------------------------------------------------
 if [[ -z "${GROUP:-}" && ${#SERVICES[@]} -eq 0 ]]; then
-  log ERROR "[!] You must specify at least -g <group> or -s <service1 service2 ...>"
+  log ERROR "[!] You must specify either -g <group> or -s <service1 service2 ...>"
   log ERROR "Usage: $0 [-e envfile] [-g group] [-s service1 service2 ...]"
   exit 1
 fi
 
-workspace_file="$SCRIPT_PATH/workspace.$WORKSPACE.json"
-if [[ ! -f "$workspace_file" ]]; then
-  log ERROR "[!] Workspace file not found: $workspace_file"
-  return 1
-fi
-
-# Count Docker manager and infra nodes
+# -------------------------------------------------------------------
+# Populate Docker node variables
+# -------------------------------------------------------------------
 update_docker_variables "DOCKER_MANAGERS" "role=manager" "$SCRIPT_PATH/.env" "Docker Manager Nodes"
 update_docker_variables "DOCKER_INFRAS" "node.label=infra=true" "$SCRIPT_PATH/.env" "Docker Infra Nodes"
 update_docker_variables "DOCKER_WORKERS" "node.label=worker=true" "$SCRIPT_PATH/.env" "Docker Worker Nodes"
 
-# Clean VXLAN interfaces
+# -------------------------------------------------------------------
+# Clean up existing VXLAN interfaces
+# -------------------------------------------------------------------
 log INFO "[*] Cleaning up VXLAN interfaces..."
 cleanup_vxlan_interfaces
-log INFO "[+] Cleaning up VXLAN interfaces... DONE"
+log INFO "[+] VXLAN cleanup complete."
 
-# Prepare service selection list
+# -------------------------------------------------------------------
+# Process service selection
+# -------------------------------------------------------------------
 SELECTION=()
 
-# Make sure consul config if exists
-consul_target="$SCRIPT_PATH/consul/etc"
-if [[ ! -d "$consul_target" ]]; then
-  log ERROR "[!] Consul configuration directory does not exist!"
-  log ERROR "[!] Error in configuration for $consul_target"
-  return 1
-fi
-if [[ -f "$SCRIPT_PATH/consul/config/config.json" ]]; then
-  log INFO "[+] Moved Consul config to $consul_target"
-  mv -f "$SCRIPT_PATH/consul/config/config.json" "$consul_target/consul.json"
-else
-  log WARN "[!] consul/config.json not found in $SCRIPT_PATH. Skipping Consul configuration."
-  return 1
-fi
-
-# Loop each service
 for dir in "$SCRIPT_PATH"/*/; do
-  service_dir="${dir%/}"  # Remove trailing slash
-  service_name=$(basename "$service_dir")
+  service_dir="${dir%/}"
   service_file="$service_dir/config/service.json"
-
-  log INFO "[*] Configuring service: $service_name"
 
   if [[ ! -f "$service_file" ]]; then
     log WARN "[!] $service_file not found. Skipping..."
     continue
   fi
 
-  consul_conf="$service_dir/config/consul.json"
-  if [[ -f "$consul_conf" ]]; then
-    cp -f "$consul_conf" "$consul_target/consul.$service_name.json"
-  fi
-
-  # Load and parse service.json
   service_data=$(< "$service_file")
   service_id=$(echo "$service_data" | jq -r '.service.id')
-  service_group=$(echo "$service_data" | jq -r '.service.groups[]?')
-  service_endpoint=$(echo "$service_data" | jq -r '.service.endpoint')
-  service_priority=$(echo "$service_data" | jq -r '.service.priority')
+  service_group=$(echo "$service_data" | jq -r '.service.groups[]?' || true)
+  service_endpoint=$(echo "$service_data" | jq -r '.service.endpoint // empty')
+  service_priority=$(echo "$service_data" | jq -r '.service.priority // 100')
 
-  # Match based on group or service list
-  if [[ "$GROUP" == "$service_group" || " ${SERVICES[*]} " == *" $service_id "* || ( -z "$GROUP" && "${#SERVICES[@]}" -eq 0 ) ]]; then
-      SELECTION+=("$service_id|$service_priority|$service_endpoint")
-      log INFO "[+] ... Service $service_name SELECTED"
-
-      # Iterate over each path entry
-      service_paths=$(echo "$service_data" | jq -c '.service.paths[]?')
-      IFS=$'\n' && for entry in $service_paths; do
-        # Extract fields
-        entry_path=$(echo "$entry" | jq -r '.path')
-        entry_type=$(echo "$entry" | jq -r '.type')
-        
-        # Build target path
-        target_path="$mnt/$service_id"
-        if [[ -z "$entry_path" || "$entry_path" == "." ]]; then
-          target_path="$target_path/$entry_type"
-        else
-          target_path="$target_path/$entry_path"
-        fi
-
-        # Clear logs if it's a logs path
-        if [[ "$entry_type" == "logs" ]]; then
-          log INFO "[*] Clearing logs in $target_path"
-          rm -rf "${target_path:?}"/*
-        fi
-
-      done
+  if [[ "$service_id" == "consul" ]]; then
+    log INFO "[+] Moving Consul configuration to /consul/etc"
+    mv -f "$SCRIPT_PATH/consul/config/config.json" "$SCRIPT_PATH/consul/etc/consul.json"
   fi
 
-  log INFO "[+] Configuration complete for $service_name"
+  if [[ "$GROUP" == "$service_group" || " ${SERVICES[*]} " == *" $service_id "* || ( -z "$GROUP" && "${#SERVICES[@]}" -eq 0 ) ]]; then
+    SELECTION+=("$service_id|$service_priority|$service_endpoint")
+    log INFO "[+] Selected service: $service_id (priority $service_priority)"
+
+    consul_conf="$service_dir/config/consul.json"
+    if [[ -f "$consul_conf" ]]; then
+      cp -f "$consul_conf" "$SCRIPT_PATH/consul/etc/consul.$service_id.json"
+    fi
+
+    log_dir="$service_dir/logs"
+    if [[ -d "$log_dir" ]]; then
+      log INFO "[*] Clearing logs in $log_dir"
+      rm -rf "${log_dir:?}"/*
+    fi
+  fi
+
+  log INFO "[+] Processed service: $service_id"
 done
 
-# Sort selected services by priority
-IFS=$'\n' sorted_services=($(printf "%s\n" "${SELECTION[@]}" | sort -t'|' -k2))
+# -------------------------------------------------------------------
+# Deploy services in priority order
+# -------------------------------------------------------------------
+IFS=$'\n' sorted_services=($(printf "%s\n" "${SELECTION[@]}" | sort -t'|' -k2,2n))
 
-# Deploy selected services
 for svc in "${sorted_services[@]}"; do
   IFS='|' read -r id priority endpoint <<< "$svc"
-  service_path="$SCRIPT_PATH/$id"
-  compose_file="$service_path/config/compose.yml"
+  compose_file="$SCRIPT_PATH/$id/config/compose.yml"
 
   if [[ ! -f "$compose_file" ]]; then
     log ERROR "[!] Compose file not found for $id. Skipping deployment."
     continue
   fi
 
-  log INFO "[*] Deploying stack for $id (priority $priority)"
+  log INFO "[*] Deploying $id with priority $priority..."
   docker stack deploy -c "$compose_file" "$STACK" --with-registry-auth --detach
+  log INFO "[+] Deployed $id"
 done
 
-log INFO "[+] All services started successfully."
-log INFO "[+] Listing deployed services..."
+# -------------------------------------------------------------------
+# Post-deployment summary
+# -------------------------------------------------------------------
+log INFO "[+] All selected services deployed successfully."
+log INFO "[+] Currently running Docker services:"
 docker service ls
