@@ -114,7 +114,7 @@ mount_disks() {
   local os_part=$(findmnt -n -o SOURCE /)
   local os_disk=$(lsblk -no PKNAME "$os_part")
   local os_disk_base="$os_disk"
-  log INFO "[*] OS disk identified: /dev/$os_disk_base (root partition: $os_part)"
+  log INFO "[*] ... OS disk identified: /dev/$os_disk_base (root partition: $os_part)"
 
   # Get non-OS disks sorted by size
   log INFO "[*] ... Getting non-os disks"
@@ -191,6 +191,8 @@ mount_disks() {
     log INFO "[*] ... Validating size for $disk: expected ${expected_size_gb}GB, found ${actual_size_gb}GB"
 
     if disk_size_matches "$actual_size_gb" "$expected_size_gb"; then
+      log INFO "[*] ... Disk size for $disk matches expected ${expected_size_gb}GB, found ${actual_size_gb}GB"
+    else
       log ERROR "[!] Disk size mismatch for $disk — expected ${expected_size_gb}GB, got ${actual_size_gb}GB"
       continue  # Skip this disk to avoid accidental mount/format
     fi
