@@ -305,7 +305,7 @@ create_workspace() {
       fi
 
       # Export + write to services.env
-      echo "export $var_name=\"$full_path\"" >> "$PATH_TEMP/src/services.env"
+      echo "export $var_name=\"$full_path\"" >> "$config_path/services.env"
       export "$var_name=$full_path"
       log INFO "[+] ... Variable: $var_name = $full_path"
 

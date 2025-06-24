@@ -15,7 +15,7 @@ fi
 
 # Load the environment file
 # Save all the variables in the .env file
-load_envfile "$SCRIPT_PATH/pipeline.env"
+load_envfile "$SCRIPT_PATH/services.env"
 load_envfile "$SCRIPT_PATH/$ENV_FILE.env"
 generate_env_file_all "$SCRIPT_PATH/.env"
 cd "$SCRIPT_PATH" || exit 1
@@ -52,14 +52,16 @@ SELECTION=()
 # Make sure consul config if exists
 consul_target="$SCRIPT_PATH/consul/etc"
 if [[ ! -d "$consul_target" ]]; then
-  mkdir -p $consul_target
-  chmod 755 -R $consul_target
-  if [[ -f "$SCRIPT_PATH/consul/config/config.json" ]]; then
-    log INFO "[+] Moved Consul config to $consul_target"
-    mv -f "$SCRIPT_PATH/consul/config/config.json" "$consul_target/consul.json"
-  else
-    log WARN "[!] consul/config.json not found in $SCRIPT_PATH. Skipping Consul configuration."
-  fi
+  log ERROR "[!] Consul configuration directory does not exist!"
+  log ERROR "[!] Error in configuration for $consul_target"
+  return 1
+fi
+if [[ -f "$SCRIPT_PATH/consul/config/config.json" ]]; then
+  log INFO "[+] Moved Consul config to $consul_target"
+  mv -f "$SCRIPT_PATH/consul/config/config.json" "$consul_target/consul.json"
+else
+  log WARN "[!] consul/config.json not found in $SCRIPT_PATH. Skipping Consul configuration."
+  return 1
 fi
 
 # Loop each service
@@ -90,7 +92,7 @@ for dir in "$SCRIPT_PATH"/*/; do
   # Match based on group or service list
   if [[ "$GROUP" == "$service_group" || " ${SERVICES[*]} " == *" $service_id "* || ( -z "$GROUP" && "${#SERVICES[@]}" -eq 0 ) ]]; then
       SELECTION+=("$service_id|$service_priority|$service_endpoint")
-      log INFO "[+] Service $service_name SELECTED"
+      log INFO "[+] ... Service $service_name SELECTED"
 
       # Iterate over each path entry
       service_paths=$(echo "$service_data" | jq -c '.service.paths[]?')
@@ -98,26 +100,13 @@ for dir in "$SCRIPT_PATH"/*/; do
         # Extract fields
         entry_path=$(echo "$entry" | jq -r '.path')
         entry_type=$(echo "$entry" | jq -r '.type')
-
-        # Get the relative path for this type
-        server_path=$(jq -r --arg t "$entry_type" '.paths[] | select(.type == $t) | .path' "$workspace_file")
         
-        # Build variable name: SERVICEID_PATH_TYPE[disk] or SERVICEID_PATH_ENTRY
-        target_path="$server_path/$service_name"
-        if [ -n "$entry_path" ]; then
-          target_path="$target_path/$entry_path"
-          var_name="$(echo "${service_name^^}_PATH_${entry_path^^}")"
-        else
+        # Build target path
+        target_path="$mnt/$service_id"
+        if [[ -z "$entry_path" || "$entry_path" == "." ]]; then
           target_path="$target_path/$entry_type"
-          var_name="$(echo "${service_name^^}_PATH_${entry_type^^}")"
-        fi
-        
-        # Add to /etc/app/.env (overwrite existing entry if present)
-        export "$var_name"="$target_path"
-        if grep -q "^${var_name}=" "$SCRIPT_PATH/.env" 2>/dev/null; then
-          sed -i "s|^${var_name}=.*|${var_name}=${target_path}|" $SCRIPT_PATH/.env
         else
-          echo "${var_name}=${target_path}" >> $SCRIPT_PATH/.env
+          target_path="$target_path/$entry_path"
         fi
 
         # Clear logs if it's a logs path
