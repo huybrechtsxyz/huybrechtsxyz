@@ -14,7 +14,7 @@ createnetwork() {
     if docker network create --driver overlay "$network"; then
       log INFO "[+] ... Docker network '$network' created successfully."
     else
-      log ERROR "[x] Failed to create Docker network '$network'. Is Docker Swarm mode enabled?"
+      log ERROR "[X] Failed to create Docker network '$network'. Is Docker Swarm mode enabled?"
       return 1
     fi
   fi
@@ -57,12 +57,12 @@ createdockersecret() {
   log INFO "[*] ... Processing secret: $label"
 
   if [[ -z "$name" ]]; then
-    log WARN "[!] Secret name is not defined for $label. Skipping."
+    log WARN "[!] ... Secret name is not defined for $label. Skipping."
     return 1
   fi
 
   if [[ -z "$value" ]]; then
-    log WARN "[!] Secret value for '$name' is empty. Skipping."
+    log WARN "[!] ... Secret value for '$name' is empty. Skipping."
     return 0
   fi
 
@@ -82,15 +82,13 @@ createdockersecret() {
   if printf "%s" "$value" | docker secret create "$name" -; then
     log INFO "[+] ... Secret '$name' created."
   else
-    log ERROR "[x] Failed to create secret '$name'."
+    log ERROR "[X] ... Failed to create secret '$name'."
     return 1
   fi
 }
 
 issecretinuse() {
   local secret_name="$1"
-
-  log INFO "[*] ... Checking if secret '$secret_name' is in use..."
 
   # Check services using the secret
   if docker service ls --format '{{.Name}}' | \
@@ -368,7 +366,6 @@ main() {
 
   # Create docker networks and secrets only leader node
   if [[ "$hostname" == *"manager-1"* ]]; then
-    log INFO "[+] Creating Docker networks..."
     createnetwork "wan-$WORKSPACE" || exit 1
     createnetwork "lan-$WORKSPACE" || exit 1
     createnetwork "lan-test" || exit 1
