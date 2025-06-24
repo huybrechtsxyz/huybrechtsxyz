@@ -89,7 +89,7 @@ mount_disks() {
 
   : "${WORKSPACE:?Missing WORKSPACE}"
   : "${PATH_TEMP:?Missing PATH_TEMP}"
-  log INFO "[*] ... Getting workspace information from $PATH_TEMP/workspace.$WORKSPACE.json"
+  log INFO "[*] Getting workspace information from $PATH_TEMP/workspace.$WORKSPACE.json"
   local hostname=$(hostname)
   local workspace_file="$PATH_TEMP/workspace.$WORKSPACE.json"
   if [[ ! -f "$workspace_file" ]]; then
@@ -97,7 +97,7 @@ mount_disks() {
     return 1
   fi
 
-  log INFO "[*] ... Getting server information for $hostname"
+  log INFO "[*] Getting server information for $hostname"
   local server_id=$(jq -r '.servers[].id' "$workspace_file" | while read -r id; do
     [[ "$hostname" == *"$id"* ]] && echo "$id" && break
   done)
@@ -106,12 +106,8 @@ mount_disks() {
     return 1
   fi
 
-  # Get expected disk size from workspace metadata (in GB)
-  local expected_size_gb=$(jq -r --arg id "$server_id" --argjson i "$i" \
-    '.servers[] | select(.id == $id) | .disks[$i].size' "$workspace_file")
-
   # Identify the OS disk by partition mounted at root '/'
-  log INFO "[*] ... Identify the OS disk by root mountpoint"
+  log INFO "[*] Identify the OS disk by root mountpoint"
   local os_part=$(findmnt -n -o SOURCE /)
   local os_disk=$(lsblk -no PKNAME "$os_part")
   local os_disk_base="$os_disk"
@@ -141,9 +137,9 @@ mount_disks() {
 
   local mount_template=$(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .mountpoint' "$workspace_file")
 
-  log INFO "[*] ... Looping over all disks"
+  log INFO "[*] Looping over all disks"
   for i in $(seq 0 $((disk_count - 1))); do
-    log INFO "[*] ... Mounting disk $i for $hostname"
+    log INFO "[*] Mounting disk $i for $hostname"
 
     local disk="/dev/${disk_names[$i]}"
     local label=$(jq -r --arg id "$server_id" --argjson i "$i" \
@@ -228,10 +224,10 @@ mount_disks() {
 
     mkdir -p "$mnt"
     if ! mountpoint -q "$mnt"; then
-      log INFO "[*]  ...Mounting $label to $mnt"
+      log INFO "[*] ... Mounting $label to $mnt"
       mount "/dev/disk/by-label/$label" "$mnt"
     else
-      log INFO "[+]  ...Already mounted: $mnt"
+      log INFO "[+] ... Already mounted: $mnt"
     fi
 
     # Ensure persistence in fstab (idempotent)

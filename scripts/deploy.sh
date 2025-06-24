@@ -77,7 +77,14 @@ for dir in "$SCRIPT_PATH"/*/; do
 
   if [[ "$service_id" == "consul" ]]; then
     log INFO "[+] Moving Consul configuration to /consul/etc"
-    mv -f "$SCRIPT_PATH/consul/config/config.json" "$SCRIPT_PATH/consul/etc/consul.json"
+    if [ -e "$SCRIPT_PATH/consul/config/config.json" ]; then
+      if [ -e "$SCRIPT_PATH/consul/etc/consul.json" ]; then
+          mv -f "$SCRIPT_PATH/consul/config/config.json" "$SCRIPT_PATH/consul/etc/consul.json"
+      else
+          echo "Error: Destination file does not exist: $SCRIPT_PATH/consul/etc/consul.json" >&2
+          exit 1
+      fi
+    fi
   fi
 
   if [[ "$GROUP" == "$service_group" || " ${SERVICES[*]} " == *" $service_id "* || ( -z "$GROUP" && "${#SERVICES[@]}" -eq 0 ) ]]; then

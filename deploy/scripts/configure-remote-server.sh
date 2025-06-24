@@ -338,8 +338,7 @@ create_workspace() {
         && var_name="${var_base}_PATH_${var_path}" \
         || var_name="${var_base}_PATH_${var_type}"
 
-      echo "export $var_name=\"$target_path\"" >> "$config_path/services.env"
-      export "$var_name=$target_path"
+      echo "$var_name=\"$target_path\"" >> "$config_path/services.env"
       log INFO "[+] ... Exported $var_name=\"$target_path\""
     done
   done
