@@ -5,6 +5,7 @@
     "groups": ["infra","auth"],
     "description": "Identity and access management for applications and services",
     "endpoint": "http://auth.${DOMAIN_DEV}/",
+    "deployment": "infra",
     "paths": [
       { "type": "config", "path":"", "chmod": 755 }
     ],

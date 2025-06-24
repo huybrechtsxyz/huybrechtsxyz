@@ -13,6 +13,7 @@
   "servers": [
     {
       "id": "manager-1",
+      "role": "manager",
       "labels": [],
       "disks": [
         { "size": 20, "label": "manager-1-os" }
@@ -27,6 +28,7 @@
     },
     {
       "id": "infra-1",
+      "role": "infra",
       "labels": [ "postgres=true" ],
       "disks": [
         { "size": 20, "label": "infra-1-os" },
@@ -42,6 +44,7 @@
     },
     {
       "id": "infra-2",
+      "role": "infra",
       "labels": [],
       "disks": [
         { "size": 20, "label": "infra-2-os" },
@@ -57,6 +60,7 @@
     },
     {
       "id": "worker-1",
+      "role": "worker",
       "labels": [],
       "disks": [
         { "size": 20, "label": "worker-1-os" }
@@ -71,6 +75,7 @@
     },
     {
       "id": "worker-2",
+      "role": "worker",
       "labels": [],
       "disks": [
         { "size": 20, "label": "worker-2-os" }
