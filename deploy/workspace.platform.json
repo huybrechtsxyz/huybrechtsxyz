@@ -17,7 +17,7 @@
       "disks": [
         { "size": 20, "label": "manager-1-os" }
       ],
-      "mountpoint": "/mnt/data${disk}",
+      "mountpoint": "/mnt/data${disk}/app",
       "mounts": [
         { "type": "config", "disk": 1 },
         { "type": "data", "disk": 1 },
@@ -32,7 +32,7 @@
         { "size": 20, "label": "infra-1-os" },
         { "size": 40, "label": "infra-1-data" }
       ],
-      "mountpoint": "/mnt/data${disk}",
+      "mountpoint": "/mnt/data${disk}/app",
       "mounts": [
         { "type": "config", "disk": 2 },
         { "type": "data", "disk": 2 },
@@ -47,7 +47,7 @@
         { "size": 20, "label": "infra-2-os" },
         { "size": 40, "label": "infra-2-data" }
       ],
-      "mountpoint": "/mnt/data${disk}",
+      "mountpoint": "/mnt/data${disk}/app",
       "mounts": [
         { "type": "config", "disk": 2 },
         { "type": "data", "disk": 2 },
@@ -61,7 +61,7 @@
       "disks": [
         { "size": 20, "label": "worker-1-os" }
       ],
-      "mountpoint": "/mnt/data${disk}",
+      "mountpoint": "/mnt/data${disk}/app",
       "mounts": [
         { "type": "config", "disk": 1 },
         { "type": "data", "disk": 1 },
@@ -75,7 +75,7 @@
       "disks": [
         { "size": 20, "label": "worker-2-os" }
       ],
-      "mountpoint": "/mnt/data${disk}",
+      "mountpoint": "/mnt/data${disk}/app",
       "mounts": [
         { "type": "config", "disk": 1 },
         { "type": "data", "disk": 1 },

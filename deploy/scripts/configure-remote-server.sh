@@ -216,158 +216,87 @@ createnodelabels() {
   return 0
 }
 
-create_workspace_paths() {
-  log INFO "[*] Creating workspace directories on mounted disks..."
-
+create_workspace() {
+  log INFO "[*] Creating workspace ..."
   : "${WORKSPACE:?Missing WORKSPACE}"
-  local hostname
-  hostname=$(hostname)
-  local workspace_file="$PATH_TEMP/src/workspace.$WORKSPACE.json"
+  : "${PATH_TEMP:?Missing PATH_TEMP}"
 
+  local hostname=$(hostname)
+  local workspace_file="$PATH_TEMP/src/workspace.$WORKSPACE.json"
   if [[ ! -f "$workspace_file" ]]; then
     log ERROR "[!] Workspace file not found: $workspace_file"
     return 1
   fi
+  log INFO "[*] ... For workspace $WORKSPACE on $hostname ..."
 
-  local server_id
-  server_id=$(jq -r '.servers[].id' "$workspace_file" | while read -r id; do
+  local server_id=$(jq -r '.servers[].id' "$workspace_file" | while read -r id; do
     [[ "$hostname" == *"$id"* ]] && echo "$id" && break
   done)
-
   if [[ -z "$server_id" ]]; then
     log ERROR "[!] No matching server ID found for hostname: $hostname"
     return 1
   fi
 
-  local mounts_json
-  mounts_json=$(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .mounts[] | @base64' "$workspace_file")
+  local mount_template=$(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .mountpoint' "$workspace_file")
+  local config_disk=$(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .mounts[] | select(.type == "config") | .disk' "$workspace_file")
+  local config_path="${mount_template//\$\{disk\}/$config_disk}"
 
-  for mount in $mounts_json; do
-    local type disk
-    type=$(echo "$mount" | base64 --decode | jq -r '.type')
-    disk=$(echo "$mount" | base64 --decode | jq -r '.disk')
-    mountpoint="/mnt/data$disk"
+  log INFO "[*] ... Using configuration mount point: $config_path"
+  mkdir -p "$config_path"
+  export PATH_CONFIG=$config_path
 
-    # Find the path for this type
-    dir_path=$(jq -r --arg t "$type" '.paths[] | select(.type == $t) | .path' "$workspace_file")
-
-    if [[ -z "$dir_path" || -z "$mountpoint" ]]; then
-      log WARN "[!] Missing path or mountpoint for type=$type, disk=$disk"
-      continue
-    fi
-
-    target="$mountpoint$dir_path"
-    if [[ ! -d "$target" ]]; then
-      log INFO "[+] Creating directory: $target"
-      mkdir -p "$target"
-    else
-      log INFO "[+] Directory already exists: $target"
-    fi
-  done
-
-  log INFO "[*] Bind mounting workspace directories to system paths..."
-  type_list=$(jq -r '.paths[].type' "$workspace_file")
-  for type in $type_list; do
-    # Get the relative path for this type
-    dir_path=$(jq -r --arg t "$type" '.paths[] | select(.type == $t) | .path' "$workspace_file")
-    # Find the disk number for this type mount
-    disk_num=$(jq -r --arg t "$type" '.servers[] | select(.id == "'$server_id'") | .mounts[] | select(.type == $t) | .disk' "$workspace_file")
-
-    mountpoint="/mnt/data$disk_num"
-    source_dir="$mountpoint$dir_path"
-    target_dir="$dir_path"
-
-    if mountpoint -q "$target_dir"; then
-      log INFO "[+] $target_dir is already a mountpoint."
-    else
-      # Ensure target directory exists
-      if [[ ! -d "$target_dir" ]]; then
-        log INFO "[+] Creating target directory $target_dir"
-        mkdir -p "$target_dir"
-      fi
-
-      log INFO "[+] Bind mounting $source_dir to $target_dir"
-      mount --bind "$source_dir" "$target_dir"
-    fi
-  done
-  log INFO "[+] Bind mounts completed."
-
-  log INFO "[+] All workspace directories created."
-}
-
-create_service_paths() {
-  log INFO "[*] Creating directories for all services..."
-
-  : "${WORKSPACE:?Missing WORKSPACE}"
-  local hostname
-  hostname=$(hostname)
-  local workspace_file="$PATH_TEMP/src/workspace.$WORKSPACE.json"
-
-  if [[ ! -f "$workspace_file" ]]; then
-    log ERROR "[!] Workspace file not found: $workspace_file"
+  log INFO "[*] ... Installing configuration files..."
+  cp -f "$PATH_TEMP"/src/*.* "$config_path/" || {
+    log ERROR "[x] Failed to copy configuration file to $config_path"
     return 1
-  fi
-
-  local server_id
-  server_id=$(jq -r '.servers[].id' "$workspace_file" | while read -r id; do
-    [[ "$hostname" == *"$id"* ]] && echo "$id" && break
-  done)
-
-  if [[ -z "$server_id" ]]; then
-    log ERROR "[!] No matching server ID found for hostname: $hostname"
-    return 1
-  fi
-
-  # Build type → mount location map
-  declare -A MOUNT_MAP
-  while IFS="|" read -r type disk; do
-    MOUNT_MAP["$type"]="/mnt/data$disk"
-  done < <(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .mounts[] | "\(.type)|\(.disk)"' "$workspace_file")
-
-  # Build type → base path map
-  declare -A TYPE_PATH_MAP
-  while IFS="|" read -r type basepath; do
-    TYPE_PATH_MAP["$type"]="$basepath"
-  done < <(jq -r '.paths[] | "\(.type)|\(.path)"' "$workspace_file")
-
+  }
   # Truncate the services.env file
-  : > "$PATH_TEMP/src/services.env"
+  : > "$config_path/services.env"
 
-  # Process each service
   for svc_file in "$PATH_TEMP"/*/service.json; do
     [[ -f "$svc_file" ]] || continue
-    local svc_name=$(basename "$(dirname "$svc_file")")
-
-    log INFO "[*] Processing service: $svc_name"
+    local service_id=$(jq -r '.service.id' "$svc_file")
+    log INFO "[*] ... Setting up service: $service_id"
 
     jq -c '.service.paths[]' "$svc_file" | while read -r path_obj; do
-      local type path chmod
-      type=$(echo "$path_obj" | jq -r '.type')
-      path=$(echo "$path_obj" | jq -r '.path // ""')
-      chmod=$(echo "$path_obj" | jq -r '.chmod // empty')
+      local type subpath chmod_mode disk mnt full_path
+      log INFO "[*] ... Setting up service path: $service_id"
 
-      local mount_base="${MOUNT_MAP[$type]}"
-      local path_base="${TYPE_PATH_MAP[$type]}"
+      type=$(jq -r '.type' <<< "$path_obj")
+      subpath=$(jq -r '.path' <<< "$path_obj")
+      chmod_mode=$(jq -r '.chmod // empty' <<< "$path_obj")
+      disk=$(jq -r --arg id "$server_id" --arg t "$type" \
+        '.servers[] | select(.id == $id) | .mounts[] | select(.type == $t) | .disk' "$workspace_file")
 
-      if [[ -z "$mount_base" || -z "$path_base" ]]; then
-        log WARN "[!] Unknown path type '$type' for service $svc_name — skipping."
+      if [[ -z "$disk" ]]; then
+        log WARN "[!] No disk mapping for type=$type in $service_id, skipping"
         continue
       fi
 
-      local full_path="$mount_base$path_base/$svc_name"
-      [[ -n "$path" ]] && full_path="$full_path/$path"
+      mnt="${mount_template//\$\{disk\}/$disk}"
+      if [[ ! -d "$mnt" ]]; then
+        log ERROR "[!] Mount point not found: $mnt (for $type in $service_id)"
+        continue
+      fi
+
+      full_path="$mnt/$service_id"
+      if [[ -z "$subpath" || "$subpath" == "." ]]; then
+        full_path="$full_path/$type"
+      else
+        full_path="$full_path/$subpath"
+      fi
 
       mkdir -p "$full_path"
-
-      if [[ -n "$chmod" ]]; then
-        chmod "$chmod" "$full_path"
-        log INFO "[+] Created $full_path with chmod $chmod"
+      if [[ -n "$chmod_mode" ]]; then
+        chmod "$chmod_mode" "$full_path" && \
+          log INFO "[+] Created: $full_path with mode $chmod_mode" || \
+          log WARN "[!] Failed to chmod $full_path"
       else
-        log INFO "[+] Created $full_path (default permissions)"
+        log INFO "[+] Created: $full_path (default mode)"
       fi
 
       # Generate variable name
-      var_base=$(echo "$svc_name" | tr '[:lower:]' '[:upper:]')
+      var_base=$(echo "$service_id" | tr '[:lower:]' '[:upper:]')
       var_type=$(echo "$type" | tr '[:lower:]' '[:upper:]')
       var_path=$(echo "$path" | tr '[:lower:]' '[:upper:]')
       if [[ -n "$var_path" ]]; then
@@ -380,41 +309,20 @@ create_service_paths() {
       echo "export $var_name=\"$full_path\"" >> "$PATH_TEMP/src/services.env"
       export "$var_name=$full_path"
 
+      # Copy service files to CONFIG
+      if [[ $var_type == "CONFIG" && $var_path == "$var_type" ]]; then
+        log INFO "[*] ... Installing service...$service_id"
+        cp -fr "$PATH_TEMP"/src/"$service_id"/* "$full_path"
+      fi
     done
-
-
   done
 
-  log INFO "[✓] All service paths created."
-}
-
-configure_server() {
-  log INFO "[*] Configuring server..."
-
-  log INFO "[*] Installing configuration files..."
-  cp -f "$PATH_TEMP"/src/*.* "$PATH_CONF/" || {
-    log ERROR "[x] Failed to copy configuration file to $PATH_CONF"
-    return 1
-  }
-
-  log INFO "[*] Installing services..."
-  for svc_file in "$PATH_TEMP"/src/*/service.json; do
-    local svc_name=$(basename "$(dirname "$svc_file")")
-    log INFO "[*] Installing service...$svc_name"
-    mkdir -p "$PATH_CONF/$svc_name"
-    cp -fr "$PATH_TEMP"/src/"$svc_name"/* "$PATH_CONF/$svc_name/"
-  done
-
-  log INFO "[*] Configuring server...DONE"
-}
-
-configure_services() {
   log INFO "[*] Configuring application services..."
-  for script in $PATH_CONF/*/configure.sh; do
+  for script in $config_path/*/configure.sh; do
     service=$(basename "$(dirname "$script")")
     log INFO "[*] Configuring service '$service'..."
 
-    remote_conf_dir="$PATH_CONF/$service"
+    remote_conf_dir="$config_path/$service"
     remote_script="$remote_conf_dir/configure.sh"
 
     chmod +x "$remote_script"
@@ -423,6 +331,8 @@ configure_services() {
     log INFO "[+] Configured service '$service'"
   done
   log INFO "[+] Configuring application services...DONE"
+
+  log INFO "[+] Creating workspace ...DONE"
 }
 
 main() {
@@ -449,22 +359,13 @@ main() {
     createnodelabels || exit 1
   fi
 
-  log INFO "[*] Creating workspace paths ..."
-  create_workspace_paths || exit 1
-
-  log INFO "[*] Creating service paths ..."
-  create_service_paths || exit 1
-  
-  log INFO "[*] Creating service paths ...DONE"
-  configure_server || exit 1
-
-  log INFO "[*] Configure services ..."
-  configure_services || exit 1
+  log INFO "[*] Creating workspace ..."
+  create_workspace || exit 1
 
   log INFO "[*] Remote server cleanup..."
-  chmod 755 "$PATH_CONF"/*
-  rm -f "$PATH_CONF"/develop.env
-  rm -f "$PATH_CONF"/secrets.env
+  chmod 755 "$PATH_CONFIG"/*
+  rm -f "$PATH_CONFIG"/develop.env
+  rm -f "$PATH_CONFIG"/secrets.env
   rm -rf "/tmp/app/"*
 
   log INFO "[+] Configuring Swarm Node: $hostname...DONE"

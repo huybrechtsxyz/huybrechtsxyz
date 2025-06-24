@@ -105,6 +105,10 @@ mount_disks() {
     return 1
   fi
 
+  # Get expected disk size from workspace metadata (in GB)
+  local expected_size_gb=$(jq -r --arg id "$server_id" --argjson i "$i" \
+    '.servers[] | select(.id == $id) | .disks[$i].size' "$workspace_file")
+
   # Identify the OS disk by partition mounted at root '/'
   log INFO "[*] ... Identify the OS disk by root mountpoint"
   local os_part=$(findmnt -n -o SOURCE /)
@@ -176,7 +180,22 @@ mount_disks() {
     log INFO "[*] ... Mounting data disk $i for $hostname"
     log INFO "[*] ... Preparing disk $disk (label=$label)"
 
-     # Check if partition exists (lsblk part)
+    # Get expected disk size from workspace metadata (in GB)
+    local expected_size_gb=$(jq -r --arg id "$server_id" --argjson i "$i" \
+      '.servers[] | select(.id == $id) | .disks[$i].size' "$workspace_file")
+    
+    # Get actual disk size in bytes and convert to GB (rounding down)
+    local actual_size_bytes=$(lsblk -bn -o SIZE -d "$disk")
+    local actual_size_gb=$(( actual_size_bytes / 1024 / 1024 / 1024 ))
+
+    log INFO "[*] ... Validating size for $disk: expected ${expected_size_gb}GB, found ${actual_size_gb}GB"
+
+    if disk_size_matches "$actual_size_gb" "$expected_size_gb"; then
+      log ERROR "[!] Disk size mismatch for $disk — expected ${expected_size_gb}GB, got ${actual_size_gb}GB"
+      continue  # Skip this disk to avoid accidental mount/format
+    fi
+
+    # Check if partition exists (lsblk part)
     if ! lsblk "$part" &>/dev/null; then
       log INFO "[*] ... Partitioning $disk"
       parted -s "$disk" mklabel gpt
@@ -230,6 +249,27 @@ mount_disks() {
   done
 
   log INFO "[+] All disks prepared and mounted."
+}
+
+disk_size_matches() {
+  local actual_gb="$1"        # e.g. 39
+  local expected_gb="$2"      # e.g. 40
+  local tolerance_mb="${3:-20}"  # Optional, default to 20 MiB
+
+  local BYTES_PER_GB=1073741824
+  local BYTES_PER_MB=1048576
+
+  local expected_bytes=$(( expected_gb * BYTES_PER_GB ))
+  local actual_bytes=$(( actual_gb * BYTES_PER_GB ))
+  local diff_bytes=$(( actual_bytes - expected_bytes ))
+  local diff_mb=$(( diff_bytes / BYTES_PER_MB ))
+  local abs_diff_mb=${diff_mb#-}
+
+  if (( abs_diff_mb <= tolerance_mb )); then
+    return 0  # Match within tolerance
+  else
+    return 1  # Too far off
+  fi
 }
 
 install_docker_if_needed() {
