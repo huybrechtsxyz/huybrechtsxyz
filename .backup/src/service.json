@@ -11,6 +11,16 @@
       { "type": "config", "path":"etc", "chmod": 755 },
       { "type": "data", "path":"", "chmod": 600 },
       { "type": "logs", "path":"", "chmod": 777 }
-    ]
+    ],
+    "project": {
+      "config": "",
+      "file": "",
+      "registry": "",
+      "imagename": "",
+      "dockerfile": "",
+      "buildconfig": "",
+      "runtime": "",
+      "runversion": ""
+    }
   }
 }

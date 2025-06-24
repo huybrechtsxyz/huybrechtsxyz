@@ -8,16 +8,6 @@
     "serverrole": "infra",
     "paths": [
       { "type": "config", "path":"", "chmod": 755 }
-    ],
-    "project": {
-      "name": "",
-      "file": "",
-      "registry": "",
-      "imagename": "",
-      "dockerfile": "",
-      "buildconfig": "",
-      "runtime": "",
-      "runversion": ""
-    }
+    ]
   }
 }
