@@ -217,7 +217,6 @@ createnodelabels() {
 }
 
 create_workspace() {
-  log INFO "[*] Creating workspace ..."
   : "${WORKSPACE:?Missing WORKSPACE}"
   : "${PATH_TEMP:?Missing PATH_TEMP}"
 
@@ -253,7 +252,7 @@ create_workspace() {
   # Truncate the services.env file
   : > "$config_path/services.env"
 
-  for svc_file in "$PATH_TEMP"/*/service.json; do
+  for svc_file in "$PATH_TEMP"/src/*/service.json; do
     [[ -f "$svc_file" ]] || continue
     local service_id=$(jq -r '.service.id' "$svc_file")
     log INFO "[*] ... Setting up service: $service_id"
