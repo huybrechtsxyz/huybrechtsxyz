@@ -288,10 +288,10 @@ create_workspace() {
       mkdir -p "$full_path"
       if [[ -n "$chmod_mode" ]]; then
         chmod "$chmod_mode" "$full_path" && \
-          log INFO "[+] Created: $full_path with mode $chmod_mode" || \
+          log INFO "[+] ... Created: $full_path with mode $chmod_mode" || \
           log WARN "[!] Failed to chmod $full_path"
       else
-        log INFO "[+] Created: $full_path (default mode)"
+        log INFO "[+] ... Created: $full_path (default mode)"
       fi
 
       # Generate variable name
@@ -307,9 +307,10 @@ create_workspace() {
       # Export + write to services.env
       echo "export $var_name=\"$full_path\"" >> "$PATH_TEMP/src/services.env"
       export "$var_name=$full_path"
+      log INFO "[+] ... Variable: $var_name = $full_path"
 
       # Copy service files to CONFIG
-      if [[ $var_type == "CONFIG" && $var_path == "$var_type" ]]; then
+      if [[ "${var_type,,}" == "config" && ( -z "$var_path" || "$var_path" == "." ) ]]; then
         log INFO "[*] ... Installing service...$service_id"
         cp -fr "$PATH_TEMP"/src/"$service_id"/* "$full_path"
       fi
