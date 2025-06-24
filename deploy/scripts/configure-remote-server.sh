@@ -327,11 +327,6 @@ create_workspace() {
       fi
 
       local server_mnt="${server_template//\$\{disk\}/$server_disk}"
-      if [[ ! -d "$server_mnt" ]]; then
-        log ERROR "[!] Mount point not found: $server_mnt (type=$path_type in $service_id)"
-        continue
-      fi
-
       local target_path="$server_mnt/$service_id"
       [[ -z "$path_name" || "$path_name" == "." ]] && target_path="$target_path/$path_type" || target_path="$target_path/$path_name"
 
@@ -352,11 +347,10 @@ create_workspace() {
 
   log INFO "[*] Running configuration scripts for services..."
   for script in $config_path/*/config/configure.sh; do
-    local service
-    service=$(basename "$(dirname "$script")")
+    local service=$(basename "$(dirname "$script")")
     log INFO "[*] Configuring service '$service'..."
     chmod +x "$script"
-    if "$script"; then
+    if "$script" "$config_path"; then
       log INFO "[+] Successfully configured '$service'"
     else
       log WARN "[!] Failed to configure '$service'"
