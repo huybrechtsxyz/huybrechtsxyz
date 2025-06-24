@@ -351,7 +351,7 @@ create_workspace() {
   done
 
   log INFO "[*] Running configuration scripts for services..."
-  find "$PATH_CONFIG" -type f -path "*/config/configure.sh" | while read -r script; do
+  for script in $config_path/*/conf/configure.sh; do
     local service
     service=$(basename "$(dirname "$script")")
     log INFO "[*] Configuring service '$service'..."
