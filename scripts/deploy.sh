@@ -54,9 +54,9 @@ consul_target="$SCRIPT_PATH/consul/etc"
 if [[ ! -d "$consul_target" ]]; then
   mkdir -p $consul_target
   chmod 755 -R $consul_target
-  if [[ -f "$SCRIPT_PATH/consul/config.json" ]]; then
+  if [[ -f "$SCRIPT_PATH/consul/config/config.json" ]]; then
     log INFO "[+] Moved Consul config to $consul_target"
-    mv -f "$SCRIPT_PATH/consul/config.json" "$consul_target/consul.json"
+    mv -f "$SCRIPT_PATH/consul/config/config.json" "$consul_target/consul.json"
   else
     log WARN "[!] consul/config.json not found in $SCRIPT_PATH. Skipping Consul configuration."
   fi
@@ -66,7 +66,7 @@ fi
 for dir in "$SCRIPT_PATH"/*/; do
   service_dir="${dir%/}"  # Remove trailing slash
   service_name=$(basename "$service_dir")
-  service_file="$service_dir/service.json"
+  service_file="$service_dir/config/service.json"
 
   log INFO "[*] Configuring service: $service_name"
 
@@ -75,7 +75,7 @@ for dir in "$SCRIPT_PATH"/*/; do
     continue
   fi
 
-  consul_conf="$service_dir/consul.json"
+  consul_conf="$service_dir/config/consul.json"
   if [[ -f "$consul_conf" ]]; then
     cp -f "$consul_conf" "$consul_target/consul.$service_name.json"
   fi
@@ -139,7 +139,7 @@ IFS=$'\n' sorted_services=($(printf "%s\n" "${SELECTION[@]}" | sort -t'|' -k2))
 for svc in "${sorted_services[@]}"; do
   IFS='|' read -r id priority endpoint <<< "$svc"
   service_path="$SCRIPT_PATH/$id"
-  compose_file="$service_path/compose.yml"
+  compose_file="$service_path/config/compose.yml"
 
   if [[ ! -f "$compose_file" ]]; then
     log ERROR "[!] Compose file not found for $id. Skipping deployment."
