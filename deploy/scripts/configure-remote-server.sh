@@ -232,9 +232,11 @@ create_workspace() {
   fi
 
   # Resolve server ID based on hostname
-  local server_id=$(jq -r '.servers[].id' "$workspace_file" | grep -F "$hostname" | head -n1)
+  local server_id=$(jq -r '.servers[].id' "$workspace_file" | while read -r id; do
+    [[ "$hostname" == *"$id"* ]] && echo "$id" && break
+  done)
   if [[ -z "$server_id" ]]; then
-    log ERROR "[!] No matching server ID for hostname: $hostname"
+    log ERROR "[!] No matching server ID found for hostname: $hostname"
     return 1
   fi
 
