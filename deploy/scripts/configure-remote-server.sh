@@ -318,7 +318,7 @@ create_workspace() {
   done
 
   log INFO "[*] Configuring application services..."
-  for script in $config_path/*/configure.sh; do
+  for script in $config_path/*/config/configure.sh; do
     service=$(basename "$(dirname "$script")")
     log INFO "[*] Configuring service '$service'..."
 
