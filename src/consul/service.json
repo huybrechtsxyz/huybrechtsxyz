@@ -5,7 +5,7 @@
     "groups": ["infra"],
     "description": "Service discovery and configuration management tool",
     "endpoint": "http://consul.${DOMAIN_DEV}/",
-    "deployment": "manager",
+    "serverrole": "manager",
     "paths": [
       { "type": "config", "path":"", "chmod": 755 },
       { "type": "config", "path":"etc", "chmod": 755 },

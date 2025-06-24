@@ -5,7 +5,7 @@
     "groups": ["infra","sqldb"],
     "description": "PostgreSQL database service for data storage and retrieval",
     "endpoint": "",
-    "deployment": "infra",
+    "serverrole": "infra",
     "paths": [
       { "type": "config", "path":"", "chmod": 755 },
       { "type": "data", "path":"data", "chmod": 777 },

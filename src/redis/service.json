@@ -5,7 +5,7 @@
     "groups": ["infra","redis"],
     "description": "Redis allows flexible data structure stored for caching, AI workloads, and vector databases",
     "endpoint": "",
-    "deployment": "infra",
+    "serverrole": "infra",
     "paths": [
       { "type": "config", "path":"", "chmod": 755 },
       { "type": "data", "path":"", "chmod": 777 }
