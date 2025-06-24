@@ -8,78 +8,15 @@ createnetwork() {
   log INFO "[*] Ensuring Docker network '$network' exists..."
 
   if docker network inspect "$network" --format '{{.Id}}' &>/dev/null; then
-    log INFO "[=] Docker network '$network' already exists."
+    log INFO "[=] ... Docker network '$network' already exists."
   else
-    log INFO "[+] Creating Docker overlay network '$network'..."
+    log INFO "[+] ... Creating Docker overlay network '$network'..."
     if docker network create --driver overlay "$network"; then
-      log INFO "[+] Docker network '$network' created successfully."
+      log INFO "[+] ... Docker network '$network' created successfully."
     else
       log ERROR "[x] Failed to create Docker network '$network'. Is Docker Swarm mode enabled?"
       return 1
     fi
-  fi
-}
-
-issecretinuse() {
-  local secret_name="$1"
-
-  log INFO "[*] Checking if secret '$secret_name' is in use..."
-
-  # Check services using the secret
-  if docker service ls --format '{{.Name}}' | \
-    xargs -r -n1 -I{} docker service inspect {} --format '{{range .Spec.TaskTemplate.ContainerSpec.Secrets}}{{if eq .SecretName "'"$secret_name"'"}}1{{end}}{{end}}' 2>/dev/null | \
-    grep -q "1"; then
-    log INFO "[*] Secret '$secret_name' is in use by a Docker service."
-    return 0
-  fi
-
-  # Check containers using the secret (Swarm services mount secrets as /run/secrets/*)
-  if docker ps --format '{{.ID}}' | \
-    xargs -r -n1 -I{} docker inspect {} --format '{{range .Mounts}}{{if and (eq .Type "bind") (hasPrefix .Source "/var/lib/docker/swarm/secrets/")}}{{.Name}}{{end}}{{end}}' 2>/dev/null | \
-    grep -q "$secret_name"; then
-    log INFO "[*] Secret '$secret_name' is in use by a running container."
-    return 0
-  fi
-
-  log INFO "[*] Secret '$secret_name' is not in use."
-  return 1
-}
-
-createdockersecret() {
-  local label="$1"
-  local name="$2"
-  local value="$3"
-
-  log INFO "[*] Processing secret: $label"
-
-  if [[ -z "$name" ]]; then
-    log WARN "[!] Secret name is not defined for $label. Skipping."
-    return 1
-  fi
-
-  if [[ -z "$value" ]]; then
-    log WARN "[!] Secret value for '$name' is empty. Skipping."
-    return 0
-  fi
-
-  if docker secret inspect "$name" &>/dev/null; then
-    log INFO "[*] Secret '$name' already exists."
-
-    if issecretinuse "$name"; then
-      log INFO "[*] Secret '$name' is in use. Skipping deletion and creation."
-      return 0
-    fi
-
-    log INFO "[*] Removing old secret '$name'..."
-    docker secret rm "$name"
-  fi
-
-  # Use printf to avoid trailing newline
-  if printf "%s" "$value" | docker secret create "$name" -; then
-    log INFO "[+] Secret '$name' created."
-  else
-    log ERROR "[x] Failed to create secret '$name'."
-    return 1
   fi
 }
 
@@ -106,11 +43,73 @@ loaddockersecrets() {
     value="${value%\"}"
     value="${value#\"}"
 
-    log INFO "[=] Creating Docker secret: $key"
     createdockersecret "$key" "$key" "$value"
   done < "$secrets_file"
 
   echo "[+] Finished loading secrets."
+}
+
+createdockersecret() {
+  local label="$1"
+  local name="$2"
+  local value="$3"
+
+  log INFO "[*] ... Processing secret: $label"
+
+  if [[ -z "$name" ]]; then
+    log WARN "[!] Secret name is not defined for $label. Skipping."
+    return 1
+  fi
+
+  if [[ -z "$value" ]]; then
+    log WARN "[!] Secret value for '$name' is empty. Skipping."
+    return 0
+  fi
+
+  if docker secret inspect "$name" &>/dev/null; then
+    log INFO "[*] ... Secret '$name' already exists."
+
+    if issecretinuse "$name"; then
+      log INFO "[*] ... Secret '$name' is in use. Skipping deletion and creation."
+      return 0
+    fi
+
+    log INFO "[*] ... Removing old secret '$name'..."
+    docker secret rm "$name"
+  fi
+
+  # Use printf to avoid trailing newline
+  if printf "%s" "$value" | docker secret create "$name" -; then
+    log INFO "[+] ... Secret '$name' created."
+  else
+    log ERROR "[x] Failed to create secret '$name'."
+    return 1
+  fi
+}
+
+issecretinuse() {
+  local secret_name="$1"
+
+  log INFO "[*] ... Checking if secret '$secret_name' is in use..."
+
+  # Check services using the secret
+  if docker service ls --format '{{.Name}}' | \
+    xargs -r -n1 -I{} docker service inspect {} --format '{{range .Spec.TaskTemplate.ContainerSpec.Secrets}}{{if eq .SecretName "'"$secret_name"'"}}1{{end}}{{end}}' 2>/dev/null | \
+    grep -q "1"; then
+    log INFO "[*] ... Secret '$secret_name' is in use by a Docker service."
+    return 0
+  fi
+
+  # Check containers using the secret (Swarm services mount secrets as /run/secrets/*)
+  if docker ps --format '{{.ID}}' | \
+    xargs -r -n1 -I{} docker inspect {} --format '{{range .Mounts}}{{if and (eq .Type "bind") (hasPrefix .Source "/var/lib/docker/swarm/secrets/")}}{{.Name}}{{end}}{{end}}' 2>/dev/null | \
+    grep -q "$secret_name"; then
+    log INFO "[*] ... Secret '$secret_name' is in use by a running container."
+    return 0
+  fi
+
+  log INFO "[*] ... Secret '$secret_name' is not in use."
+  return 1
 }
 
 createnodelabels() {
@@ -142,17 +141,17 @@ createnodelabels() {
     role=$(echo "$node" | cut -d'-' -f3)
     instance=$(echo "$node" | cut -d'-' -f4)
     server="${role}-${instance}"
-    log INFO "[*] ... Setting $role=true on $node"
-    log INFO "[*] ... Setting role=$role on $node"
-    log INFO "[*] ... Setting server=$server on $node"
-    log INFO "[*] ... Setting instance=$instance on $node"
+    log INFO "[*] ...... Setting $role=true on $node"
+    log INFO "[*] ...... Setting role=$role on $node"
+    log INFO "[*] ...... Setting server=$server on $node"
+    log INFO "[*] ...... Setting instance=$instance on $node"
 
     # Initialize associative arrays
     declare -A existing_labels
     declare -A desired_labels
 
     # Read existing labels into associative array
-    log INFO "[*] ... Reading existing labels on $node"
+    log INFO "[*] ...... Reading existing labels on $node"
     while IFS='=' read -r k v; do
       [[ -z "$k" && -z "$v" ]] && continue  # Skip empty lines or pure "="
       if [[ "$k" =~ ^[a-zA-Z0-9_.-]+$ && -n "$v" ]]; then
@@ -173,16 +172,16 @@ createnodelabels() {
     desired_labels["instance"]="$instance"
 
     # Update/add standard labels if they differ or are missing
-    log INFO "[*] ... Update/add standard labels $node"
+    log INFO "[*] ...... Update/add standard labels $node"
     for key in "${!desired_labels[@]}"; do
       if [[ "${existing_labels[$key]}" != "${desired_labels[$key]}" ]]; then
-        log INFO "[*] ... Setting $key=${desired_labels[$key]}"
+        log INFO "[*] ...... Setting $key=${desired_labels[$key]}"
         docker node update --label-add "$key=${desired_labels[$key]}" "$node" || echo "[!] Warning: Failed to set $key on $node"
       fi
     done
 
     # Add custom labels from workspace JSON (jq filters by node id)
-    log INFO "[*] ... Add custom labels from workspace on $node"
+    log INFO "[*] ....... Add custom labels from workspace on $node"
     mapfile -t ws_labels < <(jq -r --arg id "$node" '.servers[] | select(.id == $id) | .labels[]?' "$workspace_file")
     for label in "${ws_labels[@]}"; do
       # Split label key and value
@@ -191,7 +190,7 @@ createnodelabels() {
 
       # Add or update label if needed
       if [[ "${existing_labels[$key]}" != "$val" ]]; then
-        log INFO "[*] ... Adding custom label $label"
+        log INFO "[*] ...... Adding custom label $label"
         docker node update --label-add "$label" "$node" || echo "[!] Warning: Failed to add $label on $node"
       fi
 
@@ -203,7 +202,7 @@ createnodelabels() {
     log INFO "[*] ... Cleaning up obsolete labels on $node"
     for key in "${!existing_labels[@]}"; do
       if [[ -z "${desired_labels[$key]}" ]]; then
-        log INFO "[*] ... Removing $key"
+        log INFO "[*] ...... Removing $key"
         docker node update --label-rm "$key" "$node" || echo "[!] Warning: Failed to remove $key on $node"
       fi
     done
@@ -247,11 +246,11 @@ create_workspace() {
   local config_disk=$(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .mounts[] | select(.type == "config") | .disk' "$workspace_file")
   local config_path="${config_template//\$\{disk\}/$config_disk}"
 
-  log INFO "[*] Using configuration mount point: $config_path"
+  log INFO "[*] ... Using configuration mount point: $config_path"
   mkdir -p "$config_path"
   : > "$config_path/services.env"
 
-  log INFO "[*] Copying global configuration files..."
+  log INFO "[*] ... Copying global configuration files..."
   if ! cp -f "$PATH_TEMP"/src/*.* "$config_path/"; then
     log ERROR "[x] Failed to copy configuration files to $config_path"
     return 1
@@ -268,7 +267,7 @@ create_workspace() {
       continue
     fi
 
-    log INFO "[*] Setting up service: $service_id (role: $server_role)"
+    log INFO "[*] ... Setting up service: $service_id (role: $server_role)"
 
     # Resolve matching server based on role
     local serverdata=$(jq -c --arg role "$server_role" '.servers[] | select(.role == $role)' "$workspace_file" | head -n 1)
@@ -307,7 +306,7 @@ create_workspace() {
       mkdir -p "$full_path"
       if [[ -n "$path_chmod" ]]; then
         chmod "$path_chmod" "$full_path" && \
-          log INFO "[+] Created $full_path with permissions $path_chmod" || \
+          log INFO "[+] ... Created $full_path with permissions $path_chmod" || \
           log WARN "[!] Failed to chmod $full_path"
       else
         log INFO "[+] Created $full_path"
@@ -315,7 +314,7 @@ create_workspace() {
 
       # Install service configuration if applicable
       if [[ "${path_type,,}" == "config" && ( -z "$path_name" || "$path_name" == "." ) ]]; then
-        log INFO "[*] Installing service files for $service_id"
+        log INFO "[*] ... Installing service files for $service_id"
         cp -fr "$PATH_TEMP"/src/"$service_id"/* "$full_path"
       fi
 
@@ -341,17 +340,17 @@ create_workspace() {
 
       echo "export $var_name=\"$target_path\"" >> "$config_path/services.env"
       export "$var_name=$target_path"
-      log INFO "[+] Exported $var_name=\"$target_path\""
+      log INFO "[+] ... Exported $var_name=\"$target_path\""
     done
   done
 
   log INFO "[*] Running configuration scripts for services..."
   for script in $config_path/*/config/configure.sh; do
     local service=$(basename "$(dirname "$script")")
-    log INFO "[*] Configuring service '$service'..."
+    log INFO "[*] ... Configuring service '$service'..."
     chmod +x "$script"
     if "$script" "$config_path"; then
-      log INFO "[+] Successfully configured '$service'"
+      log INFO "[+] ... Successfully configured '$service'"
     else
       log WARN "[!] Failed to configure '$service'"
     fi
