@@ -20,7 +20,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     volumes:
-      - ${PGADMIN_PATH_DATA}/pgadmin:/var/lib/pgadmin
+      - ${PGADMIN_PATH_DATA}:/var/lib/pgadmin
     networks:
       - lan-${WORKSPACE}
     secrets:
@@ -45,7 +45,6 @@ services:
         constraints:
           - node.role==${DOCKER_WORKER}
           - node.labels.infra==true
-          - node.labels.postgres==true
         preferences:
           - spread: node.id
       restart_policy:
