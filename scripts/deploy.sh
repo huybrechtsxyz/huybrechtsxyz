@@ -78,10 +78,10 @@ for dir in "$SCRIPT_PATH"/*/; do
   if [[ "$service_id" == "consul" ]]; then
     log INFO "[+] Moving Consul configuration to /consul/etc"
     if [ -e "$SCRIPT_PATH/consul/config/config.json" ]; then
-      if [ -e "$SCRIPT_PATH/consul/etc/consul.json" ]; then
-          mv -f "$SCRIPT_PATH/consul/config/config.json" "$SCRIPT_PATH/consul/etc/consul.json"
+      if [ -e "$SCRIPT_PATH/consul/etc/config.json" ]; then
+          mv -f "$SCRIPT_PATH/consul/config/config.json" "$SCRIPT_PATH/consul/etc/config.json"
       else
-          echo "Error: Destination file does not exist: $SCRIPT_PATH/consul/etc/consul.json" >&2
+          echo "Error: Destination file does not exist: $SCRIPT_PATH/consul/etc/config.json" >&2
           exit 1
       fi
     fi
@@ -121,7 +121,7 @@ for svc in "${sorted_services[@]}"; do
   fi
 
   log INFO "[*] Deploying $id with priority $priority..."
-  docker stack deploy -c "$compose_file" "$STACK" --with-registry-auth --detach
+  docker stack deploy -c "$compose_file" "$STACK" --with-registry-auth --detach >> "$SCRIPT_PATH"/stack.log 2>&1
   log INFO "[+] Deployed $id"
 done
 

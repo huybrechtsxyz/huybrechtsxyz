@@ -93,6 +93,7 @@ curl -u "your_username:your_password" \
   "https://www.versio.nl/api/v1/dns/list?domain=abc.dev"
 
 You should get a valid JSON response.
+
 2. Whitelist the Docker Swarm node’s IP
 
 Login to your Versio API settings and make sure your Swarm manager's public IP is listed under:
@@ -118,6 +119,7 @@ Or use:
 🔗 https://dnschecker.org/#TXT/_acme-challenge.proxy.abc.dev
 
 Once the TXT record appears globally, Let's Encrypt will validate and issue the cert.
+
 🛡️ Required DNS Setup at Versio
 
 For each domain:
