@@ -1,7 +1,7 @@
 {
   "service": {
     "id": "redisinsight",
-    "name": "redisinsight",
+    "name": "Redis Insight",
     "address": "redisinsight",
     "port": 5540,
     "checks": [
