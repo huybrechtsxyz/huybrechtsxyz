@@ -45,14 +45,14 @@ services:
       KC_HTTPS_ENABLED: "false"
       KC_HOSTNAME: https://auth.${DOMAIN_DEV}
       KC_HOSTNAME_STRICT: "false"
-      KC_HEALTH_ENABLED: "true"
-      KC_METRICS_ENABLED: "true"
-      KC_HTTP_METRICS_HISTOGRAMS_ENABLED: "true"
-      KC_EVENT_METRICS_USER_ENABLED: "true"
-      KC_TRACING_ENABLED: "true"
-      KC_TRACING_PROPAGATORS: tracecontext,baggage
-      KC_TRACING_SAMPLER: always_on
-      KC_TRACING_ENDPOINT: http://telemetry:4317
+      #KC_HEALTH_ENABLED: "true"
+      #KC_METRICS_ENABLED: "true"
+      #KC_HTTP_METRICS_HISTOGRAMS_ENABLED: "true"
+      #KC_EVENT_METRICS_USER_ENABLED: "true"
+      #KC_TRACING_ENABLED: "true"
+      #KC_TRACING_PROPAGATORS: tracecontext,baggage
+      #KC_TRACING_SAMPLER: always_on
+      #KC_TRACING_ENDPOINT: http://telemetry:4317
       KC_DB: postgres
       KC_DB_URL_HOST: postgres
       KC_DB_URL_DATABASE: ${PLATFORM_SQL_NAME}
