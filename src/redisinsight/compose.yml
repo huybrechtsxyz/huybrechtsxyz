@@ -53,6 +53,6 @@ services:
         - traefik.http.services.redisinsight.loadbalancer.server.port=5540
         - traefik.http.routers.redisinsight.rule=Host(`redis.${DOMAIN_DEV}`)
         - traefik.http.routers.redisinsight.entrypoints=websecure
-        - traefik.http.routers.redisinsight.tls.certresolver=${TRAEFIK_TLS_DNS}
+        - traefik.http.routers.redisinsight.tls.certresolver=${TRAEFIK_TLS_HTTP}
         - traefik.http.routers.redisinsight.service=redisinsight
         - traefik.http.routers.redisinsight.middlewares=basic-auth
