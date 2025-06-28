@@ -8,7 +8,14 @@ set -e
 #   echo "Error: POSTGRES_USER secret file not found!" >&2
 #   exit 1
 # fi
-POSTGRES_USER="root"
+#POSTGRES_USER="root"
+
+if [ -f "/run/secrets/PLATFORM_USERNAME" ]; then
+  POSTGRES_USER=$(cat /run/secrets/PLATFORM_USERNAME)
+else
+  echo "Error: PLATFORM_USERNAME secret file not found!" >&2
+  exit 1
+fi
 
 if [ -f "/run/secrets/PLATFORM_PASSWORD" ]; then
   POSTGRES_PASSWORD=$(cat /run/secrets/PLATFORM_PASSWORD)
