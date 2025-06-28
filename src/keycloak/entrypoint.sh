@@ -74,7 +74,7 @@ process_file_env_vars '*_FILE'
 substitute_env_vars "/tmp/realm.template.json" "/tmp/realm.json"
 
 # Import the preprocessed realm JSON
-exec /opt/keycloak/bin/kc.sh import --file /tmp/realm.json --override false
+/opt/keycloak/bin/kc.sh import --file /tmp/realm.json --override false
 
 # Pass all command parameters
 exec /opt/keycloak/bin/kc.sh start "$@"
