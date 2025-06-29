@@ -1,55 +1,29 @@
 #!/bin/sh
 set -e
 
-process_file_env_vars() {
-  local pattern="_FILE"
+load_secret_files() {
+  echo "[INFO] Loading environment variables from *_FILE references..."
 
-  # Ensure the pattern is provided
-  if [[ -z $pattern ]]; then
-    echo "ERR: No pattern provided to process_file_env_vars"
-    return 1
-  fi
+  # Loop over environment variables ending in _FILE
+  for var in $(env | grep -E '^[A-Za-z_][A-Za-z0-9_]*_FILE=' | cut -d= -f1); do
+    base_var="${var%_FILE}"
 
-  # Find suitable variables matching the provided pattern
-  local lines=$(printenv | grep "${pattern}$" | cut -d '=' -f 1)
-  
-  # Split into array
-  IFS=$'\n' read -r -d '' -a vars <<< "$lines"
+    # Get the file path
+    file_path=$(eval echo "\$$var")
+    echo "[INFO] Processing variable: $var (file path: $file_path)"
 
-  # Enumerate variable names
-  for var in "${vars[@]}"; do
-    # Output variable, trim the _FILE suffix
-    # e.g. KC_DB_PASSWORD_FILE -> KC_DB_PASSWORD
-    local outvar="${var%_FILE}"
-
-    # Variable content = file path
-    local file="${!var}"
-
-    # Empty value -> warn but don't fail
-    if [[ -z $file ]]; then
-      echo "WARN: $var specified but empty"
-      continue
-    fi
-
-    # File exists
-    if [[ -e $file ]]; then
-      # Read contents
-      local content
-      content=$(< "$file")  # More efficient way to read file content
-      # Export contents if non-empty
-      if [[ -n $content ]]; then
-        export "$outvar"="$content"
-        echo "INFO: exported $outvar from $var"
-      # Empty contents, warn but don't fail
-      else
-        echo "WARN: $var -> $file is empty"
-      fi
-    # File is expected but not found. Very likely a misconfiguration, fail early
+    if [ -f "$file_path" ]; then
+      value=$(cat "$file_path")
+      echo "[INFO] Setting variable: $base_var (from file content)"
+      # Assign the variable safely
+      eval "$base_var=\"\$value\""
+      export "$base_var"
     else
-      echo "ERR: $var -> file '$file' not found"
-      exit 1
+      echo "[WARNING] File '$file_path' specified in $var does not exist or is not a regular file."
     fi
   done
+
+  echo "[INFO] Done loading environment variables."
 }
 
 substitute_env_vars() {
@@ -69,7 +43,7 @@ substitute_env_vars() {
 }
 
 # Read all _FILE secret files to environment variables
-process_file_env_vars
+load_secret_files
 
 # Substitute envvars for in the following files
 substitute_env_vars "/tmp/realm.template.json" "/tmp/realm.json"
