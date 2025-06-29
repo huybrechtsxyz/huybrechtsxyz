@@ -2,24 +2,49 @@
 set -e
 
 process_file_env_vars() {
-  # Loop over all env vars ending in _FILE
-  for var in $(env | awk -F= '/_FILE=/ {print $1}'); do
-    # Strip _FILE suffix
-    outvar="${var%_FILE}"
-    # Get the file path
-    file="$(printenv "$var")"
-    # Check if empty
-    if [ -z "$file" ]; then
-      echo "WARN: $var is empty"
+  local pattern="_FILE"
+
+  # Ensure the pattern is provided
+  if [[ -z $pattern ]]; then
+    echo "ERR: No pattern provided to process_file_env_vars"
+    return 1
+  fi
+
+  # Find suitable variables matching the provided pattern
+  local lines=$(printenv | grep "${pattern}$" | cut -d '=' -f 1)
+  
+  # Split into array
+  IFS=$'\n' read -r -d '' -a vars <<< "$lines"
+
+  # Enumerate variable names
+  for var in "${vars[@]}"; do
+    # Output variable, trim the _FILE suffix
+    # e.g. KC_DB_PASSWORD_FILE -> KC_DB_PASSWORD
+    local outvar="${var%_FILE}"
+
+    # Variable content = file path
+    local file="${!var}"
+
+    # Empty value -> warn but don't fail
+    if [[ -z $file ]]; then
+      echo "WARN: $var specified but empty"
       continue
     fi
-    # Check if the file exists
-    if [ -f "$file" ]; then
-      # Read file content
-      content="$(cat "$file")"
-      # Export variable
-      export "$outvar=$content"
-      echo "INFO: exported $outvar from $var"
+
+    # File exists
+    if [[ -e $file ]]; then
+      # Read contents
+      local content
+      content=$(< "$file")  # More efficient way to read file content
+      # Export contents if non-empty
+      if [[ -n $content ]]; then
+        export "$outvar"="$content"
+        echo "INFO: exported $outvar from $var"
+      # Empty contents, warn but don't fail
+      else
+        echo "WARN: $var -> $file is empty"
+      fi
+    # File is expected but not found. Very likely a misconfiguration, fail early
     else
       echo "ERR: $var -> file '$file' not found"
       exit 1
