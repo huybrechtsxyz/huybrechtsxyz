@@ -46,12 +46,12 @@ substitute_env_vars() {
 load_secret_files
 
 # Substitute envvars for in the following files
-substitute_env_vars "/tmp/realm.template.json" "/tmp/realm.json"
+substitute_env_vars "/usr/local/bin/realm.template.json" "/usr/local/bin/realm.json"
 
 # Wait for Postgres readiness
 echo "[INFO] Waiting for Postgres to be ready..."
-until nc -z -v -w5 "${KC_DB_URL_HOST:-postgres}" 5432; do
-  echo "[INFO] Postgres is unavailable - sleeping"
+while [ ! -f /pgready/pgready ]; do
+  echo "[INFO] /pgready/pgready not found, sleeping 2s..."
   sleep 2
 done
 echo "[INFO] Postgres is ready!"
@@ -60,7 +60,7 @@ echo "[INFO] Postgres is ready!"
 #/opt/keycloak/bin/kc.sh import --file /tmp/realm.json --override false
 if [ ! -f "/opt/keycloak/data/imported.flag" ]; then
   echo "[INFO] Importing realm..."
-  /opt/keycloak/bin/kc.sh import --file /tmp/realm.json --override false
+  /opt/keycloak/bin/kc.sh import --file /usr/local/bin/realm.json --override false
   touch /opt/keycloak/data/imported.flag
 else
   echo "[INFO] Realm already imported. Skipping import."

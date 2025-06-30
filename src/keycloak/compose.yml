@@ -11,7 +11,9 @@ secrets:
     external: true
 
 # configs:
-# volumes:
+
+volumes:
+  postgres-ready:
 
 networks:
   lan-develop:
@@ -21,11 +23,44 @@ networks:
 
 services:
 
+  keycloak-init:
+    image: postgres
+    volumes:
+      - postgres-ready:/pgready
+      - ${KEYCLOAK_PATH_CONFIG}:/usr/local/bin
+    networks:
+      - lan-${WORKSPACE}
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+    command: >
+      bash -c "
+        echo 'Waiting for Postgres with pg_isready...' &&
+        until pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT; do
+          echo 'Postgres unavailable - sleeping';
+          sleep 2;
+        done;
+        echo 'Postgres is ready!' &&
+        touch /pgready/pgready &&
+        echo 'pgready file created.'"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra==true
+      restart_policy:
+        condition: none # Ensure this runs only once
+      labels:
+        - traefik.enable=false
+
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
     volumes:
+      - postgres-ready:/pgready
       - ${KEYCLOAK_PATH_CONFIG}/entrypoint.sh:/usr/local/bin/entrypoint.sh
-      - ${KEYCLOAK_PATH_CONFIG}/realm.${WORKSPACE}.json:/tmp/realm.template.json
+      - ${KEYCLOAK_PATH_CONFIG}/realm.${WORKSPACE}.json:/usr/local/bin/realm.template.json
     networks:
       - lan-${WORKSPACE}
     secrets:
