@@ -27,7 +27,6 @@ services:
     image: postgres
     volumes:
       - postgres-ready:/pgready
-      - ${KEYCLOAK_PATH_CONFIG}:/usr/local/bin
     networks:
       - lan-${WORKSPACE}
     environment:
@@ -60,7 +59,7 @@ services:
     volumes:
       - postgres-ready:/pgready
       - ${KEYCLOAK_PATH_CONFIG}/entrypoint.sh:/usr/local/bin/entrypoint.sh
-      - ${KEYCLOAK_PATH_CONFIG}/realm.${WORKSPACE}.json:/usr/local/bin/realm.template.json
+      - ${KEYCLOAK_PATH_CONFIG}/realm.${WORKSPACE}.json:/tmp/realm.template.json
     networks:
       - lan-${WORKSPACE}
     secrets:
