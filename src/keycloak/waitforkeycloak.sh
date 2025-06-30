@@ -1,3 +1,34 @@
+ keycloak-load:
+    image: quay.io/keycloak/keycloak:26.0
+    volumes:
+      - ${KEYCLOAK_PATH_CONFIG}/waitforkeycloak.sh:/usr/local/bin/waitforkeycloak.sh
+    networks:
+      - lan-${WORKSPACE}
+    secrets:
+      - PLATFORM_USERNAME
+      - PLATFORM_PASSWORD
+      - TRAEFIK_CLIENTID
+      - TRAEFIK_SECRET
+    environment:
+      KEYCLOAK_HOST: keycloak
+      KEYCLOAK_PORT: 8080
+      KC_BOOTSTRAP_ADMIN_USERNAME_FILE: /run/secrets/PLATFORM_USERNAME
+      KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
+    entrypoint: ["/bin/sh", "/usr/local/bin/waitforkeycloak.sh"]
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra==true
+          - node.labels.server==infra-1
+      restart_policy:
+        condition: none # Ensure this runs only once
+      labels:
+        - traefik.enable=false
+
+
 #!/bin/sh
 set -e
 
