@@ -73,6 +73,14 @@ configure_firewall() {
   ufw allow out proto tcp to 10.0.0.0/23 port 7946 comment 'Swarm Gossip TCP OUT'
   ufw allow out proto udp to 10.0.0.0/23 port 7946 comment 'Swarm Gossip UDP OUT'
 
+  # Postgres traffic between nodes
+  ufw allow proto tcp from 10.0.0.0/23 to any port 5432 comment 'Postgres IN'
+  ufw allow out proto tcp to 10.0.0.0/23 port 5432 comment 'Postgres OUT'
+
+  # Redis traffic between nodes
+  ufw allow proto tcp from 10.0.0.0/23 to any port 6379 comment 'Redis IN'
+  ufw allow out proto tcp to 10.0.0.0/23 port 6379 comment 'Redis OUT'
+
   # Enable firewall only if not active
   if ! ufw status | grep -q "Status: active"; then
   log INFO "[*] Enabling UFW..."
