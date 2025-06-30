@@ -1,54 +1,29 @@
 #!/bin/sh
+set -e
 
-process_file_env_vars() {
-    local pattern=$1
+load_secret_files() {
+  echo "[INFO] Loading environment variables from *_FILE references..."
 
-    # Ensure the pattern is provided
-    if [[ -z $pattern ]]; then
-        echo "ERR: No pattern provided to process_file_env_vars"
-        return 1
+  # Loop over environment variables ending in _FILE
+  for var in $(env | grep -E '^[A-Za-z_][A-Za-z0-9_]*_FILE=' | cut -d= -f1); do
+    base_var="${var%_FILE}"
+
+    # Get the file path
+    file_path=$(eval echo "\$$var")
+    echo "[INFO] Processing variable: $var (file path: $file_path)"
+
+    if [ -f "$file_path" ]; then
+      value=$(cat "$file_path")
+      echo "[INFO] Setting variable: $base_var (from file content)"
+      # Assign the variable safely
+      eval "$base_var=\"\$value\""
+      export "$base_var"
+    else
+      echo "[WARNING] File '$file_path' specified in $var does not exist or is not a regular file."
     fi
+  done
 
-    # Find suitable variables matching the provided pattern
-    local lines=$(printenv | grep -o "$pattern")
-    echo "$lines"
-
-    # Split into array
-    local vars=($lines)
-
-    # Enumerate variable names
-    for var in "${vars[@]}"; do
-        # Output variable, trim the _FILE suffix
-        # e.g. KC_DB_PASSWORD_FILE -> KC_DB_PASSWORD
-        local outvar="${var%_FILE}"
-
-        # Variable content = file path
-        local file="${!var}"
-
-        # Empty value -> warn but don't fail
-        if [[ -z $file ]]; then
-            echo "WARN: $var specified but empty"
-            continue
-        fi
-
-        # File exists
-        if [[ -e $file ]]; then
-            # Read contents
-            local content=$(cat "$file")
-            # Export contents if non-empty
-            if [[ -n $content ]]; then
-                export "$outvar"="$content"
-                echo "INFO: exported $outvar from $var"
-            # Empty contents, warn but don't fail
-            else
-                echo "WARN: $var -> $file is empty"
-            fi
-        # File is expected but not found. Very likely a misconfiguration, fail early
-        else
-            echo "ERR: $var -> file '$file' not found"
-            exit 1
-        fi
-    done
+  echo "[INFO] Done loading environment variables."
 }
 
 substitute_env_vars() {
@@ -68,13 +43,28 @@ substitute_env_vars() {
 }
 
 # Read all _FILE secret files to environment variables
-process_file_env_vars '*_FILE'
+load_secret_files
 
 # Substitute envvars for in the following files
 substitute_env_vars "/tmp/realm.template.json" "/tmp/realm.json"
 
+# Wait for Postgres readiness
+echo "[INFO] Waiting for Postgres to be ready..."
+while [ ! -f /pgready/pgready ]; do
+  echo "[INFO] /pgready/pgready not found, sleeping 2s..."
+  sleep 2
+done
+echo "[INFO] Postgres is ready!"
+
 # Import the preprocessed realm JSON
-exec /opt/keycloak/bin/kc.sh import --file /tmp/realm.json --override false
+#/opt/keycloak/bin/kc.sh import --file /tmp/realm.json --override false
+# if [ ! -f "/opt/keycloak/data/imported.flag" ]; then
+#   echo "[INFO] Importing realm..."
+#   /opt/keycloak/bin/kc.sh import --file /tmp/realm.json --override false
+#   touch /opt/keycloak/data/imported.flag
+# else
+#   echo "[INFO] Realm already imported. Skipping import."
+# fi
 
 # Pass all command parameters
 exec /opt/keycloak/bin/kc.sh start "$@"

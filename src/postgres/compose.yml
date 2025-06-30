@@ -20,7 +20,7 @@ services:
   postgres:
     image: postgres
     volumes:
-      - ${POSTGRES_PATH_DATA}/postgres/data:/var/lib/postgresql/data/pgdata
+      - ${POSTGRES_PATH_DATA}:/var/lib/postgresql/data/pgdata
     networks:
       - lan-${WORKSPACE}
     secrets:
@@ -31,6 +31,7 @@ services:
       POSTGRES_DB: ${PLATFORM_SQL_NAME}
       POSTGRES_USER: root
       POSTGRES_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
+      POSTGRES_INITDB_ARGS: --auth-host=md5
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d ${PLATFORM_SQL_NAME} -U root"]
       interval: 60s
@@ -65,8 +66,8 @@ services:
   postgres-init:
     image: postgres
     volumes:
-      - ${APP_PATH}/postgres/conf/entrypoint.sh:/usr/local/bin/entrypoint.sh:ro
-      - ${APP_PATH}/postgres/conf/initialize.sql:/usr/local/bin/postgres-init.sql:ro
+      - ${POSTGRES_PATH_CONFIG}/entrypoint.sh:/usr/local/bin/entrypoint.sh:ro
+      - ${POSTGRES_PATH_CONFIG}/initialize.sql:/usr/local/bin/postgres-init.sql:ro
     networks:
       - lan-${WORKSPACE}
     secrets:
@@ -76,7 +77,8 @@ services:
       POSTGRES_URL: postgres
       POSTGRES_USER: root
       POSTGRES_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
-    entrypoint: /usr/local/bin/entrypoint.sh
+      POSTGRES_INITDB_ARGS: --auth-host=md5
+    entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
     deploy:
       mode: replicated
       replicas: 1
@@ -84,7 +86,7 @@ services:
         constraints:
           - node.role==${DOCKER_WORKER}
           - node.labels.infra==true
-          - node.labels.postgres==true
+          - node.labels.server==infra-1
       restart_policy:
         condition: none # Ensure this runs only once
       labels:

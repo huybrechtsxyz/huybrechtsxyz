@@ -20,7 +20,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     volumes:
-      - ${PGADMIN_PATH_DATA}/pgadmin:/var/lib/pgadmin
+      - ${PGADMIN_PATH_DATA}:/var/lib/pgadmin
     networks:
       - lan-${WORKSPACE}
     secrets:
@@ -45,7 +45,6 @@ services:
         constraints:
           - node.role==${DOCKER_WORKER}
           - node.labels.infra==true
-          - node.labels.postgres==true
         preferences:
           - spread: node.id
       restart_policy:
@@ -70,11 +69,11 @@ services:
         - traefik.http.middlewares.pgadmin-redirect.redirectregex.permanent=true
         - traefik.http.routers.pgadmin-redirect.rule=Host(`pgadmin.${DOMAIN_DEV}`) && Path(`/`)
         - traefik.http.routers.pgadmin-redirect.entrypoints=websecure
-        - traefik.http.routers.pgadmin-redirect.tls.certresolver=${TRAEFIK_TLS_DNS}
+        - traefik.http.routers.pgadmin-redirect.tls.certresolver=${TRAEFIK_TLS_HTTP}
         - traefik.http.routers.pgadmin-redirect.middlewares=pgadmin-redirect
         #  pgAdmin service at /pgadmin
         - traefik.http.services.pgadmin.loadbalancer.server.scheme=http
         - traefik.http.services.pgadmin.loadbalancer.server.port=9080
         - traefik.http.routers.pgadmin.rule=Host(`pgadmin.${DOMAIN_DEV}`) && PathPrefix(`/pgadmin`)
         - traefik.http.routers.pgadmin.entrypoints=websecure
-        - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_TLS_DNS}
+        - traefik.http.routers.pgadmin.tls.certresolver=${TRAEFIK_TLS_HTTP}

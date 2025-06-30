@@ -35,10 +35,10 @@ scp -o StrictHostKeyChecking=no \
 }
 
 execute_initialization() {
-log INFO "[*] Executing REMOTE initialization..."
+log INFO "[*] Executing REMOTE server initialization..."
 if ! ssh -o StrictHostKeyChecking=no root@"$APP_REMOTE_IP" << EOF
   set -e
-  echo "[*] Executing on REMOTE server..."
+  echo "[*] Executing initialization on REMOTE server..."
   set -a
   source "$APP_PATH_TEMP/initialize.env"
   source "$APP_PATH_TEMP/functions.sh"

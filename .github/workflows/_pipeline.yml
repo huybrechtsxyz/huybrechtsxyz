@@ -1,4 +1,12 @@
 # [Workspace Setup Guide]
+# To create new servers
+#  - Create a new workspace.{workspace-name}.json file
+#  - To recreate the servers delete existing:
+#    - Servers and networks in Kamatera
+#      on https://console.kamatera.com
+#    - The HCP Terraform Cloud Workspace
+#      on https://app.terraform.io/app/xyz/workspaces/{workspace}
+#
 # To add a new path:
 #  - Update env vars in the pipeline accordingly
 #  - Add the new path under "paths" in workspace.json
@@ -50,10 +58,6 @@ on:
         required: true
 
 env:
-  APP_PATH_CONF: /etc/app
-  APP_PATH_DATA: /var/lib/data
-  APP_PATH_LOGS: /var/lib/logs
-  APP_PATH_SERV: /srv/app
   APP_PATH_TEMP: /tmp/app
 
 jobs:

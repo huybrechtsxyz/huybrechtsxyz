@@ -7,11 +7,13 @@ secrets:
     external: true
   TRAEFIK_CLIENTID:
     external: true
-  TRAEFIK_SECRET:           
+  TRAEFIK_SECRET:
     external: true
-    
+
 # configs:
-# volumes:
+
+volumes:
+  postgres-ready:
 
 networks:
   lan-develop:
@@ -20,12 +22,12 @@ networks:
     external: true
 
 services:
-
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
     volumes:
-      - ${KEYCLOAK_PATH_CONF}/keycloak/entrypoint.sh:/usr/local/bin/entrypoint.sh
-      - ${KEYCLOAK_PATH_CONF}/keycloak/real.${WORKSPACE}.json:/tmp/realm.template.json
+      - postgres-ready:/pgready
+      - ${KEYCLOAK_PATH_CONFIG}/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ${KEYCLOAK_PATH_CONFIG}/realm.${WORKSPACE}.json:/tmp/realm.template.json
     networks:
       - lan-${WORKSPACE}
     secrets:
@@ -45,14 +47,14 @@ services:
       KC_HTTPS_ENABLED: "false"
       KC_HOSTNAME: https://auth.${DOMAIN_DEV}
       KC_HOSTNAME_STRICT: "false"
-      KC_HEALTH_ENABLED: "true"
-      KC_METRICS_ENABLED: "true"
-      KC_HTTP_METRICS_HISTOGRAMS_ENABLED: "true"
-      KC_EVENT_METRICS_USER_ENABLED: "true"
-      KC_TRACING_ENABLED: "true"
-      KC_TRACING_PROPAGATORS: tracecontext,baggage
-      KC_TRACING_SAMPLER: always_on
-      KC_TRACING_ENDPOINT: http://telemetry:4317
+      #KC_HEALTH_ENABLED: "true"
+      #KC_METRICS_ENABLED: "true"
+      #KC_HTTP_METRICS_HISTOGRAMS_ENABLED: "true"
+      #KC_EVENT_METRICS_USER_ENABLED: "true"
+      #KC_TRACING_ENABLED: "true"
+      #KC_TRACING_PROPAGATORS: tracecontext,baggage
+      #KC_TRACING_SAMPLER: always_on
+      #KC_TRACING_ENDPOINT: http://telemetry:4317
       KC_DB: postgres
       KC_DB_URL_HOST: postgres
       KC_DB_URL_DATABASE: ${PLATFORM_SQL_NAME}
@@ -63,6 +65,7 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
       TRAEFIK_CLIENTID_FILE: /run/secrets/TRAEFIK_CLIENTID
       TRAEFIK_SECRET: /run/secrets/TRAEFIK_SECRET
+      JAVA_OPTS_APPEND: -Xms256m -Xmx512m
     entrypoint: /usr/local/bin/entrypoint.sh --proxy-headers forwarded --hostname-debug=true --features=opentelemetry
     healthcheck:
       test: ["CMD", "bash", "-c", "[ $$(/opt/keycloak/bin/kcadm.sh get serverinfo --realm Keycloak --fields '*' --server http://localhost:8080/admin/serverinfo 2>&1 | grep Unauthorized | wc -l ) -eq 1 ]"]
@@ -99,4 +102,32 @@ services:
         - traefik.http.services.keycloak.loadbalancer.server.port=8080
         - traefik.http.routers.keycloak.rule=Host(`auth.${DOMAIN_DEV}`)
         - traefik.http.routers.keycloak.entrypoints=websecure
-        - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_TLS_DNS}
+        - traefik.http.routers.keycloak.tls.certresolver=${TRAEFIK_TLS_HTTP}
+
+  keycloak-init:
+    image: postgres
+    volumes:
+      - postgres-ready:/pgready
+      - ${KEYCLOAK_PATH_CONFIG}/waitfordb.sh:/usr/local/bin/waitfordb.sh
+    networks:
+      - lan-${WORKSPACE}
+    secrets:
+      - PLATFORM_PASSWORD
+    environment:
+      POSTGRES_DB: ${PLATFORM_SQL_NAME}
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
+    entrypoint: ["/bin/sh", "/usr/local/bin/waitfordb.sh"]
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra==true
+          - node.labels.server==infra-1
+      restart_policy:
+        condition: none # Ensure this runs only once
+      labels:
+        - traefik.enable=false

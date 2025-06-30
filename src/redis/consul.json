@@ -1,7 +1,7 @@
 {
   "service": {
     "id": "redis",
-    "name": "redis",
+    "name": "Redis",
     "address": "redis",
     "port": 6379,
     "checks": [

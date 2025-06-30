@@ -3,7 +3,8 @@ param (
 )
 
 # Load the required modules
-. "$env:USERPROFILE/Sources/huybrechtsxyz/scripts/functions.ps1"
+$ScriptPath = Split-Path $($MyInvocation.MyCommand.Path)
+. "$ScriptPath/functions.ps1"
 # RootPath from functions
 # AppPath from functions
 # SourcePath from functions

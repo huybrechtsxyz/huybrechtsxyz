@@ -1,19 +1,16 @@
 # VARIABLES
-$RootPath = "$env:USERPROFILE/Sources/huybrechtsxyz"
+$RootPath = Split-Path $ScriptPath
 $SourcePath = "$RootPath/src"
 $AppPath = "$RootPath/.app"
 $ProjectGuid = "acbede3b-f8f8-41b2-ad78-d1f3e176949f"
 $SecretsPath = "$env:APPDATA\Microsoft\UserSecrets\$ProjectGuid\secrets.json"
-
-# RootPath from functions
-# AppPath from functions
-# SourcePath from functions
 
 # FUNCTION: Check if Docker is available by running the `docker` command
 function Test-Docker {
     try {
         # Try running 'docker --version' to check if Docker is installed and available
         $dockerVersion = & docker --version 2>&1
+        Write-Host "Docker Version Output: $dockerVersion"
         # If Docker is available, $dockerVersion should contain version information, otherwise it throws an error
         if ($dockerVersion -match "Docker version") {
             Write-Host " -- Docker is available"

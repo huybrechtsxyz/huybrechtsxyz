@@ -73,6 +73,14 @@ configure_firewall() {
   ufw allow out proto tcp to 10.0.0.0/23 port 7946 comment 'Swarm Gossip TCP OUT'
   ufw allow out proto udp to 10.0.0.0/23 port 7946 comment 'Swarm Gossip UDP OUT'
 
+  # Postgres traffic between nodes
+  ufw allow proto tcp from 10.0.0.0/23 to any port 5432 comment 'Postgres IN'
+  ufw allow out proto tcp to 10.0.0.0/23 port 5432 comment 'Postgres OUT'
+
+  # Redis traffic between nodes
+  ufw allow proto tcp from 10.0.0.0/23 to any port 6379 comment 'Redis IN'
+  ufw allow out proto tcp to 10.0.0.0/23 port 6379 comment 'Redis OUT'
+
   # Enable firewall only if not active
   if ! ufw status | grep -q "Status: active"; then
   log INFO "[*] Enabling UFW..."
@@ -88,7 +96,8 @@ mount_disks() {
   log INFO "[*] Preparing and mounting disk volumes..."
 
   : "${WORKSPACE:?Missing WORKSPACE}"
-  log INFO "[*] ... Getting workspace information from $PATH_TEMP/workspace.$WORKSPACE.json"
+  : "${PATH_TEMP:?Missing PATH_TEMP}"
+  log INFO "[*] Getting workspace information from $PATH_TEMP/workspace.$WORKSPACE.json"
   local hostname=$(hostname)
   local workspace_file="$PATH_TEMP/workspace.$WORKSPACE.json"
   if [[ ! -f "$workspace_file" ]]; then
@@ -96,7 +105,7 @@ mount_disks() {
     return 1
   fi
 
-  log INFO "[*] ... Getting server information for $hostname"
+  log INFO "[*] Getting server information for $hostname"
   local server_id=$(jq -r '.servers[].id' "$workspace_file" | while read -r id; do
     [[ "$hostname" == *"$id"* ]] && echo "$id" && break
   done)
@@ -104,13 +113,13 @@ mount_disks() {
     log ERROR "[!] No matching server ID found for hostname: $hostname"
     return 1
   fi
-  
+
   # Identify the OS disk by partition mounted at root '/'
-  log INFO "[*] ... Identify the OS disk by root mountpoint"
-  local os_part=$(findmnt -n -o SOURCE /)   # e.g., /dev/sda2
-  local os_disk=$(lsblk -no PKNAME "$os_part")   # e.g., sda
+  log INFO "[*] Identify the OS disk by root mountpoint"
+  local os_part=$(findmnt -n -o SOURCE /)
+  local os_disk=$(lsblk -no PKNAME "$os_part")
   local os_disk_base="$os_disk"
-  log INFO "[*] OS disk identified: /dev/$os_disk_base (root partition: $os_part)"
+  log INFO "[*] ... OS disk identified: /dev/$os_disk_base (root partition: $os_part)"
 
   # Get non-OS disks sorted by size
   log INFO "[*] ... Getting non-os disks"
@@ -134,9 +143,11 @@ mount_disks() {
     return 1
   fi
 
-  log INFO "[*] ... Looping over all disks"
+  local mount_template=$(jq -r --arg id "$server_id" '.servers[] | select(.id == $id) | .mountpoint' "$workspace_file")
+
+  log INFO "[*] Looping over all disks"
   for i in $(seq 0 $((disk_count - 1))); do
-    log INFO "[*] ... Mounting disk $i for $hostname"
+    log INFO "[*] Mounting disk $i for $hostname"
 
     local disk="/dev/${disk_names[$i]}"
     local label=$(jq -r --arg id "$server_id" --argjson i "$i" \
@@ -144,7 +155,7 @@ mount_disks() {
     local part=""
     local fs_type=""
     local current_label=""
-    local mnt=""
+    local mnt="${mount_template//\$\{disk\}/$((i + 1))}"
 
     if [[ $i -eq 0 ]]; then
       # OS disk — use the actual root partition, not just first partition
@@ -161,17 +172,35 @@ mount_disks() {
       else
         log INFO "[*] ... OS disk label is already correct: $label"
       fi
+      # Make sure the mountpoint exist
+      mkdir -p "$mnt"
       continue
     else
       # Data disks — expect partition 1 on the disk (e.g., /dev/sdb1)
       part=$(lsblk -nr -o NAME "$disk" | awk 'NR==2 {print "/dev/" $1}')
       fs_type=$(blkid -s TYPE -o value "$part" 2>/dev/null || echo "")
       current_label=$(blkid -s LABEL -o value "$part" 2>/dev/null || echo "")
-      mnt="/mnt/data$((i - 1))"
     fi
 
-    log INFO "[*] ... Mounting data disk $((i - 1)) for $hostname"
+    log INFO "[*] ... Mounting data disk $i for $hostname"
     log INFO "[*] ... Preparing disk $disk (label=$label)"
+
+    # Get expected disk size from workspace metadata (in GB)
+    local expected_size_gb=$(jq -r --arg id "$server_id" --argjson i "$i" \
+      '.servers[] | select(.id == $id) | .disks[$i].size' "$workspace_file")
+    
+    # Get actual disk size in bytes and convert to GB (rounding down)
+    local actual_size_bytes=$(lsblk -bn -o SIZE -d "$disk")
+    local actual_size_gb=$(( actual_size_bytes / 1024 / 1024 / 1024 ))
+
+    log INFO "[*] ... Validating size for $disk: expected ${expected_size_gb}GB, found ${actual_size_gb}GB"
+
+    if disk_size_matches "$actual_size_gb" "$expected_size_gb"; then
+      log INFO "[*] ... Disk size for $disk matches expected ${expected_size_gb}GB, found ${actual_size_gb}GB"
+    else
+      log ERROR "[!] Disk size mismatch for $disk — expected ${expected_size_gb}GB, got ${actual_size_gb}GB"
+      continue  # Skip this disk to avoid accidental mount/format
+    fi
 
     # Check if partition exists (lsblk part)
     if ! lsblk "$part" &>/dev/null; then
@@ -179,9 +208,9 @@ mount_disks() {
       parted -s "$disk" mklabel gpt
       parted -s -a optimal "$disk" mkpart primary ext4 0% 100%
       sync
-      sleep 2
-      part="/dev/$(lsblk -nro NAME "$disk" | sed -n '2p')"
+      sleep 5
       # refresh fs_type and current_label after new partition creation
+      part="/dev/$(lsblk -nro NAME "$disk" | sed -n '2p')"
       fs_type=$(blkid -s TYPE -o value "$part" 2>/dev/null || echo "")
       current_label=$(blkid -s LABEL -o value "$part" 2>/dev/null || echo "")
     else
@@ -203,16 +232,51 @@ mount_disks() {
 
     mkdir -p "$mnt"
     if ! mountpoint -q "$mnt"; then
-      log INFO "[*]  ...Mounting $label to $mnt"
+      log INFO "[*] ... Mounting $label to $mnt"
       mount "/dev/disk/by-label/$label" "$mnt"
     else
-      log INFO "[+]  ...Already mounted: $mnt"
+      log INFO "[+] ... Already mounted: $mnt"
     fi
 
-    log INFO "[*] ... Mounting disk $i for $hostname DONE"
+    # Ensure persistence in fstab (idempotent)
+    fstab_line="LABEL=$label $mnt ext4 defaults 0 2"
+    if grep -qE "^\s*LABEL=$label\s" /etc/fstab; then
+      if ! grep -Fxq "$fstab_line" /etc/fstab; then
+        log INFO "[*] ... Updating existing fstab entry for $label"
+        sed -i.bak "/^\s*LABEL=$label\s/c\\$fstab_line" /etc/fstab
+      else
+        log INFO "[*] ... fstab entry for $label is already correct"
+      fi
+    else
+      log INFO "[*] ... Adding fstab entry for $label"
+      echo "$fstab_line" >> /etc/fstab
+    fi
+
+    log INFO "[*] ... Disk $i mounted successfully at $mnt"
   done
 
-  log INFO "[+] Preparing and mounting disk volumes...DONE"
+  log INFO "[+] All disks prepared and mounted."
+}
+
+disk_size_matches() {
+  local actual_gb="$1"        # e.g. 39
+  local expected_gb="$2"      # e.g. 40
+  local tolerance_mb="${3:-20}"  # Optional, default to 20 MiB
+
+  local BYTES_PER_GB=1073741824
+  local BYTES_PER_MB=1048576
+
+  local expected_bytes=$(( expected_gb * BYTES_PER_GB ))
+  local actual_bytes=$(( actual_gb * BYTES_PER_GB ))
+  local diff_bytes=$(( actual_bytes - expected_bytes ))
+  local diff_mb=$(( diff_bytes / BYTES_PER_MB ))
+  local abs_diff_mb=${diff_mb#-}
+
+  if (( abs_diff_mb <= tolerance_mb )); then
+    return 0  # Match within tolerance
+  else
+    return 1  # Too far off
+  fi
 }
 
 install_docker_if_needed() {
