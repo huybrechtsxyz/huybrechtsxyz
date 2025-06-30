@@ -57,7 +57,14 @@ done
 echo "[INFO] Postgres is ready!"
 
 # Import the preprocessed realm JSON
-/opt/keycloak/bin/kc.sh import --file /tmp/realm.json --override false
+#/opt/keycloak/bin/kc.sh import --file /tmp/realm.json --override false
+if [ ! -f "/opt/keycloak/data/imported.flag" ]; then
+  echo "[INFO] Importing realm..."
+  /opt/keycloak/bin/kc.sh import --file /tmp/realm.json --override false
+  touch /opt/keycloak/data/imported.flag
+else
+  echo "[INFO] Realm already imported. Skipping import."
+fi
 
 # Pass all command parameters
 exec /opt/keycloak/bin/kc.sh start "$@"
