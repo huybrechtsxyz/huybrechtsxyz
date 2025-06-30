@@ -117,7 +117,7 @@ services:
       POSTGRES_HOST: postgres
       POSTGRES_USER: root
       POSTGRES_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
-    entrypoint: /usr/local/bin/waitfordb.sh
+    entrypoint: ["/bin/sh", "/usr/local/bin/waitfordb.sh"]
     deploy:
       mode: replicated
       replicas: 1

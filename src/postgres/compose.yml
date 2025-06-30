@@ -78,7 +78,7 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
       POSTGRES_INITDB_ARGS: --auth-host=md5
-    entrypoint: /usr/local/bin/entrypoint.sh
+    entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
     deploy:
       mode: replicated
       replicas: 1
