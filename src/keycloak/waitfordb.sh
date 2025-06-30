@@ -1,6 +1,12 @@
 #!/bin/sh
 set -e
 
+# Remove stale readiness file if it exists
+if [ -f /pgready/pgready ]; then
+  echo "[INFO] Removing stale /pgready/pgready file..."
+  rm -f /pgready/pgready
+fi
+
 if [ -f "/run/secrets/PLATFORM_PASSWORD" ]; then
   POSTGRES_PASSWORD=$(cat /run/secrets/PLATFORM_PASSWORD)
   export PGPASSWORD=$POSTGRES_PASSWORD
