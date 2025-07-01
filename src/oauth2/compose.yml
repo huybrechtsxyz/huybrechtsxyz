@@ -1,6 +1,13 @@
 # version: '3.9'
 
-#secrets:
+secrets:
+  OAUTH2_CLIENTID:
+    external: true
+  OAUTH2_SECRET:
+    external: true
+  OAUTH2_COOKIE:
+    external: true
+
 # configs:
 # volumes:
 
@@ -14,65 +21,65 @@ networks:
   wan-platform:
     external: true
 
-services:
+x-oauth2-base: &oauth2-base
+  image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+  volumes:
+    - ${APP_PATH}/functions.sh:/etc/functions.sh:ro
+    - ${OAUTH2_PATH_CONFIG}/entrypoint.sh:/etc/entrypoint.sh:ro
+  networks:
+    - lan-${WORKSPACE}
+    - wan-${WORKSPACE}
+  secrets:
+    - OAUTH2_CLIENTID
+    - OAUTH2_SECRET
+    - OAUTH2_COOKIE
+  environment: &oauth2-base-environment
+    OIDC_ISSUER_URL: https://auth.${DOMAIN_DEV}/realms/${REALM_ID}
+    # These files are the same across all, unless you create separate secrets per domain
+    OAUTH2_CLIENT_ID_FILE: /run/secrets/OAUTH2_CLIENTID
+    OAUTH2_CLIENT_SECRET_FILE: /run/secrets/OAUTH2_SECRET
+    OAUTH2_COOKIE_SECRET_FILE: /run/secrets/OAUTH2_COOKIE
+  entrypoint: ["/etc/entrypoint.sh"]
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:4180/oauth2/health"]
+    interval: 60s
+    timeout: 15s
+    retries: 10
+    start_period: 120s
+  deploy:
+    mode: global
+    placement:
+      constraints:
+        - node.role==${DOCKER_WORKER}
+        - node.labels.infra==true
+    restart_policy:
+      condition: on-failure
+      delay: 10s
+    update_config:
+      parallelism: 1
+      delay: 15s
+      failure_action: rollback
+      monitor: 30s
+      order: start-first
+    rollback_config:
+      parallelism: 1
+      delay: 10s
+      failure_action: continue
+      monitor: 30s
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.oauth2.loadbalancer.server.scheme=http
+      - traefik.http.services.oauth2.loadbalancer.server.port=4180
+      - traefik.http.routers.oauth2.rule=Host(`oauth2.${DOMAIN_DEV}`)
+      - traefik.http.routers.oauth2.entrypoints=websecure
+      - traefik.http.routers.oauth2.tls.certresolver=${TRAEFIK_TLS_HTTP}
 
-  oauth2-base: &oauth2-base
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
-    volumes:
-      - ${APP_PATH}/functions.sh:/opt/oauth2/functions.sh:ro
-      - ${OAUTH2_PATH_CONFIG}/entrypoint.sh:/opt/oauth2/entrypoint.sh:ro
-    networks:
-      - lan-${WORKSPACE}
-      - wan-${WORKSPACE}
-    secrets:
-      - OAUTH2_CLIENTID
-      - OAUTH2_SECRET
-      - OAUTH2_COOKIE
-    environment:
-      OIDC_ISSUER_URL: https://auth.${DOMAIN_DEV}/realms/${REALM_ID}
-      # These files are the same across all, unless you create separate secrets per domain
-      OAUTH2_CLIENT_ID_FILE: /run/secrets/OAUTH2_CLIENTID
-      OAUTH2_CLIENT_SECRET_FILE: /run/secrets/OAUTH2_SECRET
-      OAUTH2_COOKIE_SECRET_FILE: /run/secrets/OAUTH2_COOKIE
-    entrypoint: ["/bin/sh", "/opt/oauth2/entrypoint.sh"]
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4180/oauth2/health"]
-      interval: 60s
-      timeout: 15s
-      retries: 10
-      start_period: 120s
-    deploy:
-      mode: global
-      placement:
-        constraints:
-          - node.role==${DOCKER_WORKER}
-          - node.labels.infra==true
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-      update_config:
-        parallelism: 1
-        delay: 15s
-        failure_action: rollback
-        monitor: 30s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 30s
-      labels:
-        - traefik.enable=true
-        - traefik.http.services.oauth2.loadbalancer.server.scheme=http
-        - traefik.http.services.oauth2.loadbalancer.server.port=4180
-        - traefik.http.routers.oauth2.rule=Host(`oauth2.${DOMAIN_DEV}`)
-        - traefik.http.routers.oauth2.entrypoints=websecure
-        - traefik.http.routers.oauth2.tls.certresolver=${TRAEFIK_TLS_HTTP}
+services:
 
   oauth2-dev:
     <<: *oauth2-base
     environment:
-      <<: *oauth2-base.environment
+      <<: *oauth2-base-environment
       COOKIE_DOMAIN: .${DOMAIN_DEV}
       REDIRECT_HOST: oauth2.${DOMAIN_DEV}
       WHITELIST_DOMAIN: .${DOMAIN_DEV}
