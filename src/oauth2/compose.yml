@@ -45,8 +45,8 @@ services:
       mode: global
       placement:
         constraints:
-          - node.role==manager
-          - node.labels.manager==true
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra==true
       restart_policy:
         condition: on-failure
         delay: 10s
