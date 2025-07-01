@@ -24,7 +24,7 @@ networks:
 x-oauth2-base: &oauth2-base
   image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
   volumes:
-    - ${APP_PATH}/functions.sh:/etc/functions.sh:ro
+    - ${OAUTH2_PATH_CONFIG}/functions.sh:/etc/functions.sh:ro
     - ${OAUTH2_PATH_CONFIG}/entrypoint.sh:/etc/entrypoint.sh:ro
   networks:
     - lan-${WORKSPACE}

@@ -26,7 +26,7 @@ services:
     image: quay.io/keycloak/keycloak:26.0
     volumes:
       - service-ready:/pgready
-      - ${APP_PATH}/functions.sh:/usr/local/bin/functions.sh
+      - ${KEYCLOAK_PATH_CONFIG}/functions.sh:/usr/local/bin/functions.sh
       - ${KEYCLOAK_PATH_CONFIG}/entrypoint.sh:/usr/local/bin/entrypoint.sh
     networks:
       - lan-${WORKSPACE}
