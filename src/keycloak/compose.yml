@@ -47,7 +47,7 @@ services:
       KC_HTTPS_ENABLED: "false"
       KC_HOSTNAME: https://auth.${DOMAIN_DEV}
       KC_HOSTNAME_STRICT: "false"
-      #KC_HEALTH_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
       #KC_METRICS_ENABLED: "true"
       #KC_HTTP_METRICS_HISTOGRAMS_ENABLED: "true"
       #KC_EVENT_METRICS_USER_ENABLED: "true"
