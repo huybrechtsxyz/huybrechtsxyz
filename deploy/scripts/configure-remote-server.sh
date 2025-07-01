@@ -308,6 +308,7 @@ create_workspace() {
       if [[ "${path_type,,}" == "config" && ( -z "$path_name" || "$path_name" == "." ) ]]; then
         log INFO "[*] ... Installing service files for $service_id"
         cp -fr "$PATH_TEMP"/src/"$service_id"/* "$full_path"
+        cp -f "$PATH_TEMP"/src/functions.sh "$full_path"
       fi
 
       # Apply the correct security on the folder
