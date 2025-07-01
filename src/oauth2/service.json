@@ -4,10 +4,10 @@
     "priority": 7,
     "groups": ["infra"],
     "description": "Lightweight container that does OIDC flow with Keycloak, issues session cookies, validates sessions on each request",
-    "endpoint": "http://oauth.${DOMAIN_DEV}/",
+    "endpoint": "http://oauth2.${DOMAIN_DEV}/",
     "serverrole": "manager",
     "paths": [
-      { "type": "config", "path":"", "chmod": 755 }
+      { "type": "config", "path": "", "chmod": 755 }
     ]
   }
 }
