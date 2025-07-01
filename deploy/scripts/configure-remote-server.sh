@@ -248,6 +248,8 @@ create_workspace() {
   log INFO "[*] ... Using configuration mount point: $config_path"
   mkdir -p "$config_path"
   : > "$config_path/services.env"
+  echo "APP_PATH=\"$config_path\"" >> "$config_path/services.env"
+  log INFO "[+] ... Exported APP_PATH=\"$config_path\""
 
   log INFO "[*] ... Copying global configuration files..."
   if ! cp -f "$PATH_TEMP"/src/*.* "$config_path/"; then

@@ -134,6 +134,7 @@ generate_env_file() {
   log INFO "[+] Environment file generated at '$output_file'"
 }
 
+# Generate an environment file taking all env vars
 generate_env_file_all() {
   local output_file="$1"
 
@@ -174,6 +175,7 @@ generate_env_file_all() {
   log INFO "[+] Environment file generated at '$output_file'"
 }
 
+# Add specific docker variable to the .env file
 update_docker_variables() {
   local var_name="$1"
   local filter="$2"
@@ -191,4 +193,47 @@ update_docker_variables() {
   else
     echo "${var_name}=${count}" >> "$env_file"
   fi
+}
+
+# Loading environment variables from *_FILE references
+load_secret_files() {
+  echo "[INFO] Loading environment variables from *_FILE references..."
+
+  # Loop over environment variables ending in _FILE
+  for var in $(env | grep -E '^[A-Za-z_][A-Za-z0-9_]*_FILE=' | cut -d= -f1); do
+    base_var="${var%_FILE}"
+
+    # Get the file path
+    file_path=$(eval echo "\$$var")
+    echo "[INFO] Processing variable: $var (file path: $file_path)"
+
+    if [ -f "$file_path" ]; then
+      value=$(cat "$file_path")
+      echo "[INFO] Setting variable: $base_var (from file content)"
+      # Assign the variable safely
+      eval "$base_var=\"\$value\""
+      export "$base_var"
+    else
+      echo "[WARNING] File '$file_path' specified in $var does not exist or is not a regular file."
+    fi
+  done
+
+  echo "[INFO] Done loading environment variables."
+}
+
+# Acts as envsubst when not available in image
+substitute_env_vars() {
+  local input_file="$1"
+  local output_file="$2"
+
+  if [[ -z "$input_file" || -z "$output_file" ]]; then
+    echo "Usage: envsubst_simple input-file output-file"
+    return 1
+  fi
+
+  while IFS= read -r line; do
+    local escaped_line
+    escaped_line=$(printf '%s\n' "$line" | sed 's/\\/\\\\/g; s/"/\\"/g; s/`/\\`/g')
+    eval "echo \"$escaped_line\""
+  done < "$input_file" > "$output_file"
 }
