@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Initialize script
 SCRIPT_PATH="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-source "$SCRIPT_PATH/functions.sh"
+source "$SCRIPT_PATH/utilities.sh"
 parse_options "$@"
 load_envfile "$ENV_FILE.env"
 

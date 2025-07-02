@@ -10,7 +10,7 @@ APP_REMOTE_IP="$1"
 APP_PRIVATE_IP="$2"
 APP_MANAGER_IP="$3"
 
-source "$(dirname "${BASH_SOURCE[0]}")/../../scripts/functions.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../../scripts/utilities.sh"
 
 create_env_file() {
   generate_env_file "APP_" "./deploy/scripts/initialize.env"
@@ -27,7 +27,7 @@ log INFO "[*] Copying initialization scripts and cluster config to remote server
 scp -o StrictHostKeyChecking=no \
   ./deploy/scripts/* \
   ./deploy/*.* \
-  ./scripts/functions.sh \
+  ./scripts/utilities.sh \
   root@"$APP_REMOTE_IP":"$APP_PATH_TEMP"/ || {
     echo "[x] Failed to transfer initialization scripts to remote server"
     exit 1
@@ -41,7 +41,7 @@ if ! ssh -o StrictHostKeyChecking=no root@"$APP_REMOTE_IP" << EOF
   echo "[*] Executing initialization on REMOTE server..."
   set -a
   source "$APP_PATH_TEMP/initialize.env"
-  source "$APP_PATH_TEMP/functions.sh"
+  source "$APP_PATH_TEMP/utilities.sh"
   set +a
   chmod +x "$APP_PATH_TEMP/initialize-remote-server.sh"
   "$APP_PATH_TEMP/initialize-remote-server.sh"

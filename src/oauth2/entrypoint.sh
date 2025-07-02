@@ -2,10 +2,10 @@
 set -e
 
 # Load functions for secrets and substitution
-if [ -f /etc/functions.sh ]; then
-  . /etc/functions.sh
+if [ -f /etc/libutils.sh ]; then
+  . /etc/libutils.sh
 else
-  echo "ERROR . /etc/functions.sh not found"
+  echo "ERROR . /etc/libutils.sh not found"
   exit 1
 fi
 

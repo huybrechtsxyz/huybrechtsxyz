@@ -5,7 +5,7 @@ set -euo pipefail
 # Initialize script paths and source dependencies
 # -------------------------------------------------------------------
 SCRIPT_PATH="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-source "$SCRIPT_PATH/functions.sh"
+source "$SCRIPT_PATH/utilities.sh"
 
 log INFO "[*] Starting deployment process..."
 parse_options "$@"
