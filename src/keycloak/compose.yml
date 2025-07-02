@@ -78,6 +78,7 @@ services:
         constraints:
           - node.role==${DOCKER_WORKER}
           - node.labels.infra==true
+          - node.labels.server==infra-2
         preferences:
           - spread: node.id
       restart_policy:
@@ -125,7 +126,7 @@ services:
         constraints:
           - node.role==${DOCKER_WORKER}
           - node.labels.infra==true
-          - node.labels.server==infra-1
+          - node.labels.server==infra-2
       restart_policy:
         condition: none # Ensure this runs only once
       labels:
