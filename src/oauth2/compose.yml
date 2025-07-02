@@ -22,7 +22,7 @@ networks:
     external: true
 
 x-oauth2-base: &oauth2-base
-  image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+  image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0-alpine
   volumes:
     - ${OAUTH2_PATH_CONFIG}/functions.sh:/etc/functions.sh:ro
     - ${OAUTH2_PATH_CONFIG}/entrypoint.sh:/etc/entrypoint.sh:ro
@@ -41,30 +41,28 @@ x-oauth2-base: &oauth2-base
     OAUTH2_COOKIE_SECRET_FILE: /run/secrets/OAUTH2_COOKIE
     DOMAIN_DEV: ${DOMAIN_DEV}
     REALM_ID: ${REALM_ID}
-  entrypoint:
-    - sh
+  command:
+    - /bin/sh
     - -c
     - |
-      set -e
-      
       # Function to safely read secrets
       read_secret() {
-          local secret_file="/run/secrets/$$1"
-          if [ -f "$$secret_file" ]; then
-              cat "$$secret_file"
+          secret_file="/run/secrets/$1"
+          if [ -f "$secret_file" ]; then
+              cat "$secret_file"
           else
-              echo "ERROR: Secret file $$secret_file not found" >&2
+              echo "ERROR: Secret file $secret_file not found" >&2
               exit 1
           fi
       }
       
       # Load secrets into OAuth2 Proxy environment variables
-      export OAUTH2_PROXY_CLIENT_ID="$$(read_secret OAUTH2_CLIENTID)"
-      export OAUTH2_PROXY_CLIENT_SECRET="$$(read_secret OAUTH2_SECRET)"
-      export OAUTH2_PROXY_COOKIE_SECRET="$$(read_secret OAUTH2_COOKIE)"
+      export OAUTH2_PROXY_CLIENT_ID="$(read_secret OAUTH2_CLIENTID)"
+      export OAUTH2_PROXY_CLIENT_SECRET="$(read_secret OAUTH2_SECRET)"
+      export OAUTH2_PROXY_COOKIE_SECRET="$(read_secret OAUTH2_COOKIE)"
       
       # Core OAuth2 Proxy configuration
-      export OAUTH2_PROXY_OIDC_ISSUER_URL="$$OIDC_ISSUER_URL"
+      export OAUTH2_PROXY_OIDC_ISSUER_URL="$OIDC_ISSUER_URL"
       export OAUTH2_PROXY_HTTP_ADDRESS="0.0.0.0:4180"
       export OAUTH2_PROXY_EMAIL_DOMAINS="*"
       export OAUTH2_PROXY_UPSTREAMS="static://202"
@@ -78,26 +76,26 @@ x-oauth2-base: &oauth2-base
       export OAUTH2_PROXY_PASS_AUTHORIZATION_HEADER="true"
       
       # Cookie settings (will be overridden per service if needed)
-      if [ -n "$$COOKIE_DOMAIN" ]; then
-          export OAUTH2_PROXY_COOKIE_DOMAINS="$$COOKIE_DOMAIN"
+      if [ -n "$COOKIE_DOMAIN" ]; then
+          export OAUTH2_PROXY_COOKIE_DOMAINS="$COOKIE_DOMAIN"
       fi
       
-      if [ -n "$$REDIRECT_HOST" ]; then
-          export OAUTH2_PROXY_REDIRECT_URL="https://$$REDIRECT_HOST/oauth2/callback"
+      if [ -n "$REDIRECT_HOST" ]; then
+          export OAUTH2_PROXY_REDIRECT_URL="https://$REDIRECT_HOST/oauth2/callback"
       fi
       
-      if [ -n "$$WHITELIST_DOMAIN" ]; then
-          export OAUTH2_PROXY_WHITELIST_DOMAINS="$$WHITELIST_DOMAIN"
+      if [ -n "$WHITELIST_DOMAIN" ]; then
+          export OAUTH2_PROXY_WHITELIST_DOMAINS="$WHITELIST_DOMAIN"
       fi
       
       # Debug output (remove in production)
       echo "OAuth2 Proxy starting with:"
-      echo "  Issuer: $$OAUTH2_PROXY_OIDC_ISSUER_URL"
-      echo "  Client ID: $${OAUTH2_PROXY_CLIENT_ID:0:8}..."
-      echo "  HTTP Address: $$OAUTH2_PROXY_HTTP_ADDRESS"
-      echo "  Redirect URL: $$OAUTH2_PROXY_REDIRECT_URL"
-      echo "  Cookie Domain: $$OAUTH2_PROXY_COOKIE_DOMAINS"
-      echo "  Whitelist Domain: $$OAUTH2_PROXY_WHITELIST_DOMAINS"
+      echo "  Issuer: $OAUTH2_PROXY_OIDC_ISSUER_URL"
+      echo "  Client ID: ${OAUTH2_PROXY_CLIENT_ID:0:8}..."
+      echo "  HTTP Address: $OAUTH2_PROXY_HTTP_ADDRESS"
+      echo "  Redirect URL: $OAUTH2_PROXY_REDIRECT_URL"
+      echo "  Cookie Domain: $OAUTH2_PROXY_COOKIE_DOMAINS"
+      echo "  Whitelist Domain: $OAUTH2_PROXY_WHITELIST_DOMAINS"
       
       # Start OAuth2 Proxy
       exec oauth2-proxy
