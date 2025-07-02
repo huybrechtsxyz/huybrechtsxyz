@@ -4,6 +4,7 @@
     "priority": 7,
     "groups": ["infra"],
     "description": "Lightweight container that does OIDC flow with Keycloak, issues session cookies, validates sessions on each request",
+    "website": "https://oauth2-proxy.github.io/oauth2-proxy/",
     "endpoint": "",
     "serverrole": "infra",
     "paths": [
