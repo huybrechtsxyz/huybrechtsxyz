@@ -2,8 +2,11 @@
 set -e
 
 # Load function library if any
-if [ -f /opt/oauth2/functions.sh ]; then
-  . /opt/oauth2/functions.sh
+if [ -f /etc/functions.sh ]; then
+  . /etc/functions.sh
+else
+  echo "ERROR . /etc/functions.sh not found"
+  exit 1
 fi
 
 # Convert *_FILE env vars to env vars with contents

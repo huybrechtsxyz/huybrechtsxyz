@@ -1,8 +1,13 @@
 #!/bin/sh
 set -e
 
-# Load functions for secrts and substitution
-source ./functions.sh
+# Load functions for secrets and substitution
+if [ -f /usr/local/bin/functions.sh ]; then
+  . /usr/local/bin/functions.sh
+else
+  echo "ERROR . /usr/local/bin/functions.sh not found"
+  exit 1
+fi
 
 # Read all _FILE secret files to environment variables
 load_secret_files
