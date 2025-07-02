@@ -37,9 +37,9 @@ x-oauth2-base: &oauth2-base
   environment: &oauth2-base-environment
     OIDC_ISSUER_URL: https://auth.${DOMAIN_DEV}/realms/${REALM_ID}
     # These files are the same across all, unless you create separate secrets per domain
-    OAUTH2_CLIENT_ID_FILE: /run/secrets/OAUTH2_CLIENTID
-    OAUTH2_CLIENT_SECRET_FILE: /run/secrets/OAUTH2_SECRET
-    OAUTH2_COOKIE_SECRET_FILE: /run/secrets/OAUTH2_COOKIE
+    OAUTH2_CLIENTID_FILE: /run/secrets/OAUTH2_CLIENTID
+    OAUTH2_SECRET_FILE: /run/secrets/OAUTH2_SECRET
+    OAUTH2_COOKIE_FILE: /run/secrets/OAUTH2_COOKIE
     REALM_ID: ${REALM_ID}
   entrypoint: ["/bin/sh", "/etc/entrypoint.sh"]
   healthcheck:
