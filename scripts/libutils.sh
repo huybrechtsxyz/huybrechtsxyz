@@ -3,29 +3,19 @@
 # Loading environment variables from *_FILE references (POSIX compliant)
 load_secret_files() {
   echo "[INFO] Loading environment variables from *_FILE references..."
-
-  # Loop over environment variables ending in _FILE
-  env | grep -E '^[A-Za-z_][A-Za-z0-9_]*_FILE=' | cut -d= -f1 | while read -r var; do
-    base_var=$(printf '%s' "$var" | sed 's/_FILE$//')
-
-    # Get the file path
-    # Use parameter expansion instead of eval
-    file_path=$(env | grep "^${var}=" | cut -d= -f2-)
+  for var in $(env | grep -E '^[A-Za-z_][A-Za-z0-9_]*_FILE=' | cut -d= -f1); do
+    base_var="${var%_FILE}"
+    file_path=$(eval echo "\$$var")
     echo "[INFO] Processing variable: $var (file path: $file_path)"
-
     if [ -f "$file_path" ]; then
       value=$(cat "$file_path")
       echo "[INFO] Setting variable: $base_var (from file content)"
-      # POSIX compliant way to export variable dynamically
-      # Use 'export' with 'set' to assign variable by name
-      # Here we use 'set' and 'eval' carefully:
-      eval "$base_var=\$(printf '%s' \"$value\")"
-      export "$base_var"
+      # Safer assignment without eval
+      export "$base_var=$value"
     else
       echo "[WARNING] File '$file_path' specified in $var does not exist or is not a regular file."
     fi
   done
-
   echo "[INFO] Done loading environment variables."
 }
 
