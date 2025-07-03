@@ -24,7 +24,7 @@ networks:
 x-oauth2-base: &oauth2-base
   image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0-alpine
   volumes:
-    - ${OAUTH2_PATH_CONFIG}/config.template.cfg:/etc/config.template.cfg:rw
+    - ${OAUTH2_PATH_CONFIG}/config.template.cfg:/etc/config.template.cfg
     - ${OAUTH2_PATH_CONFIG}/libutils.sh:/etc/libutils.sh:ro
     - ${OAUTH2_PATH_CONFIG}/entrypoint.sh:/etc/entrypoint.sh:ro
   networks:
@@ -48,7 +48,7 @@ x-oauth2-base: &oauth2-base
     timeout: 15s
     retries: 10
     start_period: 120s
-  deploy:
+  deploy: &oauth2-base-deploy
     mode: replicated
     replicas: 1
     placement:
@@ -79,6 +79,7 @@ services:
       REDIRECT_HOST: auth.${DOMAIN_DEV}
       WHITELIST_DOMAIN: .${DOMAIN_DEV}
     deploy:
+      <<: *oauth2-base-deploy
       labels:
         - traefik.enable=true
         - traefik.http.middlewares.oauth2-dev-headers.headers.customrequestheaders.Host=auth.${DOMAIN_DEV}
