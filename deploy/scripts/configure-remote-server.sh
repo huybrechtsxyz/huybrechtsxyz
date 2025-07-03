@@ -303,18 +303,21 @@ create_workspace() {
       [[ -z "$path_name" || "$path_name" == "." ]] && full_path="$full_path/$path_type" || full_path="$full_path/$path_name"
 
       mkdir -p "$full_path"
-      if [[ -n "$path_chmod" ]]; then
-        chmod "$path_chmod" "$full_path" && \
-          log INFO "[+] ... Created $full_path with permissions $path_chmod" || \
-          log WARN "[!] Failed to chmod $full_path"
-      else
-        log INFO "[+] Created $full_path"
-      fi
 
       # Install service configuration if applicable
       if [[ "${path_type,,}" == "config" && ( -z "$path_name" || "$path_name" == "." ) ]]; then
         log INFO "[*] ... Installing service files for $service_id"
         cp -fr "$PATH_TEMP"/src/"$service_id"/* "$full_path"
+        cp -f "$PATH_TEMP"/src/libutils.sh "$full_path"
+      fi
+
+      # Apply the correct security on the folder
+      if [[ -n "$path_chmod" ]]; then
+        chmod -R "$path_chmod" "$full_path" && \
+          log INFO "[+] ... Created $full_path with permissions $path_chmod" || \
+          log WARN "[!] Failed to chmod $full_path"
+      else
+        log INFO "[+] Created $full_path"
       fi
 
       # Export path environment variable

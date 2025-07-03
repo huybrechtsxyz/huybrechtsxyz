@@ -10,5 +10,8 @@
     "docker-compose.yaml",
     "compose.*.yaml",
     ]
-  }
+  },
+  "github-actions.workflows.pinned.workflows": [
+    ".github/workflows/deploy-shared.yml"
+  ]
 }

@@ -2,7 +2,7 @@
 set -euo pipefail
 REMOTE_IP="$1"
 
-source "$(dirname "${BASH_SOURCE[0]}")/../../scripts/functions.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../../scripts/utilities.sh"
 
 create_secret_file() {
   generate_env_file "APP_" "./src/pipeline.env"
@@ -75,7 +75,7 @@ set -a
 source "$APP_PATH_TEMP/src/pipeline.env"
 source "$APP_PATH_TEMP/src/$APP_ENVIRONMENT.env"
 source "$APP_PATH_TEMP/src/secrets.env"
-source "$APP_PATH_TEMP/src/functions.sh"
+source "$APP_PATH_TEMP/src/utilities.sh"
 set +a
 chmod +x "$APP_PATH_TEMP/deploy/configure-remote-server.sh"
 "$APP_PATH_TEMP/deploy/configure-remote-server.sh"

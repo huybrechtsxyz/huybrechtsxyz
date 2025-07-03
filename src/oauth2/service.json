@@ -1,0 +1,14 @@
+{
+  "service": {
+    "id": "oauth2",
+    "priority": 7,
+    "groups": ["infra"],
+    "description": "Lightweight container that does OIDC flow with Keycloak, issues session cookies, validates sessions on each request",
+    "website": "https://oauth2-proxy.github.io/oauth2-proxy/",
+    "endpoint": "http://auth.${DOMAIN_DEV}/",
+    "serverrole": "infra",
+    "paths": [
+      { "type": "config", "path": "", "chmod": 755 }
+    ]
+  }
+}

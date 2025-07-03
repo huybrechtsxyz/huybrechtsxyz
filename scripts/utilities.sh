@@ -134,46 +134,7 @@ generate_env_file() {
   log INFO "[+] Environment file generated at '$output_file'"
 }
 
-generate_env_file_all() {
-  local output_file="$1"
-
-  if [[ -z "$output_file" ]]; then
-    echo "[!] Usage: generate_env_file_all <OUTPUT_FILE>" >&2
-    return 1
-  fi
-
-  log INFO "[*] Generating environment file with all non-empty exported variables..."
-
-  # Get all environment variable names
-  mapfile -t vars < <(compgen -v)
-
-  # Filter out empty variables
-  local non_empty_vars=()
-  for var in "${vars[@]}"; do
-    if [[ -n "${!var-}" ]]; then
-      non_empty_vars+=("$var")
-    fi
-  done
-
-  if [[ "${#non_empty_vars[@]}" -eq 0 ]]; then
-    echo "[!] Error: No non-empty environment variables found" >&2
-    return 1
-  fi
-
-  # Ensure output directory exists
-  mkdir -p "$(dirname "$output_file")"
-
-  # Write the env file
-  {
-    echo "# Auto-generated environment file (all non-empty variables)"
-    for var in "${non_empty_vars[@]}"; do
-      printf '%s=%q\n' "$var" "${!var}"
-    done
-  } > "$output_file"
-
-  log INFO "[+] Environment file generated at '$output_file'"
-}
-
+# Add specific docker variable to the .env file
 update_docker_variables() {
   local var_name="$1"
   local filter="$2"

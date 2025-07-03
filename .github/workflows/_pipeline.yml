@@ -266,39 +266,26 @@ jobs:
             6cc5b975-56a9-4d7a-80c7-b2c90151cce0 > KAMATERA_PUBLIC_KEY
             f16fffe2-77b7-4d20-bf6c-b2c9015c71d3 > KAMATERA_PRIVATE_KEY
             5083ae32-429d-428b-b7df-b2c901441bbb > KAMATERA_ROOT_PASSWORD
+            5db70d74-c5db-459a-b916-b2d80126d8a3 > OAUTH2_CLIENTID
+            f5eaa406-b7cb-4ea8-b260-b2d80127303d > OAUTH2_SECRET
+            1aa843a8-05a6-47f6-8ef0-b30d00af357d > OAUTH2_COOKIE
             09171644-23c8-4b7f-9015-b2e5015a4572 > PLATFORM_USERNAME
             ffa5e6f9-de6a-47fa-887e-b2e5015ae1a4 > PLATFORM_PASSWORD
-            5db70d74-c5db-459a-b916-b2d80126d8a3 > TRAEFIK_CLIENTID
-            f5eaa406-b7cb-4ea8-b260-b2d80127303d > TRAEFIK_SECRET
             f53a76ab-b87f-4af0-9aa4-b2d1016aba2b > VERSIO_USERNAME
             3d7bbfcd-18a5-4762-9064-b2d1016aef63 > VERSIO_PASSWORD
 
       # Set up GitHub Secrets for Test Environment
       # - name: Get Test Secrets
       #   if: inputs.environment == 'test'
-      #   uses: bitwarden/sm-action@v2
-      #   with:  
-      #     access_token: ${{ secrets.BITWARDEN_TOKEN }}
-      #     secrets: |
-      #       5083ae32-429d-428b-b7df-b2c901441bbb > ROOT_PASSWORD
-
       # Set up GitHub Secrets for Staging Environment
       # - name: Get Staging Secrets
       #   if: inputs.environment == 'staging'
-      #   uses: bitwarden/sm-action@v2
-      #   with:  
-      #     access_token: ${{ secrets.BITWARDEN_TOKEN }}
-      #     secrets: |
-      #       924b9526-a6cf-43c1-93a9-b2c9014494ae > ROOT_PASSWORD
-
       # Set up GitHub Secrets for Production Environment
       # - name: Get Production Secrets
       #   if: inputs.environment == 'production'
       #   uses: bitwarden/sm-action@v2
       #   with:  
       #     access_token: ${{ secrets.BITWARDEN_TOKEN }}
-      #     secrets: |
-      #       6db5856c-3f7f-4b62-9846-b2c90144cb0b > ROOT_PASSWORD
 
       # Set up SSH connection
       - name: Set up SSH connection
@@ -316,8 +303,9 @@ jobs:
           APP_WORKSPACE: ${{ inputs.workspace }}
           SECRET_PLATFORM_USERNAME: ${{ steps.get-secrets.outputs.PLATFORM_USERNAME }}
           SECRET_PLATFORM_PASSWORD: ${{ steps.get-secrets.outputs.PLATFORM_PASSWORD }}
-          SECRET_TRAEFIK_CLIENTID : ${{ steps.get-secrets.outputs.TRAEFIK_CLIENTID }}
-          SECRET_TRAEFIK_SECRET : ${{ steps.get-secrets.outputs.TRAEFIK_SECRET }}
+          SECRET_OAUTH2_CLIENTID : ${{ steps.get-secrets.outputs.OAUTH2_CLIENTID }}
+          SECRET_OAUTH2_SECRET : ${{ steps.get-secrets.outputs.OAUTH2_SECRET }}
+          SECRET_OAUTH2_COOKIE : ${{ steps.get-secrets.outputs.OAUTH2_COOKIE }}
           SECRET_VERSIO_USERNAME : ${{ steps.get-secrets.outputs.VERSIO_USERNAME }}
           SECRET_VERSIO_PASSWORD : ${{ steps.get-secrets.outputs.VERSIO_PASSWORD }}
         run: |
