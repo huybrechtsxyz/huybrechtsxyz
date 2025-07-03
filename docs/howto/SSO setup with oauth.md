@@ -1,3 +1,5 @@
+https://console.cloud.google.com/auth/clients/1
+
 # 🛡️ SSO Setup with oauth2-proxy, Keycloak, and Google
 
 This guide explains how to configure Single Sign-On in Docker Swarm using oauth2-proxy, Keycloak, and Google login.
