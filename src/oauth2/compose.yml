@@ -78,12 +78,13 @@ services:
       COOKIE_DOMAIN: .${DOMAIN_DEV}
       REDIRECT_HOST: auth.${DOMAIN_DEV}
       WHITELIST_DOMAIN: .${DOMAIN_DEV}
-    labels:
-      - traefik.enable=true
-      - traefik.http.middlewares.oauth2-dev-headers.headers.customrequestheaders.Host=auth.${DOMAIN_DEV}
-      - traefik.http.services.oauth2-dev.loadbalancer.server.scheme=http
-      - traefik.http.services.oauth2-dev.loadbalancer.server.port=4180
-      - traefik.http.routers.oauth2-dev.rule=Host(`auth.${DOMAIN_DEV}`)
-      - traefik.http.routers.oauth2-dev.entrypoints=websecure
-      - traefik.http.routers.oauth2-dev.tls.certresolver=${TRAEFIK_TLS_HTTP}
-      - traefik.http.routers.oauth2-dev.middlewares=oauth2-dev-headers
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.middlewares.oauth2-dev-headers.headers.customrequestheaders.Host=auth.${DOMAIN_DEV}
+        - traefik.http.services.oauth2-dev.loadbalancer.server.scheme=http
+        - traefik.http.services.oauth2-dev.loadbalancer.server.port=4180
+        - traefik.http.routers.oauth2-dev.rule=Host(`auth.${DOMAIN_DEV}`)
+        - traefik.http.routers.oauth2-dev.entrypoints=websecure
+        - traefik.http.routers.oauth2-dev.tls.certresolver=${TRAEFIK_TLS_HTTP}
+        - traefik.http.routers.oauth2-dev.middlewares=oauth2-dev-headers
