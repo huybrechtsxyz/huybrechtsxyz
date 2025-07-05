@@ -29,5 +29,4 @@ cat /etc/config.cfg
 
 exec oauth2-proxy \
   --config=/etc/config.cfg \
-  --insecure-oidc-skip-issuer-verification \
-  --skip-oidc-discovery
+  --insecure-oidc-skip-issuer-verification
