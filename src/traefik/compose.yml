@@ -86,8 +86,9 @@ services:
         # Basic Authentication
         - traefik.http.middlewares.basic-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU.
         # OAuth Authentication
-        - traefik.http.middlewares.forward-auth.forwardauth.address=https://auth.${DOMAIN_DEV}/oauth2/auth
+        - traefik.http.middlewares.forward-auth.forwardauth.address=https://auth.${DOMAIN_DEV}/oauth2/sign_in
         - traefik.http.middlewares.forward-auth.forwardauth.trustForwardHeader=true
+        - traefik.http.middlewares.oauth.forwardauth.authResponseHeaders=X-Auth-Request-User,X-Auth-Request-Email
         # Traefik dashboard
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
