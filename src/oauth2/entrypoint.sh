@@ -27,4 +27,7 @@ substitute_env_vars /etc/config.template.cfg /etc/config.cfg
 echo "Generated /etc/config.cfg:"
 cat /etc/config.cfg
 
-exec oauth2-proxy --config=/etc/config.cfg
+exec oauth2-proxy \
+  --config=/etc/config.cfg \
+  --insecure-oidc-skip-issuer-verification \
+  --skip-oidc-discovery
