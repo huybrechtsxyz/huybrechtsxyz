@@ -3,5 +3,5 @@ SELECT pg_reload_conf();
 
 -- Keycloak PostgreSQL schema creation script
 
--- Create schema for authentik
+-- Create schema for keycloak
 CREATE SCHEMA IF NOT EXISTS keycloak;
