@@ -55,4 +55,4 @@ services:
         - traefik.http.routers.redisinsight.entrypoints=websecure
         - traefik.http.routers.redisinsight.tls.certresolver=${TRAEFIK_TLS_HTTP}
         - traefik.http.routers.redisinsight.service=redisinsight
-        - traefik.http.routers.redisinsight.middlewares=${TRAEFIK_AUTH}
+        - traefik.http.routers.redisinsight.middlewares=basic-auth

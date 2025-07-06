@@ -40,6 +40,7 @@ x-oauth2-base: &oauth2-base
     OAUTH2_CLIENTID_FILE: /run/secrets/OAUTH2_CLIENTID
     OAUTH2_SECRET_FILE: /run/secrets/OAUTH2_SECRET
     OAUTH2_COOKIE_FILE: /run/secrets/OAUTH2_COOKIE
+    DOMAIN_DEV: ${DOMAIN_DEV}
     REALM_ID: ${REALM_ID}
   entrypoint: ["/bin/sh", "/etc/entrypoint.sh"]
   healthcheck:
@@ -71,22 +72,18 @@ x-oauth2-base: &oauth2-base
       monitor: 30s
 
 services:
-  oauth2-admin:
+  oauth2-traefik:
     <<: *oauth2-base
     environment:
       <<: *oauth2-base-environment
+      CLIENT_PREFIX: traefik
       COOKIE_DOMAIN: .${DOMAIN_DEV}
-      REDIRECT_HOST: auth.${DOMAIN_DEV}
+      REDIRECT_HOST: traefik.${DOMAIN_DEV}
       WHITELIST_DOMAIN: .${DOMAIN_DEV}
     deploy:
       <<: *oauth2-base-deploy
       labels:
         - traefik.enable=true
-        # OAuth2 Proxy Headers
-        - traefik.http.middlewares.oauth2-proxy.forwardauth.address=http://auth.${DOMAIN_DEV}/oauth2/auth
-        - traefik.http.middlewares.oauth2-proxy.forwardauth.trustForwardHeader=true
-        - traefik.http.middlewares.oauth2-proxy.forwardauth.authResponseHeaders=X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Preferred-Username
-        # OAuth2 Service
         - traefik.http.services.oauth2-admin.loadbalancer.server.scheme=http
         - traefik.http.services.oauth2-admin.loadbalancer.server.port=4180
         - traefik.http.routers.oauth2-admin.rule=Host(`auth.${DOMAIN_DEV}`)
