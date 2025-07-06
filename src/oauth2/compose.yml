@@ -82,10 +82,13 @@ services:
       <<: *oauth2-base-deploy
       labels:
         - traefik.enable=true
-        - traefik.http.middlewares.oauth2-admin-headers.headers.customrequestheaders.Host=auth.${DOMAIN_DEV}
+        # OAuth2 Proxy Headers
+        - traefik.http.middlewares.oauth2-proxy.forwardauth.address=http://oauth2-admin:4180/oauth2/auth
+        - traefik.http.middlewares.oauth2-proxy.forwardauth.trustForwardHeader=true
+        - traefik.http.middlewares.oauth2-proxy.forwardauth.authResponseHeaders=X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Preferred-Username
+        # OAuth2 Service
         - traefik.http.services.oauth2-admin.loadbalancer.server.scheme=http
         - traefik.http.services.oauth2-admin.loadbalancer.server.port=4180
         - traefik.http.routers.oauth2-admin.rule=Host(`auth.${DOMAIN_DEV}`)
         - traefik.http.routers.oauth2-admin.entrypoints=websecure
         - traefik.http.routers.oauth2-admin.tls.certresolver=${TRAEFIK_TLS_HTTP}
-        - traefik.http.routers.oauth2-admin.middlewares=oauth2-admin-headers
