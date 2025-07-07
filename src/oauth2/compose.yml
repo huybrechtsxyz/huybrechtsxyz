@@ -68,61 +68,26 @@ services:
       <<: *oauth2-base-deploy
       labels:
         - traefik.enable=true
-        # Router to handle /oauth2/ endpoints
-        - traefik.http.routers.oauth.rule=Host(`traefik.${DOMAIN_DEV}`) && PathPrefix(`/oauth2/`)
-        - traefik.http.routers.oauth.entrypoints=websecure
-        - traefik.http.routers.oauth.tls.certresolver=${TRAEFIK_TLS_HTTP}
-        - traefik.http.routers.oauth.tls.domains[0].main=${DOMAIN_DEV}
-        - traefik.http.routers.oauth.tls.domains[0].sans=*.${DOMAIN_DEV}
-        # Attach security headers middleware
-        - traefik.http.routers.oauth.middlewares=auth-headers
-        # Service backend
-        - traefik.http.services.oauth-backend.loadbalancer.server.port=4180
         # Security headers middleware
-        - traefik.http.middlewares.auth-headers.headers.sslRedirect=true
-        - traefik.http.middlewares.auth-headers.headers.stsSeconds=315360000
-        - traefik.http.middlewares.auth-headers.headers.browserXssFilter=true
-        - traefik.http.middlewares.auth-headers.headers.contentTypeNosniff=true
-        - traefik.http.middlewares.auth-headers.headers.forceSTSHeader=true
-        - traefik.http.middlewares.auth-headers.headers.sslHost=example.com
-        - traefik.http.middlewares.auth-headers.headers.stsIncludeSubdomains=true
-        - traefik.http.middlewares.auth-headers.headers.stsPreload=true
-        - traefik.http.middlewares.auth-headers.headers.frameDeny=true
-        # ForwardAuth middleware (checks /oauth2/auth)
-        - traefik.http.middlewares.oauth-auth.forwardauth.address=https://auth.${DOMAIN_DEV}/oauth2/auth
-        - traefik.http.middlewares.oauth-auth.forwardauth.trustForwardHeader=true
-        # Errors middleware (handles 401-403 with redirect to login)
-        - traefik.http.middlewares.oauth-errors.errors.status=401-403
-        - traefik.http.middlewares.oauth-errors.errors.service=oauth-backend
-        - traefik.http.middlewares.oauth-errors.errors.query=/oauth2/sign_in?rd={url}
-
-
-labels:
-  - "traefik.enable=true"
-
-  # Router to expose /oauth2/* endpoints behind same domain
-  - "traefik.http.routers.oauth.rule=Host(`a-service.example.com`) && PathPrefix(`/oauth2/`)"
-  - "traefik.http.routers.oauth.entrypoints=websecure"
-  - "traefik.http.routers.oauth.tls.certresolver=default"
-  - "traefik.http.routers.oauth.middlewares=auth-headers"
-  - "traefik.http.services.oauth.loadbalancer.server.port=4180"
-
-  # Security headers (optional)
-  - "traefik.http.middlewares.auth-headers.headers.sslRedirect=true"
-  - "traefik.http.middlewares.auth-headers.headers.stsSeconds=315360000"
-  - "traefik.http.middlewares.auth-headers.headers.browserXssFilter=true"
-  - "traefik.http.middlewares.auth-headers.headers.contentTypeNosniff=true"
-  - "traefik.http.middlewares.auth-headers.headers.forceSTSHeader=true"
-  - "traefik.http.middlewares.auth-headers.headers.sslHost=example.com"
-  - "traefik.http.middlewares.auth-headers.headers.stsIncludeSubdomains=true"
-  - "traefik.http.middlewares.auth-headers.headers.stsPreload=true"
-  - "traefik.http.middlewares.auth-headers.headers.frameDeny=true"
-
-  # ForwardAuth middleware
-  - "traefik.http.middlewares.oauth-auth.forwardauth.address=https://a-service.example.com/oauth2/auth"
-  - "traefik.http.middlewares.oauth-auth.forwardauth.trustForwardHeader=true"
-
-  # Errors middleware
-  - "traefik.http.middlewares.oauth-errors.errors.status=401-403"
-  - "traefik.http.middlewares.oauth-errors.errors.service=oauth"
-  - "traefik.http.middlewares.oauth-errors.errors.query=/oauth2/sign_in?rd={url}"
+        - traefik.http.middlewares.auth-dev-headers.headers.sslRedirect=true
+        - traefik.http.middlewares.auth-dev-headers.headers.stsSeconds=315360000
+        - traefik.http.middlewares.auth-dev-headers.headers.browserXssFilter=true
+        - traefik.http.middlewares.auth-dev-headers.headers.contentTypeNosniff=true
+        - traefik.http.middlewares.auth-dev-headers.headers.forceSTSHeader=true
+        - traefik.http.middlewares.auth-dev-headers.headers.sslHost=${DOMAIN_DEV}
+        - traefik.http.middlewares.auth-dev-headers.headers.stsIncludeSubdomains=true
+        - traefik.http.middlewares.auth-dev-headers.headers.stsPreload=true
+        - traefik.http.middlewares.auth-dev-headers.headers.frameDeny=true
+        # ForwardAuth middleware
+        - traefik.http.middlewares.oauth-traefik-auth.forwardauth.address=https://oauth2-traefik:4180/oauth2/auth
+        - traefik.http.middlewares.oauth-traefik-auth.forwardauth.trustForwardHeader=true
+        # Errors middleware
+        - traefik.http.middlewares.oauth-traefik-errors.errors.status=401-403
+        - traefik.http.middlewares.oauth-traefik-errors.errors.service=oauth2-traefik-backend
+        - traefik.http.middlewares.oauth-traefik-errors.errors.query=/oauth2/sign_in?rd={url}
+        # Router to expose /oauth2/* endpoints behind same domain
+        - traefik.http.routers.oauth-traefik.rule=Host(`traefik.${DOMAIN_DEV}`) && PathPrefix(`/oauth2/`)
+        - traefik.http.routers.oauth-traefik.middlewares=auth-dev-headers
+        - traefik.http.routers.oauth-traefik.service=oauth2-traefik-backend
+        - traefik.http.routers.oauth-traefik.tls.certresolver=${TRAEFIK_TLS_HTTP}
+        - traefik.http.services.oauth2-traefik-backend.loadbalancer.server.port=4180

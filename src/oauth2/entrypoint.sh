@@ -24,4 +24,5 @@ export OAUTH2_PROXY_COOKIE_SECRET
 
 exec oauth2-proxy \
   --config=/etc/config.cfg \
-  --insecure-oidc-skip-issuer-verification
+  --insecure-oidc-skip-issuer-verification \
+  --allowed-roles=sysadmins
