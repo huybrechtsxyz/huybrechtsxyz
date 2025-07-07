@@ -1,6 +1,6 @@
 {
   "service": {
-    "id": "oauth2-dev",
+    "id": "oauth2-proxy",
     "name": "OAuth2 Proxy",
     "address": "oauth2",
     "port": 4180,

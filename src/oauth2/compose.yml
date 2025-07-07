@@ -65,7 +65,6 @@ services:
       OAUTH2_PROXY_CLIENT_SECRET_FILE: /run/secrets/OAUTH2_TRAEFIK_CLIENT
       OAUTH2_PROXY_OIDC_ISSUER_URL: https://identity.${DOMAIN_DEV}/realms/${REALM_ID}
       OAUTH2_PROXY_REDIRECT_URL: https://auth.${DOMAIN_DEV}/oauth2/callback
-      OAUTH2_PROXY_UPSTREAMS: "https://traefik.${DOMAIN_DEV}"
       OAUTH2_PROXY_CLIENT_ID: "oauth2-traefik"
       OAUTH2_PROXY_COOKIE_NAME: "oauth2-traefik"
       OAUTH2_PROXY_COOKIE_DOMAINS: ".${DOMAIN_DEV}"
@@ -85,16 +84,25 @@ services:
         - traefik.http.middlewares.auth-dev-headers.headers.stsPreload=true
         - traefik.http.middlewares.auth-dev-headers.headers.frameDeny=true
         # ForwardAuth middleware
-        - traefik.http.middlewares.oauth-traefik-auth.forwardauth.address=https://auth.${DOMAIN_DEV}/oauth2/auth
+        - traefik.http.middlewares.oauth-traefik-auth.forwardauth.address=https://traefik.${DOMAIN_DEV}/oauth2/auth
         - traefik.http.middlewares.oauth-traefik-auth.forwardauth.trustForwardHeader=true
         - traefik.http.middlewares.oauth-traefik-auth.forwardauth.authresponseheaders=X-Auth-Request-User, X-Auth-Request-Email
         # Errors middleware
         - traefik.http.middlewares.oauth-traefik-errors.errors.status=401-403
         - traefik.http.middlewares.oauth-traefik-errors.errors.service=oauth2-traefik-backend
         - traefik.http.middlewares.oauth-traefik-errors.errors.query=/oauth2/sign_in?rd={url}
+        # Router for oauth2 endpoints on traefik domain
+        - traefik.http.routers.oauth-traefik-endpoints.rule=Host(`traefik.${DOMAIN_DEV}`) && PathPrefix(`/oauth2/`)
+        - traefik.http.routers.oauth-traefik-endpoints.service=oauth2-traefik-backend
+        - traefik.http.routers.oauth-traefik-endpoints.entrypoints=websecure
+        - traefik.http.routers.oauth-traefik-endpoints.tls.certresolver=${TRAEFIK_TLS_HTTP}
+        - traefik.http.routers.oauth-traefik-endpoints.middlewares=auth-dev-headers
+        - traefik.http.routers.oauth-traefik-endpoints.priority=100
         # Router to expose /oauth2/* endpoints behind same domain
-        - traefik.http.routers.oauth-traefik.rule=Host(`auth.${DOMAIN_DEV}`)
-        - traefik.http.routers.oauth-traefik.middlewares=auth-dev-headers
-        - traefik.http.routers.oauth-traefik.service=oauth2-traefik-backend
-        - traefik.http.routers.oauth-traefik.tls.certresolver=${TRAEFIK_TLS_HTTP}
+        - traefik.http.services.oauth2-traefik-backend.loadbalancer.server.scheme=http
         - traefik.http.services.oauth2-traefik-backend.loadbalancer.server.port=4180
+        - traefik.http.routers.oauth-traefik.rule=Host(`auth.${DOMAIN_DEV}`)
+        - traefik.http.routers.oauth-traefik.service=oauth2-traefik-backend
+        - traefik.http.routers.oauth-traefik.entrypoints=websecure
+        - traefik.http.routers.oauth-traefik.tls.certresolver=${TRAEFIK_TLS_HTTP}
+        - traefik.http.routers.oauth-traefik.middlewares=auth-dev-headers
