@@ -1,10 +1,6 @@
 # version: '3.9'
 
 secrets:
-  TRAEFIK_CLIENTID:
-    external: true
-  TRAEFIK_SECRET:
-    external: true
   VERSIO_USERNAME:
     external: true
   VERSIO_PASSWORD:
@@ -42,8 +38,6 @@ services:
     secrets:
       - VERSIO_USERNAME
       - VERSIO_PASSWORD
-      - TRAEFIK_CLIENTID
-      - TRAEFIK_SECRET
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}

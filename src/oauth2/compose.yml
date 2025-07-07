@@ -1,6 +1,9 @@
 # version: '3.9'
 
-#secrets:
+secrets:
+  OAUTH2_TRAEFIK_CLIENT:
+    external: true
+
 # configs:
 # volumes:
 
