@@ -3,6 +3,8 @@
 secrets:
   OAUTH2_TRAEFIK_CLIENT:
     external: true
+  OAUTH2_TRAEFIK_COOKIE:
+    external: true
 
 # configs:
 # volumes:
@@ -21,7 +23,6 @@ x-oauth2-base: &oauth2-base
     - ${OAUTH2_PATH_CONFIG}/entrypoint.sh:/etc/entrypoint.sh:ro
   networks:
     - lan-${WORKSPACE}
-    - wan-${WORKSPACE}
   entrypoint: ["/bin/sh", "/etc/entrypoint.sh"]
   healthcheck:
     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4180/ping"]
@@ -59,9 +60,10 @@ services:
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       REALM_ID: ${REALM_ID}
+      OAUTH2_TRAEFIK_COOKIE_FILE: /run/secrets/OAUTH2_TRAEFIK_COOKIE
       OAUTH2_PROXY_CLIENT_SECRET_FILE: /run/secrets/OAUTH2_TRAEFIK_CLIENT
       OAUTH2_PROXY_OIDC_ISSUER_URL: https://identity.${DOMAIN_DEV}/realms/${REALM_ID}
-      OAUTH2_PROXY_REDIRECT_URL: traefik.${DOMAIN_DEV}/oauth2/callback
+      OAUTH2_PROXY_REDIRECT_URL: https://traefik.${DOMAIN_DEV}/oauth2/callback
       OAUTH2_PROXY_UPSTREAMS: "https://traefik.${DOMAIN_DEV}"
       OAUTH2_PROXY_CLIENT_ID: "oauth2-traefik"
       OAUTH2_PROXY_COOKIE_NAME: "oauth2-traefik"
