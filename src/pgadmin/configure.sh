@@ -9,7 +9,7 @@ if [ -z "$OAUTH2_PGADMIN_SECRET" ]; then
   echo "Error: OAUTH2_PGADMIN_SECRET is not set."
   exit 1
 else
-  echo OAUTH2_PGADMIN_SECRET: ***
+  echo OAUTH2_PGADMIN_SECRET: known
 fi
 export OAUTH2_PGADMIN_SECRET=$OAUTH2_PGADMIN_SECRET
 

@@ -4,6 +4,7 @@
 
 # Multiple OAUTH2 providers can be added in the list like [{...},{...}]
 # All parameters are required
+AUTHENTICATION_SOURCES = ['oauth2']
 
 OAUTH2_CONFIG = [
     {
