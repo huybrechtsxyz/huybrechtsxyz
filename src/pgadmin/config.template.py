@@ -3,6 +3,7 @@
 ##########################################################################
 
 # Multiple OAUTH2 providers can be added in the list like [{...},{...}]
+# ['oauth2',‘internal’]
 # All parameters are required
 AUTHENTICATION_SOURCES = ['oauth2']
 
@@ -64,7 +65,7 @@ OAUTH2_CONFIG = [
         # }
         'OAUTH2_ADDITIONAL_CLAIMS': {
             'groups': ['/sysadmins']
-        }
+        },
         # Set this variable to False to disable SSL certificate verification
         # for OAuth2 provider.
         # This may need to set False, in case of self-signed certificates.
