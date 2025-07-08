@@ -62,7 +62,9 @@ OAUTH2_CONFIG = [
         #     'groups': ["0760b6cf-170e-4a14-91b3-4b78e0739963"],
         #     'wids': ["cf1c38e5-3621-4004-a7cb-879624dced7c"],
         # }
-        'OAUTH2_ADDITIONAL_CLAIMS': None,
+        'OAUTH2_ADDITIONAL_CLAIMS': {
+            'groups': ['/sysadmins']
+        }
         # Set this variable to False to disable SSL certificate verification
         # for OAuth2 provider.
         # This may need to set False, in case of self-signed certificates.
