@@ -86,4 +86,4 @@ services:
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_TLS_HTTP}
-        - traefik.http.routers.traefik.middlewares=basic-auth
+        - traefik.http.routers.traefik.middlewares=oauth-errors,oauth-auth
