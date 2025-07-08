@@ -16,7 +16,6 @@ services:
     image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0
     networks:
       - lan-${WORKSPACE}
-    environment:
     command:
       - --http-address=0.0.0.0:4180
       - --reverse-proxy=true
@@ -36,11 +35,14 @@ services:
       retries: 10
       start_period: 120s
     deploy:
-      mode: global
+      mode: replicated
+      replicas: 1
       placement:
         constraints:
-          - node.role==manager
+          - node.role==${DOCKER_WORKER}
           - node.labels.infra==true
+        preferences:
+          - spread: node.id
       restart_policy:
         condition: on-failure
         delay: 10s
