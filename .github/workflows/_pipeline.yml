@@ -266,8 +266,6 @@ jobs:
             6cc5b975-56a9-4d7a-80c7-b2c90151cce0 > KAMATERA_PUBLIC_KEY
             f16fffe2-77b7-4d20-bf6c-b2c9015c71d3 > KAMATERA_PRIVATE_KEY
             5083ae32-429d-428b-b7df-b2c901441bbb > KAMATERA_ROOT_PASSWORD
-            f5eaa406-b7cb-4ea8-b260-b2d80127303d > OAUTH2_TRAEFIK_CLIENT
-            a2bd5813-567a-469e-90d7-b313009fe9d7 > OAUTH2_TRAEFIK_COOKIE
             09171644-23c8-4b7f-9015-b2e5015a4572 > PLATFORM_USERNAME
             ffa5e6f9-de6a-47fa-887e-b2e5015ae1a4 > PLATFORM_PASSWORD
             f53a76ab-b87f-4af0-9aa4-b2d1016aba2b > VERSIO_USERNAME
@@ -302,8 +300,6 @@ jobs:
           APP_WORKSPACE: ${{ inputs.workspace }}
           SECRET_PLATFORM_USERNAME: ${{ steps.get-secrets.outputs.PLATFORM_USERNAME }}
           SECRET_PLATFORM_PASSWORD: ${{ steps.get-secrets.outputs.PLATFORM_PASSWORD }}
-          SECRET_OAUTH2_TRAEFIK_CLIENT : ${{ steps.get-secrets.outputs.OAUTH2_TRAEFIK_CLIENT }}
-          SECRET_OAUTH2_TRAEFIK_COOKIE : ${{ steps.get-secrets.outputs.OAUTH2_TRAEFIK_COOKIE }}
           SECRET_VERSIO_USERNAME : ${{ steps.get-secrets.outputs.VERSIO_USERNAME }}
           SECRET_VERSIO_PASSWORD : ${{ steps.get-secrets.outputs.VERSIO_PASSWORD }}
         run: |
