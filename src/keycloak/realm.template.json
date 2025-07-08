@@ -16,7 +16,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "k2DzGn7XSUCsUMDSpMtunXfbslGiwmg4",
+      "secret": "some-secret-value",
       "redirectUris": [
         "https://auth.theorderoftheblacklizard.be/oauth2/*",
         "https://auth.meeus.family/oauth2/*",

@@ -1,11 +1,9 @@
 # version: '3.9'
 
 secrets:
-  OAUTH2_CLIENTID:
+  OAUTH2_TRAEFIK_CLIENT:
     external: true
-  OAUTH2_SECRET:
-    external: true
-  OAUTH2_COOKIE:
+  OAUTH2_TRAEFIK_COOKIE:
     external: true
 
 # configs:
@@ -16,96 +14,23 @@ networks:
     external: true
   lan-platform:
     external: true
-  wan-develop:
-    external: true
-  wan-platform:
-    external: true
 
 x-oauth2-base: &oauth2-base
   image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0-alpine
   volumes:
-    - ${OAUTH2_PATH_CONFIG}/functions.sh:/etc/functions.sh:ro
+    - ${OAUTH2_PATH_CONFIG}/config.cfg:/etc/config.cfg
+    - ${OAUTH2_PATH_CONFIG}/libutils.sh:/etc/libutils.sh:ro
     - ${OAUTH2_PATH_CONFIG}/entrypoint.sh:/etc/entrypoint.sh:ro
   networks:
     - lan-${WORKSPACE}
-    - wan-${WORKSPACE}
-  secrets:
-    - OAUTH2_CLIENTID
-    - OAUTH2_SECRET
-    - OAUTH2_COOKIE
-  environment: &oauth2-base-environment
-    OIDC_ISSUER_URL: https://auth.${DOMAIN_DEV}/realms/${REALM_ID}
-    # These files are the same across all, unless you create separate secrets per domain
-    OAUTH2_CLIENT_ID_FILE: /run/secrets/OAUTH2_CLIENTID
-    OAUTH2_CLIENT_SECRET_FILE: /run/secrets/OAUTH2_SECRET
-    OAUTH2_COOKIE_SECRET_FILE: /run/secrets/OAUTH2_COOKIE
-    DOMAIN_DEV: ${DOMAIN_DEV}
-    REALM_ID: ${REALM_ID}
-  command:
-    - /bin/sh
-    - -c
-    - |
-      # Function to safely read secrets
-      read_secret() {
-          secret_file="/run/secrets/$1"
-          if [ -f "$secret_file" ]; then
-              cat "$secret_file"
-          else
-              echo "ERROR: Secret file $secret_file not found" >&2
-              exit 1
-          fi
-      }
-      
-      # Load secrets into OAuth2 Proxy environment variables
-      export OAUTH2_PROXY_CLIENT_ID="$(read_secret OAUTH2_CLIENTID)"
-      export OAUTH2_PROXY_CLIENT_SECRET="$(read_secret OAUTH2_SECRET)"
-      export OAUTH2_PROXY_COOKIE_SECRET="$(read_secret OAUTH2_COOKIE)"
-      
-      # Core OAuth2 Proxy configuration
-      export OAUTH2_PROXY_OIDC_ISSUER_URL="$OIDC_ISSUER_URL"
-      export OAUTH2_PROXY_HTTP_ADDRESS="0.0.0.0:4180"
-      export OAUTH2_PROXY_EMAIL_DOMAINS="*"
-      export OAUTH2_PROXY_UPSTREAMS="static://202"
-      export OAUTH2_PROXY_SKIP_PROVIDER_BUTTON="true"
-      
-      # Auth and session settings
-      export OAUTH2_PROXY_PASS_ACCESS_TOKEN="true"
-      export OAUTH2_PROXY_PASS_USER_HEADERS="true"
-      export OAUTH2_PROXY_SET_XAUTHREQUEST="true"
-      export OAUTH2_PROXY_SET_AUTHORIZATION_HEADER="true"
-      export OAUTH2_PROXY_PASS_AUTHORIZATION_HEADER="true"
-      
-      # Cookie settings (will be overridden per service if needed)
-      if [ -n "$COOKIE_DOMAIN" ]; then
-          export OAUTH2_PROXY_COOKIE_DOMAINS="$COOKIE_DOMAIN"
-      fi
-      
-      if [ -n "$REDIRECT_HOST" ]; then
-          export OAUTH2_PROXY_REDIRECT_URL="https://$REDIRECT_HOST/oauth2/callback"
-      fi
-      
-      if [ -n "$WHITELIST_DOMAIN" ]; then
-          export OAUTH2_PROXY_WHITELIST_DOMAINS="$WHITELIST_DOMAIN"
-      fi
-      
-      # Debug output (remove in production)
-      echo "OAuth2 Proxy starting with:"
-      echo "  Issuer: $OAUTH2_PROXY_OIDC_ISSUER_URL"
-      echo "  Client ID: ${OAUTH2_PROXY_CLIENT_ID:0:8}..."
-      echo "  HTTP Address: $OAUTH2_PROXY_HTTP_ADDRESS"
-      echo "  Redirect URL: $OAUTH2_PROXY_REDIRECT_URL"
-      echo "  Cookie Domain: $OAUTH2_PROXY_COOKIE_DOMAINS"
-      echo "  Whitelist Domain: $OAUTH2_PROXY_WHITELIST_DOMAINS"
-      
-      # Start OAuth2 Proxy
-      exec oauth2-proxy
+  entrypoint: ["/bin/sh", "/etc/entrypoint.sh"]
   healthcheck:
-    test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4180/oauth2/health"]
+    test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4180/ping"]
     interval: 60s
     timeout: 15s
     retries: 10
     start_period: 120s
-  deploy:
+  deploy: &oauth2-base-deploy
     mode: replicated
     replicas: 1
     placement:
@@ -128,18 +53,56 @@ x-oauth2-base: &oauth2-base
       monitor: 30s
 
 services:
-
-  oauth2-dev:
+  oauth2-traefik:
     <<: *oauth2-base
+    secrets:
+      - OAUTH2_TRAEFIK_CLIENT
+      - OAUTH2_TRAEFIK_COOKIE
     environment:
-      <<: *oauth2-base-environment
-      COOKIE_DOMAIN: .${DOMAIN_DEV}
-      REDIRECT_HOST: oauth2.${DOMAIN_DEV}
-      WHITELIST_DOMAIN: .${DOMAIN_DEV}
-    labels:
-      - traefik.enable=true
-      - traefik.http.services.oauth2-dev.loadbalancer.server.scheme=http
-      - traefik.http.services.oauth2-dev.loadbalancer.server.port=4180
-      - traefik.http.routers.oauth2-dev.rule=Host(`oauth2.${DOMAIN_DEV}`)
-      - traefik.http.routers.oauth2-dev.entrypoints=websecure
-      - traefik.http.routers.oauth2-dev.tls.certresolver=${TRAEFIK_TLS_HTTP}
+      DOMAIN_DEV: ${DOMAIN_DEV}
+      REALM_ID: ${REALM_ID}
+      OAUTH2_TRAEFIK_COOKIE_FILE: /run/secrets/OAUTH2_TRAEFIK_COOKIE
+      OAUTH2_PROXY_CLIENT_SECRET_FILE: /run/secrets/OAUTH2_TRAEFIK_CLIENT
+      OAUTH2_PROXY_OIDC_ISSUER_URL: https://identity.${DOMAIN_DEV}/realms/${REALM_ID}
+      OAUTH2_PROXY_REDIRECT_URL: https://auth.${DOMAIN_DEV}/oauth2/callback
+      OAUTH2_PROXY_CLIENT_ID: "oauth2-traefik"
+      OAUTH2_PROXY_COOKIE_NAME: "oauth2-traefik"
+      OAUTH2_PROXY_COOKIE_DOMAINS: ".${DOMAIN_DEV}"
+      OAUTH2_PROXY_WHITELIST_DOMAINS: ".${DOMAIN_DEV}"
+    deploy:
+      <<: *oauth2-base-deploy
+      labels:
+        - traefik.enable=true
+        # Security headers middleware
+        - traefik.http.middlewares.auth-dev-headers.headers.sslRedirect=true
+        - traefik.http.middlewares.auth-dev-headers.headers.stsSeconds=315360000
+        - traefik.http.middlewares.auth-dev-headers.headers.browserXssFilter=true
+        - traefik.http.middlewares.auth-dev-headers.headers.contentTypeNosniff=true
+        - traefik.http.middlewares.auth-dev-headers.headers.forceSTSHeader=true
+        - traefik.http.middlewares.auth-dev-headers.headers.sslHost=${DOMAIN_DEV}
+        - traefik.http.middlewares.auth-dev-headers.headers.stsIncludeSubdomains=true
+        - traefik.http.middlewares.auth-dev-headers.headers.stsPreload=true
+        - traefik.http.middlewares.auth-dev-headers.headers.frameDeny=true
+        # ForwardAuth middleware
+        - traefik.http.middlewares.oauth-traefik-auth.forwardauth.address=https://traefik.${DOMAIN_DEV}/oauth2/auth
+        - traefik.http.middlewares.oauth-traefik-auth.forwardauth.trustForwardHeader=true
+        - traefik.http.middlewares.oauth-traefik-auth.forwardauth.authresponseheaders=X-Auth-Request-User, X-Auth-Request-Email
+        # Errors middleware
+        - traefik.http.middlewares.oauth-traefik-errors.errors.status=401-403
+        - traefik.http.middlewares.oauth-traefik-errors.errors.service=oauth2-traefik-backend
+        - traefik.http.middlewares.oauth-traefik-errors.errors.query=/oauth2/sign_in?rd={url}
+        # Router for oauth2 endpoints on traefik domain
+        - traefik.http.routers.oauth-traefik-endpoints.rule=Host(`traefik.${DOMAIN_DEV}`) && PathPrefix(`/oauth2/`)
+        - traefik.http.routers.oauth-traefik-endpoints.service=oauth2-traefik-backend
+        - traefik.http.routers.oauth-traefik-endpoints.entrypoints=websecure
+        - traefik.http.routers.oauth-traefik-endpoints.tls.certresolver=${TRAEFIK_TLS_HTTP}
+        - traefik.http.routers.oauth-traefik-endpoints.middlewares=auth-dev-headers
+        - traefik.http.routers.oauth-traefik-endpoints.priority=100
+        # Router to expose /oauth2/* endpoints behind same domain
+        - traefik.http.services.oauth2-traefik-backend.loadbalancer.server.scheme=http
+        - traefik.http.services.oauth2-traefik-backend.loadbalancer.server.port=4180
+        - traefik.http.routers.oauth-traefik.rule=Host(`auth.${DOMAIN_DEV}`)
+        - traefik.http.routers.oauth-traefik.service=oauth2-traefik-backend
+        - traefik.http.routers.oauth-traefik.entrypoints=websecure
+        - traefik.http.routers.oauth-traefik.tls.certresolver=${TRAEFIK_TLS_HTTP}
+        - traefik.http.routers.oauth-traefik.middlewares=auth-dev-headers
