@@ -36,23 +36,25 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PLATFORM_EMAIL}
       PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD
       SCRIPT_NAME: /pgadmin
+
       PGADMIN_CONFIG_AUTHENTICATION_SOURCES: "oauth2"
       PGADMIN_CONFIG_OAUTH2_AUTO_CREATE_USERS: "True"
       PGADMIN_CONFIG_OAUTH2_NAME: "Keycloak"
       PGADMIN_CONFIG_OAUTH2_DISPLAY_NAME: "Login with Keycloak"
       PGADMIN_CONFIG_OAUTH2_CLIENT_ID: "pgadmin-client"
       PGADMIN_CONFIG_OAUTH2_CLIENT_SECRET_FILE: /run/secrets/OAUTH2_PGADMIN_SECRET
-      PGADMIN_CONFIG_OAUTH2_TOKEN_URL: "https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/token"
-      PGADMIN_CONFIG_OAUTH2_AUTHORIZATION_URL: "https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/auth"
-      PGADMIN_CONFIG_OAUTH2_API_BASE_URL: "https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect"
-      PGADMIN_CONFIG_OAUTH2_USER_API_URL: "https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/userinfo"
-      PGADMIN_CONFIG_OAUTH2_SCOPE: "openid email profile"
+      PGADMIN_CONFIG_OAUTH2_TOKEN_URL: "'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/token'"
+      PGADMIN_CONFIG_OAUTH2_AUTHORIZATION_URL: "'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/auth'"
+      PGADMIN_CONFIG_OAUTH2_API_BASE_URL: "'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect'"
+      PGADMIN_CONFIG_OAUTH2_USER_API_URL: "'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/userinfo'"
+      PGADMIN_CONFIG_OAUTH2_LOGOUT_URL: "'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/logout'"
+      PGADMIN_CONFIG_OAUTH2_SCOPE: "'openid email profile'"
       PGADMIN_CONFIG_OAUTH2_USERNAME_CLAIM: "preferred_username"
       PGADMIN_CONFIG_OAUTH2_EMAIL_CLAIM: "email"
       PGADMIN_CONFIG_OAUTH2_ROLE_CLAIM: "realm_access.roles"
       PGADMIN_CONFIG_OAUTH2_ROLE_MAPPING: '{"sysadmins": "USER"}'
       PGADMIN_CONFIG_OAUTH2_ROLE_SYNC: "True"
-      PGADMIN_CONFIG_OAUTH2_LOGOUT_URL: "https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/logout"
+      
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:9080/pgadmin"]
       interval: 60s
