@@ -18,16 +18,19 @@ OAUTH2_CONFIG = [
         'OAUTH2_CLIENT_SECRET': '${OAUTH2_PGADMIN_SECRET}',
         # URL to generate a token,
         # Ex: https://github.com/login/oauth/access_token
-        # 'OAUTH2_TOKEN_URL': 'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/token',
+        'OAUTH2_TOKEN_URL': 'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/token',
         # URL is used for authentication,
         # Ex: https://github.com/login/oauth/authorize
-        # 'OAUTH2_AUTHORIZATION_URL': 'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/auth',
+        'OAUTH2_AUTHORIZATION_URL': 'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/auth',
         # server metadata url might optional for your provider
+        # Ex: https://identity.huybrechts.dev/realms/platform/.well-known/openid-configuration
         'OAUTH2_SERVER_METADATA_URL': 'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/.well-known/openid-configuration',
         # Oauth base url, ex: https://api.github.com/
-        # 'OAUTH2_API_BASE_URL': 'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect',
+        'OAUTH2_API_BASE_URL': 'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect',
         # Name of the Endpoint, ex: user
-        'OAUTH2_USERINFO_ENDPOINT': 'userinfo',
+        # Should be https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/userinfo
+        # userinfo - for url: https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/userinfo"
+        'OAUTH2_USERINFO_ENDPOINT': 'https://identity.${DOMAIN_DEV}/realms/${REALM_ID/protocol/openid-connect/userinfo',
         # Oauth scope, ex: 'openid email profile'
         # Note that an 'email' claim is required in the resulting profile
         'OAUTH2_SCOPE': 'openid email profile',
@@ -69,7 +72,7 @@ OAUTH2_CONFIG = [
         # Example for keycloak:
         # 'OAUTH2_LOGOUT_URL':
         # 'https://example.com/realms/master/protocol/openid-connect/logout?post_logout_redirect_uri={redirect_uri}&id_token_hint={id_token}'
-        # 'OAUTH2_LOGOUT_URL': 'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/logout'
+        'OAUTH2_LOGOUT_URL': 'https://identity.${DOMAIN_DEV}/realms/${REALM_ID}/protocol/openid-connect/logout'
     }
 ]
 
