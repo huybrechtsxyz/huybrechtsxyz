@@ -25,9 +25,9 @@ services:
       - --cookie-secret=yY6zhCIDlNMqlRkO7P4CIJh4bRypqboR
       - --redirect-url=https://traefik.${DOMAIN_DEV}/oauth2/callback
       - --oidc-issuer-url=https://identity.${DOMAIN_DEV}/realms/${REALM_ID}
-      - --scope=openid #email profile groups
+      - --scope="openid email profile groups"
       - --email-domain=*
-      #- --allowed-group=/sysadmins
+      - --allowed-group=/sysadmins
       - --code-challenge-method=S256
     # healthcheck:
     #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4180/ping"]
