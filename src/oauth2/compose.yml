@@ -1,13 +1,6 @@
 # version: '3.9'
 
-secrets:
-  OAUTH2_CLIENTID:
-    external: true
-  OAUTH2_SECRET:
-    external: true
-  OAUTH2_COOKIE:
-    external: true
-
+#secrets:
 # configs:
 # volumes:
 
@@ -16,76 +9,66 @@ networks:
     external: true
   lan-platform:
     external: true
-  wan-develop:
-    external: true
-  wan-platform:
-    external: true
-
-x-oauth2-base: &oauth2-base
-  image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0-alpine
-  volumes:
-    - ${OAUTH2_PATH_CONFIG}/config.template.cfg:/etc/config.template.cfg
-    - ${OAUTH2_PATH_CONFIG}/libutils.sh:/etc/libutils.sh:ro
-    - ${OAUTH2_PATH_CONFIG}/entrypoint.sh:/etc/entrypoint.sh:ro
-  networks:
-    - lan-${WORKSPACE}
-    - wan-${WORKSPACE}
-  secrets:
-    - OAUTH2_CLIENTID
-    - OAUTH2_SECRET
-    - OAUTH2_COOKIE
-  environment: &oauth2-base-environment
-    OIDC_ISSUER_URL: https://identity.${DOMAIN_DEV}/realms/${REALM_ID}
-    # These files are the same across all, unless you create separate secrets per domain
-    OAUTH2_CLIENTID_FILE: /run/secrets/OAUTH2_CLIENTID
-    OAUTH2_SECRET_FILE: /run/secrets/OAUTH2_SECRET
-    OAUTH2_COOKIE_FILE: /run/secrets/OAUTH2_COOKIE
-    REALM_ID: ${REALM_ID}
-  entrypoint: ["/bin/sh", "/etc/entrypoint.sh"]
-  healthcheck:
-    test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4180/ping"]
-    interval: 60s
-    timeout: 15s
-    retries: 10
-    start_period: 120s
-  deploy: &oauth2-base-deploy
-    mode: replicated
-    replicas: 1
-    placement:
-      constraints:
-        - node.role==${DOCKER_WORKER}
-        - node.labels.infra==true
-    restart_policy:
-      condition: on-failure
-      delay: 10s
-    update_config:
-      parallelism: 1
-      delay: 15s
-      failure_action: rollback
-      monitor: 30s
-      order: start-first
-    rollback_config:
-      parallelism: 1
-      delay: 10s
-      failure_action: continue
-      monitor: 30s
 
 services:
-  oauth2-dev:
-    <<: *oauth2-base
-    environment:
-      <<: *oauth2-base-environment
-      COOKIE_DOMAIN: .${DOMAIN_DEV}
-      REDIRECT_HOST: auth.${DOMAIN_DEV}
-      WHITELIST_DOMAIN: .${DOMAIN_DEV}
+
+  oauth2-traefik:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0
+    networks:
+      - lan-${WORKSPACE}
+    command:
+      - --http-address=0.0.0.0:4180
+      - --reverse-proxy=true
+      - --provider=keycloak-oidc
+      - --email-domain=*
+      - --client-id=traefik-client
+      - --client-secret=yY6zhCIDlNMqlRkO7P4CIJh4bRypqboR
+      - --cookie-secret=yY6zhCIDlNMqlRkO7P4CIJh4bRypqboR
+      - --redirect-url=https://traefik.${DOMAIN_DEV}/oauth2/callback
+      - --oidc-issuer-url=https://identity.${DOMAIN_DEV}/realms/${REALM_ID}
+      - --scope=openid email profile
+      - --allowed-role=system-admin
+      - --set-authorization-header=true
+      - --set-xauthrequest=true
+      - --show-debug-on-error=true
+      - --code-challenge-method=S256
     deploy:
-      <<: *oauth2-base-deploy
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role==${DOCKER_WORKER}
+          - node.labels.infra==true
+        preferences:
+          - spread: node.id
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 30s
       labels:
         - traefik.enable=true
-        - traefik.http.middlewares.oauth2-dev-headers.headers.customrequestheaders.Host=auth.${DOMAIN_DEV}
-        - traefik.http.services.oauth2-dev.loadbalancer.server.scheme=http
-        - traefik.http.services.oauth2-dev.loadbalancer.server.port=4180
-        - traefik.http.routers.oauth2-dev.rule=Host(`auth.${DOMAIN_DEV}`)
-        - traefik.http.routers.oauth2-dev.entrypoints=websecure
-        - traefik.http.routers.oauth2-dev.tls.certresolver=${TRAEFIK_TLS_HTTP}
-        - traefik.http.routers.oauth2-dev.middlewares=oauth2-dev-headers
+        # OAuth2 Forward Auth middleware
+        - traefik.http.middlewares.oauth-auth.forwardAuth.address=http://oauth2-traefik:4180/oauth2/auth
+        - traefik.http.middlewares.oauth-auth.forwardAuth.trustForwardHeader=true
+        # OAuth2 Error handling middleware
+        - traefik.http.middlewares.oauth-errors.errors.status=401,403
+        - traefik.http.middlewares.oauth-errors.errors.service=oauth
+        - traefik.http.middlewares.oauth-errors.errors.query=/oauth2/sign_in?rd={url}
+        # OAuth2 Service and Router
+        - traefik.http.services.oauth.loadbalancer.server.scheme=http
+        - traefik.http.services.oauth.loadbalancer.server.port=4180
+        - traefik.http.routers.oauth.rule=Host(`traefik.${DOMAIN_DEV}`) && PathPrefix(`/oauth2/`)
+        - traefik.http.routers.oauth.priority=100
+        - traefik.http.routers.oauth.service=oauth
+        - traefik.http.routers.oauth.entrypoints=websecure
+        - traefik.http.routers.oauth.tls.certresolver=${TRAEFIK_TLS_HTTP}

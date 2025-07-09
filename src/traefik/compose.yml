@@ -1,10 +1,6 @@
 # version: '3.9'
 
 secrets:
-  TRAEFIK_CLIENTID:
-    external: true
-  TRAEFIK_SECRET:
-    external: true
   VERSIO_USERNAME:
     external: true
   VERSIO_PASSWORD:
@@ -42,8 +38,6 @@ services:
     secrets:
       - VERSIO_USERNAME
       - VERSIO_PASSWORD
-      - TRAEFIK_CLIENTID
-      - TRAEFIK_SECRET
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
@@ -85,14 +79,12 @@ services:
         - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
         # Basic Authentication
         - traefik.http.middlewares.basic-auth.basicauth.users=root:$$apr1$$QWdnNA46$$ERyQkE85h.jRxDlkEFTcU.
-        # OAuth Authentication
-        - traefik.http.middlewares.forward-auth.forwardauth.address=https://auth.${DOMAIN_DEV}/oauth2/auth
-        - traefik.http.middlewares.forward-auth.forwardauth.trustForwardHeader=true
         # Traefik dashboard
         - traefik.http.services.traefik.loadbalancer.server.scheme=http
         - traefik.http.services.traefik.loadbalancer.server.port=8080
-        - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_DEV}`)
+        - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_DEV}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`) || PathPrefix(`/ping`))
+        - traefik.http.routers.traefik.priority=1
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.tls.certresolver=${TRAEFIK_TLS_HTTP}
-        - traefik.http.routers.traefik.middlewares=${TRAEFIK_AUTH}
+        - traefik.http.routers.traefik.middlewares=oauth-errors, oauth-auth

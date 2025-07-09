@@ -1,62 +1,29 @@
 #!/bin/sh
 set -e
 
-# Load function library if any
-if [ -f /etc/functions.sh ]; then
-  . /etc/functions.sh
+# Load functions for secrets and substitution
+if [ -f /etc/libutils.sh ]; then
+  . /etc/libutils.sh
 else
-  echo "ERROR . /etc/functions.sh not found"
+  echo "ERROR . /etc/libutils.sh not found"
   exit 1
 fi
 
-# Convert *_FILE env vars to env vars with contents
+# Read all _FILE secret files to environment variables
 load_secret_files
 
-for secret_var in OAUTH2_CLIENT_ID OAUTH2_CLIENT_SECRET OAUTH2_COOKIE_SECRET; do
-  val="$(eval echo \$$secret_var)"
-  if [ -n "$val" ]; then
-    echo "$secret_var = ***"
-  else
-    echo "$secret_var is not set"
-  fi
-done
+# Read all environment variables
+export OAUTH2_PROXY_COOKIE_SECRET=$OAUTH2_TRAEFIK_COOKIE
 
-# Generate config file dynamically
-cat >/etc/oauth2-proxy.cfg <<EOF
-# OAuth2 Proxy Configuration
+export OAUTH2_PROXY_CLIENT_SECRET_FILE=$OAUTH2_PROXY_CLIENT_SECRET_FILE
+export OAUTH2_PROXY_OIDC_ISSUER_URL=$OAUTH2_PROXY_OIDC_ISSUER_URL
+export OAUTH2_PROXY_REDIRECT_URL=$OAUTH2_PROXY_REDIRECT_URL
+export OAUTH2_PROXY_UPSTREAMS=$OAUTH2_PROXY_UPSTREAMS
+export OAUTH2_PROXY_CLIENT_ID=$OAUTH2_PROXY_CLIENT_ID
+export OAUTH2_PROXY_COOKIE_NAME=$OAUTH2_PROXY_COOKIE_NAME
+export OAUTH2_PROXY_COOKIE_DOMAINS=$OAUTH2_PROXY_COOKIE_DOMAINS
+export OAUTH2_PROXY_WHITELIST_DOMAINS=$OAUTH2_PROXY_WHITELIST_DOMAINS
 
-provider = oidc
-oidc_issuer_url = ${OIDC_ISSUER_URL}
-client_id = ${OAUTH2_CLIENT_ID:-oauth2-proxy}
-client_secret = ${OAUTH2_CLIENT_SECRET}
-cookie_secret = ${OAUTH2_COOKIE_SECRET}
-cookie_secure = true
-cookie_domain = ${COOKIE_DOMAIN}
-http_address = 0.0.0.0:4180
-redirect_url = https://${REDIRECT_HOST}/oauth2/callback
-scope = openid email profile
-session_cookie_name = _oauth2_proxy
-session_store_type = cookie
-session_lifetime = 8h
-session_refresh = 1h
-request_logging = true
-log_level = info
-whitelist_domains = ${WHITELIST_DOMAIN}
-skip_provider_button = true
-enable_refresh_tokens = true
-
-EOF
-
-echo "Generated /etc/oauth2-proxy.cfg:"
-cat /etc/oauth2-proxy.cfg
-
-# Base command
-CMD="oauth2-proxy --config=/etc/oauth2-proxy.cfg"
-
-# Append any arguments passed to the script (if any)
-if [ ! -z "$1" ]; then
-  CMD="$CMD $*"
-fi
-
-# Exec the command (replaces shell process)
-exec $CMD
+exec oauth2-proxy \
+  --config=/etc/config.cfg \
+  --insecure-oidc-skip-issuer-verification

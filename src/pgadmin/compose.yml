@@ -5,6 +5,8 @@ secrets:
     external: true
   PLATFORM_PASSWORD:
     external: true
+  OAUTH2_PGADMIN_SECRET:
+    external: true
 
 # configs:
 # volumes:
@@ -20,14 +22,18 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     volumes:
+      - ${PGADMIN_PATH_CONFIG}/config_local.py:/pgadmin4/config_local.py
       - ${PGADMIN_PATH_DATA}:/var/lib/pgadmin
     networks:
       - lan-${WORKSPACE}
     secrets:
       - PLATFORM_PASSWORD
+      - OAUTH2_PGADMIN_SECRET
     environment:
       DOMAIN_DEV: ${DOMAIN_DEV}
       ENVIRONMENT: ${ENVIRONMENT}
+      REALM_ID: ${REALM_ID}
+      OAUTH2_PGADMIN_SECRET_FILE: /run/secrets/OAUTH2_PGADMIN_SECRET
       PGADMIN_LISTEN_PORT: 9080
       PGADMIN_DEFAULT_EMAIL: ${PLATFORM_EMAIL}
       PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/PLATFORM_PASSWORD

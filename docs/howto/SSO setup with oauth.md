@@ -1,19 +1,15 @@
-https://console.cloud.google.com/auth/clients/1
+SSO Setup with oauth2-proxy, Keycloak, and Google on Docker Swarm
 
-# 🛡️ SSO Setup with oauth2-proxy, Keycloak, and Google
+This guide walks you through configuring Single Sign-On (SSO) with oauth2-proxy, Keycloak, and Google login, running on Docker Swarm with Traefik as the ingress proxy.
 
-This guide explains how to configure Single Sign-On in Docker Swarm using oauth2-proxy, Keycloak, and Google login.
+It also covers how to restrict access based on Keycloak group membership mapped to a realm role.
+1️⃣ Adding oauth2-proxy to Docker Compose / Swarm
 
----
+Sample docker-compose.yml snippet:
 
-## ✨ 1️⃣ Adding oauth2-proxy to Docker Compose / Swarm
-
-**Example `docker-compose.yml` service:**
-
-```yaml
 services:
   oauth2-proxy:
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0-alpine
     networks:
       - traefik
     environment:
@@ -22,8 +18,9 @@ services:
       - OAUTH2_CLIENT_SECRET=<client-secret>
       - OAUTH2_COOKIE=<cookie-secret> # 16, 24 or 32 bytes base64 string
       - REDIRECT_HOST=auth.<domain>
-      - COOKIE_DOMAIN=.dev.mycompany.local
-      - WHITELIST_DOMAIN=.dev.mycompany.local
+      - COOKIE_DOMAIN=.yourdomain.dev
+      - WHITELIST_DOMAIN=.yourdomain.dev
+      - OAUTH2_PROXY_ALLOWED_GROUPS=/sysadmins
     command:
       - --provider=oidc
       - --oidc-issuer-url=$(OIDC_ISSUER_URL)
@@ -33,12 +30,14 @@ services:
       - --cookie-secure=true
       - --cookie-domains=$(COOKIE_DOMAIN)
       - --redirect-url=https://$(REDIRECT_HOST)/oauth2/callback
-      - --scope=openid email profile
+      - --scope=openid email profile groups
       - --session-store-type=cookie
       - --cookie-expire=8h
       - --cookie-refresh=1h
       - --skip-provider-button=true
       - --email-domain=*
+      - --request-logging=true
+      - --insecure-oidc-skip-issuer-verification # Optional for self-signed certs
     labels:
       - traefik.enable=true
       - traefik.http.routers.oauth2.rule=Host(`auth.<domain>`)
@@ -46,19 +45,20 @@ services:
       - traefik.http.routers.oauth2.tls.certresolver=<resolver>
       - traefik.http.services.oauth2.loadbalancer.server.port=4180
 
-Note:
+    Notes:
 
-    Replace <KEYCLOAK_DOMAIN>, <REALM>, <client-id>, <client-secret>, and <domain> with your actual values.
+        Replace <KEYCLOAK_DOMAIN>, <REALM>, <client-id>, <client-secret>, <cookie-secret>, <domain>, and <resolver> with your real values.
 
-🛡️ 2️⃣ Creating a Keycloak Client for oauth2-proxy
+        OAUTH2_PROXY_ALLOWED_GROUPS restricts access to users in the /sysadmins group (see Keycloak setup).
 
-In the Keycloak Admin Console:
+2️⃣ Create and Configure Keycloak Client for oauth2-proxy
+In Keycloak Admin Console:
 
-    Select your realm (e.g., myrealm).
+    Go to your realm (e.g., myrealm).
 
-    Go to Clients.
+    Navigate to Clients → Create.
 
-    Click Create.
+    Enter:
 
         Client ID: oauth2-proxy
 
@@ -68,9 +68,7 @@ In the Keycloak Admin Console:
 
     Save.
 
-⚙️ 3️⃣ Configuring the Keycloak Client
-
-In your created client:
+Client Settings:
 
     Access Type: confidential
 
@@ -84,7 +82,9 @@ In your created client:
 
 https://auth.<domain>/oauth2/callback
 
-(or wildcard: https://auth.<domain>/oauth2/*)
+or wildcard:
+
+https://auth.<domain>/oauth2/*
 
 Web Origins:
 
@@ -92,18 +92,28 @@ Web Origins:
 
     Credentials: Copy Client Secret to use in oauth2-proxy.
 
-✅ Save your changes.
-🌐 4️⃣ Configuring Google Developer Console
+Add Group Membership Mapper:
 
-    Create OAuth 2.0 Client:
+    Go to Client Scopes or Mappers tab.
 
-        Go to Google Cloud Console.
+    Add a mapper:
 
-        APIs & Services → Credentials.
+        Mapper Type: Group Membership
 
-        Create Credentials → OAuth Client ID.
+        Token Claim Name: groups
 
-        Application Type: Web application.
+        Full group path: checked (recommended)
+
+        Add to ID token and access token.
+
+3️⃣ Add Google as an Identity Provider in Keycloak
+In Google Cloud Console:
+
+    Navigate to APIs & Services → Credentials.
+
+    Create OAuth 2.0 Client ID:
+
+        Application Type: Web application
 
         Authorized Redirect URIs:
 
@@ -111,15 +121,13 @@ Web Origins:
 
     Copy Client ID and Client Secret.
 
-🔗 5️⃣ Adding Google as Identity Provider in Keycloak
-
-In Keycloak Admin Console:
+In Keycloak:
 
     Go to Identity Providers.
 
-    Click Add provider → Google.
+    Select Google.
 
-    Fill:
+    Configure:
 
         Alias: google
 
@@ -133,42 +141,79 @@ In Keycloak Admin Console:
 
     Save.
 
-✅ You now have Google login enabled in Keycloak.
-✨ 6️⃣ (Optional) Auto-redirect to Google
+4️⃣ (Optional) Auto-redirect Users to Google Login
 
-If you want to skip the Keycloak login page:
+To skip Keycloak’s login page and directly redirect to Google:
 
-    Add the query parameter to the authorization request:
+    Add query parameter:
 
-    kc_idp_hint=google
+kc_idp_hint=google
 
-    In oauth2-proxy config:
+In oauth2-proxy, use:
 
-        Use --skip-provider-button=true.
+    --skip-provider-button=true
 
-        Set the --login-url accordingly if needed (advanced).
+    Adjust --login-url if needed for advanced cases.
 
-⚠️ 7️⃣ Notes & Tips
+5️⃣ Restrict Access by Keycloak Group Membership (Realm Role Mapping)
+In Keycloak:
 
-    You should never visit auth.<domain> directly—instead, access your protected app.
+    Create a realm role called sysadmins.
 
-    If you visit auth.<domain> with no path, you will get a 404—this is normal.
+    Create a group named sysadmins.
 
-    Forward Auth in Traefik:
+    Assign the sysadmins role to the sysadmins group.
 
-        Each protected app router must have a forward auth middleware pointing to oauth2-proxy.
+    Add users to the sysadmins group to grant them this role.
 
-Example forward auth label:
+In oauth2-proxy config:
 
-- traefik.http.middlewares.forward-auth.forwardauth.address=https://auth.<domain>/oauth2/auth
-- traefik.http.middlewares.forward-auth.forwardauth.trustForwardHeader=true
+Add or set:
 
-✅ Done! You now have:
+allowed_groups = "/sysadmins"
+scope = "openid email profile groups"
 
-    Traefik protecting your services.
+    Important: The /sysadmins value is the full group path as it appears in the token. You can verify the exact string by decoding the token at jwt.io.
 
-    oauth2-proxy handling authentication.
+6️⃣ Traefik Forward Authentication Setup
 
-    Keycloak as the OIDC provider.
+For each protected service, add a Traefik middleware to forward auth requests to oauth2-proxy.
 
-    Google login integrated into Keycloak.
+Example Traefik labels on your service:
+
+labels:
+  - traefik.http.middlewares.forward-auth.forwardauth.address=https://auth.<domain>/oauth2/auth
+  - traefik.http.middlewares.forward-auth.forwardauth.trustForwardHeader=true
+  - traefik.http.routers.myapp.middlewares=forward-auth
+
+7️⃣ Troubleshooting
+Symptom	Cause	Solution
+invalid_client unauthorized error	Client ID or secret mismatch	Verify client credentials in Keycloak and proxy
+403 Forbidden after login	User not in allowed group	Confirm user group membership in Keycloak
+Redirect URI mismatch	Redirect URI does not match	Match exact URI in Keycloak and oauth2-proxy config
+Missing groups claim	Group Membership mapper not configured	Add and enable Group Membership mapper
+404 at auth.<domain>	Direct visit to oauth2-proxy root	Access protected services instead
+8️⃣ Verifying Tokens
+
+    Login to your app via oauth2-proxy.
+
+    Grab the id_token from browser dev tools or logs.
+
+    Paste the token payload at https://jwt.io.
+
+    Check the groups claim includes /sysadmins.
+
+Summary
+
+    Keycloak manages authentication and group/role mappings.
+
+    Google login is integrated via Keycloak as an IdP.
+
+    oauth2-proxy enforces OAuth2 authentication and group-based authorization.
+
+    Traefik forwards protected requests to oauth2-proxy for auth.
+
+    Access is restricted to users in the /sysadmins group.
+
+
+    
