@@ -26,19 +26,12 @@ services:
       - --cookie-secret=yY6zhCIDlNMqlRkO7P4CIJh4bRypqboR
       - --redirect-url=https://traefik.${DOMAIN_DEV}/oauth2/callback
       - --oidc-issuer-url=https://identity.${DOMAIN_DEV}/realms/${REALM_ID}
-      - --scope="openid" #email profile"
-      # - --oidc-groups-claim=realm_access.roles
-      # - --allowed-group=system-admin
-      # - --set-authorization-header=true
-      # - --set-xauthrequest=true
+      - --scope=openid email profile
+      - --allowed-role=system-admin
+      - --set-authorization-header=true
+      - --set-xauthrequest=true
       - --show-debug-on-error=true
       - --code-challenge-method=S256
-    # healthcheck:
-    #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4180/ping"]
-    #   interval: 60s
-    #   timeout: 15s
-    #   retries: 10
-    #   start_period: 120s
     deploy:
       mode: replicated
       replicas: 1
@@ -64,16 +57,6 @@ services:
         monitor: 30s
       labels:
         - traefik.enable=true
-        # Security headers middleware
-        - traefik.http.middlewares.auth-headers.headers.sslRedirect=true
-        - traefik.http.middlewares.auth-headers.headers.stsSeconds=315360000
-        - traefik.http.middlewares.auth-headers.headers.browserXssFilter=true
-        - traefik.http.middlewares.auth-headers.headers.contentTypeNosniff=true
-        - traefik.http.middlewares.auth-headers.headers.forceSTSHeader=true
-        - traefik.http.middlewares.auth-headers.headers.sslHost=${DOMAIN_DEV}
-        - traefik.http.middlewares.auth-headers.headers.stsIncludeSubdomains=true
-        - traefik.http.middlewares.auth-headers.headers.stsPreload=true
-        - traefik.http.middlewares.auth-headers.headers.frameDeny=true
         # OAuth2 Forward Auth middleware
         - traefik.http.middlewares.oauth-auth.forwardAuth.address=http://oauth2-traefik:4180/oauth2/auth
         - traefik.http.middlewares.oauth-auth.forwardAuth.trustForwardHeader=true
@@ -89,4 +72,3 @@ services:
         - traefik.http.routers.oauth.service=oauth
         - traefik.http.routers.oauth.entrypoints=websecure
         - traefik.http.routers.oauth.tls.certresolver=${TRAEFIK_TLS_HTTP}
-        #- traefik.http.routers.oauth.middlewares=oauth-headers
