@@ -20,14 +20,18 @@ services:
       - --http-address=0.0.0.0:4180
       - --reverse-proxy=true
       - --provider=keycloak-oidc
+      - --email-domain=*
       - --client-id=traefik-client
       - --client-secret=yY6zhCIDlNMqlRkO7P4CIJh4bRypqboR
       - --cookie-secret=yY6zhCIDlNMqlRkO7P4CIJh4bRypqboR
       - --redirect-url=https://traefik.${DOMAIN_DEV}/oauth2/callback
       - --oidc-issuer-url=https://identity.${DOMAIN_DEV}/realms/${REALM_ID}
-      - --scope="openid email profile groups"
-      - --email-domain=*
-      - --allowed-group=/sysadmins
+      - --scope="openid" #email profile"
+      # - --oidc-groups-claim=realm_access.roles
+      # - --allowed-group=system-admin
+      # - --set-authorization-header=true
+      # - --set-xauthrequest=true
+      - --show-debug-on-error=true
       - --code-challenge-method=S256
     # healthcheck:
     #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4180/ping"]
@@ -85,4 +89,4 @@ services:
         - traefik.http.routers.oauth.service=oauth
         - traefik.http.routers.oauth.entrypoints=websecure
         - traefik.http.routers.oauth.tls.certresolver=${TRAEFIK_TLS_HTTP}
-        - traefik.http.routers.oauth.middlewares=oauth-headers
+        #- traefik.http.routers.oauth.middlewares=oauth-headers
