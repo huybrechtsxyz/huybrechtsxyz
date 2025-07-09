@@ -11,7 +11,10 @@ KAMATERA_ROOT_PASSWORD=xyz_kamatera_root_password_platform
 REGISTRY_USERNAME=xyz_registry_username
 REGISTRY_PASSWORD=xyz_registry_password
 TERRAFORM_API_TOKEN=xyz_terraform_api_token
-TRAEFIK_CLIENTID=app_keycloak_traefik_clientid
-TRAEFIK_SECRET=app_keycloak_traefik_secret
+
 VERSIO_USERNAME=xyz_versio_username
 VERSIO_PASSWORD=xyz_versio_password
+
+OAUTH2_TRAEFIK_SECRET=app_keyclaok_traefik_secret
+
+OAUTH2_TRAEFIK_COOKIE=$(openssl rand -base64 32) on deploy to cookie.env is not exiss.
