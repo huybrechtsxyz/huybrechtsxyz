@@ -22,7 +22,9 @@ graph TD
 ## Documentation
 
 - [Infrastructure Provisioning](./infrastructure.md)
-- [Platform Deployment](./deployment.md)
+- [Infrastructure Deployment](./deployment.md)
+- [Platform Deployment](./platform.md)
+- [Platform Services](./services.md)
 
 ## Repository Overview
 
