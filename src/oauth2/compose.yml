@@ -59,6 +59,16 @@ services:
         monitor: 30s
       labels:
         - traefik.enable=true
+        # Security headers middleware
+        - traefik.http.middlewares.auth-headers.headers.sslRedirect=true
+        - traefik.http.middlewares.auth-headers.headers.stsSeconds=315360000
+        - traefik.http.middlewares.auth-headers.headers.browserXssFilter=true
+        - traefik.http.middlewares.auth-headers.headers.contentTypeNosniff=true
+        - traefik.http.middlewares.auth-headers.headers.forceSTSHeader=true
+        - traefik.http.middlewares.auth-headers.headers.sslHost=${DOMAIN_DEV}
+        - traefik.http.middlewares.auth-headers.headers.stsIncludeSubdomains=true
+        - traefik.http.middlewares.auth-headers.headers.stsPreload=true
+        - traefik.http.middlewares.auth-headers.headers.frameDeny=true
         # OAuth2 Forward Auth middleware
         - traefik.http.middlewares.oauth-auth.forwardAuth.address=http://oauth2-admin:4180/oauth2/auth
         - traefik.http.middlewares.oauth-auth.forwardAuth.trustForwardHeader=true
@@ -66,11 +76,12 @@ services:
         - traefik.http.middlewares.oauth-errors.errors.status=401,403
         - traefik.http.middlewares.oauth-errors.errors.service=oauth-backend
         - traefik.http.middlewares.oauth-errors.errors.query=/oauth2/sign_in?rd={url}
-        # OAuth2 Backend service
-        - traefik.http.services.oauth-backend.loadbalancer.server.port=4180
-        # OAuth2 Router
+        # OAuth2 Service and Router
+        - traefik.http.services.oauth.loadbalancer.server.scheme=http
+        - traefik.http.services.oauth.loadbalancer.server.port=4180
         - traefik.http.routers.oauth.rule=Host(`traefik.${DOMAIN_DEV}`) && PathPrefix(`/oauth2/`)
-        - traefik.http.routers.oauth.service=oauth-backend
+        - traefik.http.routers.oauth.priority=100
+        - traefik.http.routers.oauth.service=oauth
         - traefik.http.routers.oauth.entrypoints=websecure
         - traefik.http.routers.oauth.tls.certresolver=${TRAEFIK_TLS_HTTP}
-        - traefik.http.routers.oauth.priority=100
+        - traefik.http.routers.oauth.middlewares=oauth-headers
