@@ -271,6 +271,7 @@ jobs:
             f53a76ab-b87f-4af0-9aa4-b2d1016aba2b > VERSIO_USERNAME
             3d7bbfcd-18a5-4762-9064-b2d1016aef63 > VERSIO_PASSWORD
             a7ddb397-fb3f-4ed5-8a65-b314009c3424 > OAUTH2_PGADMIN_SECRET
+            3df03dde-5a4d-431a-91a7-b31501440e2b > OAUTH2_TRAEFIK_SECRET
 
       # Set up GitHub Secrets for Test Environment
       # - name: Get Test Secrets
@@ -304,6 +305,7 @@ jobs:
           SECRET_VERSIO_USERNAME : ${{ steps.get-secrets.outputs.VERSIO_USERNAME }}
           SECRET_VERSIO_PASSWORD : ${{ steps.get-secrets.outputs.VERSIO_PASSWORD }}
           SECRET_OAUTH2_PGADMIN_SECRET: ${{ steps.get-secrets.outputs.OAUTH2_PGADMIN_SECRET }}
+          SECRET_OAUTH2_TRAEFIK_SECRET: ${{ steps.get-secrets.outputs.OAUTH2_TRAEFIK_SECRET }}
         run: |
           echo "[*] Configuring swarm server ${{ matrix.ip }} ..."
           chmod +x deploy/scripts/configure-swarm-server.sh

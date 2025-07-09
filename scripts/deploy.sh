@@ -33,6 +33,41 @@ cd "$SCRIPT_PATH" || exit 1
 STACK="${STACK:-app}"  # Default stack name
 
 # -------------------------------------------------------------------
+# Load and merge environment configurations
+# While waiting for pull request #3104 to be merged
+# https://github.com/oauth2-proxy/oauth2-proxy/pull/3104/files
+# -------------------------------------------------------------------
+COOKIE_FILE="$SCRIPT_PATH/cookie.env"
+COOKIE_NAME="OAUTH2_TRAEFIK_COOKIE"
+if [ ! -f "$COOKIE_FILE" ]; then
+  touch "$COOKIE_FILE"
+fi
+# Check if the variable is present and has a value
+EXISTING_VALUE=$(grep -E "^${COOKIE_NAME}=" "$COOKIE_FILE" | cut -d'=' -f2-)
+if [ -z "$EXISTING_VALUE" ]; then
+  # Generate a 32-byte random base64 secret
+  NEW_SECRET=$(openssl rand -base64 32)
+  # If variable already exists as an empty value, replace it
+  if grep -q "^${COOKIE_NAME}=" "$COOKIE_FILE"; then
+    sed -i "s|^${COOKIE_NAME}=.*|${COOKIE_NAME}=${NEW_SECRET}|" "$COOKIE_FILE"
+  else
+    # Otherwise, append it
+    echo "${COOKIE_NAME}=${NEW_SECRET}" >> "$COOKIE_FILE"
+  fi
+  EXISTING_VALUE=$NEW_SECRET
+  log INFO "[+] Generated new cookie secret and updated .env"
+else
+  log INFO "[+] Existing cookie secret found in .env (nothing changed)"
+fi
+load_envfile "$COOKIE_FILE"
+# Update or append in env
+if grep -q "^${COOKIE_NAME}=" "$SCRIPT_PATH/.env"; then
+  sed -i "s|^${COOKIE_NAME}=.*|${COOKIE_NAME}=${EXISTING_VALUE}|" "$SCRIPT_PATH/.env"
+else
+  echo "${COOKIE_NAME}=${EXISTING_VALUE}" >> "$SCRIPT_PATH/.env"
+fi
+
+# -------------------------------------------------------------------
 # Validate input options
 # -------------------------------------------------------------------
 if [[ -z "${GROUP:-}" && ${#SERVICES[@]} -eq 0 ]]; then
@@ -86,6 +121,8 @@ for dir in "$SCRIPT_PATH"/*/; do
       fi
     fi
   fi
+
+
 
   if [[ "$GROUP" == "$service_group" || " ${SERVICES[*]} " == *" $service_id "* || ( -z "$GROUP" && "${#SERVICES[@]}" -eq 0 ) ]]; then
     SELECTION+=("$service_id|$service_priority|$service_endpoint")

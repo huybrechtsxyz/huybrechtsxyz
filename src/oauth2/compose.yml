@@ -16,14 +16,19 @@ services:
     image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0
     networks:
       - lan-${WORKSPACE}
+    secrets:
+      - OAUTH2_TRAEFIK_SECRET
+    environment:
+      - OAUTH2_TRAEFIK_SECRET=/run/secrets/OAUTH2_TRAEFIK_SECRET
+      - OAUTH2_TRAEFIK_COOKIE=${OAUTH2_TRAEFIK_COOKIE}
     command:
       - --http-address=0.0.0.0:4180
       - --reverse-proxy=true
       - --provider=keycloak-oidc
       - --email-domain=*
       - --client-id=traefik-client
-      - --client-secret=yY6zhCIDlNMqlRkO7P4CIJh4bRypqboR
-      - --cookie-secret=yY6zhCIDlNMqlRkO7P4CIJh4bRypqboR
+      - --client-secret-file=${OAUTH2_TRAEFIK_SECRET}
+      - --cookie-secret=${OAUTH2_TRAEFIK_COOKIE}
       - --redirect-url=https://traefik.${DOMAIN_DEV}/oauth2/callback
       - --oidc-issuer-url=https://identity.${DOMAIN_DEV}/realms/${REALM_ID}
       - --scope=openid email profile
