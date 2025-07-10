@@ -17,7 +17,7 @@ The infrastructure for this self-hosted platform is created and maintained using
 
 ## What is a Workspace?
 
-A workspace is an instance of the full cloud environment. It defines all infrastructure components, network topology, and storage layout required to deploy, operate, and manage your services. Workspaces are defined at provisioning and deployment. Workspaces are configured using the workspace configuration file.
+A workspace is an instance of the full cloud environment. It defines all infrastructure components, network topologies, and storage layouts required to deploy, operate, and manage your services. Workspaces are defined at provisioning and deployment. Workspaces are configured using the workspace configuration file.
 
 Key characteristics of a workspace:
 
