@@ -1,6 +1,6 @@
 # Huybrechts-XYZ
 
-Huybrechts-XYZ is a self-hosted `cloud` platform designed to provide centralized authentication, secure service access, and streamlined deployment of custom and third-party applications. The platform enables users to run various services such as personal websites, blogs, and internally developed software with ease and security.
+Huybrechts-XYZ is a self-hosted platform designed to provide centralized authentication, secure service access, and streamlined deployment of custom and third-party applications. The platform enables the user to run various services such as personal websites, blogs, and internally developed software with ease and security.
 
 ## Objectives for the Platform
 
