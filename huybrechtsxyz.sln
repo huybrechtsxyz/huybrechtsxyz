@@ -8,15 +8,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{34E212C1-229
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "website", "website", "{521822AF-29EB-E827-1871-FC06BF0B0907}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.App", ".backup\src\website\Huybrechts.App\Huybrechts.App.csproj", "{EA1FEDB4-EBAC-E27E-BFE6-CE0AA01FBA35}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.App", "src\website\Huybrechts.App\Huybrechts.App.csproj", "{EA1FEDB4-EBAC-E27E-BFE6-CE0AA01FBA35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Core", ".backup\src\website\Huybrechts.Core\Huybrechts.Core.csproj", "{51FBCDAC-1FD4-D8D7-1155-068323576A70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Core", "src\website\Huybrechts.Core\Huybrechts.Core.csproj", "{51FBCDAC-1FD4-D8D7-1155-068323576A70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.Npgsql", ".backup\src\website\Huybrechts.Infra.Npgsql\Huybrechts.Infra.Npgsql.csproj", "{4DC989E4-2ABB-42B5-5C03-F47924309F20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.Npgsql", "src\website\Huybrechts.Infra.Npgsql\Huybrechts.Infra.Npgsql.csproj", "{4DC989E4-2ABB-42B5-5C03-F47924309F20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.SqlServer", ".backup\src\website\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj", "{1DE04181-F06E-0EFE-377C-01C1048A9073}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Infra.SqlServer", "src\website\Huybrechts.Infra.SqlServer\Huybrechts.Infra.SqlServer.csproj", "{1DE04181-F06E-0EFE-377C-01C1048A9073}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Web", ".backup\src\website\Huybrechts.Web\Huybrechts.Web.csproj", "{006B64F0-417D-D03E-947F-F1872262B536}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huybrechts.Web", "src\website\Huybrechts.Web\Huybrechts.Web.csproj", "{006B64F0-417D-D03E-947F-F1872262B536}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{48A5AEBE-C62A-EA52-0F4A-EED93DB6CB57}"
 EndProject
@@ -65,7 +65,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{34E212C1-2293-2165-02DC-B8023C7688C5} = {A52537F8-A314-0C08-E09F-88B95EEAC007}
 		{521822AF-29EB-E827-1871-FC06BF0B0907} = {34E212C1-2293-2165-02DC-B8023C7688C5}
 		{EA1FEDB4-EBAC-E27E-BFE6-CE0AA01FBA35} = {521822AF-29EB-E827-1871-FC06BF0B0907}
 		{51FBCDAC-1FD4-D8D7-1155-068323576A70} = {521822AF-29EB-E827-1871-FC06BF0B0907}

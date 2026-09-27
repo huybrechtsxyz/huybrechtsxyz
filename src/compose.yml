@@ -1,0 +1,17 @@
+include:
+  - path: postgres/compose.yml
+
+services:
+  website:
+    build:
+      context: ..
+      dockerfile: src/website/Huybrechts.Web/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__NpgsqlContext: Host=postgres;Database=${POSTGRES_DB:-huybrechts};Username=${POSTGRES_USER:-huybrechts};Password=${POSTGRES_PASSWORD:-develop}
+    depends_on:
+      postgres:
+        condition: service_healthy
